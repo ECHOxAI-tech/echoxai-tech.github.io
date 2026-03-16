@@ -237,6 +237,34 @@
       font-family:'IM Fell English',serif; font-size:1.4rem;
       color:var(--off-white); font-weight:400; margin-bottom:0.5rem;
     }
+    /* AUDIO PLAYER */
+    .track-audio {
+      padding:1.2rem 2rem;
+      background:#0a0a08;
+      border-top:1px solid #1a1a16;
+      display:flex; align-items:center; gap:1.2rem; flex-wrap:wrap;
+    }
+    .audio-label {
+      font-family:"Inconsolata",monospace; font-size:0.65rem;
+      letter-spacing:0.15em; text-transform:uppercase; color:var(--gold-dim);
+      white-space:nowrap;
+    }
+    .audio-player {
+      flex:1; min-width:180px;
+      height:32px;
+      filter: invert(1) sepia(1) saturate(0.3) hue-rotate(10deg) brightness(0.7);
+    }
+    .btn-youtube {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      padding:0.5rem 1.2rem;
+      background:transparent; color:#c00;
+      border:1px solid rgba(200,0,0,0.4);
+      font-family:"Inconsolata",monospace; font-size:0.68rem;
+      letter-spacing:0.12em; text-transform:uppercase;
+      text-decoration:none; transition:all 0.2s;
+    }
+    .btn-youtube:hover { background:rgba(200,0,0,0.1); border-color:#c00; }
+
     .coming-soon p {
       font-size:1rem; color:var(--muted); font-style:italic;
       line-height:1.7; max-width:400px; margin:0 auto;
@@ -320,6 +348,11 @@
       <a href="#ilostit" class="index-item">
         <p class="index-num">06</p>
         <p class="index-title">I Lost It</p>
+        <p class="index-collab">ECHOxPRODUCTION</p>
+      </a>
+      <a href="#blodsommar" class="index-item">
+        <p class="index-num">07</p>
+        <p class="index-title">Blodsommar</p>
         <p class="index-collab">ECHOxPRODUCTION</p>
       </a>
     </div>
@@ -459,6 +492,13 @@
               <p class="note-text">The glitching vocal sample should feel authentically mechanical. Consider the acoustic space of the U-Bahn: metallic reverb, underground compression. The outro: relief and melancholy simultaneously — the train pulls away and you're finally alone again.</p>
             </div>
           </div>
+        </div>
+        <div class="track-audio">
+          <span class="audio-label">Demo</span>
+          <audio class="audio-player" controls preload="none">
+            <source src="Zurück steigen bitte.wav" type="audio/wav"/>
+            Your browser does not support audio.
+          </audio>
         </div>
         <div class="lyric-footer">
           <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
@@ -692,6 +732,13 @@
             </div>
           </div>
         </div>
+        <div class="track-audio">
+          <span class="audio-label">Demo</span>
+          <audio class="audio-player" controls preload="none">
+            <source src="Ghetto Blaster.wav" type="audio/wav"/>
+            Your browser does not support audio.
+          </audio>
+        </div>
         <div class="lyric-footer">
           <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
         </div>
@@ -822,14 +869,51 @@
       </p>
     </div>
 
-    <div class="coming-soon">
-      <span class="cs-sigil">✦</span>
-      <h3>Ark of Dark</h3>
-      <p>
-        Lyrics and production notes in development.<br/>
-        In the spirit of Martinson — humanity adrift, the stars as sorrow, not salvation.<br/><br/>
-        <em>The ship drifts on.</em>
-      </p>
+    <div class="track-card" id="ark-track">
+      <div class="track-header" onclick="toggleTrack('t5')">
+        <div class="track-header-left">
+          <p class="track-num">Track 05 — Philosophical Pop · Melodifestivalen 2027</p>
+          <h3 class="track-title">Ark of Dark</h3>
+          <div class="track-tags">
+            <span class="tag reelow">ECHOxPRODUCTION</span>
+            <span class="tag" style="border-color:rgba(184,150,62,0.3); color:var(--gold-dim);">Available — inbox@echoxstudios.art</span>
+            <span class="tag">Inspired by Aniara</span>
+          </div>
+        </div>
+        <span class="track-toggle" id="t5-toggle">Read concept ↓</span>
+      </div>
+      <div id="t5" class="track-body">
+        <div class="lyrics-layout">
+          <div class="lyrics-col">
+            <div class="lyric-section">
+              <span class="lyric-label">Concept</span>
+              <span class="lyric-line" style="font-style:italic; color:var(--bone);">Lyrics in development.</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">Inspired by Harry Martinson's 1956 epic poem Aniara —</span>
+              <span class="lyric-line">humanity adrift in deep space, the stars as sorrow not salvation.</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line" style="font-style:italic; color:var(--muted);">The ship drifts on.</span>
+            </div>
+          </div>
+          <div class="notes-col">
+            <span class="notes-label">About</span>
+            <div class="note-block">
+              <p class="note-title">Ark of Dark</p>
+              <p class="note-text">Sophisticated philosophical pop in the tradition of ABBA meeting Martinson. Targeting Melodifestivalen 2027. Full lyrics and production notes in development. Contact inbox@echoxstudios.art for early access.</p>
+            </div>
+          </div>
+        </div>
+        <div class="track-audio">
+          <span class="audio-label">Demo</span>
+          <audio class="audio-player" controls preload="none">
+            <source src="Ark of Dark.wav" type="audio/wav"/>
+            Your browser does not support audio.
+          </audio>
+        </div>
+        <div class="lyric-footer">
+          <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -842,7 +926,7 @@
           <h3 class="track-title">I Lost It</h3>
           <div class="track-tags">
             <span class="tag reelow">ECHOxPRODUCTION</span>
-            <span class="tag" style="border-color:rgba(184,150,62,0.3); color:var(--gold-dim);">Available — inbox@echoxstudios.art</span>
+            <span class="tag" style="border-color:rgba(184,150,62,0.3); color:var(--gold-dim);">Available — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5dcdbd7dacdf5d0d6dddacdc6c1c0d1dcdac69bd4c7c1">[email&#160;protected]</a></span>
           </div>
         </div>
         <span class="track-toggle" id="t6-toggle">Read lyrics ↓</span>
@@ -1014,11 +1098,163 @@
             </div>
           </div>
         </div>
+        <div class="track-audio">
+          <span class="audio-label">Watch</span>
+          <a class="btn-youtube" href="https://www.youtube.com/watch?v=osGAKdQvqWY" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.5A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.75 15.5v-7l6.25 3.5-6.25 3.5z"/></svg>
+            Watch on YouTube
+          </a>
+        </div>
         <div class="lyric-footer">
           <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
         </div>
       </div>
     </div>
+
+
+  <!-- BLODSOMMAR -->
+  <div class="section-divider" id="blodsommar" style="margin-top:4rem; padding-top:4rem; border-top:1px solid var(--rule);">
+    <p class="section-heading">ECHOxPRODUCTION · Gothic Metal · Swedish</p>
+    <h2 class="section-title">Blodsommar</h2>
+    <p class="section-desc">
+      A Midsommar ritual for the eternal Goth. Swedish lyrics, triple choir, demonic children, brass explosion.
+      Ironically serious. Genuinely sacred.
+    </p>
+  </div>
+
+  <div class="track-card" id="blodsommar-track">
+    <div class="track-header" onclick="toggleTrack('t7')">
+      <div class="track-header-left">
+        <p class="track-num">Track 07 — Gothic Metal · Swedish</p>
+        <h3 class="track-title">Blodsommar</h3>
+        <div class="track-tags">
+          <span class="tag reelow">ECHOxPRODUCTION</span>
+          <span class="tag" style="border-color:rgba(184,150,62,0.3); color:var(--gold-dim);">Available — inbox@echoxstudios.art</span>
+          <span class="tag">Svenska</span>
+          <span class="tag">Gothic · Choral</span>
+        </div>
+      </div>
+      <span class="track-toggle" id="t7-toggle">Read lyrics ↓</span>
+    </div>
+
+    <div id="t7" class="track-body">
+      <div class="lyrics-layout">
+        <div class="lyrics-col">
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Intro — Female whisper, church organ]</span>
+            <span class="lyric-line" style="font-style:italic; color:var(--muted);">Kroka min arm...</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Verse 1 — Female, intimate, rising]</span>
+            <span class="lyric-line">Kroka min arm, lyft din bägare</span>
+            <span class="lyric-line">Vi dricker varandra</span>
+            <span class="lyric-line">Vi dricker honom</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Verse 2 — Male, deep growl under tenor]</span>
+            <span class="lyric-line">Det här är mitt hjärta i flytande form</span>
+            <span class="lyric-line">Det här är min själ i rött</span>
+            <span class="lyric-line">Vi skålar för evigheten</span>
+            <span class="lyric-line">Vi skålar för Blodsommar</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Pre-Chorus — Both]</span>
+            <span class="lyric-line">Ser du hur ängen blir svart?</span>
+            <span class="lyric-line">Ser du hur solen blir röd?</span>
+            <span class="lyric-line">Det är hans ögon som öppnas nu</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Chorus — Explosive choir + demonic children]</span>
+            <span class="lyric-line chorus">AVE SATANI!</span>
+            <span class="lyric-line chorus">Blodsommar är här</span>
+            <span class="lyric-line chorus">AVE SATANI!</span>
+            <span class="lyric-line chorus">Födelsen i Evigt Mörker</span>
+            <span class="lyric-line">Vi krokar armar</span>
+            <span class="lyric-line">Vi dricker blod</span>
+            <span class="lyric-line">Vi självantänder</span>
+            <span class="lyric-line">Och vi blir ånga</span>
+            <span class="lyric-line chorus">AVE SATANI!</span>
+            <span class="lyric-line chorus">VI ÄR BRINNANDE NU!</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Post-Chorus — Gang shouts + demonic laughter]</span>
+            <span class="lyric-line chorus">NÄSTA ÅR! NÄSTA ÅR!</span>
+            <span class="lyric-line chorus">SAMMA PLATS! SAMMA PLATS!</span>
+            <span class="lyric-line chorus">SAMMA BLOD! SAMMA BLOD!</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Verse 3 — Female, operatic soar]</span>
+            <span class="lyric-line">Valdemar, jag blir Goth ikväll</span>
+            <span class="lyric-line">Vi lovar varandra inför honom</span>
+            <span class="lyric-line">Varje midsommar – tills världen är borta</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Verse 4 — Male, brutal commitment]</span>
+            <span class="lyric-line">Victoria, jag blir din gemål för evigt</span>
+            <span class="lyric-line">Vi brinner upp</span>
+            <span class="lyric-line">Vi blir rök</span>
+            <span class="lyric-line">Vi blir legend</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Bridge — A cappella latin chant]</span>
+            <span class="lyric-line" style="font-style:italic; color:var(--bone);">Sanctus Luciferi</span>
+            <span class="lyric-line" style="font-style:italic; color:var(--bone);">Ave Blodsommar</span>
+            <span class="lyric-line" style="font-style:italic; color:var(--bone);">Ave Goth och Rex</span>
+            <span class="lyric-line empty"></span>
+            <span class="lyric-line" style="font-style:italic; color:var(--muted);">(Whispered, female:) Vi ses nästa år…</span>
+            <span class="lyric-line" style="font-style:italic; color:var(--muted);">(Whispered, male:) samma äng… samma eld…</span>
+          </div>
+
+          <div class="lyric-section">
+            <span class="lyric-label">[Final Chorus — Key change ↑ F# minor · triple choir · insane synth solo]</span>
+            <span class="lyric-line chorus">AVE SATANI!</span>
+            <span class="lyric-line chorus">Blodsommar är evig</span>
+            <span class="lyric-line chorus">AVE SATANI!</span>
+            <span class="lyric-line chorus">Vi är hans</span>
+          </div>
+
+        </div>
+        <div class="notes-col">
+          <span class="notes-label">Concept Notes</span>
+          <div class="note-block">
+            <p class="note-title">Ironically Serious</p>
+            <p class="note-text">Blodsommar is a love letter to Swedish teen Goth culture — the vloggers, the eternal couples, the Midsommar rituals conducted with complete sincerity in black eyeliner and velvet at 11 PM in full Nordic daylight. The irony is never mockery. It is reverence for the commitment it takes to be genuinely Goth in a country where the sun refuses to cooperate.</p>
+          </div>
+          <div class="note-block">
+            <p class="note-title">Valdemar &amp; Victoria</p>
+            <p class="note-text">The eternal Goth couple. They return to the same meadow every Midsommar, make the same blood oath, film it for their followers, and mean every word. They are not performing — or rather, they understand that performance and belief are the same thing when the commitment is absolute.</p>
+          </div>
+          <div class="note-block">
+            <p class="note-title">The Structure</p>
+            <p class="note-text">Church organ intro bleeds into gothic metal. The demonic children in the chorus are essential — not horror, but the sound of Swedish teenagers who have memorised Ave Satani from the Omen soundtrack and sing it with the same energy they bring to Melodifestivalen. The brass explosion in the key change is the moment sincerity wins over irony entirely.</p>
+          </div>
+          <div class="note-block">
+            <p class="note-title">Cultural Reference</p>
+            <p class="note-text">Positioned in the tradition of Swedish vlogger culture — the Gothenburg and Malmö Goth scenes, the YouTube couples who document their identities with meticulous aesthetic precision. Blodsommar is the song they have been waiting for without knowing it existed.</p>
+          </div>
+        </div>
+      </div>
+      <div class="track-audio">
+        <span class="audio-label">Demo</span>
+        <audio class="audio-player" controls preload="none">
+          <source src="Blodsommar.wav" type="audio/wav"/>
+          Your browser does not support audio.
+        </audio>
+      </div>
+      <div class="lyric-footer">
+        <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <span class="footer-logo">ECHOx</span>
@@ -1028,7 +1264,4 @@
       <li><a href="gallery.html">Photography</a></li>
       <li><a href="terms.html">Terms</a></li>
     </ul>
-    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All rights reserved</p>
-  </footer>
-
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.
+    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All right
