@@ -11,7 +11,7 @@
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;--gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#6e6a64;--rule:rgba(184,150,62,0.2)}
-    html{font-size:20px}
+    html{font-size:24px}
     body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
     nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
     .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
@@ -44,8 +44,8 @@
     .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
     .photo-cell{background:var(--near);aspect-ratio:1;position:relative;overflow:hidden;cursor:pointer}
     .photo-cell.wide{aspect-ratio:1}
-    .photo-cell img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;filter:saturate(.82) contrast(1.04);transition:filter .35s ease,transform .45s ease;transform:scale(1.65)}
-    .photo-cell:hover img{filter:saturate(1) contrast(1.04);transform:scale(1.70)}
+    .photo-cell img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;filter:saturate(.82) contrast(1.04);transition:filter .35s ease,transform .45s ease;transform:scale(1.82)}
+    .photo-cell:hover img{filter:saturate(1) contrast(1.04);transform:scale(1.87)}
     .cell-hover{position:absolute;inset:0;background:rgba(8,8,6,.55);display:flex;align-items:flex-end;padding:.8rem 1rem;opacity:0;transition:opacity .3s ease}
     .photo-cell:hover .cell-hover{opacity:1}
     .cell-text{font-family:'Inconsolata',monospace;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);line-height:1.4}
