@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Dark Hierarchy — ECHOx</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2); --red:#8b1a1a;
+    }
+    html { font-size:16px; }
+    body { background:var(--black); color:var(--text); font-family:'Cormorant Garamond',Georgia,serif; font-weight:300; }
+
+    /* AGE GATE */
+    #gate {
+      position:fixed; inset:0; z-index:200;
+      background:var(--black);
+      display:flex; align-items:center; justify-content:center; padding:2rem;
+      transition:opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #gate.dismissed { opacity:0; visibility:hidden; pointer-events:none; }
+    .gate-inner { max-width:480px; width:100%; text-align:center; }
+    .gate-sigil { font-family:'IM Fell English',serif; font-size:1.8rem; color:var(--gold); letter-spacing:0.3em; display:block; margin-bottom:2rem; }
+    .gate-title { font-family:'IM Fell English',serif; font-size:1.7rem; color:var(--off-white); margin-bottom:1.5rem; font-weight:400; }
+    .gate-body { font-size:0.9rem; color:var(--muted); line-height:1.8; margin-bottom:2rem; font-style:italic; }
+    .gate-warn {
+      font-family:'Inconsolata',monospace; font-size:0.68rem;
+      letter-spacing:0.12em; color:var(--gold-dim); text-transform:uppercase;
+      margin-bottom:2rem; line-height:1.8;
+      border:1px solid rgba(139,26,26,0.3); padding:1rem;
+    }
+    .gate-btn {
+      display:inline-block; padding:0.85rem 2.2rem;
+      border:1px solid var(--gold-dim); background:transparent;
+      color:var(--gold); font-family:'Inconsolata',monospace;
+      font-size:0.75rem; letter-spacing:0.18em; text-transform:uppercase;
+      cursor:pointer; transition:all 0.3s; margin:0.4rem;
+    }
+    .gate-btn:hover { background:var(--gold); color:var(--black); }
+    .gate-btn.leave { border-color:#333; color:var(--muted); }
+    .gate-btn.leave:hover { background:#1a1a18; color:var(--text); border-color:#555; }
+
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
+      background:var(--black); position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-back { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .nav-back:hover { color:var(--gold); }
+
+    #main { opacity:0; transition:opacity 0.8s ease; }
+    #main.visible { opacity:1; }
+
+    .page-header { max-width:820px; margin:0 auto; padding:5rem 2rem 3rem; border-bottom:1px solid var(--rule); }
+    .access-badge { display:inline-flex; align-items:center; gap:0.5rem; font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--red); margin-bottom:1.5rem; }
+    .access-badge::before { content:''; display:block; width:6px; height:6px; border-radius:50%; background:var(--red); }
+    h1 { font-family:'IM Fell English',serif; font-size:clamp(2rem,6vw,3.5rem); color:var(--off-white); font-weight:400; line-height:1.1; margin-bottom:0.5rem; }
+    .subtitle { font-size:1rem; color:var(--muted); font-style:italic; margin-bottom:0.4rem; }
+    .author-line { font-family:'Inconsolata',monospace; font-size:0.65rem; letter-spacing:0.15em; color:var(--gold-dim); margin-bottom:2rem; }
+    .meta-row { display:flex; gap:2.5rem; flex-wrap:wrap; font-family:'Inconsolata',monospace; font-size:0.65rem; letter-spacing:0.1em; color:var(--muted); }
+    .meta-row span { border-left:1px solid var(--rule); padding-left:0.8rem; }
+    .meta-row span:first-child { border:none; padding:0; }
+
+    .wrapper { max-width:820px; margin:0 auto; padding:0 2rem; }
+
+    .actions { display:flex; gap:1rem; flex-wrap:wrap; padding:2.5rem 0; border-bottom:1px solid var(--rule); }
+    .btn-dl { display:inline-flex; align-items:center; gap:0.6rem; padding:0.8rem 2rem; background:var(--gold); color:var(--black); font-family:'Inconsolata',monospace; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; border:none; cursor:pointer; transition:background 0.25s; }
+    .btn-dl:hover { background:var(--off-white); }
+    .btn-read { display:inline-flex; align-items:center; gap:0.6rem; padding:0.8rem 2rem; background:transparent; color:var(--text); font-family:'Inconsolata',monospace; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; border:1px solid #2a2a26; cursor:pointer; transition:all 0.25s; }
+    .btn-read:hover { border-color:var(--muted); color:var(--off-white); }
+
+    .sample-section { padding:3rem 0; }
+    .section-label { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.22em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:2rem; }
+
+    .epigraphs { margin:2rem 0 3rem; }
+    .epigraph { border-left:1px solid var(--rule); padding-left:1.4rem; margin-bottom:1.8rem; }
+    .epigraph p { font-size:1rem; line-height:1.8; color:var(--bone); font-style:italic; }
+    .epigraph cite { display:block; margin-top:0.4rem; font-family:'Inconsolata',monospace; font-size:0.65rem; color:var(--gold-dim); font-style:normal; letter-spacing:0.1em; }
+
+    .prologue-text { font-size:1.02rem; line-height:1.9; color:var(--bone); max-width:620px; }
+    .prologue-text p { margin-bottom:1.3em; }
+    .prologue-text .dropcap::first-letter { font-family:'IM Fell English',serif; font-size:3.2em; float:left; line-height:0.75; margin:0.1em 0.12em 0 0; color:var(--gold); }
+
+    .law-block { background:var(--near); border:1px solid #1a1a16; padding:2rem 2.5rem; margin:2.5rem 0; }
+    .law-block h3 { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.2em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:1.5rem; }
+    .law { padding:0.6rem 0; border-bottom:1px solid #1a1a16; font-size:0.9rem; color:var(--muted); line-height:1.6; }
+    .law:last-child { border:none; }
+    .law strong { color:var(--bone); font-weight:400; font-family:'Inconsolata',monospace; font-size:0.72em; letter-spacing:0.1em; margin-right:0.8em; }
+
+    .fade-out { position:relative; margin-top:-2rem; height:5rem; background:linear-gradient(to bottom, transparent, var(--black)); pointer-events:none; }
+
+    .reader-wrap { display:none; }
+    .reader-wrap.open { display:block; }
+    .reader-toolbar { display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1.5rem; background:#0a0a08; border:1px solid #1a1a16; border-bottom:none; margin-top:1rem; }
+    .reader-title { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.15em; color:var(--gold-dim); text-transform:uppercase; }
+    .reader-controls { display:flex; gap:0.5rem; }
+    .ctrl { background:none; border:1px solid #2a2a26; color:var(--muted); font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.1em; padding:0.3rem 0.7rem; cursor:pointer; text-transform:uppercase; transition:all 0.2s; }
+    .ctrl:hover { border-color:var(--gold-dim); color:var(--text); }
+    .reader-body { border:1px solid #1a1a16; padding:3rem 4rem; max-height:75vh; overflow-y:auto; font-size:1rem; line-height:1.9; color:#ccc7bc; background:#0e0e0b; }
+    .reader-body::-webkit-scrollbar { width:3px; }
+    .reader-body::-webkit-scrollbar-thumb { background:#2a2a26; }
+    .reader-body p { margin-bottom:1.2em; text-align:justify; hyphens:auto; }
+    .reader-body h2 { font-family:'IM Fell English',serif; font-size:1.3em; color:var(--off-white); font-weight:400; margin:2.5em 0 1em; text-align:center; }
+    .reader-body .rule { text-align:center; margin:2em 0; color:var(--gold-dim); letter-spacing:0.4em; }
+    .reader-body .epiq { font-style:italic; color:var(--muted); border-left:1px solid var(--rule); padding-left:1.2em; margin:1.5em 2em; font-size:0.92em; }
+    .reader-body .epiq cite { display:block; margin-top:0.4em; font-family:'Inconsolata',monospace; font-size:0.8em; color:var(--gold-dim); font-style:normal; }
+
+    footer { border-top:1px solid var(--rule); padding:2.5rem 2.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-top:3rem; }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links a { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+
+    @media(max-width:640px){ .reader-body { padding:1.5rem 1.2rem; } .actions { flex-direction:column; } }
+  </style>
+</head>
+<body>
+
+  <!-- AGE GATE -->
+  <div id="gate">
+    <div class="gate-inner">
+      <span class="gate-sigil">✦</span>
+      <h2 class="gate-title">Adult content</h2>
+      <div class="gate-warn">
+        This work contains explicit philosophical and theological engagement<br/>
+        with adult themes and practices.<br/>
+        Intended for readers 18 and over.
+      </div>
+      <p class="gate-body">
+        In the tradition of Bataille, Nin, and Sacher-Masoch — serious intellectual and spiritual inquiry.
+        Not pornography. Not instruction. Theology.
+      </p>
+      <div>
+        <button class="gate-btn" onclick="enter()">I am 18+ — Enter</button>
+        <button class="gate-btn leave" onclick="window.history.back()">Leave</button>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
+  </nav>
+
+  <div id="main">
+    <div class="page-header">
+      <div class="access-badge">Adult content · Invitation access</div>
+      <h1>The Dark Hierarchy</h1>
+      <p class="subtitle">A Treatise on Authority, Initiation, and the Order</p>
+      <p class="author-line">Echo Kronborg — Berlin</p>
+      <div class="meta-row">
+        <span>v6.1</span>
+        <span>276 pp.</span>
+        <span>Philosophy · Theology</span>
+        <span>English</span>
+        <span>Complete</span>
+      </div>
+    </div>
+
+    <div class="wrapper">
+
+      <div class="actions">
+        <a class="btn-dl" href="the_dark_hierarchy_v61.pdf" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download PDF
+        </a>
+        <button class="btn-read" onclick="toggleReader()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          <span id="reader-label">Read Online</span>
+        </button>
+      </div>
+
+      <!-- READER -->
+      <div id="reader" class="reader-wrap">
+        <div class="reader-toolbar">
+          <span class="reader-title">The Dark Hierarchy — Echo Kronborg</span>
+          <div class="reader-controls">
+            <button class="ctrl" onclick="adjFont(-1)">A−</button>
+            <button class="ctrl" onclick="adjFont(1)">A+</button>
+            <button class="ctrl" onclick="toggleReader()">Close</button>
+          </div>
+        </div>
+        <div id="reader-body" class="reader-body">
+
+          <h2>The Dark Hierarchy</h2>
+          <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.72em; letter-spacing:0.15em; color:var(--gold-dim); text-transform:uppercase;">Echo Kronborg — Berlin</p>
+          <p style="text-align:center; font-size:0.82em; color:var(--muted); font-style:italic; margin-top:0.5em; margin-bottom:2em;">© ECHOx / Eko Svenningsson</p>
+
+          <div class="rule">✦</div>
+
+          <p style="text-align:center; font-style:italic; color:var(--bone); margin:2em 0; line-height:2;">
+            For the ones who always knew.<br/>
+            Who carried it before there was language for it.<br/>
+            Who survived the dark night<br/>
+            and came back to write it down.<br/><br/>
+            ✦<br/><br/>
+            And for the one crossing water.
+          </p>
+
+          <div class="rule">—</div>
+
+          <p class="epiq">The body was always the philosopher. We simply stopped pretending otherwise.<cite>— Echo Kronborg</cite></p>
+          <p class="epiq">The sacred and the obscene are the same force. One named in the temple, one named in the dark. Both honest.<cite>— Georges Bataille, adapted</cite></p>
+          <p class="epiq">If you want to stand straight: fall on your knees.<cite>— Vilhelm Ekelund</cite></p>
+
+          <div class="rule">—</div>
+
+          <p style="text-align:center; font-style:italic; color:var(--off-white); font-size:1.05em; margin:2em 0;">
+            This book is not a confession.<br/>It is version control.
+          </p>
+
+          <div class="rule">✦</div>
+
+          <h2>Prologue: On Structure and the Absence of Certainty</h2>
+
+          <p>This book was written in Berlin, in sections, over several years. It began as a private document — not a theoretical claim but a personal reckoning. The theology came later. The framework arrived after the experience, not before it.</p>
+
+          <p>What follows is structured — deliberately, carefully — but structure is not the same as certainty. The architecture exists to carry something. It is not the thing itself.</p>
+
+          <p>The reader who wants a manual will find partial satisfaction here. The reader who wants a philosophy will find more. The reader who wants to understand what it means to inhabit a specific orientation — to follow it past the point where most frameworks stop — will find what they came for.</p>
+
+          <p>The text does not argue that its claims are universal. It argues that they are precise. Precision is worth more than universality when the subject is desire.</p>
+
+          <p>The book proceeds in five movements. The first is revelation — not argument, but arrival. The second is prolegomena: the philosophical scaffolding. The third is theology. The fourth is the dark hierarchy itself — the structure in practice. The fifth is daily life.</p>
+
+          <p>Read it in order or do not. The architecture holds regardless. But the prologue is a threshold, not a summary. Do not skip it. Do not treat it as orientation. It is already the interior.</p>
+
+          <div class="rule">✦</div>
+
+          <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.7em; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; margin-top:2em;">
+            — Complete text available via PDF download above —
+          </p>
+          <p style="text-align:center; font-size:0.82em; color:var(--muted); font-style:italic; margin-top:0.5em;">
+            276 pages. Five books. This reader presents the opening matter.
+          </p>
+
+          <div class="rule" style="margin-top:3em;">✦</div>
+          <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.62em; color:#2e2e2a; margin-top:1.5em;">© ECHOx / Eko Svenningsson — All rights reserved — Berlin</p>
+
+        </div>
+      </div>
+
+      <!-- STATIC SAMPLE -->
+      <div id="static-sample">
+        <div class="sample-section">
+          <p class="section-label">Epigraphs</p>
+          <div class="epigraphs">
+            <div class="epigraph">
+              <p>The body was always the philosopher. We simply stopped pretending otherwise.</p>
+              <cite>— Echo Kronborg</cite>
+            </div>
+            <div class="epigraph">
+              <p>The sacred and the obscene are the same force. One named in the temple, one named in the dark. Both honest.</p>
+              <cite>— Georges Bataille, adapted</cite>
+            </div>
+            <div class="epigraph">
+              <p>If you want to stand straight: fall on your knees.</p>
+              <cite>— Vilhelm Ekelund</cite>
+            </div>
+          </div>
+
+          <p class="section-label">From the Prologue</p>
+          <div class="prologue-text">
+            <p class="dropcap">This book was written in Berlin, in sections, over several years. It began as a private document — not a theoretical claim but a personal reckoning. The theology came later. The framework arrived after the experience, not before it.</p>
+            <p>What follows is structured — deliberately, carefully — but structure is not the same as certainty. The architecture exists to carry something. It is not the thing itself.</p>
+          </div>
+        </div>
+
+        <div class="law-block">
+          <h3>The Ten Laws — Appendix</h3>
+          <div class="law"><strong>Law 1 — Recognition</strong> Hierarchy appears before it is spoken.</div>
+          <div class="law"><strong>Law 2 — Direction</strong> Desire without structure dissolves into chaos.</div>
+          <div class="law"><strong>Law 3 — Authority</strong> Authority begins the moment someone inhabits it.</div>
+          <div class="law"><strong>Law 4 — Restraint</strong> The Master proves himself not by taking power, but by refusing it.</div>
+          <div class="law"><strong>Law 5 — Trust</strong> Pain may exist inside trust; harm destroys it.</div>
+          <div class="law"><strong>Law 9 — Reciprocity</strong> Master and initiate form a system, not an opposition.</div>
+          <div class="law"><strong>Law 10 — Completion</strong> Every hierarchy begins the moment it is recognized. Ends the moment it is denied.</div>
+        </div>
+
+        <div class="fade-out"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — All rights reserved</p>
+  </footer>
+
+  <script>
+    let fontSize = 16;
+    function enter() {
+      document.getElementById('gate').classList.add('dismissed');
+      const m = document.getElementById('main');
+      m.classList.add('visible');
+      sessionStorage.setItem('dh-age','1');
+    }
+    if (sessionStorage.getItem('dh-age')) {
+      document.getElementById('gate').style.display='none';
+      const m = document.getElementById('main');
+      m.classList.add('visible'); m.style.opacity='1';
+    }
+    function toggleReader() {
+      const r=document.getElementById('reader');
+      const s=document.getElementById('static-sample');
+      const l=document.getElementById('reader-label');
+      const open=r.classList.contains('open');
+      r.classList.toggle('open');
+      s.style.display=open?'block':'none';
+      l.textContent=open?'Read Online':'Close Reader';
+      if(!open) r.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function adjFont(d) {
+      const b=document.getElementById('reader-body');
+      fontSize=Math.max(12,Math.min(22,fontSize+d));
+      b.style.fontSize=fontSize+'px';
+    }
+  </script>
+</body>
+</html>
