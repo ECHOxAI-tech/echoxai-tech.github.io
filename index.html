@@ -1,85 +1,532 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ECHOx Terms & Conditions</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ECHOx — Eko Svenningsson</title>
+  <meta name="description" content="ECHOx — Eko Svenningsson. Multimedia artist, writer, photographer. Berlin."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
   <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+
+    html { font-size:16px; scroll-behavior:smooth; }
+
     body {
-      font-family: Georgia, serif;
-      margin: 2em auto;
-      max-width: 800px;
-      line-height: 1.6;
-      color: #111;
-      background: #fff;
-      padding: 0 1em;
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    h1, h2 {
-      font-family: Helvetica, Arial, sans-serif;
-      margin-top: 1.5em;
+
+    /* ─── HERO ─────────────────────────────────────── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-    h1 {
+
+    /* Placeholder — replace with actual photo */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('IMG_0145.jpeg') center/cover no-repeat;
+    }
+
+    /* Grain texture overlay */
+    .hero-grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 128px 128px;
+      pointer-events: none;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(8,8,6,0.1) 0%,
+        rgba(8,8,6,0.05) 40%,
+        rgba(8,8,6,0.7) 85%,
+        rgba(8,8,6,1) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
       text-align: center;
-      margin-bottom: 1em;
+      padding: 2rem;
+      animation: fadeUp 1.4s ease both;
     }
-    p {
-      margin: 0.8em 0;
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
     }
-    ul {
-      margin: 0.5em 0 1em 1.5em;
+
+    .hero-sigil {
+      display: block;
+      font-family: 'IM Fell English', serif;
+      font-size: 1rem;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      opacity: 0.8;
     }
+
+    .hero-name {
+      font-family: 'IM Fell English', serif;
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 400;
+      color: var(--off-white);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-sub {
+      font-size: clamp(0.8rem, 2vw, 1rem);
+      color: var(--muted);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-family: 'Inconsolata', monospace;
+      margin-bottom: 3rem;
+    }
+
+    .hero-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--rule);
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-tagline {
+      font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+      color: var(--bone);
+      font-style: italic;
+      line-height: 1.7;
+      max-width: 420px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .hero-scroll {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      cursor: pointer;
+      border: none;
+      background: none;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 0.5; transform: translateY(0); }
+      50%      { opacity: 1;   transform: translateY(4px); }
+    }
+
+    .hero-scroll svg { width: 16px; height: 16px; }
+
+    /* ─── NAV ──────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(8,8,6,0.9), transparent);
+      transition: background 0.4s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(8,8,6,0.97);
+      border-bottom: 1px solid rgba(184,150,62,0.1);
+    }
+
+    .nav-logo {
+      font-family: 'IM Fell English', serif;
+      font-size: 1.2rem;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    /* Mobile nav */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 1px;
+      background: var(--muted);
+      transition: all 0.3s;
+    }
+
+    /* ─── SECTIONS ─────────────────────────────────── */
+    section {
+      padding: 6rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'IM Fell English', serif;
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      color: var(--off-white);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      line-height: 1.2;
+    }
+
+    .section-rule {
+      width: 50px;
+      height: 1px;
+      background: var(--rule);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ─── ABOUT ────────────────────────────────────── */
+    #about .about-text {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      line-height: 1.9;
+      color: var(--bone);
+      max-width: 620px;
+    }
+
+    #about .about-text p { margin-bottom: 1.3em; }
+
+    #about .about-text em {
+      font-style: italic;
+      color: var(--off-white);
+    }
+
+    /* ─── WORK GRID ─────────────────────────────────── */
+    #work { border-top: 1px solid var(--rule); }
+
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-top: 1rem;
+    }
+
+    .work-item {
+      background: var(--black);
+      padding: 2rem 1.8rem;
+      text-decoration: none;
+      display: block;
+      transition: background 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .work-item::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.4s ease;
+    }
+
+    .work-item:hover { background: #0e0e0b; }
+    .work-item:hover::before { width: 100%; }
+
+    .work-item-num {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.6rem;
+      color: var(--gold-dim);
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+
+    .work-item-title {
+      font-family: 'IM Fell English', serif;
+      font-size: 1.25rem;
+      color: var(--off-white);
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .work-item-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .work-item-arrow {
+      display: inline-block;
+      margin-top: 1.2rem;
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      transition: color 0.2s, letter-spacing 0.2s;
+    }
+
+    .work-item:hover .work-item-arrow {
+      color: var(--gold);
+      letter-spacing: 0.25em;
+    }
+
+    /* ─── FOOTER ───────────────────────────────────── */
     footer {
-      margin-top: 3em;
-      font-size: 0.9em;
-      color: #666;
-      border-top: 1px solid #ccc;
-      padding-top: 1em;
+      border-top: 1px solid var(--rule);
+      padding: 3rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'IM Fell English', serif;
+      font-size: 1rem;
+      color: var(--gold-dim);
+      letter-spacing: 0.15em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--gold); }
+
+    .footer-copy {
+      font-family: 'Inconsolata', monospace;
+      font-size: 0.6rem;
+      color: #2e2e2a;
+      letter-spacing: 0.1em;
+      width: 100%;
+    }
+
+    /* ─── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-toggle { display: flex; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        inset: 0;
+        background: rgba(8,8,6,0.98);
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 99;
+      }
+      .nav-links.open a { font-size: 1rem; letter-spacing: 0.2em; }
+      section { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; align-items: flex-start; padding: 2.5rem 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <h1>Terms & Conditions</h1>
-  <p>These Terms & Conditions apply to all photography sessions conducted by the artist known as <strong>ECHOx</strong> (also represented through official accounts such as <em>@berlinechoes</em> on Instagram). By booking, participating in, or accepting delivery of photographs, you agree to the following terms.</p>
 
-  <h2>1. Scope</h2>
-  <p>These Terms apply to both paid and unpaid (informal) photo sessions, and extend to all previously taken pictures by ECHOx.</p>
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="/" class="nav-logo">ECHOx</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html">Music</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="https://github.com/echox-se" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
-  <h2>2. Copyright and Usage</h2>
-  <ul>
-    <li>All copyrights remain with ECHOx.</li>
-    <li>By participating in a photo session (paid or unpaid), you grant ECHOx the explicit right to publish, exhibit, and use the photographs online, in exhibitions, portfolios, printed materials, and other artistic contexts.</li>
-    <li>Clients may not use the photographs for commercial purposes without prior written consent from ECHOx.</li>
-  </ul>
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-sigil">✦ ECHOx ✦</span>
+      <h1 class="hero-name">Eko<br/>Svenningsson</h1>
+      <p class="hero-sub">Berlin · Writer · Photographer · Artist</p>
+      <div class="hero-rule"></div>
+      <p class="hero-tagline">
+        Writing people into permanence.<br/>
+        The irreversible frame.
+      </p>
+      <button class="hero-scroll" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Enter
+      </button>
+    </div>
+  </div>
 
-  <h2>3. Attribution</h2>
-  <p>In all official or public contexts, the artist must be referred to as <strong>ECHOx</strong> or by one of the official accounts (currently <em>@berlinechoes</em> on Instagram). The legal identity behind ECHOx is K. E. Haakansson, Berlin.</p>
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="section-label">About</p>
+    <h2 class="section-title">Multimedia artist,<br/>writer, photographer</h2>
+    <div class="section-rule"></div>
+    <div class="about-text">
+      <p>
+        ECHOx is the working identity of <em>Eko Svenningsson</em> — a Swedish artist based in Berlin, 
+        working across fiction, poetry, theater, photography, and music.
+      </p>
+      <p>
+        The practice centers on a single question: <em>what survives disappearance?</em> 
+        Writing names people into permanence. Photography captures what cannot be retaken. 
+        Theater enacts what cannot be said.
+      </p>
+      <p>
+        Analog processes, irreversible techniques. Berlin as both ground and metaphysical space.
+        Language as architecture — syntax and rhythm as structural elements, not ornament.
+      </p>
+    </div>
+  </section>
 
-  <h2>4. Pricing & Payment</h2>
-  <ul>
-    <li>Pre-booked and confirmed shoots have a starting fee of €100, including 8–12 high-resolution digital scans delivered via WeTransfer.</li>
-    <li>Signed originals (limited edition of 1) start at €60 each. Discounts may be available for multiple purchases on request.</li>
-    <li>Payment is due within 7 (seven) calendar days of invoice. If payment is not received within this period, ECHOx reserves the right to initiate legal proceedings.</li>
-  </ul>
+  <!-- WORK -->
+  <section id="work">
+    <p class="section-label">Work</p>
+    <h2 class="section-title">Disciplines</h2>
+    <div class="section-rule"></div>
 
-  <h2>5. Client Responsibilities</h2>
-  <ul>
-    <li>Clients share responsibility for the outcome of a session. Weather, sunlight, or other conditions cannot be guaranteed.</li>
-    <li>If special wishes or requirements exist (such as specific backdrops or locations), the client must assist in identifying suitable options and planning in advance.</li>
-    <li>Punctuality is essential. Missed opportunities due to lateness are the client’s responsibility.</li>
-  </ul>
+    <div class="work-grid">
+      <a href="manuscripts.html" class="work-item">
+        <p class="work-item-num">01 — Writing</p>
+        <h3 class="work-item-title">Manuscripts</h3>
+        <p class="work-item-desc">Fiction, poetry, theater. Three works across genre, form, and the limits of language.</p>
+        <span class="work-item-arrow">View →</span>
+      </a>
 
-  <h2>6. Artistic Autonomy</h2>
-  <p>ECHOx reserves full artistic discretion in the process of photographing, selecting, and editing. Moral rights as the author of the work remain intact at all times.</p>
+      <a href="gallery.html" class="work-item">
+        <p class="work-item-num">02 — Photography</p>
+        <h3 class="work-item-title">Instant Film</h3>
+        <p class="work-item-desc">ECHOxINSTANT. Fuji and Polaroid. Analog only. The irreversible frame as ethical position.</p>
+        <span class="work-item-arrow">View Gallery →</span>
+      </a>
 
-  <h2>7. Enforcement</h2>
-  <p>If payment obligations are not fulfilled within the specified time frame, or if these Terms are violated, ECHOx reserves the right to take legal action without further notice.</p>
+      <a href="lyrics.html" class="work-item">
+        <p class="work-item-num">03 — Music</p>
+        <h3 class="work-item-title">Lyrics &amp; Production</h3>
+        <p class="work-item-desc">Tech-house with Reelow. Ark of Dark. Berlin–Barcelona axis. Words as architectural proposals.</p>
+        <span class="work-item-arrow">Read Lyrics →</span>
+      </a>
 
-  <h2>8. Governing Law</h2>
-  <p>These Terms & Conditions are governed by German law. Jurisdiction is Berlin, Germany.</p>
+      <a href="https://github.com/echox-se" target="_blank" rel="noopener" class="work-item">
+        <p class="work-item-num">04 — Code</p>
+        <h3 class="work-item-title">GitHub</h3>
+        <p class="work-item-desc">Open repositories. Tools, experiments, the infrastructure behind the practice.</p>
+        <span class="work-item-arrow">Explore →</span>
+      </a>
+    </div>
+  </section>
 
+  <!-- FOOTER -->
   <footer>
-    <p>© ECHOxSTUDIOS — All rights reserved.<br>
-    Contact: <em>@berlinechoes</em> (Instagram) | ECHOxINSTANT@proton.me, Berlin</p>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html">Music</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="https://github.com/echox-se" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All rights reserved</p>
   </footer>
+
+  <script>
+    // Nav scroll state
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Mobile menu
+    const toggle = document.getElementById('nav-toggle');
+    const links = document.getElementById('nav-links');
+    toggle.addEventListener('click', () => {
+      links.classList.toggle('open');
+    });
+    links.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => links.classList.remove('open'));
+    });
+  </script>
+
 </body>
 </html>
