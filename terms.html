@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terms & Conditions — ECHOx</title>
+  <meta name="description" content="Terms and Conditions for photography sessions by ECHOx / Eko Svenningsson. Berlin."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+    html { font-size:16px; }
+    body {
+      background:var(--black); color:var(--text);
+      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+      min-height:100vh;
+    }
+
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
+      background:var(--black); position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    @media(max-width:600px){ .nav-links { display:none; } }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding:5rem 2rem 3rem; text-align:center;
+      border-bottom:1px solid var(--rule);
+    }
+    .page-label {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:1rem;
+    }
+    .page-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(2rem,6vw,3.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.1; margin-bottom:1rem;
+    }
+    .page-sub {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      max-width:520px; margin:0 auto; line-height:1.7;
+    }
+
+    /* LAYOUT */
+    .wrapper {
+      max-width:760px; margin:0 auto;
+      padding:4rem 2rem 6rem;
+    }
+
+    /* SECTION */
+    .terms-section {
+      margin-bottom:3.5rem;
+      padding-bottom:3.5rem;
+      border-bottom:1px solid var(--rule);
+    }
+    .terms-section:last-of-type { border-bottom:none; }
+
+    .section-num {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.22em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.6rem;
+    }
+    .section-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1.1rem,2.5vw,1.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.2; margin-bottom:1.5rem;
+    }
+
+    p {
+      font-size:0.98rem; line-height:1.85; color:var(--bone);
+      margin-bottom:1.1em;
+    }
+    p:last-child { margin-bottom:0; }
+
+    ul {
+      list-style:none; margin:0; padding:0;
+    }
+    ul li {
+      font-size:0.95rem; line-height:1.8; color:var(--bone);
+      padding:0.55rem 0 0.55rem 1.4rem;
+      border-bottom:1px solid #1a1a16;
+      position:relative;
+    }
+    ul li:first-child { border-top:1px solid #1a1a16; }
+    ul li::before {
+      content:'—';
+      position:absolute; left:0;
+      color:var(--gold-dim);
+      font-family:'Inconsolata',monospace;
+      font-size:0.75em;
+    }
+
+    strong { color:var(--off-white); font-weight:400; }
+    em { font-style:italic; color:var(--off-white); }
+
+    /* LEGAL NOTICE BOX */
+    .legal-box {
+      background:var(--near); border:1px solid #1a1a16;
+      padding:2rem 2.5rem; margin-bottom:1.5rem;
+    }
+    .legal-box-label {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:1rem; display:block;
+    }
+    .legal-box p {
+      font-size:0.88rem; color:var(--muted); line-height:1.8;
+      margin-bottom:0.6em;
+    }
+    .legal-box p:last-child { margin-bottom:0; }
+    .legal-box strong { color:var(--bone); }
+    .legal-box a { color:var(--gold-dim); text-decoration:none; }
+    .legal-box a:hover { color:var(--gold); }
+
+    /* WARNING BOX */
+    .notice-box {
+      border-left:2px solid var(--gold-dim);
+      padding:1rem 1.5rem; margin:1.5rem 0;
+      background:#0a0a08;
+    }
+    .notice-box p {
+      font-size:0.88rem; color:var(--muted);
+      font-style:italic; margin:0;
+    }
+
+    /* CONTACT */
+    .contact-row {
+      display:flex; gap:0.8rem; flex-wrap:wrap;
+      margin-top:1rem;
+    }
+    .contact-item {
+      font-family:'Inconsolata',monospace; font-size:0.72rem;
+      letter-spacing:0.1em; color:var(--muted);
+      border:1px solid #1e1e1a; padding:0.5rem 1rem;
+    }
+    .contact-item a { color:var(--gold-dim); text-decoration:none; }
+    .contact-item a:hover { color:var(--gold); }
+
+    /* TOC */
+    .toc {
+      background:var(--near); border:1px solid #1a1a16;
+      padding:2rem 2.5rem; margin-bottom:4rem;
+    }
+    .toc-label {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:1.2rem; display:block;
+    }
+    .toc-list { list-style:none; margin:0; padding:0; }
+    .toc-list li {
+      border-bottom:1px solid #1a1a16; padding:0;
+      font-size:0.88rem;
+    }
+    .toc-list li:first-child { border-top:none; }
+    .toc-list li::before { display:none; }
+    .toc-list a {
+      display:flex; justify-content:space-between;
+      padding:0.55rem 0;
+      color:var(--muted); text-decoration:none;
+      font-family:'Inconsolata',monospace; font-size:0.7rem;
+      letter-spacing:0.1em; text-transform:uppercase;
+      transition:color 0.2s;
+    }
+    .toc-list a:hover { color:var(--gold); }
+    .toc-list a span { color:var(--gold-dim); }
+
+    /* EFFECTIVE DATE */
+    .effective {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.12em; color:var(--muted);
+      margin-bottom:3rem; display:block;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top:1px solid var(--rule); padding:2.5rem 2.5rem;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links a {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html">Music</a></li>
+      <li><a href="terms.html" class="active">Terms</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <p class="page-label">Legal</p>
+    <h1 class="page-title">Terms &amp; Conditions</h1>
+    <p class="page-sub">Photography sessions, licensing, and usage rights.<br/>Governed by German law. Jurisdiction: Berlin.</p>
+  </div>
+
+  <div class="wrapper">
+
+    <span class="effective">Effective: 2025 — echoxstudious.art</span>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+      <span class="toc-label">Contents</span>
+      <ul class="toc-list">
+        <li><a href="#scope">1. Scope <span>→</span></a></li>
+        <li><a href="#copyright">2. Copyright &amp; Usage Rights <span>→</span></a></li>
+        <li><a href="#attribution">3. Attribution <span>→</span></a></li>
+        <li><a href="#pricing">4. Pricing &amp; Payment <span>→</span></a></li>
+        <li><a href="#cancellation">5. Cancellation &amp; Right of Withdrawal <span>→</span></a></li>
+        <li><a href="#client">6. Client Responsibilities <span>→</span></a></li>
+        <li><a href="#autonomy">7. Artistic Autonomy <span>→</span></a></li>
+        <li><a href="#enforcement">8. Enforcement &amp; Default <span>→</span></a></li>
+        <li><a href="#governing">9. Governing Law <span>→</span></a></li>
+        <li><a href="#privacy">10. Data Protection (DSGVO) <span>→</span></a></li>
+        <li><a href="#impressum">11. Impressum (§ 5 TMG) <span>→</span></a></li>
+      </ul>
+    </div>
+
+    <p>These Terms &amp; Conditions apply to all photography sessions conducted by the artist known as <strong>ECHOx</strong> (Eko Svenningsson), including sessions booked via <em>@berlinechoes</em> on Instagram or by direct contact. By booking, participating in, or accepting delivery of photographs, you agree to the following terms.</p>
+
+    <!-- 1. SCOPE -->
+    <div class="terms-section" id="scope">
+      <p class="section-num">Section 01</p>
+      <h2 class="section-title">Scope</h2>
+      <p>These Terms apply to all paid and unpaid photography sessions conducted by ECHOx, and extend to all photographs previously taken by ECHOx where a session agreement — formal or informal — existed between the parties. By proceeding with a session, the client confirms they have read and accepted these Terms.</p>
+    </div>
+
+    <!-- 2. COPYRIGHT -->
+    <div class="terms-section" id="copyright">
+      <p class="section-num">Section 02</p>
+      <h2 class="section-title">Copyright &amp; Usage Rights</h2>
+      <ul>
+        <li>All copyright in photographs remains exclusively with ECHOx (Eko Svenningsson), in accordance with <strong>§ 13 UrhG</strong> (German Copyright Act).</li>
+        <li>By participating in a session, the client grants ECHOx the right to publish, exhibit, and use the photographs online, in exhibitions, portfolios, printed materials, and other artistic or commercial contexts — without further consent or compensation, unless otherwise agreed in writing.</li>
+        <li>Clients receive a non-exclusive, non-transferable right of personal use for delivered images. Commercial use — including advertising, product placement, press, or resale — requires prior written consent from ECHOx and may be subject to a separate licensing fee.</li>
+        <li>Clients may not alter, crop, filter, or manipulate delivered images in ways that misrepresent the original work or compromise its artistic integrity.</li>
+        <li>Any publication by the client must include attribution as specified in Section 3.</li>
+      </ul>
+    </div>
+
+    <!-- 3. ATTRIBUTION -->
+    <div class="terms-section" id="attribution">
+      <p class="section-num">Section 03</p>
+      <h2 class="section-title">Attribution</h2>
+      <p>In all public, editorial, or official contexts, the photographer must be credited as <strong>ECHOx</strong> or via the active official account (currently <em>@berlinechoes</em> on Instagram). The moral right of authorship (<strong>§ 13 UrhG</strong>) remains with the artist at all times and cannot be waived or transferred.</p>
+      <p>Failure to attribute constitutes a violation of these Terms and may give rise to claims under German copyright law.</p>
+    </div>
+
+    <!-- 4. PRICING -->
+    <div class="terms-section" id="pricing">
+      <p class="section-num">Section 04</p>
+      <h2 class="section-title">Pricing &amp; Payment</h2>
+      <ul>
+        <li>Pre-booked and confirmed shoots have a starting fee of <strong>€100</strong>, including 8–12 high-resolution digital scans delivered via WeTransfer or equivalent secure transfer.</li>
+        <li>Signed original instant film prints (limited edition of 1) start at <strong>€60</strong> each. Discounts may be available for multiple purchases upon request.</li>
+        <li>Payment is due within <strong>7 (seven) calendar days</strong> of invoice issuance.</li>
+        <li>All prices are stated inclusive of applicable VAT where relevant, or exclusive where ECHOx operates as a Kleinunternehmer under <strong>§ 19 UStG</strong>. The applicable status will be indicated on the invoice.</li>
+        <li>ECHOx reserves the right to request a deposit of up to 50% of the agreed fee at the time of booking confirmation.</li>
+      </ul>
+    </div>
+
+    <!-- 5. CANCELLATION -->
+    <div class="terms-section" id="cancellation">
+      <p class="section-num">Section 05</p>
+      <h2 class="section-title">Cancellation &amp; Right of Withdrawal</h2>
+
+      <div class="notice-box">
+        <p>Under German consumer law (§ 312g BGB), a right of withdrawal may apply to contracts concluded at a distance. The following sets out the applicable policy.</p>
+      </div>
+
+      <p><strong>Cancellation by client:</strong> Cancellations made more than 48 hours before the scheduled session will incur no charge. Cancellations within 48 hours of the session will be charged at 50% of the agreed fee. No-shows will be charged at 100%.</p>
+
+      <p><strong>Cancellation by ECHOx:</strong> If ECHOx must cancel a confirmed session, the client will be notified as early as possible and offered a rescheduled date at no additional cost, or a full refund of any deposit paid.</p>
+
+      <p><strong>Right of withdrawal for digital goods:</strong> Once digital image files have been delivered via download link, the right of withdrawal is extinguished in accordance with <strong>§ 356 Abs. 5 BGB</strong>, as performance has commenced with the client's explicit consent prior to expiry of the withdrawal period.</p>
+
+      <p><strong>Right of withdrawal for physical prints:</strong> Signed original prints may be returned within 14 days of receipt in their original, undamaged condition. The client bears the cost of return shipping. Refunds will be issued within 14 days of receipt of the returned item.</p>
+    </div>
+
+    <!-- 6. CLIENT RESPONSIBILITIES -->
+    <div class="terms-section" id="client">
+      <p class="section-num">Section 06</p>
+      <h2 class="section-title">Client Responsibilities</h2>
+      <ul>
+        <li>Clients share responsibility for the outcome of a session. Weather, available light, and environmental conditions cannot be guaranteed and do not constitute grounds for a refund.</li>
+        <li>If specific locations, backdrops, or arrangements are required, the client is responsible for communicating these in advance and for any permits or access required.</li>
+        <li>Punctuality is essential. If a client is more than 20 minutes late without prior notice, ECHOx reserves the right to treat the session as a no-show and invoice accordingly.</li>
+        <li>Clients who are minors (under 18) must be accompanied by a parent or legal guardian who accepts these Terms on their behalf and provides written consent for the photographs to be used in accordance with Section 2.</li>
+      </ul>
+    </div>
+
+    <!-- 7. ARTISTIC AUTONOMY -->
+    <div class="terms-section" id="autonomy">
+      <p class="section-num">Section 07</p>
+      <h2 class="section-title">Artistic Autonomy</h2>
+      <p>ECHOx retains full artistic discretion in all aspects of photographing, selecting, and processing images. This includes — but is not limited to — composition, framing, lighting choices, and the selection of images delivered to the client. The moral right of the author (<strong>§ 14 UrhG</strong> — right to prohibit distortion of the work) remains with ECHOx at all times.</p>
+      <p>ECHOx is not obligated to deliver images that do not meet the artistic standard of the work, even if technically captured during the session.</p>
+    </div>
+
+    <!-- 8. ENFORCEMENT -->
+    <div class="terms-section" id="enforcement">
+      <p class="section-num">Section 08</p>
+      <h2 class="section-title">Enforcement &amp; Default</h2>
+      <p>If payment is not received within the specified 7-day period, the client enters default in accordance with <strong>§ 286 BGB</strong> without the need for a further reminder. From the date of default, statutory default interest applies at the rate defined in <strong>§ 288 BGB</strong> (currently 5 percentage points above the base rate for consumer contracts; 9 percentage points for commercial transactions).</p>
+      <p>In the event of a material breach of these Terms — including unauthorised use of images, failure to attribute, or non-payment — ECHOx reserves the right to pursue claims under German copyright law and civil law without further notice, including injunctive relief under <strong>§ 97 UrhG</strong>.</p>
+    </div>
+
+    <!-- 9. GOVERNING LAW -->
+    <div class="terms-section" id="governing">
+      <p class="section-num">Section 09</p>
+      <h2 class="section-title">Governing Law</h2>
+      <p>These Terms &amp; Conditions are governed exclusively by the law of the Federal Republic of Germany. The exclusive place of jurisdiction for all disputes arising from or in connection with these Terms is <strong>Berlin, Germany</strong>, to the extent permitted by law.</p>
+      <p>For consumers domiciled in another EU member state, mandatory consumer protection provisions of that state may additionally apply.</p>
+    </div>
+
+    <!-- 10. PRIVACY / DSGVO -->
+    <div class="terms-section" id="privacy">
+      <p class="section-num">Section 10</p>
+      <h2 class="section-title">Data Protection (DSGVO / GDPR)</h2>
+      <p>This section fulfils the information obligations under <strong>Art. 13 DSGVO</strong> (EU General Data Protection Regulation).</p>
+
+      <div class="legal-box">
+        <span class="legal-box-label">Responsible Party (Verantwortlicher)</span>
+        <p><strong>Karl Erik Håkansson (ECHOx / Eko Svenningsson)</strong><br/>
+        Berlin, Germany<br/>
+        <a href="/cdn-cgi/l/email-protection#6520262d2a1d35372a213026312c2a2b2515170a110a0b4b0800"><span class="__cf_email__" data-cfemail="fdb8beb5b285adafb2b9a8bea9b4b2b3bd8d8f92899293d39098">[email&#160;protected]</span></a></p>
+      </div>
+
+      <p><strong>What data is collected:</strong> When you contact ECHOx by email or direct message, the content of your message and any personal data contained therein (name, email address) are stored for the purpose of responding and fulfilling the contractual relationship. No data is collected automatically through this website beyond standard server logs held by the hosting provider (GitHub Pages / Fastly). No cookies are set by this site.</p>
+
+      <p><strong>Legal basis:</strong> Data processing is based on <strong>Art. 6 Abs. 1 lit. b DSGVO</strong> (contractual necessity) and <strong>Art. 6 Abs. 1 lit. f DSGVO</strong> (legitimate interest in responding to communications).</p>
+
+      <p><strong>Retention:</strong> Personal data is retained only for as long as necessary to fulfil the purpose for which it was collected, or as required by statutory retention obligations (up to 10 years for invoicing records under German commercial law).</p>
+
+      <p><strong>Photographs:</strong> Images in which you appear are processed on the legal basis of your consent (<strong>Art. 6 Abs. 1 lit. a DSGVO</strong>) given by participating in a session, or on the basis of a legitimate artistic interest (<strong>§ 23 KUG</strong> — Kunsturhebergesetz) where images are published as part of an artistic work. You may withdraw consent at any time for future use; withdrawal does not affect prior lawful processing.</p>
+
+      <p><strong>Your rights:</strong> You have the right to request access, correction, deletion, restriction of processing, data portability, and the right to object, in accordance with Arts. 15–21 DSGVO. You also have the right to lodge a complaint with the competent supervisory authority — in Berlin, the <em>Berliner Beauftragte für Datenschutz und Informationsfreiheit</em>.</p>
+
+      <p><strong>Third-party services:</strong> This site is hosted on GitHub Pages (GitHub, Inc. / Microsoft). GitHub may process access logs. For details, see GitHub's privacy policy at <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener" style="color:var(--gold-dim);">docs.github.com</a>.</p>
+    </div>
+
+    <!-- 11. IMPRESSUM -->
+    <div class="terms-section" id="impressum">
+      <p class="section-num">Section 11</p>
+      <h2 class="section-title">Impressum <span style="font-family:'Inconsolata',monospace; font-size:0.65rem; letter-spacing:0.12em; color:var(--gold-dim); vertical-align:middle; margin-left:0.5rem;">§ 5 TMG</span></h2>
+
+      <div class="notice-box">
+        <p>German law (§ 5 Telemediengesetz) requires the following information to be provided on all commercial or publicly accessible websites operated from Germany.</p>
+      </div>
+
+      <div class="legal-box">
+        <span class="legal-box-label">Provider / Anbieter</span>
+        <p>
+          <strong>Karl Erik Håkansson</strong><br/>
+          Artist pseudonyms: ECHOx, Eko Svenningsson<br/>
+          Berlin, Germany
+        </p>
+        <p style="margin-top:1rem;">
+          <strong>Contact:</strong><br/>
+          Email: <a href="/cdn-cgi/l/email-protection#b7f2f4fff8cfe7e5f8f3e2f4e3fef8f9f7c7c5d8c3d8d999dad2"><span class="__cf_email__" data-cfemail="a9eceae1e6d1f9fbe6edfceafde0e6e7e9d9dbc6ddc6c787c4cc">[email&#160;protected]</span></a><br/>
+          Instagram: <a href="https://instagram.com/berlinechoes" target="_blank" rel="noopener">@berlinechoes</a>
+        </p>
+        <p style="margin-top:1rem;">
+          <strong>Note on street address:</strong> A full street address is required under § 5 TMG. 
+          If you operate commercially, add your full Berlin address here. 
+          If operating as a private individual (Privatperson), you may use a postal address 
+          or c/o address. This field must be completed before publication.
+        </p>
+        <p style="margin-top:1rem; color:#8b1a1a; font-style:normal;">
+          ⚠ ACTION REQUIRED: Replace this block with your full street address before going live.
+        </p>
+      </div>
+
+      <div class="legal-box" style="margin-top:1rem;">
+        <span class="legal-box-label">Responsible for Content / Verantwortlich für den Inhalt</span>
+        <p><strong>Karl Erik Håkansson</strong> — as above</p>
+      </div>
+
+      <div class="legal-box" style="margin-top:1rem;">
+        <span class="legal-box-label">VAT / Steuer</span>
+        <p>If registered for VAT, state your Umsatzsteuer-Identifikationsnummer (USt-IdNr.) here.<br/>
+        If operating under Kleinunternehmerregelung (§ 19 UStG), state: <em>"Gemäß § 19 UStG wird keine Umsatzsteuer berechnet."</em></p>
+      </div>
+
+      <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--muted);">
+        Note: The Impressum is a legal requirement under German law and must contain accurate, 
+        up-to-date information. Failure to maintain a correct Impressum can result in fines and 
+        legal action by competitors or consumer protection organisations.
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="m

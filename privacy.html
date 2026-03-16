@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Protection — ECHOx</title>
+  <meta name="description" content="Datenschutzerklärung / Privacy Policy for echoxstudious.art. DSGVO compliant. Berlin."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+    html { font-size:16px; }
+    body {
+      background:var(--black); color:var(--text);
+      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+      min-height:100vh;
+    }
+
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
+      background:var(--black); position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    @media(max-width:600px){ .nav-links { display:none; } }
+
+    .page-header {
+      padding:5rem 2rem 3rem; text-align:center;
+      border-bottom:1px solid var(--rule);
+    }
+    .page-label {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:1rem;
+    }
+    .page-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1.8rem,5vw,3rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.1; margin-bottom:1rem;
+    }
+    .page-sub {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      max-width:480px; margin:0 auto; line-height:1.7;
+    }
+
+    .wrapper { max-width:760px; margin:0 auto; padding:4rem 2rem 6rem; }
+
+    .effective {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.12em; color:var(--muted);
+      margin-bottom:3rem; display:block;
+    }
+
+    .priv-section {
+      margin-bottom:3rem; padding-bottom:3rem;
+      border-bottom:1px solid var(--rule);
+    }
+    .priv-section:last-of-type { border-bottom:none; }
+
+    .section-num {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.22em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.5rem;
+    }
+    .section-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1rem,2.5vw,1.4rem);
+      color:var(--off-white); font-weight:400;
+      margin-bottom:1.3rem;
+    }
+
+    p {
+      font-size:0.96rem; line-height:1.85; color:var(--bone);
+      margin-bottom:1em;
+    }
+    p:last-child { margin-bottom:0; }
+
+    ul { list-style:none; margin:0 0 1em; padding:0; }
+    ul li {
+      font-size:0.93rem; line-height:1.8; color:var(--bone);
+      padding:0.5rem 0 0.5rem 1.4rem;
+      border-bottom:1px solid #1a1a16; position:relative;
+    }
+    ul li:first-child { border-top:1px solid #1a1a16; }
+    ul li::before {
+      content:'—'; position:absolute; left:0;
+      color:var(--gold-dim); font-family:'Inconsolata',monospace; font-size:0.75em;
+    }
+
+    strong { color:var(--off-white); font-weight:400; }
+    em { font-style:italic; color:var(--off-white); }
+    a { color:var(--gold-dim); text-decoration:none; }
+    a:hover { color:var(--gold); }
+
+    .legal-box {
+      background:var(--near); border:1px solid #1a1a16;
+      padding:1.8rem 2rem; margin:1.2rem 0;
+    }
+    .legal-box-label {
+      font-family:'Inconsolata',monospace; font-size:0.56rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:0.8rem; display:block;
+    }
+    .legal-box p { font-size:0.87rem; color:var(--muted); }
+    .legal-box strong { color:var(--bone); }
+
+    .notice-box {
+      border-left:2px solid var(--gold-dim);
+      padding:1rem 1.5rem; margin:1.2rem 0; background:#0a0a08;
+    }
+    .notice-box p { font-size:0.86rem; color:var(--muted); font-style:italic; margin:0; }
+
+    footer {
+      border-top:1px solid var(--rule); padding:2.5rem 2.5rem;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links li::before { display:none; }
+    .footer-links li { border:none; padding:0; }
+    .footer-links a {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <p class="page-label">DSGVO / GDPR</p>
+    <h1 class="page-title">Data Protection</h1>
+    <p class="page-sub">Datenschutzerklärung gemäß Art. 13 DSGVO.<br/>Privacy policy for echoxstudious.art.</p>
+  </div>
+
+  <div class="wrapper">
+
+    <span class="effective">Effective: 2025 — echoxstudious.art — Last reviewed: March 2026</span>
+
+    <!-- 1. RESPONSIBLE PARTY -->
+    <div class="priv-section">
+      <p class="section-num">§ 1</p>
+      <h2 class="section-title">Responsible Party — Verantwortlicher</h2>
+      <div class="legal-box">
+        <span class="legal-box-label">Verantwortlicher gemäß Art. 4 Abs. 7 DSGVO</span>
+        <p>
+          <strong>Karl Erik Håkansson</strong><br/>
+          Artist pseudonyms: ECHOx, Eko Svenningsson<br/>
+          Berlin, Germany<br/><br/>
+          Email: <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a><br/>
+          Instagram: <a href="https://instagram.com/berlinechoes" target="_blank" rel="noopener">@berlinechoes</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- 2. WHAT IS COLLECTED -->
+    <div class="priv-section">
+      <p class="section-num">§ 2</p>
+      <h2 class="section-title">Data Collected — Erhobene Daten</h2>
+
+      <p><strong>This website does not use cookies, tracking, analytics, or advertising.</strong> No personal data is collected automatically through this site beyond what your browser and the hosting provider (GitHub Pages) log as part of standard server operation.</p>
+
+      <p><strong>Server logs (GitHub Pages / Fastly CDN):</strong> When you visit this site, GitHub Pages automatically records standard access data including your IP address, browser type, referring URL, and timestamp. This data is processed by GitHub, Inc. (a Microsoft subsidiary) and is outside the direct control of this site's operator. Retention is governed by GitHub's own policies. For details see: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement</a>.</p>
+
+      <p><strong>Email contact:</strong> When you contact ECHOx by email, the content of your message and any personal data it contains (name, email address, other information you choose to include) are stored for the purpose of responding and fulfilling the contractual or pre-contractual relationship. This data is stored on ProtonMail servers (Proton AG, Geneva, Switzerland), which provides end-to-end encryption and operates under Swiss and EU privacy law.</p>
+
+      <p><strong>Instagram DM:</strong> Direct messages sent via Instagram are processed by Meta Platforms Ireland Ltd. under Meta's own privacy policy. ECHOx has no control over Meta's data processing.</p>
+
+      <p><strong>Photography sessions:</strong> When you book a session, contact details (name, email) are retained for invoicing and communication purposes. Photographs in which you appear are processed as described in § 4 below.</p>
+    </div>
+
+    <!-- 3. LEGAL BASIS -->
+    <div class="priv-section">
+      <p class="section-num">§ 3</p>
+      <h2 class="section-title">Legal Basis — Rechtsgrundlage</h2>
+      <ul>
+        <li><strong>Art. 6 Abs. 1 lit. a DSGVO</strong> — Consent: where you have explicitly agreed to processing, e.g. by participating in a photography session.</li>
+        <li><strong>Art. 6 Abs. 1 lit. b DSGVO</strong> — Contractual necessity: processing required to fulfil a booking, invoice, or delivery of photographs.</li>
+        <li><strong>Art. 6 Abs. 1 lit. c DSGVO</strong> — Legal obligation: retention of invoicing records for up to 10 years under § 147 AO (German Tax Code).</li>
+        <li><strong>Art. 6 Abs. 1 lit. f DSGVO</strong> — Legitimate interest: responding to inquiries and communications.</li>
+        <li><strong>§ 23 KUG</strong> (Kunsturhebergesetz): photographs of persons may be published without individual consent where they form part of an artistic or documentary work, subject to the limits of § 23 KUG.</li>
+      </ul>
+    </div>
+
+    <!-- 4. PHOTOGRAPHS OF PERSONS -->
+    <div class="priv-section">
+      <p class="section-num">§ 4</p>
+      <h2 class="section-title">Photographs of Persons — Bildnisse</h2>
+      <p>By participating in a photography session with ECHOx, you consent to the taking and use of photographs in which you appear, in accordance with the <a href="terms.html">Terms &amp; Conditions</a>. This constitutes consent under <strong>Art. 6 Abs. 1 lit. a DSGVO</strong> and the right of publication under <strong>§ 22 KUG</strong>.</p>
+      <p>You may withdraw this consent at any time for future use by contacting ECHOx in writing at <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a>. Withdrawal does not affect the lawfulness of processing prior to withdrawal, and does not require the deletion of photographs already published as part of an artistic body of work where § 23 KUG applies.</p>
+
+      <div class="notice-box">
+        <p>Photographs taken in public spaces in Berlin may be published under the right of artistic freedom (Art. 5 Abs. 3 GG) and § 23 KUG without individual consent, where persons are incidental to the image or where the work has clear artistic purpose.</p>
+      </div>
+    </div>
+
+    <!-- 5. RETENTION -->
+    <div class="priv-section">
+      <p class="section-num">§ 5</p>
+      <h2 class="section-title">Retention Periods — Speicherdauer</h2>
+      <ul>
+        <li>Email correspondence: retained for the duration of the business relationship and up to 3 years thereafter, unless longer retention is required by law.</li>
+        <li>Invoicing and payment records: retained for 10 years in accordance with § 147 AO and § 257 HGB.</li>
+        <li>Session booking information: retained for 3 years from the date of the session.</li>
+        <li>All other personal data: deleted as soon as the purpose for which it was collected has been fulfilled and no statutory retention obligation applies.</li>
+      </ul>
+    </div>
+
+    <!-- 6. YOUR RIGHTS -->
+    <div class="priv-section">
+      <p class="section-num">§ 6</p>
+      <h2 class="section-title">Your Rights — Ihre Rechte</h2>
+      <p>Under the DSGVO, you have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Art. 15 DSGVO</strong> — Right of access: you may request confirmation of whether personal data concerning you is being processed and, if so, access to that data.</li>
+        <li><strong>Art. 16 DSGVO</strong> — Right to rectification: you may request correction of inaccurate personal data.</li>
+        <li><strong>Art. 17 DSGVO</strong> — Right to erasure ("right to be forgotten"): you may request deletion of personal data where it is no longer necessary or where you withdraw consent.</li>
+        <li><strong>Art. 18 DSGVO</strong> — Right to restriction of processing.</li>
+        <li><strong>Art. 20 DSGVO</strong> — Right to data portability.</li>
+        <li><strong>Art. 21 DSGVO</strong> — Right to object: you may object to processing based on legitimate interest at any time.</li>
+        <li><strong>Art. 7 Abs. 3 DSGVO</strong> — Right to withdraw consent at any time without affecting prior lawful processing.</li>
+      </ul>
+      <p>To exercise any of these rights, contact: <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a></p>
+    </div>
+
+    <!-- 7. SUPERVISORY AUTHORITY -->
+    <div class="priv-section">
+      <p class="section-num">§ 7</p>
+      <h2 class="section-title">Right to Lodge a Complaint — Beschwerderecht</h2>
+      <p>You have the right to lodge a complaint with the competent data protection supervisory authority. For Berlin, this is:</p>
+      <div class="legal-box">
+        <span class="legal-box-label">Supervisory Authority / Aufsichtsbehörde</span>
+        <p>
+          <strong>Berliner Beauftragte für Datenschutz und Informationsfreiheit</strong><br/>
+          Friedrichstr. 219, 10969 Berlin<br/>
+          Tel: +49 30 13889-0<br/>
+          <a href="https://www.datenschutz-berlin.de" target="_blank" rel="noopener">www.datenschutz-berlin.de</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- 8. THIRD PARTY SERVICES -->
+    <div class="priv-section">
+      <p class="section-num">§ 8</p>
+      <h2 class="section-title">Third-Party Services</h2>
+      <ul>
+        <li><strong>GitHub Pages (GitHub, Inc. / Microsoft):</strong> Website hosting. May process server access logs. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub Privacy Statement →</a></li>
+        <li><strong>Google Fonts:</strong> This site loads fonts from Google's servers. Your IP address is transmitted to Google with each page load. Legal basis: Art. 6 Abs. 1 lit. f DSGVO (legitimate interest in consistent typography). <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy Policy →</a></li>
+        <li><strong>ProtonMail (Proton AG):</strong> Email provider for inbox@echoxstudios.art. End-to-end encrypted. Subject to Swiss Federal Act on Data Protection (nFADP) and GDPR. <a href="https://proton.me/legal/privacy" target="_blank" rel="noopener">Proton Privacy Policy →</a></li>
+        <li><strong>Meta / Instagram:</strong> Instagram profile @berlinechoes is operated on Meta's platform. Meta processes data under its own privacy policy. ECHOx has no control over Meta's data processing.</li>
+      </ul>
+
+      <div class="notice-box">
+        <p>Note on Google Fonts: if you wish to avoid your IP being transmitted to Google on page load, you may self-host the fonts by downloading them and serving them from the GitHub repository directly.</p>
+      </div>
+    </div>
+
+    <!-- 9. CHANGES -->
+    <div class="priv-section">
+      <p class="section-num">§ 9</p>
+      <h2 class="section-title">Changes to This Policy</h2>
+      <p>This privacy policy may be updated to reflect changes in legal requirements or the services used. The current version is always available at <strong>echoxstudious.art/privacy.html</strong>. Significant changes will be noted with a revised effective date.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <p class="footer-copy">© Karl Erik Håkansson (ECHOx / Eko Svenningsson) — echoxstudious.art — Berlin — All rights reserved</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — ECHOx</title>
+  <meta name="description" content="Contact ECHOx / Eko Svenningsson. Photography bookings, manuscript inquiries, collaboration. Berlin."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+    html { font-size:16px; }
+    body {
+      background:var(--black); color:var(--text);
+      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+      min-height:100vh;
+    }
+
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
+      background:var(--black); position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    @media(max-width:600px){ .nav-links { display:none; } }
+
+    .page-header {
+      padding:5rem 2rem 3rem; text-align:center;
+      border-bottom:1px solid var(--rule);
+    }
+    .page-label {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:1rem;
+    }
+    .page-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(2rem,6vw,3.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.1; margin-bottom:1rem;
+    }
+    .page-sub {
+      font-size:0.9rem; color:var(--muted); font-style:italic;
+      max-width:420px; margin:0 auto; line-height:1.7;
+    }
+
+    .wrapper {
+      max-width:700px; margin:0 auto;
+      padding:5rem 2rem 7rem;
+    }
+
+    /* CONTACT BLOCKS */
+    .contact-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1px;
+      background:var(--rule);
+      border:1px solid var(--rule);
+      margin-bottom:4rem;
+    }
+
+    .contact-block {
+      background:var(--black);
+      padding:2.5rem 2rem;
+      text-decoration:none;
+      display:block;
+      transition:background 0.25s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .contact-block::after {
+      content:'';
+      position:absolute; bottom:0; left:0;
+      width:0; height:1px;
+      background:var(--gold);
+      transition:width 0.4s ease;
+    }
+    .contact-block:hover { background:var(--near); }
+    .contact-block:hover::after { width:100%; }
+
+    .cb-label {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:0.8rem; display:block;
+    }
+    .cb-value {
+      font-family:'IM Fell English',serif; font-size:1.1rem;
+      color:var(--off-white); line-height:1.3;
+      display:block; margin-bottom:0.6rem;
+      word-break:break-word;
+    }
+    .cb-desc {
+      font-size:0.8rem; color:var(--muted); font-style:italic;
+      line-height:1.6;
+    }
+    .cb-arrow {
+      display:block; margin-top:1.2rem;
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--gold-dim); transition:color 0.2s, letter-spacing 0.2s;
+    }
+    .contact-block:hover .cb-arrow {
+      color:var(--gold); letter-spacing:0.25em;
+    }
+
+    /* NON-LINK BLOCK */
+    .contact-block.static {
+      cursor:default;
+    }
+    .contact-block.static:hover { background:var(--black); }
+    .contact-block.static::after { display:none; }
+
+    /* CONTEXT SECTION */
+    .context-section {
+      margin-bottom:3.5rem;
+    }
+    .context-label {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:1.5rem; display:block;
+    }
+
+    .inquiry-list {
+      list-style:none; margin:0; padding:0;
+    }
+    .inquiry-list li {
+      display:grid;
+      grid-template-columns:140px 1fr;
+      gap:1rem;
+      padding:1rem 0;
+      border-bottom:1px solid #1a1a16;
+      font-size:0.9rem;
+    }
+    .inquiry-list li:first-child { border-top:1px solid #1a1a16; }
+    .inquiry-type {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.1em; text-transform:uppercase;
+      color:var(--gold-dim); padding-top:0.1rem;
+    }
+    .inquiry-desc { color:var(--bone); line-height:1.65; }
+    .inquiry-email {
+      font-family:'Inconsolata',monospace; font-size:0.7rem;
+      color:var(--muted);
+    }
+
+    /* RESPONSE NOTE */
+    .response-note {
+      background:var(--near); border:1px solid #1a1a16;
+      padding:1.8rem 2rem; margin-top:3rem;
+    }
+    .response-note p {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      line-height:1.75;
+    }
+    .response-note strong { color:var(--bone); font-weight:400; font-style:normal; }
+
+    /* RULE */
+    .divider {
+      width:40px; height:1px;
+      background:var(--rule); margin:3.5rem 0;
+    }
+
+    footer {
+      border-top:1px solid var(--rule); padding:2.5rem 2.5rem;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links a {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+
+    @media(max-width:500px){
+      .contact-grid { grid-template-columns:1fr; }
+      .inquiry-list li { grid-template-columns:1fr; gap:0.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html">Music</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <p class="page-label">Get in touch</p>
+    <h1 class="page-title">Contact</h1>
+    <p class="page-sub">Photography bookings, manuscript inquiries,<br/>collaboration, licensing. Berlin.</p>
+  </div>
+
+  <div class="wrapper">
+
+    <!-- CONTACT CHANNELS -->
+    <div class="contact-grid">
+
+      <a href="mailto:inbox@echoxstudios.art" class="contact-block">
+        <span class="cb-label">Email</span>
+        <span class="cb-value">inbox@echoxstudios.art</span>
+        <span class="cb-desc">Primary channel. Photography bookings, manuscript access, licensing, collaboration.</span>
+        <span class="cb-arrow">Write →</span>
+      </a>
+
+      <a href="https://instagram.com/berlinechoes" target="_blank" rel="noopener" class="contact-block">
+        <span class="cb-label">Instagram</span>
+        <span class="cb-value">@berlinechoes</span>
+        <span class="cb-desc">ECHOxINSTANT posts, Berlin photography, ongoing work. DMs open.</span>
+        <span class="cb-arrow">Follow →</span>
+      </a>
+
+      <a href="https://github.com/echox-se" target="_blank" rel="noopener" class="contact-block">
+        <span class="cb-label">GitHub</span>
+        <span class="cb-value">echox-se</span>
+        <span class="cb-desc">Open repositories, site source, code projects.</span>
+        <span class="cb-arrow">Explore →</span>
+      </a>
+
+      <div class="contact-block static">
+        <span class="cb-label">Location</span>
+        <span class="cb-value">Berlin</span>
+        <span class="cb-desc">Based in Berlin. Available for sessions in Berlin and by arrangement elsewhere.</span>
+      </div>
+
+    </div>
+
+    <!-- INQUIRY TYPES -->
+    <div class="context-section">
+      <span class="context-label">What to write about</span>
+      <ul class="inquiry-list">
+        <li>
+          <span class="inquiry-type">Photography</span>
+          <div>
+            <p class="inquiry-desc">Session bookings, instant film prints, licensing of existing work. See <a href="terms.html" style="color:var(--gold-dim); text-decoration:none;">Terms &amp; Conditions</a> for pricing and usage rights.</p>
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ inbox@echoxstudios.art</p>
+          </div>
+        </li>
+        <li>
+          <span class="inquiry-type">Manuscripts</span>
+          <div>
+            <p class="inquiry-desc">Access requests for full manuscripts, agent or publisher inquiries, rights and permissions for <em>The Alexander Cipher</em>, <em>The Dark Hierarchy</em>, or <em>Aniara: The Doors to the Stars</em>.</p>
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ inbox@echoxstudios.art</p>
+          </div>
+        </li>
+        <li>
+          <span class="inquiry-type">Theater</span>
+          <div>
+            <p class="inquiry-desc">Performance rights and production inquiries for <em>Aniara: The Doors to the Stars</em>. All performances require prior written permission.</p>
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ inbox@echoxstudios.art</p>
+          </div>
+        </li>
+        <li>
+          <span class="inquiry-type">Music</span>
+          <div>
+            <p class="inquiry-desc">Collaboration inquiries, sync licensing, production notes for the Reelow tracks or Ark of Dark project.</p>
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ inbox@echoxstudios.art</p>
+          </div>
+        </li>
+        <li>
+          <span class="inquiry-type">Press</span>
+          <div>
+            <p class="inquiry-desc">Interview requests, editorial features, exhibition inquiries. Please include publication name and intended use.</p>
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ inbox@echoxstudios.art</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="response-note">
+      <p>
+        <strong>Response time:</strong> Email is checked regularly but not daily.
+        Expect a reply within 3–5 working days. For urgent matters, 
+        Instagram DM is faster. All correspondence is treated as confidential 
+        unless otherwise agreed.
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html">Music</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+    <p class="footer-copy">© Karl Erik Håkansson (ECHOx / Eko Svenningsson) — echoxstudious.art — Berlin — All rights reserved</p>
+  </footer>
+
+</body>
+</html>

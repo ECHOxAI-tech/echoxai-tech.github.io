@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Music — ECHOx</title>
+  <meta name="description" content="Song lyrics by ECHOx / Eko Svenningsson. Berlin–Barcelona. Ark of Dark, tech-house, Reelow collaborations."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+    html { font-size:16px; }
+    body {
+      background:var(--black); color:var(--text);
+      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+      min-height:100vh;
+    }
+
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
+      background:var(--black); position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    @media(max-width:600px){ .nav-links { display:none; } }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding:5rem 2rem 3rem; text-align:center;
+      border-bottom:1px solid var(--rule);
+    }
+    .page-label {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:1rem;
+    }
+    .page-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(2rem,6vw,3.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.1; margin-bottom:1rem;
+    }
+    .page-sub {
+      font-size:0.9rem; color:var(--muted); font-style:italic;
+      max-width:520px; margin:0 auto; line-height:1.7;
+    }
+
+    /* LAYOUT */
+    .wrapper { max-width:960px; margin:0 auto; padding:0 2rem; }
+
+    /* TRACK INDEX */
+    .track-index {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+      gap:1px; background:var(--rule); border:1px solid var(--rule);
+      margin:3rem 0 0;
+    }
+    .index-item {
+      background:var(--black); padding:1.4rem 1.5rem;
+      cursor:pointer; transition:background 0.2s;
+      text-decoration:none; display:block;
+    }
+    .index-item:hover { background:var(--near); }
+    .index-num {
+      font-family:'Inconsolata',monospace; font-size:0.55rem;
+      letter-spacing:0.15em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.4rem;
+    }
+    .index-title {
+      font-family:'IM Fell English',serif; font-size:1.05rem;
+      color:var(--off-white); line-height:1.2; margin-bottom:0.3rem;
+    }
+    .index-collab {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.1em; color:var(--muted); text-transform:uppercase;
+    }
+
+    /* SECTION DIVIDER */
+    .section-divider {
+      padding:4rem 0 1.5rem;
+      border-top:1px solid var(--rule);
+      margin-top:4rem;
+    }
+    .section-divider:first-of-type { margin-top:0; border-top:none; }
+    .section-heading {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.8rem;
+    }
+    .section-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1.3rem,3vw,1.8rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.2; margin-bottom:0.5rem;
+    }
+    .section-desc {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      line-height:1.7; max-width:520px; margin-bottom:3rem;
+    }
+
+    /* TRACK CARD */
+    .track-card {
+      margin-bottom:1px;
+      border:1px solid #1a1a16;
+      background:var(--near);
+    }
+
+    .track-header {
+      padding:1.5rem 2rem;
+      display:flex; align-items:center; justify-content:space-between;
+      cursor:pointer; transition:background 0.2s; gap:1rem;
+      user-select:none;
+    }
+    .track-header:hover { background:#121210; }
+
+    .track-header-left { flex:1; }
+    .track-num {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.18em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.35rem;
+    }
+    .track-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1.1rem,2.5vw,1.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.15;
+    }
+    .track-tags { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+    .tag {
+      font-family:'Inconsolata',monospace; font-size:0.55rem;
+      letter-spacing:0.12em; text-transform:uppercase;
+      border:1px solid #222; color:var(--muted); padding:0.2rem 0.5rem;
+    }
+    .tag.reelow { border-color:rgba(184,150,62,0.3); color:var(--gold-dim); }
+    .tag.ark { border-color:rgba(100,120,180,0.3); color:#8090c0; }
+
+    .track-toggle {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.15em; color:var(--muted); text-transform:uppercase;
+      transition:color 0.2s; white-space:nowrap; flex-shrink:0;
+    }
+    .track-header:hover .track-toggle { color:var(--gold); }
+
+    /* LYRICS BODY */
+    .track-body {
+      display:none;
+      border-top:1px solid #1a1a16;
+    }
+    .track-body.open { display:block; animation:slideIn 0.3s ease; }
+    @keyframes slideIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+    .lyrics-layout {
+      display:grid;
+      grid-template-columns:1fr 280px;
+      gap:0;
+    }
+
+    /* LYRICS */
+    .lyrics-col {
+      padding:2.5rem 2.5rem;
+      border-right:1px solid #1a1a16;
+      font-family:'Inconsolata',monospace;
+      font-size:0.85rem;
+      line-height:1.9;
+      color:var(--bone);
+    }
+
+    .lyric-section { margin-bottom:1.8rem; }
+    .lyric-section:last-child { margin-bottom:0; }
+
+    .lyric-label {
+      font-size:0.55rem; letter-spacing:0.22em;
+      text-transform:uppercase; color:var(--gold-dim);
+      margin-bottom:0.6rem; display:block;
+    }
+
+    .lyric-line { display:block; line-height:1.75; }
+    .lyric-line.empty { height:0.8em; }
+    .lyric-line.chorus { color:var(--off-white); }
+    .lyric-line.de { color:#a0c0b0; } /* German lines */
+
+    /* NOTES COL */
+    .notes-col {
+      padding:2.5rem 2rem;
+      background:#0a0a08;
+    }
+    .notes-label {
+      font-family:'Inconsolata',monospace; font-size:0.55rem;
+      letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--gold-dim); margin-bottom:1.2rem; display:block;
+    }
+    .note-block { margin-bottom:2rem; }
+    .note-block:last-child { margin-bottom:0; }
+    .note-title {
+      font-family:'IM Fell English',serif; font-size:0.95rem;
+      color:var(--bone); margin-bottom:0.5rem; font-weight:400;
+    }
+    .note-text {
+      font-size:0.78rem; color:var(--muted); line-height:1.75;
+    }
+
+    /* COPYRIGHT NOTE */
+    .lyric-footer {
+      padding:1rem 2.5rem;
+      border-top:1px solid #1a1a16;
+      background:#0a0a08;
+    }
+    .lyric-footer p {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      letter-spacing:0.1em; color:#2e2e2a;
+    }
+
+    /* ARK OF DARK — coming soon */
+    .coming-soon {
+      padding:3rem 2rem; text-align:center;
+      border:1px solid #1a1a16; background:var(--near);
+    }
+    .coming-soon .cs-sigil {
+      font-family:'IM Fell English',serif; font-size:1.5rem;
+      color:var(--gold-dim); letter-spacing:0.3em;
+      display:block; margin-bottom:1.5rem;
+    }
+    .coming-soon h3 {
+      font-family:'IM Fell English',serif; font-size:1.4rem;
+      color:var(--off-white); font-weight:400; margin-bottom:0.5rem;
+    }
+    .coming-soon p {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      line-height:1.7; max-width:400px; margin:0 auto;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top:1px solid var(--rule); padding:2.5rem 2.5rem;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1rem; margin-top:5rem;
+    }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links a {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+
+    @media(max-width:700px){
+      .lyrics-layout { grid-template-columns:1fr; }
+      .lyrics-col { border-right:none; border-bottom:1px solid #1a1a16; }
+      .notes-col { padding:2rem 1.5rem; }
+      .lyrics-col { padding:2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="lyrics.html" class="active">Music</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <p class="page-label">ECHOxPRODUCTION</p>
+    <h1 class="page-title">Music</h1>
+    <p class="page-sub">
+      Lyrics, concepts, and production notes. Berlin–Barcelona axis.
+      Collaboration with Reelow. Ark of Dark.
+    </p>
+  </div>
+
+  <div class="wrapper">
+
+    <!-- TRACK INDEX -->
+    <div class="track-index">
+      <a href="#zurück" class="index-item">
+        <p class="index-num">01</p>
+        <p class="index-title">Zurück Steigen Bitte</p>
+        <p class="index-collab">ECHOx × Reelow</p>
+      </a>
+      <a href="#fafo" class="index-item">
+        <p class="index-num">02</p>
+        <p class="index-title">Fuck Around Find Out</p>
+        <p class="index-collab">ECHOx × Reelow</p>
+      </a>
+      <a href="#ghetto" class="index-item">
+        <p class="index-num">03</p>
+        <p class="index-title">Ghetto Blaster</p>
+        <p class="index-collab">ECHOx × Reelow</p>
+      </a>
+      <a href="#barcelona" class="index-item">
+        <p class="index-num">04</p>
+        <p class="index-title">Ghetto Blaster (Barcelona Refix)</p>
+        <p class="index-collab">ECHOx × Reelow</p>
+      </a>
+      <a href="#ark" class="index-item">
+        <p class="index-num">05</p>
+        <p class="index-title">Ark of Dark</p>
+        <p class="index-collab">ECHOxPRODUCTION</p>
+      </a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SECTION: REELOW COLLABORATIONS -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="section-divider" style="padding-top:5rem; margin-top:4rem; border-top:none;">
+      <p class="section-heading">Berlin–Barcelona · 2025</p>
+      <h2 class="section-title">Reelow Collaborations</h2>
+      <p class="section-desc">
+        Four tech-house tracks written in Berlin, produced in Barcelona.
+        Words as architectural proposals — emotional framework, narrative structure,
+        conceptual DNA. Reelow's production completes them.
+      </p>
+    </div>
+
+    <!-- TRACK 01 -->
+    <div class="track-card" id="zurück">
+      <div class="track-header" onclick="toggleTrack('t1')">
+        <div class="track-header-left">
+          <p class="track-num">Track 01 — Tech-House</p>
+          <h3 class="track-title">Zurück Steigen Bitte</h3>
+          <div class="track-tags">
+            <span class="tag reelow">ECHOx × Reelow</span>
+            <span class="tag">Berlin · 2025</span>
+            <span class="tag">U-Bahn</span>
+          </div>
+        </div>
+        <span class="track-toggle" id="t1-toggle">Read lyrics ↓</span>
+      </div>
+
+      <div id="t1" class="track-body">
+        <div class="lyrics-layout">
+          <div class="lyrics-col">
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Intro]</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line">Please step back</span>
+              <span class="lyric-line">Doors closing</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 1]</span>
+              <span class="lyric-line">You're too close again</span>
+              <span class="lyric-line">In my space, in my head</span>
+              <span class="lyric-line">I can feel your heat</span>
+              <span class="lyric-line">But I need room to breathe instead</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">This ain't personal</span>
+              <span class="lyric-line">Just physics, just fact</span>
+              <span class="lyric-line">Every time you push forward</span>
+              <span class="lyric-line">I gotta step back</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Pre-Hook]</span>
+              <span class="lyric-line">I know what you want</span>
+              <span class="lyric-line">I know what you need</span>
+              <span class="lyric-line">But crowding me out</span>
+              <span class="lyric-line">Won't make me concede</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Hook]</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line chorus">Step back, give me room</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line chorus">I can't breathe when you consume</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line chorus">This train won't move till you let go</span>
+              <span class="lyric-line de chorus">Zurück steigen bitte</span>
+              <span class="lyric-line chorus">Please step back, I told you so</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 2]</span>
+              <span class="lyric-line">You think closeness means connection</span>
+              <span class="lyric-line">Think touch equals trust</span>
+              <span class="lyric-line">But I'm telling you politely</span>
+              <span class="lyric-line">Before this whole thing combusts</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">I'm not running away</span>
+              <span class="lyric-line">Just making space to stay</span>
+              <span class="lyric-line">Can't love you compressed</span>
+              <span class="lyric-line">Need distance to feel the rest</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Bridge]</span>
+              <span class="lyric-line">You hear that voice on the platform?</span>
+              <span class="lyric-line">That mechanical warning sound?</span>
+              <span class="lyric-line">That's me asking nicely</span>
+              <span class="lyric-line">Before I shut this down</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">I want you here</span>
+              <span class="lyric-line">Just not this near</span>
+              <span class="lyric-line de">Zurück steigen bitte</span>
+              <span class="lyric-line">Make it clear</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Breakdown]</span>
+              <span class="lyric-line de">Zurück steigen</span>
+              <span class="lyric-line de">Zurück steigen</span>
+              <span class="lyric-line de">Bitte</span>
+              <span class="lyric-line de">Bitte</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">— Doors closing sound —</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Beep beep beep</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Outro]</span>
+              <span class="lyric-line">Step back</span>
+              <span class="lyric-line de">Zurück</span>
+              <span class="lyric-line">I said please</span>
+              <span class="lyric-line de">Bitte</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Train departing sound fades into bass</span>
+            </div>
+
+          </div>
+          <div class="notes-col">
+            <span class="notes-label">Concept Notes</span>
+            <div class="note-block">
+              <p class="note-title">System Malfunction as Emotional Architecture</p>
+              <p class="note-text">Originated from a specific moment: late August morning, ~9AM, riding home from Berghain. The U-Bahn announcement system began glitching — voice stuttering, fragmenting into rhythm. Municipal instruction became involuntary percussion.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Boundary as Love Language</p>
+              <p class="note-text">The German announcement becomes the central metaphor: boundaries aren't rejection but infrastructure for intimacy. "Please step back" transforms from automated warning into tender insistence.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Production Note</p>
+              <p class="note-text">The glitching vocal sample should feel authentically mechanical. Consider the acoustic space of the U-Bahn: metallic reverb, underground compression. The outro: relief and melancholy simultaneously — the train pulls away and you're finally alone again.</p>
+            </div>
+          </div>
+        </div>
+        <div class="lyric-footer">
+          <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK 02 -->
+    <div class="track-card" id="fafo">
+      <div class="track-header" onclick="toggleTrack('t2')">
+        <div class="track-header-left">
+          <p class="track-num">Track 02 — Tech-House</p>
+          <h3 class="track-title">Fuck Around Find Out</h3>
+          <div class="track-tags">
+            <span class="tag reelow">ECHOx × Reelow</span>
+            <span class="tag">Berlin · 2025</span>
+            <span class="tag">Explicit</span>
+          </div>
+        </div>
+        <span class="track-toggle" id="t2-toggle">Read lyrics ↓</span>
+      </div>
+
+      <div id="t2" class="track-body">
+        <div class="lyrics-layout">
+          <div class="lyrics-col">
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Intro]</span>
+              <span class="lyric-line">You keep testing</span>
+              <span class="lyric-line">Keep pushing that line</span>
+              <span class="lyric-line">Alright then</span>
+              <span class="lyric-line">Let's see what happens</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 1]</span>
+              <span class="lyric-line">You been circling all night</span>
+              <span class="lyric-line">Eyes on me like a dare</span>
+              <span class="lyric-line">Acting like you don't want it</span>
+              <span class="lyric-line">But your body's already there</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">Every word's a little closer</span>
+              <span class="lyric-line">Every touch says "maybe not"</span>
+              <span class="lyric-line">But I know what you came for</span>
+              <span class="lyric-line">And baby, it's getting hot</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Pre-Hook]</span>
+              <span class="lyric-line">You think this is a game?</span>
+              <span class="lyric-line">You think I won't go there?</span>
+              <span class="lyric-line">Keep playing with the fire</span>
+              <span class="lyric-line">See if I care</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Hook]</span>
+              <span class="lyric-line chorus">Fuck around</span>
+              <span class="lyric-line chorus">Find out</span>
+              <span class="lyric-line chorus">What happens when you cross that line</span>
+              <span class="lyric-line chorus">Fuck around</span>
+              <span class="lyric-line chorus">Find out</span>
+              <span class="lyric-line chorus">I ain't the one to take my time</span>
+              <span class="lyric-line chorus">Fuck around</span>
+              <span class="lyric-line chorus">Find out</span>
+              <span class="lyric-line chorus">You been warned, now it's on you</span>
+              <span class="lyric-line chorus">Fuck around</span>
+              <span class="lyric-line chorus">Find out</span>
+              <span class="lyric-line chorus">Show you what this body can do</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 2]</span>
+              <span class="lyric-line">You say you're just curious</span>
+              <span class="lyric-line">Say you're just passing through</span>
+              <span class="lyric-line">But I see how you're breathing</span>
+              <span class="lyric-line">I know what you wanna do</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">So quit with the excuses</span>
+              <span class="lyric-line">Quit playing it safe</span>
+              <span class="lyric-line">Either walk away now</span>
+              <span class="lyric-line">Or stay and feel the weight</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Bridge]</span>
+              <span class="lyric-line">This is your last chance</span>
+              <span class="lyric-line">To change your mind</span>
+              <span class="lyric-line">'Cause once we start</span>
+              <span class="lyric-line">There's no rewind</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">You ready for the consequence?</span>
+              <span class="lyric-line">You ready for the fall?</span>
+              <span class="lyric-line">'Cause when you fuck around with me</span>
+              <span class="lyric-line">Baby, I take it all</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Outro]</span>
+              <span class="lyric-line chorus">Fuck around</span>
+              <span class="lyric-line chorus">Find out</span>
+              <span class="lyric-line">You wanted this</span>
+              <span class="lyric-line">Now you got it</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">(Loop fades into bass)</span>
+            </div>
+
+          </div>
+          <div class="notes-col">
+            <span class="notes-label">Concept Notes</span>
+            <div class="note-block">
+              <p class="note-title">Meme as Thesis Statement</p>
+              <p class="note-text">Inspired by the internet's favorite threat-as-invitation. The phrase carries both warning and seduction — a dare that acknowledges desire while establishing consequence.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Erotics of Accountability</p>
+              <p class="note-text">Every hook is simultaneously invitation and ultimatum. The repetition functions as both rhythm and contract — you have been warned, you have been offered exit, your participation is acknowledged.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">The Bridge as Intimacy</p>
+              <p class="note-text">"This is your last chance to change your mind" isn't manipulation — it's care. The track recognizes that intensity requires clarity, that real heat needs real consent.</p>
+            </div>
+          </div>
+        </div>
+        <div class="lyric-footer">
+          <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK 03 -->
+    <div class="track-card" id="ghetto">
+      <div class="track-header" onclick="toggleTrack('t3')">
+        <div class="track-header-left">
+          <p class="track-num">Track 03 — Tech-House</p>
+          <h3 class="track-title">Ghetto Blaster</h3>
+          <div class="track-tags">
+            <span class="tag reelow">ECHOx × Reelow</span>
+            <span class="tag">Original</span>
+            <span class="tag">Berlin · 2025</span>
+          </div>
+        </div>
+        <span class="track-toggle" id="t3-toggle">Read lyrics ↓</span>
+      </div>
+
+      <div id="t3" class="track-body">
+        <div class="lyrics-layout">
+          <div class="lyrics-col">
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Intro]</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Principal's office…</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Three chairs, one laugh…</span>
+              <span class="lyric-line">What you gonna be?</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 1]</span>
+              <span class="lyric-line">They called us in again</span>
+              <span class="lyric-line">Grades red like blood</span>
+              <span class="lyric-line">Mom can't look up</span>
+              <span class="lyric-line">Dad's fists turn to mud</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">Principal smirks slow</span>
+              <span class="lyric-line">"Boy, what's your plan B?"</span>
+              <span class="lyric-line">I stand up straight</span>
+              <span class="lyric-line">Future staring back at me</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Pre-Hook]</span>
+              <span class="lyric-line">You want the truth?</span>
+              <span class="lyric-line">I'll give it raw</span>
+              <span class="lyric-line">This body's all I own</span>
+              <span class="lyric-line">And I know what it's for</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Hook]</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">That's the name they're gonna know</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Watch me turn this flesh to gold</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Laugh now if you want</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Just wait till you see what I've got</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 2]</span>
+              <span class="lyric-line">He laughed in my face</span>
+              <span class="lyric-line">Thought it was a joke</span>
+              <span class="lyric-line">So I leaned in close</span>
+              <span class="lyric-line">Let the whole room choke</span>
+              <span class="lyric-line empty"></span>
+              <span class="lyric-line">"Just wait till you see my Ghetto Blaster"</span>
+              <span class="lyric-line">Said it calm, said it proud</span>
+              <span class="lyric-line">Whole office went quiet</span>
+              <span class="lyric-line">Now the joke's on the crowd</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Bridge]</span>
+              <span class="lyric-line">You can call it dirty</span>
+              <span class="lyric-line">You can call it shame</span>
+              <span class="lyric-line">But this body's my diploma</span>
+              <span class="lyric-line">And I'm signing my name</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Outro]</span>
+              <span class="lyric-line chorus">Ghetto Blaster…</span>
+              <span class="lyric-line chorus">Ghetto Blaster…</span>
+            </div>
+
+          </div>
+          <div class="notes-col">
+            <span class="notes-label">Concept Notes</span>
+            <div class="note-block">
+              <p class="note-title">Heritage and Transformation</p>
+              <p class="note-text">Direct lineage to "Ghetto Soul" — a conscious continuation. Where "Ghetto Soul" locates spirit in struggle, "Ghetto Blaster" claims the body itself as both weapon and monument.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">The Principal's Office as Origin Myth</p>
+              <p class="note-text">Three chairs (mother, father, son), institutional judgment, and the instant someone decides their body will be their résumé. Compressed autobiography of anyone for whom traditional paths were never designed.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Defiant Self-Naming</p>
+              <p class="note-text">Reclaiming what was meant as insult and transforming it into legend. The name celebrates transformation: explosive, unapologetic, impossible to ignore.</p>
+            </div>
+          </div>
+        </div>
+        <div class="lyric-footer">
+          <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin, 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK 04 -->
+    <div class="track-card" id="barcelona">
+      <div class="track-header" onclick="toggleTrack('t4')">
+        <div class="track-header-left">
+          <p class="track-num">Track 04 — Tech-House · 126 BPM</p>
+          <h3 class="track-title">Ghetto Blaster (Barcelona Refix)</h3>
+          <div class="track-tags">
+            <span class="tag reelow">ECHOx × Reelow</span>
+            <span class="tag">Barcelona · 2025</span>
+            <span class="tag">Peak-time</span>
+          </div>
+        </div>
+        <span class="track-toggle" id="t4-toggle">Read lyrics ↓</span>
+      </div>
+
+      <div id="t4" class="track-body">
+        <div class="lyrics-layout">
+          <div class="lyrics-col">
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Intro]</span>
+              <span class="lyric-line de" style="font-style:italic; color:var(--muted);">Cuatro de la mañana…</span>
+              <span class="lyric-line de" style="font-style:italic; color:var(--muted);">El sol sale pronto</span>
+              <span class="lyric-line de" style="font-style:italic; color:var(--muted);">Pero aquí todavía…</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 1]</span>
+              <span class="lyric-line">In the booth, Reelow</span>
+              <span class="lyric-line">Got that swing they follow</span>
+              <span class="lyric-line">Percussion talk, bassline walk</span>
+              <span class="lyric-line">Barcelona never hollow</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Pre-Drop]</span>
+              <span class="lyric-line">Everybody wait…</span>
+              <span class="lyric-line">Wait for the drop…</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Main Drop / Hook]</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">(Blaster… blaster…)</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Turn it up in Pacha</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Hands up in the rafter</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Barcelona after</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Verse 2]</span>
+              <span class="lyric-line">From the terrace to the dark room</span>
+              <span class="lyric-line">Sweat drip, bodies consume</span>
+              <span class="lyric-line">One more kick, one more boom</span>
+              <span class="lyric-line">Reelow make the system fume</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Second Drop / Hook]</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">(Blaster… blaster… blaster…)</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Whole floor in disaster</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Till the morning after</span>
+              <span class="lyric-line chorus">Ghetto Blaster</span>
+              <span class="lyric-line chorus">Reelow, the master</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Breakdown]</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Just the bounce…</span>
+              <span class="lyric-line" style="color:var(--muted); font-style:italic;">Just the bounce…</span>
+            </div>
+
+            <div class="lyric-section">
+              <span class="lyric-label">[Final Drop]</span>
+              <span class="lyric-line chorus">Ghetto Blaster!</span>
+              <span class="lyric-line chorus">Ghetto Blaster!</span>
+              <span class="lyric-line de" style="font-style:italic; color:var(--muted);">(Barcelona… Barcelona…)</span>
+              <span class="lyric-line chorus">Ghetto Blaster!</span>
+              <span class="lyric-line chorus">Ghetto Blaster!</span>
+            </div>
+
+          </div>
+          <div class="notes-col">
+            <span class="notes-label">Concept Notes</span>
+            <div class="note-block">
+              <p class="note-title">Responding to Critique Through Pure Energy</p>
+              <p class="note-text">When someone dismissed the first version as "not Reelow-style," the answer wasn't defense but evolution: strip the narrative, amplify the name, make it undeniably peak-time.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Barcelona as Sacred Geography</p>
+              <p class="note-text">Pacha, 4 AM, that particular Mediterranean quality where the night extends into morning but nobody's ready to stop. This isn't tourism — it's invocation of place as production signature.</p>
+            </div>
+            <div class="note-block">
+              <p class="note-title">Tech-House as Ceremony</p>
+              <p class="note-text">126 BPM, swung percussion, rolling bassline. Ghetto Blaster not as confession but as call-and-response between booth and floor. Making bodies move through precision, swing, and perfectly-timed release.</p>
+            </div>
+          </div>
+        </div>
+        <div class="lyric-footer">
+          <p>© Eko Svenningsson / ECHOx — All rights reserved — Berlin–Barcelona, 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- SECTION: ARK OF DARK -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="section-divider" id="ark">
+      <p class="section-heading">ECHOxPRODUCTION · Philosophical Pop</p>
+      <h2 class="section-title">Ark of Dark</h2>
+      <p class="section-desc">
+        Sophisticated philosophical pop inspired by Harry Martinson's Aniara.
+        Humanity adrift. The archive that breaks from being asked to comfort
+        instead of remember. Melodifestivalen 2027.
+      </p>
+    </div>
+
+    <div class="coming-soon">
+      <span class="cs-sigil">✦</span>
+      <h3>Ark of Dark</h3>
+      <p>
+        Lyrics and production notes in development.<br/>
+        In the spirit of Martinson — humanity adrift, the stars as sorrow, not salvation.<br/><br/>
+        <em>The ship drifts on.</em>
+      </p>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html">Manuscripts</a></li>
+      <li><a href="gallery.html">Photography</a></li>
+      <li><a href="terms.html">Terms</a></li>
+    </ul>
+    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All rights reserved</p>
+  </footer>
+
+  <script>
+    function toggleTrack(id) {
+      const body = document.getElementById(id);
+      const toggle = document.getElementById(id + '-toggle');
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open');
+      toggle.textContent = isOpen ? 'Read lyrics ↓' : 'Close ↑';
+    }
+  </script>
+
+</body>
+</html>
