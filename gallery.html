@@ -9,411 +9,367 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    :root {
-      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
-      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
-      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
-    }
-    html { font-size:16px; }
-    body {
-      background:var(--black); color:var(--text);
-      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
-      min-height:100vh;
-    }
-
-    /* NAV */
-    nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule);
-      background:var(--black); position:sticky; top:0; z-index:50;
-    }
-    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
-    .nav-links { display:flex; gap:2rem; list-style:none; }
-    .nav-links a {
-      font-family:'Inconsolata',monospace; font-size:0.65rem;
-      letter-spacing:0.18em; text-transform:uppercase;
-      color:var(--muted); text-decoration:none; transition:color 0.2s;
-    }
-    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
-    @media(max-width:600px){ .nav-links { display:none; } }
-
-    /* PAGE HEADER */
-    .page-header {
-      padding:5rem 2rem 3rem;
-      text-align:center;
-      border-bottom:1px solid var(--rule);
-    }
-    .page-label {
-      font-family:'Inconsolata',monospace; font-size:0.62rem;
-      letter-spacing:0.25em; color:var(--gold-dim);
-      text-transform:uppercase; margin-bottom:1rem;
-    }
-    .page-title {
-      font-family:'IM Fell English',serif;
-      font-size:clamp(2rem,6vw,3.5rem);
-      color:var(--off-white); font-weight:400;
-      line-height:1.1; margin-bottom:1rem;
-    }
-    .page-sub {
-      font-size:0.9rem; color:var(--muted); font-style:italic;
-      letter-spacing:0.05em; max-width:500px; margin:0 auto 2rem;
-      line-height:1.7;
-    }
-    .process-note {
-      display:inline-flex; align-items:center; gap:0.6rem;
-      font-family:'Inconsolata',monospace; font-size:0.62rem;
-      letter-spacing:0.15em; text-transform:uppercase;
-      color:var(--gold-dim); border:1px solid var(--rule);
-      padding:0.5rem 1.2rem;
-    }
-    .process-note::before {
-      content:''; display:block; width:6px; height:6px;
-      border-radius:50%; background:var(--gold-dim);
-    }
-
-    /* WRAPPER */
-    .wrapper { max-width:1100px; margin:0 auto; padding:0 2rem; }
-
-    /* FEATURED */
-    .featured-section { padding:4rem 0 2rem; }
-    .section-label {
-      font-family:'Inconsolata',monospace; font-size:0.6rem;
-      letter-spacing:0.22em; color:var(--gold-dim);
-      text-transform:uppercase; margin-bottom:2rem;
-    }
-
-    .featured-frame {
-      position:relative;
-      width:100%;
-      max-width:620px;
-      margin:0 auto;
-      border:1px solid #1a1a16;
-      overflow:hidden;
-      cursor:pointer;
-    }
-
-    .featured-frame img {
-      width:100%; display:block;
-      filter:saturate(0.85) contrast(1.05);
-      transition:filter 0.4s ease, transform 0.5s ease;
-    }
-
-    .featured-frame:hover img {
-      filter:saturate(1) contrast(1.05);
-      transform:scale(1.01);
-    }
-
-    .featured-caption {
-      padding:1rem 1.2rem;
-      background:#0a0a08;
-      border-top:1px solid #1a1a16;
-      display:flex; justify-content:space-between; align-items:center;
-    }
-    .caption-text {
-      font-size:0.82rem; color:var(--muted); font-style:italic;
-    }
-    .caption-meta {
-      font-family:'Inconsolata',monospace; font-size:0.6rem;
-      letter-spacing:0.12em; color:var(--gold-dim); text-transform:uppercase;
-    }
-
-    /* LIGHTBOX */
-    #lightbox {
-      display:none; position:fixed; inset:0; z-index:200;
-      background:rgba(8,8,6,0.96);
-      align-items:center; justify-content:center;
-      padding:2rem;
-    }
-    #lightbox.open { display:flex; }
-    #lightbox img {
-      max-width:90vw; max-height:88vh;
-      object-fit:contain;
-      border:1px solid #1a1a16;
-      filter:saturate(0.9) contrast(1.05);
-    }
-    .lb-close {
-      position:fixed; top:1.5rem; right:2rem;
-      font-family:'Inconsolata',monospace; font-size:0.65rem;
-      letter-spacing:0.18em; text-transform:uppercase;
-      color:var(--muted); background:none; border:none;
-      cursor:pointer; transition:color 0.2s;
-    }
-    .lb-close:hover { color:var(--gold); }
-    .lb-caption {
-      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
-      font-family:'Inconsolata',monospace; font-size:0.62rem;
-      letter-spacing:0.15em; color:var(--muted); text-transform:uppercase;
-      white-space:nowrap;
-    }
-
-    /* GRID */
-    .grid-section { padding:3rem 0 5rem; }
-
-    .grid-header {
-      display:flex; justify-content:space-between; align-items:baseline;
-      margin-bottom:2rem; flex-wrap:wrap; gap:1rem;
-    }
-    .grid-count {
-      font-family:'Inconsolata',monospace; font-size:0.6rem;
-      letter-spacing:0.15em; color:var(--muted); text-transform:uppercase;
-    }
-
-    .photo-grid {
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:1px;
-      background:var(--rule);
-      border:1px solid var(--rule);
-    }
-
-    .photo-cell {
-      background:var(--near);
-      aspect-ratio:1;
-      position:relative;
-      overflow:hidden;
-      cursor:pointer;
-    }
-
-    .photo-cell img {
-      width:100%; height:100%; object-fit:cover;
-      display:block;
-      filter:saturate(0.8) contrast(1.05);
-      transition:filter 0.35s ease, transform 0.45s ease;
-    }
-    .photo-cell:hover img {
-      filter:saturate(1) contrast(1.05);
-      transform:scale(1.04);
-    }
-
-    /* PLACEHOLDER cells */
-    .photo-cell.placeholder {
-      background:var(--near);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      gap:0.8rem;
-      cursor:default;
-    }
-    .placeholder-icon {
-      width:32px; height:32px; opacity:0.15;
-    }
-    .placeholder-label {
-      font-family:'Inconsolata',monospace; font-size:0.55rem;
-      letter-spacing:0.15em; text-transform:uppercase;
-      color:var(--muted); opacity:0.4;
-    }
-
-    .photo-cell .cell-hover {
-      position:absolute; inset:0;
-      background:rgba(8,8,6,0.6);
-      display:flex; align-items:flex-end; padding:1rem;
-      opacity:0; transition:opacity 0.3s ease;
-    }
-    .photo-cell:hover .cell-hover { opacity:1; }
-    .cell-hover-text {
-      font-family:'Inconsolata',monospace; font-size:0.58rem;
-      letter-spacing:0.12em; text-transform:uppercase; color:var(--bone);
-    }
-
-    /* UPLOAD NOTE */
-    .upload-note {
-      background:var(--near); border:1px solid #1a1a16;
-      padding:2rem 2.5rem; margin:3rem 0;
-      display:flex; align-items:center; gap:2rem; flex-wrap:wrap;
-    }
-    .upload-note p {
-      font-size:0.85rem; color:var(--muted); font-style:italic; line-height:1.7;
-    }
-    .upload-note strong { color:var(--bone); font-weight:400; font-style:normal; }
-
-    /* STATEMENT */
-    .statement {
-      padding:3rem 0; border-top:1px solid var(--rule);
-      max-width:620px;
-    }
-    .statement p {
-      font-size:1rem; line-height:1.85; color:var(--bone);
-      margin-bottom:1.2em;
-    }
-    .statement em { color:var(--off-white); font-style:italic; }
-
-    /* FOOTER */
-    footer {
-      border-top:1px solid var(--rule); padding:2.5rem 2.5rem;
-      display:flex; justify-content:space-between; align-items:center;
-      flex-wrap:wrap; gap:1rem;
-    }
-    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
-    .footer-links { display:flex; gap:1.5rem; list-style:none; }
-    .footer-links a {
-      font-family:'Inconsolata',monospace; font-size:0.6rem;
-      letter-spacing:0.15em; text-transform:uppercase;
-      color:var(--muted); text-decoration:none; transition:color 0.2s;
-    }
-    .footer-links a:hover { color:var(--gold); }
-    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
-
-    @media(max-width:640px){
-      .photo-grid { grid-template-columns:repeat(2,1fr); }
-      .featured-frame { max-width:100%; }
-    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;--gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#6e6a64;--rule:rgba(184,150,62,0.2)}
+    html{font-size:16px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--gold)}
+    @media(max-width:600px){.nav-links{display:none}}
+    .page-header{padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid var(--rule)}
+    .page-label{font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.25em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
+    .page-title{font-family:'IM Fell English',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
+    .page-sub{font-size:.9rem;color:var(--muted);font-style:italic;max-width:500px;margin:0 auto 1.5rem;line-height:1.7}
+    .process-note{display:inline-flex;align-items:center;gap:.6rem;font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-dim);border:1px solid var(--rule);padding:.5rem 1.2rem}
+    .process-note::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
+    .wrapper{max-width:1100px;margin:0 auto;padding:0 2rem}
+    .section-label{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+    .sample-note{background:var(--near);border:1px solid #1a1a16;padding:1.4rem 2rem;margin:3rem 0 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .sample-note p{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.6}
+    .sample-note strong{color:var(--bone);font-weight:400;font-style:normal}
+    .sample-note a{color:var(--gold-dim);text-decoration:none}
+    .sample-count{font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--gold-dim);text-transform:uppercase;white-space:nowrap}
+    #lightbox{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,8,6,.97);align-items:center;justify-content:center;padding:2rem;flex-direction:column;gap:1rem}
+    #lightbox.open{display:flex}
+    #lightbox img{max-width:88vw;max-height:82vh;object-fit:contain;border:1px solid #1a1a16}
+    .lb-close{position:fixed;top:1.5rem;right:2rem;font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
+    .lb-close:hover{color:var(--gold)}
+    .lb-caption{font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:center}
+    .lb-nav{position:fixed;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 1rem;pointer-events:none}
+    .lb-arrow{background:none;border:1px solid #2a2a26;color:var(--muted);font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.15em;padding:.6rem 1rem;cursor:pointer;pointer-events:all;transition:all .2s}
+    .lb-arrow:hover{border-color:var(--gold-dim);color:var(--gold)}
+    .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+    .photo-cell{background:var(--near);aspect-ratio:1;position:relative;overflow:hidden;cursor:pointer}
+    .photo-cell.wide{aspect-ratio:4/3}
+    .photo-cell img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.82) contrast(1.04);transition:filter .35s ease,transform .45s ease}
+    .photo-cell:hover img{filter:saturate(1) contrast(1.04);transform:scale(1.03)}
+    .cell-hover{position:absolute;inset:0;background:rgba(8,8,6,.55);display:flex;align-items:flex-end;padding:.8rem 1rem;opacity:0;transition:opacity .3s ease}
+    .photo-cell:hover .cell-hover{opacity:1}
+    .cell-text{font-family:'Inconsolata',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);line-height:1.4}
+    .projects-section{padding:5rem 0 2rem;border-top:1px solid var(--rule);margin-top:4rem}
+    .projects-intro{max-width:620px;margin-bottom:3rem}
+    .projects-intro p{font-size:1rem;line-height:1.85;color:var(--bone);margin-bottom:1em}
+    .projects-intro em{color:var(--off-white);font-style:italic}
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+    .project-card{background:var(--black);padding:2.5rem 2rem;position:relative;overflow:hidden;transition:background .25s}
+    .project-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .4s ease}
+    .project-card:hover::after{width:100%}
+    .project-card:hover{background:var(--near)}
+    .project-status{font-family:'Inconsolata',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;display:inline-block}
+    .project-status.complete{color:#5a8a6a}
+    .project-status.development{color:var(--gold-dim)}
+    .project-status.ongoing{color:#6a7a9a}
+    .project-title{font-family:'IM Fell English',serif;font-size:1.2rem;color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:.5rem}
+    .project-medium{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.2rem}
+    .project-desc{font-size:.9rem;color:var(--muted);line-height:1.75}
+    .statement{padding:4rem 0;border-top:1px solid var(--rule);max-width:620px}
+    .statement p{font-size:1rem;line-height:1.85;color:var(--bone);margin-bottom:1.2em}
+    .statement a{color:var(--gold-dim);text-decoration:none}
+    footer{border-top:1px solid var(--rule);padding:2.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-links{display:flex;gap:1.5rem;list-style:none}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--gold)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:.58rem;color:#2a2a26;width:100%}
+    @media(max-width:700px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
 <body>
 
-  <!-- LIGHTBOX -->
-  <div id="lightbox" onclick="closeLightbox()">
-    <button class="lb-close" onclick="closeLightbox()">Close ✕</button>
-    <img id="lb-img" src="" alt=""/>
-    <p class="lb-caption" id="lb-caption"></p>
+<div id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">Close ✕</button>
+  <div class="lb-nav">
+    <button class="lb-arrow" onclick="shiftLightbox(-1)">← Prev</button>
+    <button class="lb-arrow" onclick="shiftLightbox(1)">Next →</button>
+  </div>
+  <img id="lb-img" src="" alt=""/>
+  <p class="lb-caption" id="lb-caption"></p>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html" class="active">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <p class="page-label">ECHOxINSTANT</p>
+  <h1 class="page-title">Photography</h1>
+  <p class="page-sub">Fuji Instax. Polaroid. In-camera techniques only. No digital manipulation at any stage.</p>
+  <span class="process-note">Analog only — the irreversible frame</span>
+</div>
+
+<div class="wrapper">
+
+  <div class="sample-note">
+    <p><strong>Sample archive — 2024.</strong> 29 frames across Berlin, Hamburg, Rome, Naples, Milan, Istanbul. A small selection from the ongoing archive. For print inquiries or exhibition interest, see <a href="contact.html">Contact</a>.</p>
+    <span class="sample-count">29 frames shown</span>
   </div>
 
-  <nav>
-    <a href="index.html" class="nav-logo">ECHOx</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="manuscripts.html">Manuscripts</a></li>
-      <li><a href="gallery.html" class="active">Photography</a></li>
-      <li><a href="lyrics.html">Music</a></li>
-      <li><a href="terms.html">Terms</a></li>
-    </ul>
-  </nav>
+  <div class="photo-grid">
+    <div class="photo-cell wide" onclick="openLightbox(0)">
+      <img src="PHOTO-2024-10-08-05-37-14_2.jpeg" alt="Double exposure portrait"/>
+      <div class="cell-hover"><span class="cell-text">Double exposure<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(1)">
+      <img src="PHOTO-2024-10-08-05-37-15_2.jpeg" alt="Two figures, red light"/>
+      <div class="cell-hover"><span class="cell-text">Red room<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(2)">
+      <img src="PHOTO-2024-10-08-05-37-20.jpeg" alt="Figure at graffiti wall"/>
+      <div class="cell-hover"><span class="cell-text">Wall<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(3)">
+      <img src="PHOTO-2024-10-08-05-37-21_2.jpeg" alt="Portrait with unicorn balloon"/>
+      <div class="cell-hover"><span class="cell-text">Unicorn<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(4)">
+      <img src="PHOTO-2024-10-08-05-37-13.jpeg" alt="Figure from behind, Berlin rooftops"/>
+      <div class="cell-hover"><span class="cell-text">Rooftops<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(5)">
+      <img src="PHOTO-2024-10-08-05-37-15.jpeg" alt="Figure with raised hand"/>
+      <div class="cell-hover"><span class="cell-text">Refusal<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(6)">
+      <img src="PHOTO-2024-10-08-05-40-28.jpeg" alt="Portrait at café, wine glass"/>
+      <div class="cell-hover"><span class="cell-text">Café<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(7)">
+      <img src="PHOTO-2024-10-08-05-37-19.jpeg" alt="Double exposure, interior architecture"/>
+      <div class="cell-hover"><span class="cell-text">Interior double<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(8)">
+      <img src="PHOTO-2024-10-08-05-37-14.jpeg" alt="Young man on Vespa"/>
+      <div class="cell-hover"><span class="cell-text">Vespa<br/>2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(9)">
+      <img src="PHOTO-2024-10-08-05-37-20_2.jpeg" alt="Woman eating on bed"/>
+      <div class="cell-hover"><span class="cell-text">After<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(10)">
+      <img src="PHOTO-2024-10-08-05-40-29.jpeg" alt="Two women on a bench, black and white"/>
+      <div class="cell-hover"><span class="cell-text">Bench<br/>2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(11)">
+      <img src="PHOTO-2024-10-08-05-37-17.jpeg" alt="Street portrait, winter Berlin"/>
+      <div class="cell-hover"><span class="cell-text">Winter portrait<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(12)">
+      <img src="PHOTO-2024-10-08-05-40-28_2.jpeg" alt="Double exposure, restaurant with ghost figure"/>
+      <div class="cell-hover"><span class="cell-text">Ghost restaurant<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(13)">
+      <img src="PHOTO-2024-10-08-05-37-19_2.jpeg" alt="Portrait looking down, leather jacket"/>
+      <div class="cell-hover"><span class="cell-text">Looking down<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(14)">
+      <img src="PHOTO-2024-10-08-05-37-17_2.jpeg" alt="Double exposure, two faces merged"/>
+      <div class="cell-hover"><span class="cell-text">Two become one<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(15)">
+      <img src="PHOTO-2024-10-08-05-37-18_2.jpeg" alt="Light trails, figure drinking"/>
+      <div class="cell-hover"><span class="cell-text">Light trails<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(16)">
+      <img src="PHOTO-2024-10-08-05-37-21.jpeg" alt="Figure in window, black and white"/>
+      <div class="cell-hover"><span class="cell-text">Window<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(17)">
+      <img src="PHOTO-2024-10-08-05-38-07.jpeg" alt="Portrait lying on sofa, black and white"/>
+      <div class="cell-hover"><span class="cell-text">Rest<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(18)">
+      <img src="PHOTO-2024-10-08-05-37-18.jpeg" alt="Outdoor portrait, smoking, Berlin summer"/>
+      <div class="cell-hover"><span class="cell-text">Summer<br/>Berlin, 2024</span></div>
+    </div>
 
-  <div class="page-header">
-    <p class="page-label">ECHOxINSTANT</p>
-    <h1 class="page-title">Photography</h1>
-    <p class="page-sub">
-      Fuji Instax. Polaroid. In-camera techniques, no digital manipulation.
-      The irreversible frame as both aesthetic and ethical position.
-    </p>
-    <span class="process-note">Analog only — no digital post-processing</span>
+    <!-- Second batch — Hamburg, Rome, Naples, Milan, Berlin -->
+    <div class="photo-cell wide" onclick="openLightbox(19)">
+      <img src="PHOTO-2024-10-08-05-40-33.jpeg" alt="Hamburg shipyard, MSC Clea container ship"/>
+      <div class="cell-hover"><span class="cell-text">MSC Clea<br/>Hamburg, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(20)">
+      <img src="PHOTO-2024-10-08-05-40-34.jpeg" alt="Piano with lucky cat and orchid, Berlin interior"/>
+      <div class="cell-hover"><span class="cell-text">Piano<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(21)">
+      <img src="PHOTO-2024-10-08-05-40-29_2.jpeg" alt="Double exposure — Marcus Aurelius statue, Rome"/>
+      <div class="cell-hover"><span class="cell-text">Marcus Aurelius<br/>Rome, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(22)">
+      <img src="PHOTO-2024-10-08-05-40-32_2.jpeg" alt="Foosball by the harbour, Naples"/>
+      <div class="cell-hover"><span class="cell-text">Harbour foosball<br/>Naples, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(23)">
+      <img src="PHOTO-2024-10-08-05-40-31.jpeg" alt="Nun crossing the street, Milan"/>
+      <div class="cell-hover"><span class="cell-text">Crossing<br/>Milan, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(24)">
+      <img src="PHOTO-2024-10-08-05-40-34_2.jpeg" alt="Bar portrait, Berlin"/>
+      <div class="cell-hover"><span class="cell-text">Bar<br/>Berlin, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(25)">
+      <img src="PHOTO-2024-10-08-05-40-30.jpeg" alt="Siamo Vivi march, Rome cobblestones"/>
+      <div class="cell-hover"><span class="cell-text">Siamo Vivi<br/>Rome, 2024</span></div>
+    </div>
+    <div class="photo-cell wide" onclick="openLightbox(26)">
+      <img src="PHOTO-2024-10-08-05-40-30_2.jpeg" alt="Running figures, Rome alley, motion blur"/>
+      <div class="cell-hover"><span class="cell-text">Running<br/>Rome, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(27)">
+      <img src="PHOTO-2024-10-08-05-40-31_2.jpeg" alt="Casa del Portuale brutalist building, Naples port, close"/>
+      <div class="cell-hover"><span class="cell-text">Casa del Portuale<br/>Naples, 2024</span></div>
+    </div>
+    <div class="photo-cell" onclick="openLightbox(28)">
+      <img src="PHOTO-2024-10-08-05-40-32.jpeg" alt="Casa del Portuale brutalist tower, Naples, wide shot"/>
+      <div class="cell-hover"><span class="cell-text">Portuale tower<br/>Naples, 2024</span></div>
+    </div>
   </div>
 
-  <div class="wrapper">
-
-    <!-- FEATURED IMAGE -->
-    <div class="featured-section">
-      <p class="section-label">Featured</p>
-      <div class="featured-frame" onclick="openLightbox('IMG_0145.jpeg', 'ECHOx — Berlin, 2025 — Fuji Instax')">
-        <img src="IMG_0145.jpeg" alt="ECHOx with Polaroid camera, Berlin gallery"/>
-        <div class="featured-caption">
-          <span class="caption-text">Berlin, 2025 — with the Polaroid</span>
-          <span class="caption-meta">ECHOxINSTANT</span>
-        </div>
-      </div>
+  <!-- EXHIBITION PROJECTS -->
+  <div class="projects-section">
+    <span class="section-label">Exhibition Projects</span>
+    <div class="projects-intro">
+      <p>Beyond the ongoing ECHOxINSTANT archive, the practice organizes itself into longer-duration projects — each with its own formal constraints, conceptual framework, and exhibition life.</p>
+      <p>Each project treats the instant film frame not as snapshot but as <em>committed act</em> — irreversible, analog, once.</p>
     </div>
+    <div class="projects-grid">
 
-    <!-- GRID -->
-    <div class="grid-section">
-      <div class="grid-header">
-        <p class="section-label">Archive</p>
-        <span class="grid-count">Photos added as shot — analog, irreversible</span>
+      <div class="project-card">
+        <span class="project-status complete">● Exhibition-ready</span>
+        <h3 class="project-title">Faces and Facades</h3>
+        <p class="project-medium">Double &amp; triple exposure · Instant film · Berlin</p>
+        <p class="project-desc">Berlin has never tried to hide its scars. Neither does this work. Through double and triple exposures on instant film, human faces and city surfaces fold into one another — weathered skin finding its echo in flaking concrete, sharp eyes mirroring glass edges. Not documentary. Not architecture photography. Something in between that neither genre could hold alone.</p>
       </div>
 
-      <div class="photo-grid" id="photo-grid">
-
-        <!-- Real image -->
-        <div class="photo-cell" onclick="openLightbox('IMG_0145.jpeg', 'ECHOx — Berlin, 2025')">
-          <img src="IMG_0145.jpeg" alt="ECHOx with Polaroid, Berlin gallery"/>
-          <div class="cell-hover"><span class="cell-hover-text">Berlin, 2025</span></div>
-        </div>
-
-        <!-- Placeholders — replace each with real photos as you shoot -->
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-        <div class="photo-cell placeholder">
-          <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          <span class="placeholder-label">Upcoming</span>
-        </div>
-
+      <div class="project-card">
+        <span class="project-status complete">● Completed</span>
+        <h3 class="project-title">Off Leash</h3>
+        <p class="project-medium">Instant film portraiture · Berlin dogs</p>
+        <p class="project-desc">A dog in a puffer jacket sitting outside a EuroShop with the patience of a philosopher. Berlin dogs, shot as serious portrait subjects, given the full weight of the instant film frame. They carry the energy of the city better than any human could — total indifference, absolute presence, answering to nobody. The purest thing about this place.</p>
       </div>
 
-      <div class="upload-note">
-        <p>
-          <strong>Adding photos:</strong> Upload each image to your GitHub repo root, 
-          then replace a placeholder cell in <code>gallery.html</code> with:<br/><br/>
-          <code>&lt;div class="photo-cell" onclick="openLightbox('filename.jpg', 'Caption — Location, Year')"&gt;<br/>
-          &nbsp;&nbsp;&lt;img src="filename.jpg" alt="description"/&gt;<br/>
-          &nbsp;&nbsp;&lt;div class="cell-hover"&gt;&lt;span class="cell-hover-text"&gt;Caption&lt;/span&gt;&lt;/div&gt;<br/>
-          &lt;/div&gt;</code>
-        </p>
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">Acquired Taste</h3>
+        <p class="project-medium">Instant film · Portrait · Audio · Multi-media</p>
+        <p class="project-desc">The word connoisseur was built to keep certain people out. This project breaks the door down. Visceral, excessive, deliberately provocative close-up instant photography that gives fast food culture the visual reverence of fine art portraiture. Between the photographs, viewers put on headphones and hear the subjects speak — in their own words, with their own expertise, about what they know and why it matters. The camera never judges. It just looks.</p>
       </div>
+
+      <div class="project-card">
+        <span class="project-status complete">● Completed</span>
+        <h3 class="project-title">Kiezköter</h3>
+        <p class="project-medium">Instant film · Visual diary · Neukölln, Berlin</p>
+        <p class="project-desc">Five years of living in Neukölln left a mark. Not a tourist's portrait of a famous neighborhood — a visual diary built from the inside, street by street, face by face, moment by unremarkable moment that turns out to be anything but. The project that formed the eye behind everything ECHOx does: the belief that Monday, seen correctly, contains the entire world.</p>
+      </div>
+
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">Amor and Eros</h3>
+        <p class="project-medium">Dual-photographer · Instant film · Ten diptychs</p>
+        <p class="project-desc">Two photographers. Two completely opposing visual languages. The same subjects. The same locations. One sees softness, the romantic ideal of attraction. The other sees rawness, desire without apology. Amor and Eros are not opposites — they are two aspects of the same force, rarely shown side by side with equal honesty. Ten diptychs. One exhibition. The visitor stands in the gap between them and has to decide what they believe.</p>
+      </div>
+
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">Creatures of the Night</h3>
+        <p class="project-medium">Instant film · Documentary portrait · One year</p>
+        <p class="project-desc">Three or four people in Berlin who have chosen to live as vampires. Not the mythology — the life. The dentist appointment. The summer problem. The wardrobe. Documented across a full year, through all four seasons, on instant film. No mockery. No sensationalism. Just the sustained, serious attention of a photographer who believes that the collision between an extreme identity and an ordinary Tuesday is one of the most honest places a portrait can live.</p>
+      </div>
+
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">Love as a Flamethrower</h3>
+        <p class="project-medium">Instant film · Portrait · Dual study</p>
+        <p class="project-desc">There is a face that lovers make when they turn to the person they adore while telling the story of how they fell in love. Impossible to perform, identical across age and gender. This project exists to catch that face on instant film — and then: the other side. The divorce party where a woman mounted her wedding dress on a wooden cross on a beach and burned it with a flamethrower while her friends cheered. That too is love. Finally honest about what it became.</p>
+      </div>
+
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">Night Fare</h3>
+        <p class="project-medium">Instant film · Istanbul · Berlin · Barcelona · Stockholm</p>
+        <p class="project-desc">Everyone has taken this cab ride. The hour between the night and wherever you're going next. The city smearing past the window in overexposed light. Slightly unmoored, completely alive. Collected across cities — the interior of a taxi at 2am becomes a portrait not of a place but of a feeling. Universal, fleeting, and until now, undocumented.</p>
+      </div>
+
+      <div class="project-card">
+        <span class="project-status development">◐ In Development</span>
+        <h3 class="project-title">The Death of the Punk Rocker</h3>
+        <p class="project-medium">Instant film · Archive footage · Interview · Berlin</p>
+        <p class="project-desc">They were everywhere once. Being a punk in the DDR wasn't a lifestyle choice — it was a political act. The Stasi watched them, interrogated them, classified them as threats to the state. The mohawk was genuinely dangerous. This project is part elegy, part detective work. Old DDR footage. Interviews with the people who were there — the old man showing you a photograph of himself at nineteen, sitting next to it at seventy. And then the question that drives everything: where did the punk impulse go?</p>
+      </div>
+
     </div>
-
-    <!-- ARTIST STATEMENT -->
-    <div class="statement">
-      <p class="section-label">On the Practice</p>
-      <p>
-        ECHOxINSTANT is analog-only instant film photography — Fuji Instax and Polaroid,
-        in-camera techniques, no digital manipulation at any stage.
-      </p>
-      <p>
-        The irreversibility is not a constraint. It is the <em>point</em>. Each frame exists once,
-        exactly as taken. The chemical process completes itself without permission.
-        What emerges is not corrected, filtered, or reconsidered.
-      </p>
-      <p>
-        Current projects: <em>Faces and Facades</em> — double-exposure portraits documenting
-        Berlin architecture and residents. <em>The Residue of Duration</em> — long-exposure
-        documentation of Berlin's techno culture, preserving collective presence while
-        maintaining individual anonymity.
-      </p>
-    </div>
-
   </div>
 
-  <footer>
-    <span class="footer-logo">ECHOx</span>
-    <ul class="footer-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="manuscripts.html">Manuscripts</a></li>
-      <li><a href="lyrics.html">Music</a></li>
-      <li><a href="terms.html">Terms &amp; Licensing</a></li>
-    </ul>
-    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All rights reserved</p>
-  </footer>
+  <div class="statement">
+    <span class="section-label">On the Practice</span>
+    <p>ECHOxINSTANT is analog-only instant film photography — Fuji Instax and Polaroid, in-camera techniques, no digital manipulation at any stage.</p>
+    <p>The irreversibility is not a constraint. It is the point. Each frame exists once, exactly as taken. The chemical process completes itself without permission. What emerges is not corrected, filtered, or reconsidered.</p>
+    <p>For print purchases, licensing, or session bookings: <a href="contact.html">Contact →</a></p>
+  </div>
 
-  <script>
-    function openLightbox(src, caption) {
-      document.getElementById('lb-img').src = src;
-      document.getElementById('lb-caption').textContent = caption;
-      document.getElementById('lightbox').classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeLightbox();
-    });
-  </script>
+</div>
 
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="terms.html">Terms</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© Karl Erik Håkansson (ECHOx / Eko Svenningsson) — echoxstudious.art — Berlin — All rights reserved</p>
+</footer>
+
+<script>
+const photos=[
+  ['PHOTO-2024-10-08-05-37-14_2.jpeg','Double exposure — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-15_2.jpeg','Red room — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-20.jpeg','Wall — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-21_2.jpeg','Unicorn — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-13.jpeg','Rooftops — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-15.jpeg','Refusal — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-28.jpeg','Café — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-19.jpeg','Interior double — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-14.jpeg','Vespa — 2024'],
+  ['PHOTO-2024-10-08-05-37-20_2.jpeg','After — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-29.jpeg','Bench — 2024'],
+  ['PHOTO-2024-10-08-05-37-17.jpeg','Winter portrait — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-28_2.jpeg','Ghost restaurant — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-19_2.jpeg','Looking down — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-17_2.jpeg','Two become one — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-18_2.jpeg','Light trails — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-21.jpeg','Window — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-38-07.jpeg','Rest — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-37-18.jpeg','Summer — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-33.jpeg','MSC Clea — Hamburg, 2024'],
+  ['PHOTO-2024-10-08-05-40-34.jpeg','Piano — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-29_2.jpeg','Marcus Aurelius — Rome, 2024'],
+  ['PHOTO-2024-10-08-05-40-32_2.jpeg','Harbour foosball — Naples, 2024'],
+  ['PHOTO-2024-10-08-05-40-31.jpeg','Crossing — Milan, 2024'],
+  ['PHOTO-2024-10-08-05-40-34_2.jpeg','Bar — Berlin, 2024'],
+  ['PHOTO-2024-10-08-05-40-30.jpeg','Siamo Vivi — Rome, 2024'],
+  ['PHOTO-2024-10-08-05-40-30_2.jpeg','Running — Rome, 2024'],
+  ['PHOTO-2024-10-08-05-40-31_2.jpeg','Casa del Portuale — Naples, 2024'],
+  ['PHOTO-2024-10-08-05-40-32.jpeg','Portuale tower — Naples, 2024']
+];
+let current=0;
+function openLightbox(idx){current=idx;document.getElementById('lb-img').src=photos[idx][0];document.getElementById('lb-caption').textContent=photos[idx][1];document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden'}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');document.body.style.overflow=''}
+function shiftLightbox(dir){current=(current+dir+photos.length)%photos.length;document.getElementById('lb-img').src=photos[current][0];document.getElementById('lb-caption').textContent=photos[current][1]}
+document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();if(e.key==='ArrowRight')shiftLightbox(1);if(e.key==='ArrowLeft')shiftLightbox(-1)});
+</script>
 </body>
 </html>
