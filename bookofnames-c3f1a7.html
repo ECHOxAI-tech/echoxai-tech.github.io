@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Book of Names — ECHOx</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:18px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-back{font-family:'Inconsolata',monospace;font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--gold)}
+
+    .page-header{max-width:820px;margin:0 auto;padding:5rem 2rem 3rem;border-bottom:1px solid var(--rule)}
+    .access-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Inconsolata',monospace;font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1.5rem}
+    .access-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
+    h1{font-family:'IM Fell English',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:0.5rem}
+    .subtitle{font-size:1rem;color:var(--muted);font-style:italic;margin-bottom:2rem}
+    .meta-row{display:flex;gap:2.5rem;flex-wrap:wrap;font-family:'Inconsolata',monospace;font-size:0.7rem;letter-spacing:0.1em;color:var(--muted)}
+    .meta-row span{border-left:1px solid var(--rule);padding-left:0.8rem}
+    .meta-row span:first-child{border:none;padding:0}
+
+    .wrapper{max-width:820px;margin:0 auto;padding:4rem 2rem 6rem}
+
+    /* THREE ARTIFACTS */
+    .artifacts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin-bottom:4rem}
+    .artifact{background:var(--black);padding:2rem 1.5rem;text-align:center}
+    .artifact-symbol{font-family:'IM Fell English',serif;font-size:2rem;color:var(--gold-dim);margin-bottom:0.8rem;display:block}
+    .artifact-name{font-family:'Inconsolata',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.4rem;display:block}
+    .artifact-desc{font-size:0.85rem;color:var(--muted);font-style:italic;line-height:1.6}
+
+    /* PROLOGUE TEXT */
+    .section-label{font-family:'Inconsolata',monospace;font-size:0.72rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+
+    .prologue{max-width:640px;margin-bottom:4rem}
+    .prologue p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .prologue p.dropcap::first-letter{font-family:'IM Fell English',serif;font-size:3.5em;float:left;line-height:0.75;margin:0.1em 0.12em 0 0;color:var(--gold)}
+    .prologue em{color:var(--off-white);font-style:italic}
+    .prologue .rule{text-align:center;margin:2.5em 0;color:var(--gold-dim);font-size:1em;letter-spacing:0.4em;display:block}
+    .prologue blockquote{border-left:1px solid var(--rule);padding-left:1.4rem;margin:2em 0;font-style:italic;color:var(--bone)}
+
+    /* SAMPLE POEMS */
+    .poems{margin-bottom:4rem}
+    .poem{margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid var(--rule)}
+    .poem:last-child{border-bottom:none}
+    .poem-title{font-family:'IM Fell English',serif;font-size:1.2rem;color:var(--off-white);font-weight:400;margin-bottom:0.3rem}
+    .poem-subtitle{font-family:'Inconsolata',monospace;font-size:0.62rem;letter-spacing:0.12em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.5rem}
+    .poem-body{font-size:1rem;line-height:2;color:var(--bone)}
+    .poem-body p{margin-bottom:0.3em}
+    .poem-body .stanza{margin-bottom:1.2em}
+
+    /* INQUIRY */
+    .inquiry-note{background:var(--near);border:1px solid #1a1a16;padding:2rem;margin-top:3rem}
+    .inquiry-note p{font-size:0.9rem;color:var(--muted);line-height:1.8;font-style:italic}
+    .inquiry-note a{color:var(--gold-dim);text-decoration:none}
+    .inquiry-note a:hover{color:var(--gold)}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-links{display:flex;gap:1.5rem;list-style:none}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--gold)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.62rem;color:#2a2a26;width:100%}
+
+    @media(max-width:600px){
+      .artifacts{grid-template-columns:1fr}
+      .meta-row{flex-direction:column;gap:0.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
+</nav>
+
+<div class="page-header">
+  <div class="access-badge">Poetry Collection</div>
+  <h1>The Book of Names</h1>
+  <p class="subtitle">A completed poetry collection — Eko Svenningsson</p>
+  <div class="meta-row">
+    <span>Complete</span>
+    <span>Publication-ready</span>
+    <span>English</span>
+    <span>Berlin</span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <!-- THREE ARTIFACTS -->
+  <div class="artifacts">
+    <div class="artifact">
+      <span class="artifact-symbol">〜</span>
+      <span class="artifact-name">Water</span>
+      <p class="artifact-desc">Baptism · Transformation · The moment before the name exists</p>
+    </div>
+    <div class="artifact">
+      <span class="artifact-symbol">◻</span>
+      <span class="artifact-name">Mirror</span>
+      <p class="artifact-desc">Reflection · Witness · What remains when the face turns away</p>
+    </div>
+    <div class="artifact">
+      <span class="artifact-symbol">✒</span>
+      <span class="artifact-name">Pen</span>
+      <p class="artifact-desc">Inscription · Creation · The act that refuses disappearance</p>
+    </div>
+  </div>
+
+  <!-- PROLOGUE -->
+  <span class="section-label">Prologue</span>
+  <div class="prologue">
+
+    <p class="dropcap">Every name is an act of preservation. To name is to insist on existence — to place a marker in the world that says: <em>this person was here, and I witnessed it</em>. The Book of Names began from a simple fear: that people disappear not because they die, but because no one holds them in language long enough for the shape of them to survive.</p>
+
+    <p>This collection operates on what I have come to call the <em>inverse-Pessoa</em> principle. Where Pessoa dispersed himself outward into many voices, I gather multiple voices inward — through unified narration, through the act of naming — to prevent disappearance. Each poem is a stay against forgetting. Each name placed in these pages becomes, in some small way, permanent.</p>
+
+    <p>Berlin is the ground on which this happens. Not because Berlin is special, though it is — but because it is the city in which I learned to witness. Its streets taught me that the irreversible exists everywhere: in the light that falls on Bergmannstraße at exactly 4 PM in October, in the canal at Urbanhafen that holds the sky without apology, in the faces of people who have decided to become exactly who they are and have nowhere left to hide.</p>
+
+    <span class="rule">✦</span>
+
+    <p>The collection moves through three artifacts: <em>Water</em>, which holds the moment before a name is given — baptism, transformation, the body before language; <em>Mirror</em>, which is the act of witnessing — to be seen is to be preserved, to see is to take on responsibility; and <em>Pen</em>, which is inscription itself — the irreversible act, the analog commitment, the mark that cannot be taken back.</p>
+
+    <p>These are not metaphors used decoratively. They are structural elements — the architecture that holds the collection together the way a building holds its inhabitants. Form and content cohere, or the poems fail. That is the discipline this work required.</p>
+
+    <blockquote>
+      To name the living is love.<br/>
+      To name the gone is the only form of resurrection<br/>
+      that does not require belief in anything<br/>
+      except language, and the willingness<br/>
+      to use it precisely.
+    </blockquote>
+
+    <p>What follows is a selection of poems from the collection. The full manuscript is publication-ready and available for submission inquiries.</p>
+
+    <span class="rule">✦</span>
+  </div>
+
+  <!-- SAMPLE POEMS -->
+  <span class="section-label">From the Collection</span>
+  <div class="poems">
+
+    <div class="poem">
+      <h2 class="poem-title">I. Richie Goldfinger</h2>
+      <p class="poem-subtitle">Water — i</p>
+      <div class="poem-body">
+        <div class="stanza">
+          <p>I write your name into the city</p>
+          <p>the way water writes itself into stone —</p>
+          <p>not decorating, not claiming,</p>
+          <p>just finding the path</p>
+          <p>that was always there.</p>
+        </div>
+        <div class="stanza">
+          <p>Richie. The name lands differently</p>
+          <p>than it did when you were carrying it.</p>
+          <p>Now it belongs to the air</p>
+          <p>and to whoever reads this.</p>
+        </div>
+        <div class="stanza">
+          <p>That is what I mean by preservation:</p>
+          <p>not that you are saved</p>
+          <p>but that you are <em>placed</em> —</p>
+          <p>in language, in light,</p>
+          <p>in the irreversible fact</p>
+          <p>of having been witnessed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poem">
+      <h2 class="poem-title">XI. Cath at Urbanhafen</h2>
+      <p class="poem-subtitle">Mirror — iii</p>
+      <div class="poem-body">
+        <div class="stanza">
+          <p>The canal holds everything</p>
+          <p>without preference.</p>
+          <p>You leaned over the railing</p>
+          <p>and it held you too —</p>
+          <p>your face, inverted,</p>
+          <p>steadier than you felt.</p>
+        </div>
+        <div class="stanza">
+          <p>I watched you watch yourself.</p>
+          <p>That is the whole poem.</p>
+          <p>The rest is just</p>
+          <p>what I remember of the light.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="poem">
+      <h2 class="poem-title">XXIV. The Golden Pen</h2>
+      <p class="poem-subtitle">Pen — xii</p>
+      <div class="poem-body">
+        <div class="stanza">
+          <p>There is no undoing the mark.</p>
+          <p>That is the point of the pen —</p>
+          <p>not permanence as monument</p>
+          <p>but permanence as commitment:</p>
+          <p>I was here, I saw you,</p>
+          <p>I chose not to look away.</p>
+        </div>
+        <div class="stanza">
+          <p>Every name in this book</p>
+          <p>is a line pressed into paper</p>
+          <p>hard enough to bruise.</p>
+          <p>Not for decoration.</p>
+          <p>For record.</p>
+        </div>
+        <div class="stanza">
+          <p>The golden pen does not shine.</p>
+          <p>It works.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="inquiry-note">
+    <p>
+      <em>The Book of Names</em> is complete and publication-ready.
+      For submission inquiries, press requests, or to discuss representation:
+      <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a>
+    </p>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+</body>
+</html>
