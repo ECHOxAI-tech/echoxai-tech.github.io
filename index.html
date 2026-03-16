@@ -61,9 +61,9 @@
       inset: 0;
       background: linear-gradient(
         to bottom,
-        rgba(8,8,6,0.55) 0%,
-        rgba(8,8,6,0.45) 40%,
-        rgba(8,8,6,0.85) 85%,
+        rgba(8,8,6,0.65) 0%,
+        rgba(8,8,6,0.55) 40%,
+        rgba(8,8,6,0.9) 85%,
         rgba(8,8,6,1) 100%
       );
     }
@@ -88,26 +88,29 @@
       letter-spacing: 0.4em;
       color: var(--gold);
       margin-bottom: 2rem;
-      opacity: 0.8;
+      opacity: 1;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.8);
     }
 
     .hero-name {
       font-family: 'IM Fell English', serif;
       font-size: clamp(3rem, 10vw, 7rem);
       font-weight: 400;
-      color: var(--off-white);
+      color: #ffffff;
       line-height: 0.9;
       letter-spacing: 0.02em;
       margin-bottom: 1.2rem;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.7);
     }
 
     .hero-sub {
       font-size: clamp(0.8rem, 2vw, 1rem);
-      color: var(--muted);
+      color: var(--bone);
       letter-spacing: 0.25em;
       text-transform: uppercase;
       font-family: 'Inconsolata', monospace;
       margin-bottom: 3rem;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.9);
     }
 
     .hero-rule {
@@ -119,11 +122,12 @@
 
     .hero-tagline {
       font-size: clamp(0.95rem, 2.5vw, 1.15rem);
-      color: var(--bone);
+      color: #ffffff;
       font-style: italic;
       line-height: 1.7;
       max-width: 420px;
       margin: 0 auto 3.5rem;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.95);
     }
 
     .hero-scroll {
