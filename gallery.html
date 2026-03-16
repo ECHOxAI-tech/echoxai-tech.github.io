@@ -11,44 +11,44 @@
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;--gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#6e6a64;--rule:rgba(184,150,62,0.2)}
-    html{font-size:16px}
+    html{font-size:20px}
     body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
     nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
     .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
     .nav-links{display:flex;gap:2rem;list-style:none}
-    .nav-links a{font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-links a{font-family:'Inconsolata',monospace;font-size:1.1rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
     .nav-links a:hover,.nav-links a.active{color:var(--gold)}
     @media(max-width:600px){.nav-links{display:none}}
     .page-header{padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid var(--rule)}
-    .page-label{font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.25em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
+    .page-label{font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.25em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
     .page-title{font-family:'IM Fell English',serif;font-size:clamp(2.2rem,6vw,4rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
-    .page-sub{font-size:.9rem;color:var(--muted);font-style:italic;max-width:500px;margin:0 auto 1.5rem;line-height:1.7}
-    .process-note{display:inline-flex;align-items:center;gap:.6rem;font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-dim);border:1px solid var(--rule);padding:.5rem 1.2rem}
+    .page-sub{font-size:1.1rem;color:var(--muted);font-style:italic;max-width:500px;margin:0 auto 1.5rem;line-height:1.7}
+    .process-note{display:inline-flex;align-items:center;gap:.6rem;font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-dim);border:1px solid var(--rule);padding:.5rem 1.2rem}
     .process-note::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
     .wrapper{max-width:1100px;margin:0 auto;padding:0 2rem}
-    .section-label{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+    .section-label{font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
     .sample-note{background:var(--near);border:1px solid #1a1a16;padding:1.4rem 2rem;margin:3rem 0 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-    .sample-note p{font-size:.85rem;color:var(--muted);font-style:italic;line-height:1.6}
+    .sample-note p{font-size:1.1rem;color:var(--muted);font-style:italic;line-height:1.6}
     .sample-note strong{color:var(--bone);font-weight:400;font-style:normal}
     .sample-note a{color:var(--gold-dim);text-decoration:none}
-    .sample-count{font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--gold-dim);text-transform:uppercase;white-space:nowrap}
+    .sample-count{font-family:'Inconsolata',monospace;font-size:1.1rem;letter-spacing:.15em;color:var(--gold-dim);text-transform:uppercase;white-space:nowrap}
     #lightbox{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,8,6,.97);align-items:center;justify-content:center;padding:2rem;flex-direction:column;gap:1rem}
     #lightbox.open{display:flex}
     #lightbox img{max-width:88vw;max-height:82vh;object-fit:contain;border:18px solid #f5f2ec;border-bottom-width:48px;box-shadow:0 8px 40px rgba(0,0,0,0.8)}
-    .lb-close{position:fixed;top:1.5rem;right:2rem;font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
+    .lb-close{position:fixed;top:1.5rem;right:2rem;font-family:'Inconsolata',monospace;font-size:1.1rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .2s}
     .lb-close:hover{color:var(--gold)}
-    .lb-caption{font-family:'Inconsolata',monospace;font-size:.62rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:center}
+    .lb-caption{font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;text-align:center}
     .lb-nav{position:fixed;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;width:100%;padding:0 1rem;pointer-events:none}
-    .lb-arrow{background:none;border:1px solid #2a2a26;color:var(--muted);font-family:'Inconsolata',monospace;font-size:.65rem;letter-spacing:.15em;padding:.6rem 1rem;cursor:pointer;pointer-events:all;transition:all .2s}
+    .lb-arrow{background:none;border:1px solid #2a2a26;color:var(--muted);font-family:'Inconsolata',monospace;font-size:1.1rem;letter-spacing:.15em;padding:.6rem 1rem;cursor:pointer;pointer-events:all;transition:all .2s}
     .lb-arrow:hover{border-color:var(--gold-dim);color:var(--gold)}
     .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
     .photo-cell{background:var(--near);aspect-ratio:1;position:relative;overflow:hidden;cursor:pointer}
     .photo-cell.wide{aspect-ratio:1}
-    .photo-cell img{width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block;filter:saturate(.82) contrast(1.04);transition:filter .35s ease,transform .45s ease;transform:scale(1.38)}
-    .photo-cell:hover img{filter:saturate(1) contrast(1.04);transform:scale(1.42)}
+    .photo-cell img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;filter:saturate(.82) contrast(1.04);transition:filter .35s ease,transform .45s ease;transform:scale(1.65)}
+    .photo-cell:hover img{filter:saturate(1) contrast(1.04);transform:scale(1.70)}
     .cell-hover{position:absolute;inset:0;background:rgba(8,8,6,.55);display:flex;align-items:flex-end;padding:.8rem 1rem;opacity:0;transition:opacity .3s ease}
     .photo-cell:hover .cell-hover{opacity:1}
-    .cell-text{font-family:'Inconsolata',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);line-height:1.4}
+    .cell-text{font-family:'Inconsolata',monospace;font-size:1rem;letter-spacing:.1em;text-transform:uppercase;color:var(--bone);line-height:1.4}
     .projects-section{padding:5rem 0 2rem;border-top:1px solid var(--rule);margin-top:4rem}
     .projects-intro{max-width:620px;margin-bottom:3rem}
     .projects-intro p{font-size:1rem;line-height:1.85;color:var(--bone);margin-bottom:1em}
@@ -58,22 +58,22 @@
     .project-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .4s ease}
     .project-card:hover::after{width:100%}
     .project-card:hover{background:var(--near)}
-    .project-status{font-family:'Inconsolata',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;display:inline-block}
+    .project-status{font-family:'Inconsolata',monospace;font-size:1rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;display:inline-block}
     .project-status.complete{color:#5a8a6a}
     .project-status.development{color:var(--gold-dim)}
     .project-status.ongoing{color:#6a7a9a}
     .project-title{font-family:'IM Fell English',serif;font-size:1.2rem;color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:.5rem}
-    .project-medium{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.12em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.2rem}
-    .project-desc{font-size:.9rem;color:var(--muted);line-height:1.75}
+    .project-medium{font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.12em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.2rem}
+    .project-desc{font-size:1.1rem;color:var(--muted);line-height:1.75}
     .statement{padding:4rem 0;border-top:1px solid var(--rule);max-width:620px}
     .statement p{font-size:1rem;line-height:1.85;color:var(--bone);margin-bottom:1.2em}
     .statement a{color:var(--gold-dim);text-decoration:none}
     footer{border-top:1px solid var(--rule);padding:2.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
     .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
     .footer-links{display:flex;gap:1.5rem;list-style:none}
-    .footer-links a{font-family:'Inconsolata',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:1.05rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
     .footer-links a:hover{color:var(--gold)}
-    .footer-copy{font-family:'Inconsolata',monospace;font-size:.58rem;color:#2a2a26;width:100%}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:.74rem;color:#2a2a26;width:100%}
     @media(max-width:700px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
   </style>
 </head>
