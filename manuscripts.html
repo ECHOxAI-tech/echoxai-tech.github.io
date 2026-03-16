@@ -1,852 +1,352 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manuscripts — ECHOx / Eko Svenningsson</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manuscripts — ECHOx</title>
+  <meta name="description" content="Manuscripts by Eko Svenningsson / ECHOx. Fiction, theater, philosophy. Berlin."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
   <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     :root {
-      --black: #0a0a08;
-      --off-white: #f0ece3;
-      --bone: #d4cfc4;
-      --gold: #b8963e;
-      --gold-dim: #7a6128;
-      --red: #8b1a1a;
-      --text: #e8e3d8;
-      --muted: #7a7670;
-      --rule: rgba(184, 150, 62, 0.25);
+      --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+      --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
+      --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
+    }
+    html { font-size:16px; }
+    body {
+      background:var(--black); color:var(--text);
+      font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+      min-height:100vh;
     }
 
-```
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-html { font-size: 16px; }
-
-body {
-  background: var(--black);
-  color: var(--text);
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 300;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ─── GATE ─────────────────────────────────────────────── */
-#gate {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: var(--black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  transition: opacity 0.8s ease, visibility 0.8s ease;
-}
-
-#gate.dismissed {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.gate-inner {
-  max-width: 520px;
-  width: 100%;
-  text-align: center;
-}
-
-.gate-sigil {
-  font-family: 'IM Fell English', serif;
-  font-size: 2rem;
-  color: var(--gold);
-  letter-spacing: 0.3em;
-  margin-bottom: 2.5rem;
-  display: block;
-}
-
-.gate-title {
-  font-family: 'IM Fell English', serif;
-  font-size: clamp(1.4rem, 4vw, 2rem);
-  color: var(--off-white);
-  line-height: 1.3;
-  margin-bottom: 1.5rem;
-}
-
-.gate-body {
-  font-size: 0.95rem;
-  color: var(--muted);
-  line-height: 1.8;
-  margin-bottom: 2.5rem;
-  font-style: italic;
-}
-
-.gate-rule {
-  width: 60px;
-  height: 1px;
-  background: var(--rule);
-  margin: 0 auto 2rem;
-}
-
-.gate-warning {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  color: var(--gold-dim);
-  text-transform: uppercase;
-  margin-bottom: 2rem;
-  line-height: 1.7;
-}
-
-.gate-btn {
-  display: inline-block;
-  padding: 0.85rem 2.5rem;
-  border: 1px solid var(--gold-dim);
-  background: transparent;
-  color: var(--gold);
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 0.4rem;
-}
-
-.gate-btn:hover {
-  background: var(--gold);
-  color: var(--black);
-  border-color: var(--gold);
-}
-
-.gate-btn.secondary {
-  border-color: #333;
-  color: var(--muted);
-}
-
-.gate-btn.secondary:hover {
-  background: #1a1a18;
-  color: var(--text);
-  border-color: #555;
-}
-
-/* ─── MAIN LAYOUT ───────────────────────────────────────── */
-#main {
-  opacity: 0;
-  transition: opacity 1s ease 0.3s;
-}
-
-#main.visible { opacity: 1; }
-
-/* ─── HEADER ────────────────────────────────────────────── */
-header {
-  padding: 4rem 2rem 3rem;
-  text-align: center;
-  border-bottom: 1px solid var(--rule);
-  position: relative;
-}
-
-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, transparent, var(--gold-dim));
-}
-
-.site-name {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
-
-.site-name a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.site-name a:hover { color: var(--off-white); }
-
-h1 {
-  font-family: 'IM Fell English', serif;
-  font-size: clamp(1.8rem, 5vw, 3rem);
-  font-weight: 400;
-  color: var(--off-white);
-  line-height: 1.2;
-  margin-bottom: 1rem;
-}
-
-.header-sub {
-  font-size: 0.9rem;
-  color: var(--muted);
-  font-style: italic;
-  letter-spacing: 0.05em;
-}
-
-/* ─── CONTENT WRAPPER ───────────────────────────────────── */
-.wrapper {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-/* ─── MANUSCRIPT CARD ───────────────────────────────────── */
-.manuscript-card {
-  padding: 4rem 0 3rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.ms-header {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 2rem;
-  align-items: start;
-  margin-bottom: 2.5rem;
-}
-
-.ms-label {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  color: var(--gold-dim);
-  text-transform: uppercase;
-  margin-bottom: 0.6rem;
-}
-
-.ms-title {
-  font-family: 'IM Fell English', serif;
-  font-size: clamp(1.5rem, 4vw, 2.2rem);
-  color: var(--off-white);
-  line-height: 1.2;
-  margin-bottom: 0.4rem;
-}
-
-.ms-subtitle {
-  font-size: 0.9rem;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.ms-meta {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.7rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  line-height: 2;
-  text-align: right;
-}
-
-.ms-meta span {
-  display: block;
-}
-
-.ms-excerpt {
-  font-size: 1rem;
-  line-height: 1.9;
-  color: var(--bone);
-  margin-bottom: 2rem;
-  max-width: 640px;
-  font-style: italic;
-  border-left: 1px solid var(--rule);
-  padding-left: 1.5rem;
-}
-
-.ms-actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 2.5rem;
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.8rem;
-  background: var(--gold);
-  color: var(--black);
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: all 0.25s ease;
-}
-
-.btn-primary:hover {
-  background: var(--off-white);
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.8rem;
-  background: transparent;
-  color: var(--text);
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid #333;
-  transition: all 0.25s ease;
-}
-
-.btn-secondary:hover {
-  border-color: var(--muted);
-  color: var(--off-white);
-}
-
-.btn-icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.8;
-}
-
-/* ─── READER ─────────────────────────────────────────────── */
-.reader-toggle {
-  display: none;
-}
-
-.reader-container {
-  display: none;
-  background: #0e0e0c;
-  border: 1px solid #1e1e1a;
-  margin-top: 0.5rem;
-}
-
-.reader-container.open {
-  display: block;
-  animation: slideDown 0.4s ease;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.reader-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.8rem 1.5rem;
-  border-bottom: 1px solid #1e1e1a;
-  background: #0a0a08;
-}
-
-.reader-toolbar-title {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  color: var(--gold-dim);
-  text-transform: uppercase;
-}
-
-.reader-controls {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.ctrl-btn {
-  background: none;
-  border: 1px solid #2a2a26;
-  color: var(--muted);
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  padding: 0.3rem 0.7rem;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-}
-
-.ctrl-btn:hover {
-  border-color: var(--gold-dim);
-  color: var(--text);
-}
-
-.reader-body {
-  padding: 3rem 4rem;
-  max-height: 75vh;
-  overflow-y: auto;
-  font-size: var(--reader-size, 1rem);
-  line-height: 1.85;
-  color: #ccc7bc;
-  scroll-behavior: smooth;
-}
-
-.reader-body::-webkit-scrollbar {
-  width: 4px;
-}
-
-.reader-body::-webkit-scrollbar-track {
-  background: #0a0a08;
-}
-
-.reader-body::-webkit-scrollbar-thumb {
-  background: #2a2a26;
-}
-
-/* ─── READER TYPOGRAPHY ─────────────────────────────────── */
-.reader-body h1 {
-  font-family: 'IM Fell English', serif;
-  font-size: 1.6em;
-  color: var(--off-white);
-  margin: 2.5em 0 1em;
-  font-weight: 400;
-  text-align: center;
-  letter-spacing: 0.04em;
-}
-
-.reader-body h2 {
-  font-family: 'IM Fell English', serif;
-  font-size: 1.2em;
-  color: var(--bone);
-  margin: 2em 0 0.8em;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-}
-
-.reader-body h3 {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.7em;
-  color: var(--gold-dim);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin: 2em 0 0.6em;
-}
-
-.reader-body p {
-  margin-bottom: 1.2em;
-  text-align: justify;
-  hyphens: auto;
-}
-
-.reader-body .dropcap::first-letter {
-  font-family: 'IM Fell English', serif;
-  font-size: 3.5em;
-  float: left;
-  line-height: 0.75;
-  margin: 0.1em 0.12em 0 0;
-  color: var(--gold);
-}
-
-.reader-body .epigraph {
-  margin: 2em 3em;
-  font-style: italic;
-  color: var(--muted);
-  font-size: 0.92em;
-  border-left: 1px solid var(--rule);
-  padding-left: 1.2em;
-}
-
-.reader-body .epigraph cite {
-  display: block;
-  margin-top: 0.5em;
-  font-size: 0.85em;
-  color: var(--gold-dim);
-  font-style: normal;
-  font-family: 'Inconsolata', monospace;
-  letter-spacing: 0.08em;
-}
-
-.reader-body .section-rule {
-  text-align: center;
-  margin: 2.5em 0;
-  color: var(--gold-dim);
-  font-size: 1.1em;
-  letter-spacing: 0.4em;
-}
-
-.reader-body .toc {
-  background: #0a0a08;
-  border: 1px solid #1e1e1a;
-  padding: 2em 2.5em;
-  margin: 2em 0;
-}
-
-.reader-body .toc h3 {
-  margin-bottom: 1.2em;
-}
-
-.reader-body .toc-entry {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.25em 0;
-  border-bottom: 1px solid #1a1a16;
-  font-size: 0.88em;
-  color: var(--muted);
-}
-
-.reader-body .toc-entry:last-child { border-bottom: none; }
-
-.reader-body .toc-entry .toc-title {
-  color: var(--text);
-}
-
-.reader-body .toc-book {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.65em;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--gold-dim);
-  margin: 1.2em 0 0.4em;
-}
-
-.reader-body .book-divider {
-  text-align: center;
-  margin: 3em 0;
-  color: var(--gold-dim);
-}
-
-.reader-body .copyright-block {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.72em;
-  color: var(--muted);
-  line-height: 1.9;
-  border-top: 1px solid #1e1e1a;
-  padding-top: 1.5em;
-  margin-top: 2em;
-}
-
-.reader-body .dedication {
-  text-align: center;
-  margin: 3em auto;
-  max-width: 380px;
-  font-style: italic;
-  color: var(--bone);
-  line-height: 2;
-}
-
-/* ─── FOOTER ─────────────────────────────────────────────── */
-footer {
-  padding: 3rem 2rem;
-  text-align: center;
-  border-top: 1px solid var(--rule);
-}
-
-.footer-logo {
-  font-family: 'IM Fell English', serif;
-  font-size: 1.1rem;
-  color: var(--gold-dim);
-  letter-spacing: 0.2em;
-  margin-bottom: 1rem;
-}
-
-.footer-links {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.footer-links a {
-  font-family: 'Inconsolata', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover { color: var(--gold); }
-
-.footer-copy {
-  font-size: 0.75rem;
-  color: #3a3a36;
-  font-family: 'Inconsolata', monospace;
-}
-
-/* ─── RESPONSIVE ─────────────────────────────────────────── */
-@media (max-width: 640px) {
-  .ms-header { grid-template-columns: 1fr; }
-  .ms-meta { text-align: left; }
-  .reader-body { padding: 1.5rem 1.2rem; }
-  .ms-actions { flex-direction: column; }
-  .btn-primary, .btn-secondary { justify-content: center; }
-}
-```
-
+    /* NAV */
+    nav {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2.5rem;
+      border-bottom:1px solid var(--rule);
+      background:var(--black);
+      position:sticky; top:0; z-index:50;
+    }
+    .nav-logo { font-family:'IM Fell English',serif; font-size:1.1rem; color:var(--gold); text-decoration:none; }
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--gold); }
+    @media(max-width:600px){
+      .nav-links { display:none; }
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding:5rem 2rem 3rem;
+      text-align:center;
+      border-bottom:1px solid var(--rule);
+    }
+    .page-label {
+      font-family:'Inconsolata',monospace; font-size:0.62rem;
+      letter-spacing:0.25em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:1rem;
+    }
+    .page-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(2rem,6vw,3.5rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.1; margin-bottom:1rem;
+    }
+    .page-sub {
+      font-size:0.9rem; color:var(--muted); font-style:italic;
+      letter-spacing:0.06em; max-width:480px; margin:0 auto;
+    }
+
+    /* WRAPPER */
+    .wrapper { max-width:820px; margin:0 auto; padding:0 2rem; }
+
+    /* MANUSCRIPT ENTRY */
+    .ms-entry {
+      padding:4rem 0;
+      border-bottom:1px solid var(--rule);
+      display:grid;
+      grid-template-columns:1fr 180px;
+      gap:3rem;
+      align-items:start;
+    }
+    .ms-entry:last-child { border-bottom:none; }
+
+    .ms-num {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.2em; color:var(--gold-dim);
+      text-transform:uppercase; margin-bottom:0.6rem;
+    }
+    .ms-title {
+      font-family:'IM Fell English',serif;
+      font-size:clamp(1.4rem,3.5vw,2rem);
+      color:var(--off-white); font-weight:400;
+      line-height:1.15; margin-bottom:0.3rem;
+    }
+    .ms-subtitle {
+      font-size:0.88rem; color:var(--muted); font-style:italic;
+      margin-bottom:1.5rem;
+    }
+    .ms-sample {
+      font-size:0.98rem; line-height:1.85; color:var(--bone);
+      border-left:1px solid var(--rule); padding-left:1.4rem;
+      margin-bottom:1.5rem; font-style:italic;
+    }
+    .ms-desc {
+      font-size:0.92rem; line-height:1.75; color:var(--muted);
+      margin-bottom:2rem;
+    }
+
+    .ms-tag {
+      display:inline-block;
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      border:1px solid #222; color:var(--muted);
+      padding:0.25rem 0.7rem; margin:0.2rem 0.2rem 0.2rem 0;
+    }
+    .ms-tag.adult { border-color:rgba(139,26,26,0.4); color:#8b1a1a; }
+    .ms-tag.invitation { border-color:var(--gold-dim); color:var(--gold-dim); }
+
+    /* SIDEBAR */
+    .ms-sidebar {
+      text-align:right;
+    }
+    .ms-meta {
+      font-family:'Inconsolata',monospace; font-size:0.65rem;
+      color:var(--muted); letter-spacing:0.1em; line-height:2.2;
+    }
+    .ms-meta strong { display:block; color:var(--text); font-weight:400; }
+
+    .btn-access {
+      display:block; margin-top:2rem;
+      padding:0.8rem 1.2rem;
+      border:1px solid var(--gold-dim);
+      background:transparent; color:var(--gold);
+      font-family:'Inconsolata',monospace; font-size:0.68rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      text-decoration:none; text-align:center;
+      transition:all 0.25s ease; cursor:pointer;
+    }
+    .btn-access:hover { background:var(--gold); color:var(--black); }
+
+    .btn-locked {
+      display:block; margin-top:0.6rem;
+      padding:0.8rem 1.2rem;
+      border:1px solid #222;
+      background:transparent; color:var(--muted);
+      font-family:'Inconsolata',monospace; font-size:0.68rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      text-align:center;
+    }
+
+    /* INVITATION NOTE */
+    .invitation-note {
+      background:var(--near);
+      border:1px solid #1a1a16;
+      padding:2.5rem 2rem;
+      margin:2rem 0 4rem;
+      text-align:center;
+    }
+    .invitation-note p {
+      font-size:0.88rem; color:var(--muted); line-height:1.8;
+      font-style:italic;
+    }
+    .invitation-note a {
+      color:var(--gold-dim); text-decoration:none;
+    }
+    .invitation-note a:hover { color:var(--gold); }
+
+    /* FOOTER */
+    footer {
+      border-top:1px solid var(--rule);
+      padding:2.5rem 2.5rem;
+      display:flex; justify-content:space-between; align-items:center;
+      flex-wrap:wrap; gap:1rem;
+    }
+    .footer-logo { font-family:'IM Fell English',serif; font-size:1rem; color:var(--gold-dim); }
+    .footer-links { display:flex; gap:1.5rem; list-style:none; }
+    .footer-links a {
+      font-family:'Inconsolata',monospace; font-size:0.6rem;
+      letter-spacing:0.15em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none; transition:color 0.2s;
+    }
+    .footer-links a:hover { color:var(--gold); }
+    .footer-copy {
+      font-family:'Inconsolata',monospace; font-size:0.58rem;
+      color:#2a2a26; width:100%;
+    }
+
+    @media(max-width:640px){
+      .ms-entry { grid-template-columns:1fr; gap:2rem; }
+      .ms-sidebar { text-align:left; }
+      .btn-access, .btn-locked { display:inline-block; margin-right:0.5rem; }
+    }
   </style>
 </head>
 <body>
 
-<!-- ─── CONTENT GATE ───────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="nav-logo">ECHOx</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="manuscripts.html" class="active">Manuscripts</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="https://github.com/echox-se" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </nav>
 
-<div id="gate">
-  <div class="gate-inner">
-    <span class="gate-sigil">✦</span>
-    <h2 class="gate-title">This archive contains adult material</h2>
-    <div class="gate-rule"></div>
-    <p class="gate-body">
-      The manuscripts hosted here engage seriously with adult themes — 
-      philosophy, theology, and explicit content — in the spirit of intellectual 
-      and literary inquiry. They are not intended for readers under 18.
-    </p>
-    <p class="gate-warning">
-      By entering you confirm you are 18 or older<br />
-      and consent to viewing this material.
-    </p>
-    <div>
-      <button class="gate-btn" onclick="enterArchive()">Enter the Archive</button>
-      <button class="gate-btn secondary" onclick="window.history.back()">Leave</button>
-    </div>
+  <div class="page-header">
+    <p class="page-label">Archive</p>
+    <h1 class="page-title">Manuscripts</h1>
+    <p class="page-sub">Three works in progress and completion. Full texts available by invitation.</p>
   </div>
-</div>
-
-<!-- ─── MAIN ───────────────────────────────────────────────────────────────── -->
-
-<div id="main">
-
-  <header>
-    <p class="site-name"><a href="/">ECHOx — Eko Svenningsson</a></p>
-    <h1>Manuscripts</h1>
-    <p class="header-sub">Berlin. Writing. The irreversible frame.</p>
-  </header>
 
   <div class="wrapper">
 
-```
-<!-- ─── THE DARK HIERARCHY ─── -->
-<div class="manuscript-card">
+    <!-- C1: THE ALEXANDER CIPHER -->
+    <div class="ms-entry">
+      <div>
+        <p class="ms-num">01 — Literary Thriller</p>
+        <h2 class="ms-title">The Alexander Cipher</h2>
+        <p class="ms-subtitle">A novel</p>
 
-  <div class="ms-header">
-    <div>
-      <p class="ms-label">Manuscript № 001</p>
-      <h2 class="ms-title">The Dark Hierarchy</h2>
-      <p class="ms-subtitle">A Treatise on Authority, Initiation, and the Order</p>
-    </div>
-    <div class="ms-meta">
-      <span>Echo Kronborg</span>
-      <span>Berlin</span>
-      <span>v6.1</span>
-      <span>Adult content</span>
-    </div>
-  </div>
+        <p class="ms-sample">
+          "Emma did not let her breath change. Breath was the oldest tell."
+        </p>
 
-  <p class="ms-excerpt">
-    "This book is not a confession. It is version control."
-  </p>
+        <p class="ms-desc">
+          Twins separated at birth, engineered into forbidden intimacy by a centuries-old 
+          harvesting system. A museum conservator. A set of paired names repeated across 
+          two millennia of recorded history. A trust that has been moving money — and people — 
+          since 1893.
+        </p>
+        <p class="ms-desc">
+          Literary thriller. New York, present day. The mechanism inside words.
+        </p>
 
-  <div class="ms-actions">
-    <a class="btn-primary" href="the_dark_hierarchy_v61.pdf" download>
-      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-      Download PDF
-    </a>
-    <button class="btn-secondary" onclick="toggleReader('dh')">
-      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-      <span id="dh-reader-label">Read Online</span>
-    </button>
-  </div>
+        <span class="ms-tag">Novel</span>
+        <span class="ms-tag">Literary fiction</span>
+        <span class="ms-tag">Thriller</span>
+        <span class="ms-tag invitation">By invitation</span>
+      </div>
 
-  <!-- READER -->
-  <div id="dh-reader" class="reader-container">
-    <div class="reader-toolbar">
-      <span class="reader-toolbar-title">The Dark Hierarchy — Echo Kronborg</span>
-      <div class="reader-controls">
-        <button class="ctrl-btn" onclick="adjustFont('dh', -1)">A−</button>
-        <button class="ctrl-btn" onclick="adjustFont('dh', 1)">A+</button>
-        <button class="ctrl-btn" onclick="toggleReader('dh')">Close</button>
+      <div class="ms-sidebar">
+        <div class="ms-meta">
+          <strong>v151</strong>
+          Complete manuscript
+          <strong>~395 pp.</strong>
+          English
+        </div>
+        <a class="btn-access" href="cipher-7f3a9d.html">Read sample</a>
+        <div class="btn-locked">Full text — invite only</div>
       </div>
     </div>
-    <div id="dh-reader-body" class="reader-body">
 
-      <h1>The Dark Hierarchy</h1>
-      <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.75em; letter-spacing:0.15em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.5em;">A Treatise on Authority, Initiation, and the Order</p>
-      <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.72em; color:var(--muted); margin-bottom:3em;">Echo Kronborg — Berlin</p>
+    <!-- C2: THE DARK HIERARCHY -->
+    <div class="ms-entry">
+      <div>
+        <p class="ms-num">02 — Philosophy / Theology</p>
+        <h2 class="ms-title">The Dark Hierarchy</h2>
+        <p class="ms-subtitle">A Treatise on Authority, Initiation, and the Order — Echo Kronborg</p>
 
-      <div class="copyright-block">
-        The Dark Hierarchy — First edition — Berlin<br />
-        All rights reserved. No part of this publication may be reproduced, stored in a retrieval
-        system, or transmitted in any form or by any means — electronic, mechanical,
-        photocopying, recording, or otherwise — without the prior written permission of the author.<br /><br />
-        This work is a philosophical and theological text containing explicit engagement with
-        adult themes and practices. It is intended for adult readers who approach it in the spirit
-        in which it was written: as serious intellectual and spiritual inquiry.<br /><br />
-        © ECHOx / Eko Svenningsson
+        <p class="ms-sample">
+          "This book is not a confession. It is version control."
+        </p>
+
+        <p class="ms-desc">
+          A philosophical and theological treatise on desire, authority, and structured 
+          intimacy — followed past the point where most frameworks stop. Written under 
+          the construct Echo Kronborg. Berlin.
+        </p>
+        <p class="ms-desc">
+          In the tradition of Bataille, Sacher-Masoch, and Nin: the fictional author as 
+          the distance in which truth can be spoken.
+        </p>
+
+        <span class="ms-tag">Philosophy</span>
+        <span class="ms-tag">Theology</span>
+        <span class="ms-tag adult">18+ Adult content</span>
+        <span class="ms-tag invitation">By invitation</span>
       </div>
 
-      <div class="dedication">
-        For the ones who always knew.<br />
-        Who carried it before there was language for it.<br />
-        Who survived the dark night<br />
-        and came back to write it down.<br />
-        <br />
-        ✦<br />
-        <br />
-        And for the one crossing water.
+      <div class="ms-sidebar">
+        <div class="ms-meta">
+          <strong>v6.1</strong>
+          Complete manuscript
+          <strong>276 pp.</strong>
+          English
+        </div>
+        <a class="btn-access" href="hierarchy-2e8b1f.html">Read sample</a>
+        <div class="btn-locked">Full text — invite only</div>
+      </div>
+    </div>
+
+    <!-- C3: ANIARA -->
+    <div class="ms-entry">
+      <div>
+        <p class="ms-num">03 — Theater</p>
+        <h2 class="ms-title">Aniara: The Doors to the Stars</h2>
+        <p class="ms-subtitle">A theatrical work in five movements — freely inspired by Harry Martinson</p>
+
+        <p class="ms-sample">
+          "I hold the helm — though none return.<br/>
+          I ride the drift. I tend her turn."
+        </p>
+
+        <p class="ms-desc">
+          A poetic, theatrically audacious reimagining of Martinson's 1956 epic poem. 
+          Not a conventional adaptation — a metaphysical echo rendered through ritual, 
+          movement, and dream. Strindbergian dream-logic. A lament. A requiem for Earth.
+        </p>
+        <p class="ms-desc">
+          Five movements, two pauses, a sealed door, a toy car. This is not merely 
+          to be performed. It is to be inhabited.
+        </p>
+
+        <span class="ms-tag">Theater</span>
+        <span class="ms-tag">Poetry</span>
+        <span class="ms-tag">Five movements</span>
+        <span class="ms-tag invitation">By invitation</span>
       </div>
 
-      <div class="epigraph">
-        The body was always the philosopher.<br />
-        We simply stopped pretending otherwise.
-        <cite>— Echo Kronborg</cite>
+      <div class="ms-sidebar">
+        <div class="ms-meta">
+          <strong>Complete</strong>
+          Stage production
+          <strong>63 pp.</strong>
+          English
+        </div>
+        <a class="btn-access" href="aniara-4c7e2a.html">Read sample</a>
+        <div class="btn-locked">Full text — invite only</div>
       </div>
-      <div class="epigraph">
-        The sacred and the obscene are the same force.<br />
-        One named in the temple, one named in the dark.<br />
-        Both honest.
-        <cite>— Georges Bataille, adapted</cite>
-      </div>
-      <div class="epigraph">
-        If you want to stand straight:<br />
-        fall on your knees.
-        <cite>— Vilhelm Ekelund</cite>
-      </div>
+    </div>
 
-      <div class="section-rule">✦</div>
-
-      <p style="text-align:center; font-style:italic; color:var(--bone); font-size:1.05em; margin: 2em 0;">
-        This book is not a confession.<br />It is version control.
+    <!-- INVITATION NOTE -->
+    <div class="invitation-note">
+      <p>
+        Full manuscript access is by invitation.<br/>
+        For performance rights, publication inquiries, or access requests:<br/>
+        <a href="mailto:ECHOxPRODUCTION@proton.me">ECHOxPRODUCTION@proton.me</a>
       </p>
-
-      <div class="section-rule">✦</div>
-
-      <div class="toc">
-        <h3>Contents</h3>
-
-        <p class="toc-book">Prologue</p>
-        <div class="toc-entry"><span class="toc-title">On Structure and the Absence of Certainty</span></div>
-
-        <p class="toc-book">Origin</p>
-        <div class="toc-entry"><span class="toc-title">The Naming of Echo</span></div>
-
-        <p class="toc-book">Book I — The Revelation</p>
-        <div class="toc-entry"><span class="toc-title">Fragments</span></div>
-
-        <p class="toc-book">Book II — Prolegomena</p>
-        <div class="toc-entry"><span class="toc-title">The Central Thesis</span></div>
-        <div class="toc-entry"><span class="toc-title">On Method</span></div>
-        <div class="toc-entry"><span class="toc-title">I. The Confusion</span></div>
-        <div class="toc-entry"><span class="toc-title">II. The Trigger</span></div>
-        <div class="toc-entry"><span class="toc-title">III. The Four Expressions</span></div>
-        <div class="toc-entry"><span class="toc-title">IV. Fetishes</span></div>
-        <div class="toc-entry"><span class="toc-title">V. The Great Misunderstandings</span></div>
-        <div class="toc-entry"><span class="toc-title">VI. On Identity</span></div>
-        <div class="toc-entry"><span class="toc-title">VII. How To Read What Follows</span></div>
-
-        <p class="toc-book">Book III — The Theology of Decho</p>
-        <div class="toc-entry"><span class="toc-title">Invocation</span></div>
-        <div class="toc-entry"><span class="toc-title">I–XVIII. Canticles, Rites, and the Gospel of the Body</span></div>
-
-        <p class="toc-book">Book IV — The Dark Hierarchy</p>
-        <div class="toc-entry"><span class="toc-title">Movements I–XX + Codas + Closing Canticle</span></div>
-
-        <p class="toc-book">Book V — The Daily Practice</p>
-        <div class="toc-entry"><span class="toc-title">Six Chapters: Sustaining the Flame through The Order in Practice</span></div>
-
-        <p class="toc-book">Appendices</p>
-        <div class="toc-entry"><span class="toc-title">Glossary · The Canon · The Laws of the Order · The Ten Laws</span></div>
-        <div class="toc-entry"><span class="toc-title">A Note on the Author</span></div>
-      </div>
-
-      <div class="section-rule">✦</div>
-
-      <h2>Prologue: On Structure and the Absence of Certainty</h2>
-
-      <p class="dropcap">This book was written in Berlin, in sections, over several years. It began as a private document — not a theoretical claim but a personal reckoning. The theology came later. The framework arrived after the experience, not before it.</p>
-
-      <p>What follows is structured — deliberately, carefully — but structure is not the same as certainty. The architecture exists to carry something. It is not the thing itself.</p>
-
-      <p>The reader who wants a manual will find partial satisfaction here. The reader who wants a philosophy will find more. The reader who wants to understand what it means to inhabit a specific orientation — to follow it past the point where most frameworks stop — will find what they came for.</p>
-
-      <p>The text does not argue that its claims are universal. It argues that they are precise. Precision is worth more than universality when the subject is desire.</p>
-
-      <div class="section-rule">✦</div>
-
-      <p style="text-align:center; font-family:'Inconsolata',monospace; font-size:0.7em; letter-spacing:0.15em; color: var(--gold-dim); text-transform:uppercase; margin-top: 3em;">
-        — Full text available via PDF download above —
-      </p>
-      <p style="text-align:center; font-size:0.82em; color:var(--muted); font-style:italic; margin-top: 0.5em;">
-        The complete manuscript is 276 pages. This reader displays the opening matter.
-      </p>
-
-      <div class="section-rule" style="margin-top: 3em;">✦</div>
-
-      <div class="copyright-block" style="text-align:center; margin-top:2em;">
-        © ECHOx / Eko Svenningsson — All rights reserved — Berlin
-      </div>
-
     </div>
+
   </div>
-  <!-- /READER -->
-
-</div>
-<!-- /MANUSCRIPT CARD -->
-```
-
-  </div><!-- /wrapper -->
 
   <footer>
-    <p class="footer-logo">ECHOx</p>
-    <div class="footer-links">
-      <a href="/">Home</a>
-      <a href="/terms.html">Terms &amp; Conditions</a>
-    </div>
-    <p class="footer-copy">© Eko Svenningsson — Berlin — All rights reserved</p>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="https://github.com/echox-se" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+    <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — Berlin — All rights reserved</p>
   </footer>
-
-</div><!-- /main -->
-
-<script>
-  // ─── Gate ──────────────────────────────────────────────────────────────────
-  function enterArchive() {
-    document.getElementById('gate').classList.add('dismissed');
-    const main = document.getElementById('main');
-    main.classList.add('visible');
-    sessionStorage.setItem('echox-age-confirmed', '1');
-  }
-
-  // Check if already confirmed this session
-  if (sessionStorage.getItem('echox-age-confirmed')) {
-    document.getElementById('gate').style.display = 'none';
-    document.getElementById('main').classList.add('visible');
-    document.getElementById('main').style.opacity = '1';
-  }
-
-  // ─── Reader toggle ─────────────────────────────────────────────────────────
-  function toggleReader(id) {
-    const container = document.getElementById(id + '-reader');
-    const label = document.getElementById(id + '-reader-label');
-    const isOpen = container.classList.contains('open');
-
-    if (isOpen) {
-      container.classList.remove('open');
-      label.textContent = 'Read Online';
-    } else {
-      container.classList.add('open');
-      label.textContent = 'Close Reader';
-      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  // ─── Font size control ──────────────────────────────────────────────────────
-  const fontSizes = {};
-
-  function adjustFont(id, delta) {
-    const body = document.getElementById(id + '-reader-body');
-    if (!fontSizes[id]) fontSizes[id] = 16;
-    fontSizes[id] = Math.max(12, Math.min(22, fontSizes[id] + delta));
-    body.style.fontSize = fontSizes[id] + 'px';
-  }
-</script>
 
 </body>
 </html>
