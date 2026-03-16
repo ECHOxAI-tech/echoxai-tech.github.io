@@ -15,7 +15,7 @@
       --gold:#b8963e; --gold-dim:#7a6128; --text:#e2ddd2;
       --muted:#6e6a64; --rule:rgba(184,150,62,0.2);
     }
-    html { font-size:16px; }
+    html { font-size:18px; }
     body { background:var(--black); color:var(--text); font-family:'Cormorant Garamond',Georgia,serif; font-weight:300; }
 
     nav { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 2.5rem; border-bottom:1px solid var(--rule); background:var(--black); position:sticky; top:0; z-index:50; }
@@ -27,7 +27,7 @@
     .access-badge { display:inline-flex; align-items:center; gap:0.5rem; font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:1.5rem; }
     .access-badge::before { content:''; display:block; width:6px; height:6px; border-radius:50%; background:var(--gold-dim); }
     h1 { font-family:'IM Fell English',serif; font-size:clamp(1.8rem,5vw,3rem); color:var(--off-white); font-weight:400; line-height:1.1; margin-bottom:0.3rem; }
-    .subtitle { font-size:0.95rem; color:var(--muted); font-style:italic; margin-bottom:0.4rem; }
+    .subtitle { font-size:1.05rem; color:var(--muted); font-style:italic; margin-bottom:0.4rem; }
     .author-line { font-family:'Inconsolata',monospace; font-size:0.65rem; letter-spacing:0.15em; color:var(--gold-dim); margin-bottom:2rem; }
     .meta-row { display:flex; gap:2.5rem; flex-wrap:wrap; font-family:'Inconsolata',monospace; font-size:0.65rem; letter-spacing:0.1em; color:var(--muted); }
     .meta-row span { border-left:1px solid var(--rule); padding-left:0.8rem; }
@@ -54,7 +54,7 @@
 
     .movements-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:2.5rem 0; }
     .movement { background:var(--black); padding:1.2rem 1.4rem; }
-    .movement-num { font-family:'Inconsolata',monospace; font-size:0.55rem; letter-spacing:0.15em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.3rem; }
+    .movement-num { font-family:'Inconsolata',monospace; font-size:0.68rem; letter-spacing:0.15em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.3rem; }
     .movement-title { font-size:0.82rem; color:var(--muted); }
 
     .rights-note { background:var(--near); border:1px solid #1a1a16; padding:1.8rem 2rem; margin:2rem 0; }
@@ -85,7 +85,7 @@
     .footer-links { display:flex; gap:1.5rem; list-style:none; }
     .footer-links a { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.2s; }
     .footer-links a:hover { color:var(--gold); }
-    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.58rem; color:#2a2a26; width:100%; }
+    .footer-copy { font-family:'Inconsolata',monospace; font-size:0.7rem; color:#2a2a26; width:100%; }
 
     @media(max-width:640px){ .reader-body { padding:1.5rem 1.2rem; } .actions { flex-direction:column; } .movements-grid { grid-template-columns:1fr 1fr; } }
   </style>
@@ -221,7 +221,7 @@
         </div>
 
         <div class="rights-note">
-          <p>Performance rights and inquiries: <a href="mailto:ECHOxPRODUCTION@proton.me">ECHOxPRODUCTION@proton.me</a><br/>
+          <p>Performance rights and inquiries: <a href="/cdn-cgi/l/email-protection#d99c9a9196a1898b969d8c9a8d90969799a9abb6adb6b7f7b4bc"><span class="__cf_email__" data-cfemail="185d5b505760484a575c4d5b4c51575658686a776c777636757d">[email&#160;protected]</span></a><br/>
           All performances, publications, or citations must credit both Harry Martinson's original inspiration and the distinct authorship of this work.</p>
         </div>
 
@@ -240,7 +240,7 @@
     <p class="footer-copy">© Eko Svenningsson — echoxstudious.art — All rights reserved</p>
   </footer>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     let fontSize = 16;
     function toggleReader() {
       const r=document.getElementById('reader');
@@ -250,14 +250,4 @@
       r.classList.toggle('open');
       s.style.display=open?'block':'none';
       l.textContent=open?'Read Online':'Close Reader';
-      if(!open) r.scrollIntoView({behavior:'smooth',block:'start'});
-    }
-    function adjFont(d) {
-      const b=document.getElementById('reader-body');
-      fontSize=Math.max(12,Math.min(22,fontSize+d));
-      b.style.fontSize=fontSize+'px';
-    }
-  </script>
-
-</body>
-</html>
+      if(!open) r.scrollIn
