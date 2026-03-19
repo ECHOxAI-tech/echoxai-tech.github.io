@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Dark Hierarchy — Synopsis — ECHOx</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-back{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--gold)}
+
+    .page-header{max-width:720px;margin:0 auto;padding:5rem 2rem 3rem;border-bottom:1px solid var(--rule)}
+    .access-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1.5rem}
+    .access-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
+    .adult-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.18em;text-transform:uppercase;color:#8b1a1a;margin-bottom:1.5rem;margin-left:1rem}
+    .adult-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:#8b1a1a}
+    h1{font-family:'IM Fell English',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:0.4rem}
+    .subtitle{font-size:1rem;color:var(--muted);font-style:italic;margin-bottom:2rem}
+    .meta-row{display:flex;gap:2rem;flex-wrap:wrap;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.1em;color:var(--muted)}
+    .meta-row span{border-left:1px solid var(--rule);padding-left:0.8rem}
+    .meta-row span:first-child{border:none;padding:0}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:4rem 2rem 6rem}
+
+    .synopsis-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+
+    .synopsis-text p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .synopsis-text em{color:var(--off-white);font-style:italic}
+    .synopsis-text .aphorism{border-left:1px solid var(--rule);padding-left:1.2rem;margin:1.5em 0;font-style:italic;color:var(--muted)}
+
+    .toggle-bar{display:flex;align-items:center;gap:1.5rem;margin:3rem 0 2rem;padding-top:2rem;border-top:1px solid var(--rule)}
+    .toggle-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
+    .toggle-btn{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);background:none;border:1px solid var(--gold-dim);padding:0.5rem 1rem;cursor:pointer;transition:all .2s}
+    .toggle-btn:hover{background:var(--gold-dim);color:var(--black)}
+    .toggle-btn.active{background:var(--gold-dim);color:var(--black)}
+
+    .spoiler-block{display:none;border-left:2px solid rgba(184,150,62,0.3);padding-left:1.5rem;margin-top:1rem}
+    .spoiler-block.open{display:block}
+    .spoiler-block p{font-size:1.05rem;line-height:1.95;color:var(--muted);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .spoiler-block em{color:var(--bone);font-style:italic}
+    .spoiler-warning{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.12em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.5rem;display:block}
+
+    .actions{display:flex;gap:1rem;flex-wrap:wrap;padding:2.5rem 0;border-top:1px solid var(--rule);margin-top:2rem}
+    .btn-dl{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .25s}
+    .btn-dl:hover{background:var(--off-white)}
+    .btn-req{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:transparent;color:var(--text);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .25s}
+    .btn-req:hover{border-color:var(--gold-dim);color:var(--off-white)}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,6,0.92);z-index:200;align-items:center;justify-content:center;padding:2rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--near);border:1px solid rgba(184,150,62,0.25);max-width:540px;width:100%;padding:3rem}
+    .modal-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.6rem;display:block}
+    .modal h2{font-family:'IM Fell English',serif;font-size:1.5rem;color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:0.5rem}
+    .modal-sub{font-size:0.95rem;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:2rem}
+    .form-field{margin-bottom:1.4rem}
+    .form-field label{display:block;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.5rem}
+    .form-field input,.form-field select,.form-field textarea{width:100%;background:#0a0a08;border:1px solid #2a2a26;color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;padding:0.7rem 0.9rem;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0}
+    .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold-dim)}
+    .form-field textarea{resize:vertical;min-height:90px;line-height:1.6}
+    .form-field select{cursor:pointer;color:var(--muted)}
+    .form-field select option{background:#0a0a08;color:var(--text)}
+    .form-actions{display:flex;gap:0.8rem;margin-top:1.8rem;align-items:center}
+    .btn-submit{flex:1;padding:0.9rem 1.5rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s;opacity:0.35;pointer-events:none}
+    .btn-submit.enabled{opacity:1;pointer-events:all}
+    .btn-submit.enabled:hover{background:var(--off-white)}
+    .btn-cancel{padding:0.9rem 1.2rem;background:transparent;color:var(--muted);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .2s}
+    .btn-cancel:hover{border-color:var(--muted);color:var(--text)}
+    .form-sent{display:none;text-align:center;padding:2rem 0}
+    .form-sent .sent-icon{font-size:2rem;color:var(--gold-dim);margin-bottom:1rem;display:block}
+    .form-sent p{font-size:1rem;color:var(--bone);line-height:1.8;font-style:italic}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:4rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.85rem;color:#2a2a26;width:100%}
+  </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <span class="modal-label">02 — Philosophy / Theology</span>
+    <h2>Request access — The Dark Hierarchy</h2>
+    <p class="modal-sub">Full text is available by application. Tell the author who you are and why you are asking. Note: this manuscript contains explicit adult content.</p>
+    <div id="modal-form">
+      <div class="form-field">
+        <label for="req-email">Your email address</label>
+        <input type="email" id="req-email" placeholder="you@example.com" oninput="checkForm()"/>
+      </div>
+      <div class="form-field">
+        <label for="req-function">Your function / role</label>
+        <select id="req-function" onchange="checkForm()">
+          <option value="" disabled selected>Select one</option>
+          <option>Literary agent</option>
+          <option>Editor / publisher</option>
+          <option>Press / journalist</option>
+          <option>Academic / researcher</option>
+          <option>Rights / licensing</option>
+          <option>General reader</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="req-who">Who are you</label>
+        <textarea id="req-who" placeholder="A few lines about yourself, your affiliation, and your interest in this work." oninput="checkForm()"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-submit" id="btn-submit" onclick="submitForm()">Apply to the author →</button>
+        <button class="btn-cancel" onclick="closeModalDirect()">Cancel</button>
+      </div>
+    </div>
+    <div class="form-sent" id="form-sent">
+      <span class="sent-icon">✦</span>
+      <p>Your request has been sent.<br/>The author will be in touch directly.</p>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
+</nav>
+
+<div class="page-header">
+  <div class="access-badge">Philosophy / Theology</div><div class="adult-badge">18+ Adult content</div>
+  <h1>The Dark Hierarchy</h1>
+  <p class="subtitle">A Treatise on Authority, Initiation, and the Order — Echo Kronborg</p>
+  <div class="meta-row">
+    <span>v6.1</span>
+    <span>276 pp.</span>
+    <span>English</span>
+    <span>Berlin</span>
+    <span>Complete</span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <span class="synopsis-label">Synopsis</span>
+
+  <div class="synopsis-text">
+    <p>The central claim is simple: desire is the confirmation of the aspirational sexual self. Human beings are not primarily aroused by another person as such — they are aroused by the experience of becoming, in the presence of another, the person they most deeply want to be sexually. This interior image precedes language, precedes socialization, resists both. The trigger — the mechanism of arousal — is the moment in which another person allows that self to become experientially real. When the confirmation occurs, desire ignites. When it disappears, desire vanishes, often instantly.</p>
+
+    <p>This is where <em>The Dark Hierarchy</em> begins: not with a claim about BDSM, not with a manifesto about power, but with a philosophy of desire that is intended to be universal before it becomes particular. Book I dismantles the Lacanian account — desire as constitutively unsatisfiable, the <em>objet petit a</em> forever circling the absent object — on three grounds: it cannot explain selectivity, it cannot explain the sudden complete termination of desire when recognition collapses, and it prescribes what it should only describe. What Lacan built, the book argues, is an accurate account of desire's failure mode. He described what happens when desire is built on the wrong foundation and called it desire's structure.</p>
+
+    <p>Books II through IV are one complete theology, written without apology for its specificity. A cosmology, a liturgy, a curriculum for both sides of the hierarchical axis — dominant and submissive — and a sustained philosophical argument that the submissive orientation is not a deficit, not a pathology, not a failure of self-knowledge. The initiate does not serve the Master's identity. The initiate <em>constitutes</em> it. Without the choosing, no Master. The crown is given by the one who kneels. That is the book's most counterintuitive and most load-bearing claim, and it is argued rather than asserted.</p>
+
+    <p>Book V turns the theology toward daily life: how to sustain the charge across time, how to vet a partner, how to inhabit the orientation publicly without either performing it or concealing it. It is pastoral in the original sense — the education of practitioners in how to live a framework consciously, sustainably, with full understanding of what it costs and what it makes possible.</p>
+
+    <p>Written under the construct Echo Kronborg. In the tradition of Bataille, Foucault, and Sacher-Masoch — but departing from all of them in one essential respect: this text does not describe desire from the outside. It inhabits. Theory that cannot be lived is speculation. This theory has been lived. It is a gospel in the original sense: good news, written for the ones who have been alone with this. Not scripture. An account of recognition brought back from a specific dark, in a specific language, for the specific reader who has been carrying what Echo has been carrying without adequate words for it.</p>
+  </div>
+
+  <div class="toggle-bar">
+    <span class="toggle-label">Full structure — book by book</span>
+    <button class="toggle-btn" id="spoiler-btn" onclick="toggleSpoiler()">Show →</button>
+  </div>
+
+  <div class="spoiler-block" id="spoiler-block">
+    <span class="spoiler-warning">Detailed contents — five books</span>
+
+    <p><strong style="color:var(--bone);font-weight:400">Book I — The Revelation</strong> opens with a series of aphorisms that function as the theological foundation: <em>The body is the first scripture. The drive is the first priest. The dark cult has no membership list. Only recognition.</em> These are not decoration. They are load-bearing claims the rest of the book is built to prove.</p>
+
+    <p><strong style="color:var(--bone);font-weight:400">Book II — Prolegomena</strong> states the central thesis and the method. The tradition from Plato through Lacan has described desire incorrectly — as lack, as the reaching of an incomplete self toward what will complete it. The book argues this is wrong on three counts: selectivity (desire is architecturally precise, not indiscriminate), instant termination (desire does not fade gradually — it disappears the moment recognition collapses, which only makes sense if what activated it was recognition, not lack), and prescriptive failure (Lacan's model tells practitioners their satisfaction is misrecognition, which is a description masquerading as a law). The four expressions of desire — dominant, submissive, switching, and equal — are mapped. Fetish is addressed: it is a fragment of the trigger, not the trigger itself.</p>
+
+    <p><strong style="color:var(--bone);font-weight:400">Book III — The Theology of Decho</strong> is liturgy. Decho is the name of the god who organizes this specific orientation — not a metaphor but a structural claim: the frequency that desire in the hierarchical axis produces, which Echo is the instrument that makes audible. The book contains an invocation, a gospel, canticles for both the Master and the initiate, rites of initiation and marking, and an extended treatment of hypersexuality as positive force. The chapter on the Last Canticle closes Book III.</p>
+
+    <p><strong style="color:var(--bone);font-weight:400">Book IV — The Dark Hierarchy</strong> is structured across twenty Movements and two Dialogues. Cosmology, the phenomenology of surrender, the four seasons of a relationship under the hierarchy, the slave's curriculum, the Master's curriculum, the sacred body, discipline, protocols, inspection, tenderness and body care, initiation, worship, marking, sexual darkness, the shared lens, and the dark night of the Master — the crisis point every practitioner encounters, in which the god goes quiet and the practitioner must decide whether to stop or go deeper.</p>
+
+    <p><strong style="color:var(--bone);font-weight:400">Book V — The Daily Practice</strong> addresses the ordinary hours. The anatomy of drift — how the charge fades when it is not consciously maintained. What feeds it and what starves it. The Master's protocols and what the Master owes. The pain/harm distinction — the non-negotiable. Dating and vetting: how to interview for orientation without having sex, how to read a wish list as diagnostic, how the initiate vets the Master. The Order in practice: its code, how to find it, what it asks of those inside it. The appendix contains the Ten Laws of the Order, the Canon, a glossary, and a note on the author.</p>
+  </div>
+
+  <div class="actions">
+    <a class="btn-dl" href="the_dark_hierarchy_v61-pages-1-38.pdf" download>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download sample — 38 pp.
+    </a>
+    <button class="btn-req" onclick="document.getElementById('modal-overlay').classList.add('open');document.body.style.overflow='hidden'">
+      Request full text →
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+<script>
+  function toggleSpoiler() {
+    const block = document.getElementById('spoiler-block');
+    const btn = document.getElementById('spoiler-btn');
+    const open = block.classList.contains('open');
+    block.classList.toggle('open');
+    btn.textContent = open ? 'Show →' : 'Hide ↑';
+    btn.classList.toggle('active', !open);
+  }
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function checkForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    document.getElementById('btn-submit').classList.toggle('enabled', email.includes('@') && email.includes('.') && fn && who.length > 10);
+  }
+  function submitForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    const subject = encodeURIComponent('Access request: The Dark Hierarchy');
+    const body = encodeURIComponent('Work requested: The Dark Hierarchy\nRole / function: ' + fn + '\nApplicant email: ' + email + '\n\n' + who);
+    window.location.href = 'mailto:inbox@echoxstudios.art?subject=' + subject + '&body=' + body;
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('form-sent').style.display = 'block';
+    setTimeout(closeModalDirect, 4000);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+</script>
+</body>
+</html>

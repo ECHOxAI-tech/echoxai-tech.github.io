@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Book of Names — Foreword &amp; Samples — ECHOx</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-back{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--gold)}
+
+    .page-header{max-width:720px;margin:0 auto;padding:5rem 2rem 3rem;border-bottom:1px solid var(--rule)}
+    .access-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1.5rem}
+    .access-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
+    h1{font-family:'IM Fell English',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:0.4rem}
+    .subtitle{font-size:1rem;color:var(--muted);font-style:italic;margin-bottom:2rem}
+    .meta-row{display:flex;gap:2rem;flex-wrap:wrap;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.1em;color:var(--muted)}
+    .meta-row span{border-left:1px solid var(--rule);padding-left:0.8rem}
+    .meta-row span:first-child{border:none;padding:0}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:4rem 2rem 6rem}
+
+    .section-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+
+    /* FOREWORD */
+    .foreword p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .foreword em{color:var(--off-white);font-style:italic}
+    .foreword .rule{text-align:center;margin:2.5em 0;color:var(--gold-dim);font-size:1em;letter-spacing:0.4em;display:block}
+
+    /* POEM ENTRIES */
+    .poem-entry{margin-bottom:5rem;padding-bottom:5rem;border-bottom:1px solid var(--rule)}
+    .poem-entry:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+    .poem-name{font-family:'IM Fell English',serif;font-size:1.5rem;color:var(--off-white);font-weight:400;margin-bottom:0.2rem}
+    .poem-subtitle{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:2.5rem}
+
+    .dual-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+    @media(max-width:640px){.dual-wrap{grid-template-columns:1fr;gap:2rem}}
+
+    .form-label{font-family:'Inconsolata',monospace;font-size:0.8rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;display:block;border-bottom:1px solid var(--rule);padding-bottom:0.5rem}
+    .form-long{border-right:1px solid var(--rule);padding-right:2rem}
+    @media(max-width:640px){.form-long{border-right:none;padding-right:0;border-bottom:1px solid var(--rule);padding-bottom:2rem}}
+
+    .poem-body{font-size:1rem;line-height:1.9;color:var(--bone)}
+    .poem-body p{margin-bottom:0.25em}
+    .poem-body .stanza{margin-bottom:1.1em}
+    .poem-body .section-head{font-family:'Inconsolata',monospace;font-size:0.8rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin:1.5em 0 0.8em}
+    .poem-body em{color:var(--off-white);font-style:italic}
+
+    .poem-short .poem-body{color:var(--muted)}
+    .poem-short .poem-body p{color:var(--muted)}
+
+    /* ACTIONS */
+    .actions{display:flex;gap:1rem;flex-wrap:wrap;padding:2.5rem 0;border-top:1px solid var(--rule);margin-top:3rem}
+    .btn-dl{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .25s}
+    .btn-dl:hover{background:var(--off-white)}
+    .btn-req{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:transparent;color:var(--text);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .25s}
+    .btn-req:hover{border-color:var(--gold-dim);color:var(--off-white)}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,6,0.92);z-index:200;align-items:center;justify-content:center;padding:2rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--near);border:1px solid rgba(184,150,62,0.25);max-width:540px;width:100%;padding:3rem}
+    .modal-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.6rem;display:block}
+    .modal h2{font-family:'IM Fell English',serif;font-size:1.5rem;color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:0.5rem}
+    .modal-sub{font-size:0.95rem;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:2rem}
+    .form-field{margin-bottom:1.4rem}
+    .form-field label{display:block;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.5rem}
+    .form-field input,.form-field select,.form-field textarea{width:100%;background:#0a0a08;border:1px solid #2a2a26;color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;padding:0.7rem 0.9rem;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0}
+    .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold-dim)}
+    .form-field textarea{resize:vertical;min-height:90px;line-height:1.6}
+    .form-field select{cursor:pointer;color:var(--muted)}
+    .form-field select option{background:#0a0a08;color:var(--text)}
+    .form-actions{display:flex;gap:0.8rem;margin-top:1.8rem;align-items:center}
+    .btn-submit{flex:1;padding:0.9rem 1.5rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s;opacity:0.35;pointer-events:none}
+    .btn-submit.enabled{opacity:1;pointer-events:all}
+    .btn-submit.enabled:hover{background:var(--off-white)}
+    .btn-cancel{padding:0.9rem 1.2rem;background:transparent;color:var(--muted);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .2s}
+    .btn-cancel:hover{border-color:var(--muted);color:var(--text)}
+    .form-sent{display:none;text-align:center;padding:2rem 0}
+    .form-sent .sent-icon{font-size:2rem;color:var(--gold-dim);margin-bottom:1rem;display:block}
+    .form-sent p{font-size:1rem;color:var(--bone);line-height:1.8;font-style:italic}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:4rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.85rem;color:#2a2a26;width:100%}
+  </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <span class="modal-label">04 — Poetry Collection</span>
+    <h2>Request access — The Book of Names</h2>
+    <p class="modal-sub">Full collection is available by application. Tell the author who you are and why you are asking.</p>
+    <div id="modal-form">
+      <div class="form-field">
+        <label for="req-email">Your email address</label>
+        <input type="email" id="req-email" placeholder="you@example.com" oninput="checkForm()"/>
+      </div>
+      <div class="form-field">
+        <label for="req-function">Your function / role</label>
+        <select id="req-function" onchange="checkForm()">
+          <option value="" disabled selected>Select one</option>
+          <option>Literary agent</option>
+          <option>Editor / publisher</option>
+          <option>Press / journalist</option>
+          <option>Academic / researcher</option>
+          <option>Rights / licensing</option>
+          <option>General reader</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="req-who">Who are you</label>
+        <textarea id="req-who" placeholder="A few lines about yourself, your affiliation, and your interest in this work." oninput="checkForm()"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-submit" id="btn-submit" onclick="submitForm()">Apply to the author →</button>
+        <button class="btn-cancel" onclick="closeModalDirect()">Cancel</button>
+      </div>
+    </div>
+    <div class="form-sent" id="form-sent">
+      <span class="sent-icon">✦</span>
+      <p>Your request has been sent.<br/>The author will be in touch directly.</p>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
+</nav>
+
+<div class="page-header">
+  <div class="access-badge">Poetry Collection</div>
+  <h1>The Book of Names</h1>
+  <p class="subtitle">A completed poetry collection — Eko Svenningsson</p>
+  <div class="meta-row">
+    <span>Complete</span>
+    <span>Publication-ready</span>
+    <span>English</span>
+    <span>Dual form</span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <span class="section-label">Foreword</span>
+
+  <div class="foreword">
+    <p>A name is not neutral. It is a tool. It can be a handle, a hook, a receipt — proof that you were counted and therefore manageable. Long before it becomes intimate, a name enters systems: attendance sheets, forms, inboxes, mouths that have learned to say it without asking what it costs to hear.</p>
+
+    <p>Some of us learned early that being readable was safer than being real. We became fluent in legibility the way others become fluent in trust. Tone, posture, silence, compliance — these were not personality traits, but techniques. Survival strategies refined until they passed for character.</p>
+
+    <p>This book is not a confession. It is version control.</p>
+
+    <p>Each name in this book produces two records. One tracks what occurred: the sequence, the atmosphere, the negotiation. The other records what remains: the structure that does not change when explanation is removed. They are not equal. One accumulates. One reduces. One attempts coherence. The other fixes it.</p>
+
+    <p>This book tracks what happens when a person is repeatedly misfiled — by family, by institutions, by desire — and how the self adapts by performing coherence. Not to deceive, but to remain intact. Not to disappear, but to pass through rooms without being broken by them.</p>
+
+    <p>Reclaiming a name is often described as a return. That is a kindness, but not the truth. It is a rewrite. It requires understanding that the original record was never innocent, and that refusal can be quieter than rebellion. Sometimes it is letting the wrong word pass. Sometimes silence. Sometimes writing anyway.</p>
+
+    <p>The systems in this book are ordinary ones: mirrors, classrooms, lovers, documents, messages left unread. Their violence is subtle because it is procedural. They do not shout. They categorize. They reward legibility and punish friction. They call it chemistry. They call it fit. They call it love.</p>
+
+    <p>And still: the record matters. Paper decides access. Tone decides safety. Categories decide the room.</p>
+
+    <p>This book does not reject structure. It studies it. It asks what can be held inside it without being erased — and what must be carried elsewhere, unnamed, until it is safe enough to breathe.</p>
+
+    <p>If there is tenderness here, it is not offered as cure. If there is coldness, it is not cruelty. They are both intelligences.</p>
+
+    <p>What follows is a ledger of names, masks, refusals, and returns. Not to be believed wholesale. Not to be solved. But to be read as evidence that a person can be processed, misread, archived — and still retain authorship.</p>
+
+    <span class="rule">✦</span>
+  </div>
+
+  <span class="section-label" style="margin-top:3rem">From the Collection — Eko</span>
+
+  <!-- EKO -->
+  <div class="poem-entry">
+    <h2 class="poem-name">Eko</h2>
+    <p class="poem-subtitle">Litany for the Ritual of Rewriting</p>
+    <div class="dual-wrap">
+      <div class="form-long">
+        <span class="form-label">The long story</span>
+        <div class="poem-body">
+          <p class="section-head">I. Water</p>
+          <div class="stanza">
+            <p>I did not arrive as a person.</p>
+            <p>I arrived as a registration —</p>
+            <p>a name aligned to a box.</p>
+          </div>
+          <div class="stanza">
+            <p>In water, the body does not negotiate.</p>
+            <p>Salt enters.</p>
+            <p>Breath leaves.</p>
+          </div>
+          <div class="stanza">
+            <p>One summer I went under</p>
+            <p>and the surface sealed above me.</p>
+            <p>Long enough</p>
+            <p>to understand</p>
+            <p>how quickly <em>fine</em> becomes fiction.</p>
+          </div>
+          <div class="stanza">
+            <p>If you cannot be safe, be legible.</p>
+            <p>If you cannot be held, be exact.</p>
+          </div>
+          <div class="stanza">
+            <p>So I became quiet</p>
+            <p>in a way the system could keep.</p>
+          </div>
+          <div class="stanza">
+            <p>Tell me —</p>
+            <p>what did you rename your fear</p>
+            <p>when you began wearing it</p>
+            <p>like manners?</p>
+          </div>
+          <p class="section-head">II. Mirror</p>
+          <div class="stanza">
+            <p>The mirror did not reflect me.</p>
+            <p>It confirmed me.</p>
+          </div>
+          <div class="stanza">
+            <p>Are you consistent?</p>
+            <p>Are you still the same file?</p>
+          </div>
+          <div class="stanza">
+            <p>I practiced faces for clearance.</p>
+            <p>Smile: access.</p>
+            <p>Neutral: passage.</p>
+            <p>Laughter: stability.</p>
+          </div>
+          <div class="stanza">
+            <p>I became fluent in approval.</p>
+          </div>
+          <div class="stanza">
+            <p>Honesty feels holy —</p>
+            <p>but you did not yet know</p>
+            <p>the difference</p>
+            <p>between revelation</p>
+            <p>and compliance.</p>
+          </div>
+          <div class="stanza">
+            <p>Micro-scene:</p>
+            <p>Someone asked who I was.</p>
+            <p>I offered the version</p>
+            <p>that would prevent departure.</p>
+          </div>
+          <div class="stanza">
+            <p>Who benefits</p>
+            <p>when you remain interpretable?</p>
+            <p>Who calls you "too much"</p>
+            <p>only because they refuse</p>
+            <p>the labor of seeing?</p>
+          </div>
+          <p class="section-head">III. Pen</p>
+          <div class="stanza">
+            <p>Then the pen —</p>
+            <p>not as art.</p>
+            <p>As boundary.</p>
+          </div>
+          <div class="stanza">
+            <p>I wrote my name</p>
+            <p>until it stopped being a label</p>
+            <p>and became mass.</p>
+          </div>
+          <div class="stanza">
+            <p><em>eko</em> — I remain.</p>
+            <p>Not because I cannot break.</p>
+            <p>Because I return.</p>
+          </div>
+          <div class="stanza">
+            <p>Staying legible</p>
+            <p>was erasing me.</p>
+          </div>
+          <div class="stanza">
+            <p>I refused the story</p>
+            <p>where I am footnote to my own life —</p>
+            <p>where I disappear quietly</p>
+            <p>and call it maturity.</p>
+          </div>
+          <div class="stanza">
+            <p>This is <em>The Book of Names</em>:</p>
+            <p>not archive,</p>
+            <p>but resistance.</p>
+          </div>
+          <div class="stanza">
+            <p>I write them</p>
+            <p>so absence cannot pretend</p>
+            <p>it was inevitable.</p>
+          </div>
+          <div class="stanza">
+            <p>Names as anchors.</p>
+            <p>Names as refusal.</p>
+            <p>Record as a form of love</p>
+            <p>that does not ask permission.</p>
+          </div>
+          <div class="stanza">
+            <p>O pen —</p>
+            <p>be mercy in the hands of others,</p>
+            <p>and weight in mine.</p>
+          </div>
+          <div class="stanza">
+            <p>I will not be authored</p>
+            <p>by fear.</p>
+            <p>I will not remain</p>
+            <p>legible at the cost of self.</p>
+          </div>
+          <div class="stanza">
+            <p>You do not write me.</p>
+            <p>So I cannot write you.</p>
+            <p>I can only place the instrument</p>
+            <p>back in your hand.</p>
+          </div>
+          <div class="stanza">
+            <p>Take it.</p>
+            <p>Write.</p>
+          </div>
+        </div>
+      </div>
+      <div class="poem-short">
+        <span class="form-label">The short story</span>
+        <div class="poem-body">
+          <div class="stanza">
+            <p>I was a registration.</p>
+            <p>In water,</p>
+            <p>the body does not negotiate.</p>
+          </div>
+          <div class="stanza">
+            <p>If you cannot be safe,</p>
+            <p>be legible.</p>
+          </div>
+          <div class="stanza">
+            <p>The mirror confirmed me.</p>
+            <p>Consistent. Clear. Approved.</p>
+          </div>
+          <div class="stanza">
+            <p>Until —</p>
+            <p>a line did not match.</p>
+            <p>I chose it.</p>
+            <p>Not for safety.</p>
+            <p>For self.</p>
+          </div>
+          <div class="stanza">
+            <p>I write</p>
+            <p>so absence</p>
+            <p>cannot call itself truth.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="actions">
+    <a class="btn-dl" href="The_Book_of_Names_sample.pdf" download>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download sample — 28 pp.
+    </a>
+    <button class="btn-req" onclick="document.getElementById('modal-overlay').classList.add('open');document.body.style.overflow='hidden'">
+      Request full text →
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+<script>
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function checkForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    document.getElementById('btn-submit').classList.toggle('enabled', email.includes('@') && email.includes('.') && fn && who.length > 10);
+  }
+  function submitForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    const subject = encodeURIComponent('Access request: The Book of Names');
+    const body = encodeURIComponent('Work requested: The Book of Names\nRole / function: ' + fn + '\nApplicant email: ' + email + '\n\n' + who);
+    window.location.href = 'mailto:inbox@echoxstudios.art?subject=' + subject + '&body=' + body;
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('form-sent').style.display = 'block';
+    setTimeout(closeModalDirect, 4000);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+</script>
+</body>
+</html>

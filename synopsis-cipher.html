@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Alexander Cipher — Synopsis — ECHOx</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-back{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-back:hover{color:var(--gold)}
+
+    .page-header{max-width:720px;margin:0 auto;padding:5rem 2rem 3rem;border-bottom:1px solid var(--rule)}
+    .access-badge{display:inline-flex;align-items:center;gap:0.5rem;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:1.5rem}
+    .access-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--gold-dim)}
+    h1{font-family:'IM Fell English',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:0.4rem}
+    .subtitle{font-size:1rem;color:var(--muted);font-style:italic;margin-bottom:2rem}
+    .meta-row{display:flex;gap:2rem;flex-wrap:wrap;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.1em;color:var(--muted)}
+    .meta-row span{border-left:1px solid var(--rule);padding-left:0.8rem}
+    .meta-row span:first-child{border:none;padding:0}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:4rem 2rem 6rem}
+
+    .synopsis-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:2rem;display:block}
+
+    .synopsis-text p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .synopsis-text em{color:var(--off-white);font-style:italic}
+
+    .toggle-bar{display:flex;align-items:center;gap:1.5rem;margin:3rem 0 2rem;padding-top:2rem;border-top:1px solid var(--rule)}
+    .toggle-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted)}
+    .toggle-btn{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);background:none;border:1px solid var(--gold-dim);padding:0.5rem 1rem;cursor:pointer;transition:all .2s}
+    .toggle-btn:hover{background:var(--gold-dim);color:var(--black)}
+    .toggle-btn.active{background:var(--gold-dim);color:var(--black)}
+
+    .spoiler-block{display:none;border-left:2px solid rgba(184,150,62,0.3);padding-left:1.5rem;margin-top:1rem}
+    .spoiler-block.open{display:block}
+    .spoiler-block p{font-size:1.05rem;line-height:1.95;color:var(--muted);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .spoiler-block em{color:var(--bone);font-style:italic}
+    .spoiler-warning{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.12em;color:#8b1a1a;text-transform:uppercase;margin-bottom:1.5rem;display:block}
+
+    .actions{display:flex;gap:1rem;flex-wrap:wrap;padding:2.5rem 0;border-top:1px solid var(--rule);margin-top:2rem}
+    .btn-dl{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:background .25s}
+    .btn-dl:hover{background:var(--off-white)}
+    .btn-req{display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:transparent;color:var(--text);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .25s}
+    .btn-req:hover{border-color:var(--gold-dim);color:var(--off-white)}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,8,6,0.92);z-index:200;align-items:center;justify-content:center;padding:2rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--near);border:1px solid rgba(184,150,62,0.25);max-width:540px;width:100%;padding:3rem}
+    .modal-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.6rem;display:block}
+    .modal h2{font-family:'IM Fell English',serif;font-size:1.5rem;color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:0.5rem}
+    .modal-sub{font-size:0.95rem;color:var(--muted);font-style:italic;line-height:1.7;margin-bottom:2rem}
+    .form-field{margin-bottom:1.4rem}
+    .form-field label{display:block;font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.5rem}
+    .form-field input,.form-field select,.form-field textarea{width:100%;background:#0a0a08;border:1px solid #2a2a26;color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;padding:0.7rem 0.9rem;outline:none;transition:border-color .2s;-webkit-appearance:none;border-radius:0}
+    .form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold-dim)}
+    .form-field textarea{resize:vertical;min-height:90px;line-height:1.6}
+    .form-field select{cursor:pointer;color:var(--muted)}
+    .form-field select option{background:#0a0a08;color:var(--text)}
+    .form-actions{display:flex;gap:0.8rem;margin-top:1.8rem;align-items:center}
+    .btn-submit{flex:1;padding:0.9rem 1.5rem;background:var(--gold);color:var(--black);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:none;cursor:pointer;transition:background .25s;opacity:0.35;pointer-events:none}
+    .btn-submit.enabled{opacity:1;pointer-events:all}
+    .btn-submit.enabled:hover{background:var(--off-white)}
+    .btn-cancel{padding:0.9rem 1.2rem;background:transparent;color:var(--muted);font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.15em;text-transform:uppercase;border:1px solid #2a2a26;cursor:pointer;transition:all .2s}
+    .btn-cancel:hover{border-color:var(--muted);color:var(--text)}
+    .form-sent{display:none;text-align:center;padding:2rem 0}
+    .form-sent .sent-icon{font-size:2rem;color:var(--gold-dim);margin-bottom:1rem;display:block}
+    .form-sent p{font-size:1rem;color:var(--bone);line-height:1.8;font-style:italic}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:4rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.85rem;color:#2a2a26;width:100%}
+  </style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <span class="modal-label">01 — Literary Thriller</span>
+    <h2>Request access — The Alexander Cipher</h2>
+    <p class="modal-sub">Full text is available by application. Tell the author who you are and why you are asking.</p>
+    <div id="modal-form">
+      <div class="form-field">
+        <label for="req-email">Your email address</label>
+        <input type="email" id="req-email" placeholder="you@example.com" oninput="checkForm()"/>
+      </div>
+      <div class="form-field">
+        <label for="req-function">Your function / role</label>
+        <select id="req-function" onchange="checkForm()">
+          <option value="" disabled selected>Select one</option>
+          <option>Literary agent</option>
+          <option>Editor / publisher</option>
+          <option>Press / journalist</option>
+          <option>Academic / researcher</option>
+          <option>Rights / licensing</option>
+          <option>Theater producer / director</option>
+          <option>General reader</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="req-who">Who are you</label>
+        <textarea id="req-who" placeholder="A few lines about yourself, your affiliation, and your interest in this work." oninput="checkForm()"></textarea>
+      </div>
+      <div class="form-actions">
+        <button class="btn-submit" id="btn-submit" onclick="submitForm()">Apply to the author →</button>
+        <button class="btn-cancel" onclick="closeModalDirect()">Cancel</button>
+      </div>
+    </div>
+    <div class="form-sent" id="form-sent">
+      <span class="sent-icon">✦</span>
+      <p>Your request has been sent.<br/>The author will be in touch directly.</p>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
+</nav>
+
+<div class="page-header">
+  <div class="access-badge">Literary Thriller</div>
+  <h1>The Alexander Cipher</h1>
+  <p class="subtitle">A novel — Eko Svenningsson</p>
+  <div class="meta-row">
+    <span>v151</span>
+    <span>~91,000 words</span>
+    <span>~395 pp.</span>
+    <span>English</span>
+    <span>Complete</span>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <span class="synopsis-label">Synopsis</span>
+
+  <div class="synopsis-text">
+    <p>Emma Voss is a conservator at the Metropolitan Museum of Art. She has spent eleven years filling in gaps in provenance records — the deliberate absences that mark objects which moved through the wrong hands at the wrong time. Miles Ashford is a structural engineer in Crown Heights who holds himself together by maintaining the precise geometry of his book stacks. Both were introduced years ago by the man who is now dead. Neither has spoken to the other since his funeral. The same encrypted file contains both their names.</p>
+
+    <p>On a late October evening, Emma follows a sound from her lab into the gallery and encounters a group performing a ritual over one of the collection's cylinder seals. The object responds to her touch in a way she cannot explain. A man named Thorne is present. He is calm, precise, and knows her name before she gives it. He leaves her a card she did not take. It is in her pocket when she reaches the freight elevator.</p>
+
+    <p>Miles, meanwhile, has begun finding things in the boxes his dead mentor left him — a word repeated without definition, a card directing him to a church in the Bronx with a door that is always locked until it isn't. He sees creatures on his roofline that watch him with amber precision. He is a man who treats anomalies as threshold weather. He is running out of threshold.</p>
+
+    <p>The Aurelian Trust has been incorporated since 1893. On paper, a charitable foundation. In practice, a pipeline — funding museums, archives, and research labs to keep them dependent, moving money the way a conductor keeps an orchestra obedient. Its real project, documented in board minutes Emma and Miles excavate across the middle of the novel, is a Separated Siblings Pilot: the deliberate engineering of twin separations across generations, each pair cultivated at a distance and then brought back into the same orbit at a timed event, with an ancient object as the circuit's third point. Emma and Miles are the current pair. Thorne is not the mechanism. He is the steward. The mechanism is older than he is.</p>
+
+    <p><em>The Alexander Cipher</em> is a literary thriller about infrastructure — the kind that survives by being called something else. About two people who do not know they are subjects until they become investigators. About what it costs to dismantle a system that has been running longer than either of them has been alive, when every normal path is a corridor the system built.</p>
+  </div>
+
+  <div class="toggle-bar">
+    <span class="toggle-label">Full spoiler synopsis</span>
+    <button class="toggle-btn" id="spoiler-btn" onclick="toggleSpoiler()">Show →</button>
+  </div>
+
+  <div class="spoiler-block" id="spoiler-block">
+    <span class="spoiler-warning">⚠ Full plot — contains ending</span>
+    <p>Emma and Miles make contact. Thomas Keane — their shared mentor, now dead — left both of them materials pointing toward the same destination: St. Cyprian's, a Bronx fieldstone church that serves as a ritual site for the Trust's current operation. Thorne has scheduled a "lock event" for December 1st, requiring both of them present with the cylinder seal CST-17-3 as the anchor object. They are intended to be the Vessel — the paired subjects — in a centuries-old circuit the Trust has been running under changing names since 1893.</p>
+
+    <p>Working from Thomas's notebooks and public financial records, Emma maps the Aurelian Trust's institutional network: the museums it keeps hungry, the archives it controls, the research labs whose vocabulary it purchases. Miles cross-references the separations: pairs of twins placed in different boroughs, different cities, different countries, each pair brought back into proximity at a specific age through engineered coincidence. The pattern is not accident. It is specification.</p>
+
+    <p>They travel to Frankfurt to access St. Catherine's Children's Home — the facility where their separation was processed in 1997. The last director, Frau Dr. Kline, is still present. The institution is closing in eight months; the Foundation pulled funding the previous year. She gives them their intake files: Separated Siblings Pilot. 73% separation maintenance rate. Aurelian compliance confirmed. Phase II placements funded and approved.</p>
+
+    <p>The December 1st event is a private exhibition at which Thorne intends to use the cylinder seal and both of them as components in the ritual circuit. Emma and Miles attend — not as subjects but as investigators. They have spent weeks learning the mechanism. They know how to invert it. The event fails. Thorne survives but is diminished. The Trust begins dissolving its institutional presence. The seal is returned to the Museum's collection with its provenance now fully documented.</p>
+
+    <p>By the following summer, Emma has stopped checking ceiling corners for amber eyes. Miles has stopped scanning reflections. They meet for coffee. They talk about work. Once, Emma says: <em>Do you miss it?</em> Miles understands without asking which it. He answers honestly. The manifestation was proof. What they do with its absence is their own business now.</p>
+  </div>
+
+  <div class="actions">
+    <a class="btn-dl" href="The_Alexander_Cipher_v151-pages-1-25.pdf" download>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Download sample — 25 pp.
+    </a>
+    <button class="btn-req" onclick="document.getElementById('modal-overlay').classList.add('open');document.body.style.overflow='hidden'">
+      Request full text →
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+<script>
+  function toggleSpoiler() {
+    const block = document.getElementById('spoiler-block');
+    const btn = document.getElementById('spoiler-btn');
+    const open = block.classList.contains('open');
+    block.classList.toggle('open');
+    btn.textContent = open ? 'Show →' : 'Hide ↑';
+    btn.classList.toggle('active', !open);
+  }
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+  }
+  function closeModalDirect() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function checkForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    document.getElementById('btn-submit').classList.toggle('enabled', email.includes('@') && email.includes('.') && fn && who.length > 10);
+  }
+  function submitForm() {
+    const email = document.getElementById('req-email').value.trim();
+    const fn = document.getElementById('req-function').value;
+    const who = document.getElementById('req-who').value.trim();
+    const subject = encodeURIComponent('Access request: The Alexander Cipher');
+    const body = encodeURIComponent('Work requested: The Alexander Cipher
+Role / function: ' + fn + '
+Applicant email: ' + email + '
+
+' + who);
+    window.location.href = 'mailto:inbox@echoxstudios.art?subject=' + subject + '&body=' + body;
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('form-sent').style.display = 'block';
+    setTimeout(closeModalDirect, 4000);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
+</script>
+</body>
+</html>
