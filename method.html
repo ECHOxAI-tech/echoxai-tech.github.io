@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Method — ECHOx</title>
+  <meta name="description" content="On method — how Eko Svenningsson / ECHOx works across writing, photography, and the tools that make it possible."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--gold)}
+    @media(max-width:600px){.nav-links{display:none}}
+
+    .page-header{padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid var(--rule)}
+    .page-label{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
+    .page-title{font-family:'IM Fell English',serif;font-size:clamp(2.2rem,6vw,4rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
+    .page-sub{font-size:1.05rem;color:var(--muted);font-style:italic;max-width:480px;margin:0 auto;line-height:1.7}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:5rem 2rem 8rem}
+
+    /* SECTIONS */
+    .method-section{padding-bottom:4rem;margin-bottom:4rem;border-bottom:1px solid var(--rule)}
+    .method-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+    .section-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.5rem;display:block}
+    .section-title{font-family:'IM Fell English',serif;font-size:clamp(1.6rem,3vw,2rem);color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:2rem}
+
+    .prose p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .prose em{color:var(--off-white);font-style:italic}
+    .prose strong{color:var(--off-white);font-weight:400}
+
+    /* DETAIL LIST — tool/process specifics */
+    .detail-list{margin:2rem 0;border-top:1px solid var(--rule)}
+    .detail-item{display:grid;grid-template-columns:160px 1fr;gap:1.5rem;padding:1rem 0;border-bottom:1px solid #1a1a16;align-items:baseline}
+    .detail-key{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim)}
+    .detail-val{font-size:1rem;line-height:1.7;color:var(--muted)}
+    .detail-val em{color:var(--bone);font-style:italic}
+    @media(max-width:500px){.detail-item{grid-template-columns:1fr;gap:0.3rem}}
+
+    /* PULL QUOTE */
+    .pull{border-left:2px solid rgba(184,150,62,0.4);padding-left:1.5rem;margin:2.5rem 0;font-size:1.1rem;line-height:1.8;color:var(--muted);font-style:italic}
+    .pull em{color:var(--bone)}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-links{display:flex;gap:1.5rem;list-style:none}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--gold)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.9rem;color:#2a2a26;width:100%}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="method.html" class="active">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <p class="page-label">Practice</p>
+  <h1 class="page-title">Method</h1>
+  <p class="page-sub">On how the work is made — the tools, the logic, and the conditions that produce it.</p>
+</div>
+
+<div class="wrapper">
+
+  <!-- WRITING -->
+  <div class="method-section">
+    <span class="section-label">01 — Writing</span>
+    <h2 class="section-title">Language as architecture</h2>
+
+    <div class="prose">
+      <p>The background is mathematical and computational. Years spent thinking in formal systems — proofs, code, structures where precision is not optional and where a single misplaced character propagates forward into everything downstream. That training did not go away when the work turned literary. It became the underlying logic of how language gets treated: syntax and rhythm as structural elements, not decoration. Form that fails is form that lies.</p>
+
+      <p>This is why the manuscripts are written in LaTeX. Not as an eccentricity but as a natural consequence of how writing and thinking are connected here. LaTeX is a markup language for people who want to control exactly what the document does — who understand that the gap between intention and output is always a specification problem. It produces typographically precise documents from plain text source files. The mathematics background makes this feel like home territory. Word processors feel like writing in a room where the walls keep moving.</p>
+
+      <p>There is also something methodologically honest about it: every manuscript exists first as source code, then as a compiled artifact. The <em>The Dark Hierarchy</em> took years to write and minutes to compile. <em>The Book of Names</em> the same. The Alexander Cipher was drafted in plain text and structured later. The compilation is the publication event — the moment the thing becomes what it is rather than what it might be. That irreversibility matters.</p>
+    </div>
+
+    <div class="pull">
+      The works take years to write and much shorter time to compile. The ratio is not a problem. It is the point. Everything that needed to be resolved was resolved before the final command ran.
+    </div>
+
+    <div class="prose">
+      <p>Most of the actual writing happens walking or in transit. The phone's Notes app is the primary manuscript tool — not a drafting surface but the place where the real work occurs. Lines arrive on the U-Bahn, on foot through Mitte, waiting at a crossing on Oranienburger Straße. They get transcribed later. The notebook and the desk are for assembly; the phone is for capture. This is not incidental. The motion seems necessary — something about the body being occupied with one task frees another part of the attention to work without supervision.</p>
+
+      <p>The consequence is that nothing in the manuscripts was written in a single sitting. Every line was written in motion, usually alone, usually in a city. Berlin is present in the work not because it was chosen as a subject but because it is the ground on which the thinking happens. The canal, the light at a particular hour, the geometry of a specific street — these enter the work because they were there when the line arrived.</p>
+    </div>
+
+    <div class="detail-list">
+      <div class="detail-item">
+        <span class="detail-key">Drafting</span>
+        <span class="detail-val">iOS Notes app — written walking or in transit, transcribed later</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Composition</span>
+        <span class="detail-val">LaTeX / XeLaTeX — markup-based typesetting; source files compiled to PDF</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Fonts</span>
+        <span class="detail-val"><em>The Book of Names:</em> TeX Gyre Pagella + Heros &nbsp;·&nbsp; <em>The Dark Hierarchy:</em> custom macro set, Berlin</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Editing</span>
+        <span class="detail-val">Iterative — The Dark Hierarchy reached v61, The Alexander Cipher v151. Version numbers are literal.</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Duration</span>
+        <span class="detail-val">Each manuscript: multiple years. Compilation: minutes.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTOGRAPHY -->
+  <div class="method-section">
+    <span class="section-label">02 — Photography</span>
+    <h2 class="section-title">The irreversible frame</h2>
+
+    <div class="prose">
+      <p>Instant photography is treated here as a form of ethical commitment. The analog frame cannot be edited afterward. What the image records is exactly what the camera was given — no correction possible, no post-manipulation, no recovery from a wrong decision. This constraint is the point, not a limitation to work around. It makes every frame a testimony to what the photographer actually did rather than what they wished they had done.</p>
+
+      <p>The cameras are hand-built MiNT RF70 and SF70 models — manual-focus rangefinders that take Fuji Instax film. There is no autofocus, no automatic exposure compensation, no computational assistance of any kind. Ratio, composition, focus, and timing are calculated by hand and held in the head. For double exposures the complexity compounds: the first image must be held as an interior model — its tones, its geometry, its distribution of light and dark — while the second exposure is made, knowing that light only develops on the darker areas of the first. This is a spatial and chromatic problem that has to be solved before the shutter is pressed. It cannot be solved afterward.</p>
+    </div>
+
+    <div class="pull">
+      I see instant photography as poems. They are truthful, direct, honest, and perfectly imperfect. Each frame demands complete commitment because there is no going back.
+    </div>
+
+    <div class="prose">
+      <p>The work began with portraiture — the specific problem of capturing a person without the mechanical precision of modern autofocus systems. Automatic cameras have always left something out: the negotiation between the photographer and the subject, the decision made in real time about which truth to record. Going back to fully manual tools was a way of insisting on that negotiation rather than delegating it to a machine.</p>
+
+      <p>Berlin is the recurring subject not by choice but by proximity. The city's surface is unusually legible — its scars are carried forward rather than concealed, its contrasts unresolved rather than smoothed. Faces against facades: the human surface beside the architectural one, both marked by time and use, both refusing the suggestion that they should look better than they do. The double exposures in <em>Faces and Facades</em> place these two kinds of surface against each other — the face embodies intimacy and individuality; the facade carries collective memory and the anonymity of the metropolis. When they merge, something in between becomes visible that neither contains alone.</p>
+    </div>
+
+    <div class="detail-list">
+      <div class="detail-item">
+        <span class="detail-key">Cameras</span>
+        <span class="detail-val">MiNT RF70 (rectangular frame) · MiNT SF70 (square frame) — hand-built Instax rangefinders</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Film</span>
+        <span class="detail-val">Fuji Instax — analog, in-camera only. No digital manipulation of any kind.</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Process</span>
+        <span class="detail-val">Single, double, and triple exposures — all calculated and executed in-camera</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Format codes</span>
+        <span class="detail-val">RF70 = rectangular · SF70 = square</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Subject</span>
+        <span class="detail-val">Portraits, street scenes, urban landscapes, pastoral views — primarily Berlin</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-key">Output</span>
+        <span class="detail-val">Each work: original instant print paired with enlargement. The physical object is the primary record.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CROSS-DISCIPLINE -->
+  <div class="method-section">
+    <span class="section-label">03 — The connection</span>
+    <h2 class="section-title">Irreversibility as discipline</h2>
+
+    <div class="prose">
+      <p>The formal constraint that connects the photography and the writing is irreversibility. The instant photograph cannot be edited. The LaTeX source, once compiled, has produced either the right document or the wrong one — and the difference is visible immediately. The Notes app captures the line as it arrived, in motion, unrevised; what gets transcribed later is what was there, not a cleaned-up version.</p>
+
+      <p>These are not aesthetic preferences. They are methodological commitments that come from the mathematical background: the belief that the quality of an output is a function of the quality of the process that produced it, not of subsequent correction. In formal systems, a proof that requires patching after the fact is a proof whose foundations were unclear. The same applies here. The work that survives is the work that was built correctly in the first place.</p>
+
+      <p>This is also why the version numbers matter. <em>The Dark Hierarchy</em> at v61 is a different document than at v60 — not cosmetically revised but structurally tested. <em>The Alexander Cipher</em> at v151 has been stress-tested 151 times. The number is not a count of cosmetic changes. It is a record of the distance between the first draft and the thing that could finally be compiled without apology.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+</body>
+</html>
