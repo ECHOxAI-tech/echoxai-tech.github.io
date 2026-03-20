@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About — ECHOx</title>
+  <meta name="description" content="About Eko Svenningsson / ECHOx — Swedish multidisciplinary artist based in Berlin. Writing, photography, theater, music."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--gold)}
+    @media(max-width:600px){.nav-links{display:none}}
+
+    .page-header{padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid var(--rule)}
+    .page-label{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
+    .page-title{font-family:'IM Fell English',serif;font-size:clamp(2.2rem,6vw,4rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
+    .page-sub{font-size:1.05rem;color:var(--muted);font-style:italic;max-width:500px;margin:0 auto;line-height:1.7}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:5rem 2rem 8rem}
+
+    .about-section{padding-bottom:4rem;margin-bottom:4rem;border-bottom:1px solid var(--rule)}
+    .about-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+    .section-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.5rem;display:block}
+    .section-title{font-family:'IM Fell English',serif;font-size:clamp(1.6rem,3vw,2rem);color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:2rem}
+
+    .prose p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .prose em{color:var(--off-white);font-style:italic}
+
+    .pull{border-left:2px solid rgba(184,150,62,0.4);padding-left:1.5rem;margin:2.5rem 0;font-size:1.1rem;line-height:1.85;color:var(--muted);font-style:italic}
+
+    /* NAMES / IDENTITIES */
+    .identity-block{background:var(--near);border:1px solid #1a1a16;padding:2rem 2.5rem;margin:2.5rem 0}
+    .identity-row{display:grid;grid-template-columns:160px 1fr;gap:1rem;padding:0.8rem 0;border-bottom:1px solid #111}
+    .identity-row:last-child{border-bottom:none}
+    .id-key{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-dim)}
+    .id-val{font-size:1rem;line-height:1.6;color:var(--muted)}
+    .id-val em{color:var(--bone);font-style:italic}
+    @media(max-width:500px){.identity-row{grid-template-columns:1fr;gap:0.2rem}}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-links{display:flex;gap:1.5rem;list-style:none}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--gold)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.9rem;color:#2a2a26;width:100%}
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <p class="page-label">Identity</p>
+  <h1 class="page-title">Eko Svenningsson</h1>
+  <p class="page-sub">Swedish artist based in Berlin. Working across fiction, poetry, theater, photography, and music.</p>
+</div>
+
+<div class="wrapper">
+
+  <!-- BIOGRAPHY -->
+  <div class="about-section">
+    <span class="section-label">01 — Biography</span>
+    <h2 class="section-title">Sweden, mathematics, Berlin</h2>
+
+    <div class="prose">
+      <p>Born in Sweden. Trained in mathematics and computer science — disciplines that leave a particular residue: the expectation that things can be stated precisely, that structure is not ornament but load-bearing, that a proof which requires patching after the fact was not a proof. That residue runs through everything that followed.</p>
+
+      <p>The move to Berlin was not planned as a creative relocation. It became one. The city has a particular quality of surface — its scars are carried forward rather than concealed, its contradictions unresolved rather than managed. Living in it off and on across several years, then permanently, produced a shift in what felt worth making: work that refused the smoothed-over version, that insisted on the mark of the process, that treated irreversibility not as a limitation but as the condition of honesty.</p>
+
+      <p>The practice expanded outward from there. Fiction first, then poetry, then the camera. Theater arrived as a different kind of problem — the work that cannot be taken back once the curtain opens, that exists only in time, that cannot be edited after the audience has been in the room. Music last — collaborative production and solo work.</p>
+
+      <p>ECHOx is the working identity that holds all of it. Eko Svenningsson is the name on the books.</p>
+    </div>
+
+    <div class="identity-block">
+      <div class="identity-row">
+        <span class="id-key">Legal name</span>
+        <span class="id-val">Karl Erik Håkansson</span>
+      </div>
+      <div class="identity-row">
+        <span class="id-key">Artist name</span>
+        <span class="id-val"><em>Eko Svenningsson</em> — writing and photography</span>
+      </div>
+      <div class="identity-row">
+        <span class="id-key">Working identity</span>
+        <span class="id-val"><em>ECHOx</em> — the practice as a whole</span>
+      </div>
+      <div class="identity-row">
+        <span class="id-key">Construct</span>
+        <span class="id-val"><em>Echo Kronborg</em> — author of The Dark Hierarchy only</span>
+      </div>
+      <div class="identity-row">
+        <span class="id-key">Based</span>
+        <span class="id-val">Berlin, Mitte</span>
+      </div>
+      <div class="identity-row">
+        <span class="id-key">Origin</span>
+        <span class="id-val">Sweden</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE QUESTION -->
+  <div class="about-section">
+    <span class="section-label">02 — The practice</span>
+    <h2 class="section-title">What survives disappearance</h2>
+
+    <div class="prose">
+      <p>The question that runs through all of the work is this: <em>what survives disappearance?</em> It is not a rhetorical question. It has different answers in different media, and the differences matter.</p>
+
+      <p>In writing, the answer is: a name, precisely placed, in language that does not decay. <em>The Book of Names</em> is built entirely on this premise — each poem is an act of reinstatement, each named subject pulled back from the edge of being forgotten. The inverse-Pessoa principle: where Pessoa dispersed himself outward into many voices, this work gathers many voices inward, through a single act of naming, to prevent their disappearance.</p>
+
+      <p>In photography, the answer is: the irreversible frame. An instant photograph cannot be altered after exposure. What the camera recorded is what existed at that moment — no correction possible, no recovery from a wrong decision. The image is a testimony to what actually happened in front of the lens, not to what the photographer wished had happened. This constraint is the ethical position, not a technical limitation. It means that every frame carries the full weight of its own making.</p>
+
+      <p>In theater, the answer is more uncomfortable: nothing survives, entirely. The performance exists in time and then it is gone. What remains is what the audience carries out of the room — which is not the work itself but the residue of an encounter with it. <em>Aniara: The Doors to the Stars</em> takes this seriously: a five-movement theatrical adaptation of Harry Martinson's epic poem about a spacecraft drifting irreversibly away from Earth, carrying passengers who will never return. The drift is not a metaphor. It is the structure.</p>
+    </div>
+
+    <div class="pull">
+      Analog processes, irreversible techniques. Berlin as both ground and metaphysical space. Language as architecture — syntax and rhythm as structural elements, not ornament.
+    </div>
+  </div>
+
+  <!-- WHAT MAKES THE VIEW DISTINCTIVE -->
+  <div class="about-section">
+    <span class="section-label">03 — The view</span>
+    <h2 class="section-title">Why the work looks the way it does</h2>
+
+    <div class="prose">
+      <p>The mathematical background produces a specific kind of stubbornness about precision. In formal systems, vagueness is not a stylistic choice — it is a failure. A term that means two different things depending on context is a broken term. This stubbornness applies to language: a line in a poem that could be read two ways without both readings being intentional is a line that has not yet been finished. A character whose emotional state is named rather than demonstrated is a character who has not yet been written.</p>
+
+      <p>This is why psychological states in the fiction tend to become structural problems. Depression is not described as a feeling; it is described as a load distribution. A person who is not coping is misaligned, not sad. The emotional truth is derived from the structural description — the same way a conclusion follows from premises — rather than stated directly. The reader arrives at the feeling through the architecture, which means they arrive at it themselves rather than being handed it.</p>
+
+      <p>In photography, the same principle produces the neo-cubist tendency: surfaces, planes, angles treated as formal problems rather than documentary subjects. A face against a facade is not a symbol — it is a question about what happens when two kinds of marked surface occupy the same frame. The double exposure executes that question in-camera, without the possibility of adjustment. The geometry has to be solved before the shutter opens. If the answer is wrong, the image says so without apology.</p>
+
+      <p>What is singular about the position is not any one of these disciplines but the insistence on maintaining all of them in parallel, at full commitment, without treating any as primary. Most practitioners of one form use the others as relief or hobby. Here they are all working simultaneously on the same set of questions, in different materials, producing answers that are related but not identical. The fiction and the poetry share source material but not form. The photography and the theater share the irreversibility principle but not the medium. The music and the writing share the compression instinct but not the language. They are not illustrating each other. They are converging on something that cannot yet be stated in a single form — which is why they are all still running.</p>
+    </div>
+  </div>
+
+  <!-- BERLIN -->
+  <div class="about-section">
+    <span class="section-label">04 — The city</span>
+    <h2 class="section-title">Berlin as resonance chamber</h2>
+
+    <div class="prose">
+      <p>Berlin appears in the work not because it was chosen as a subject but because it is the condition in which the work happens. Its streets taught a particular kind of witnessing. The city does not hide its history — it carries it forward in its surfaces, its gaps, its buildings that stand next to the absence of buildings that used to stand there. To live in it is to be in constant proximity to what did not survive, which makes the question of what does survive feel genuinely urgent rather than philosophical.</p>
+
+      <p>The Faces and Facades project statement calls Berlin a <em>resonance chamber — an architecture of memory and encounter, where intimacy and structure are inseparably entwined.</em> That phrase was written to describe the photography, but it applies equally to the writing. The canal at Urbanhafen appears in <em>The Book of Names</em> not as local colour but as a structural element: water that holds everything without preference, that reflects without editing, that does not distinguish between what it is given. That is the quality Berlin offers to the work — not beauty, not grit, not any of the clichés, but a specific kind of unfiltered surface that shows what is placed against it without imposing its own reading.</p>
+
+      <p>Most of the writing happens in motion through the city. The phone's Notes app captures lines on the U-Bahn, at crossings, in the specific quality of light on Oranienburger Straße at a particular hour. The city is not the subject. It is the condition of production — the ground on which the thinking becomes available to be written down.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+</body>
+</html>
