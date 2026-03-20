@@ -18,35 +18,6 @@
     html{font-size:24px}
     body { background:var(--black); color:var(--text); font-family:'Cormorant Garamond',Georgia,serif; font-weight:300; }
 
-    /* AGE GATE */
-    #gate {
-      position:fixed; inset:0; z-index:200;
-      background:var(--black);
-      display:flex; align-items:center; justify-content:center; padding:2rem;
-      transition:opacity 0.8s ease, visibility 0.8s ease;
-    }
-    #gate.dismissed { opacity:0; visibility:hidden; pointer-events:none; }
-    .gate-inner { max-width:480px; width:100%; text-align:center; }
-    .gate-sigil { font-family:'IM Fell English',serif; font-size:1.8rem; color:var(--gold); letter-spacing:0.3em; display:block; margin-bottom:2rem; }
-    .gate-title { font-family:'IM Fell English',serif; font-size:1.7rem; color:var(--off-white); margin-bottom:1.5rem; font-weight:400; }
-    .gate-body { font-size:1.05rem; color:var(--muted); line-height:1.8; margin-bottom:2rem; font-style:italic; }
-    .gate-warn {
-      font-family:'Inconsolata',monospace; font-size:0.85rem;
-      letter-spacing:0.12em; color:var(--gold-dim); text-transform:uppercase;
-      margin-bottom:2rem; line-height:1.8;
-      border:1px solid rgba(139,26,26,0.3); padding:1rem;
-    }
-    .gate-btn {
-      display:inline-block; padding:0.85rem 2.2rem;
-      border:1px solid var(--gold-dim); background:transparent;
-      color:var(--gold); font-family:'Inconsolata',monospace;
-      font-size:0.9rem; letter-spacing:0.18em; text-transform:uppercase;
-      cursor:pointer; transition:all 0.3s; margin:0.4rem;
-    }
-    .gate-btn:hover { background:var(--gold); color:var(--black); }
-    .gate-btn.leave { border-color:#333; color:var(--muted); }
-    .gate-btn.leave:hover { background:#1a1a18; color:var(--text); border-color:#555; }
-
     /* NAV */
     nav {
       display:flex; align-items:center; justify-content:space-between;
@@ -126,35 +97,14 @@
 </head>
 <body>
 
-  <!-- AGE GATE -->
-  <div id="gate">
-    <div class="gate-inner">
-      <span class="gate-sigil">✦</span>
-      <h2 class="gate-title">Adult content</h2>
-      <div class="gate-warn">
-        This work contains explicit philosophical and theological engagement<br/>
-        with adult themes and practices.<br/>
-        Intended for readers 18 and over.
-      </div>
-      <p class="gate-body">
-        In the tradition of Bataille, Nin, and Sacher-Masoch — serious intellectual and spiritual inquiry.
-        Not pornography. Not instruction. Theology.
-      </p>
-      <div>
-        <button class="gate-btn" onclick="enter()">I am 18+ — Enter</button>
-        <button class="gate-btn leave" onclick="window.history.back()">Leave</button>
-      </div>
-    </div>
-  </div>
-
   <nav>
     <a href="index.html" class="nav-logo">ECHOx</a>
     <a href="manuscripts.html" class="nav-back">← Manuscripts</a>
   </nav>
 
-  <div id="main">
+  
     <div class="page-header">
-      <div class="access-badge">Adult content · Invitation access</div>
+      <div class="access-badge">Full access — invitation only</div>
       <h1>The Dark Hierarchy</h1>
       <p class="subtitle">A Treatise on Authority, Initiation, and the Order</p>
       <p class="author-line">Echo Kronborg — Berlin</p>
@@ -170,15 +120,16 @@
     <div class="wrapper">
 
       <div class="actions">
-        <a class="btn-dl" href="the_dark_hierarchy_v61-pages-1-38.pdf" download>
+        <a class="btn-dl" href="the_dark_hierarchy_v61.pdf" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download full manuscript — v61
+        </a>
+        <a class="btn-read" href="the_dark_hierarchy_v61-pages-1-38.pdf" download>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Download sample — 38 pp.
         </a>
         <a class="btn-read" href="synopsis-hierarchy.html">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
           Read full synopsis
-        </a>
-        <a class="btn-read" href="manuscripts.html" style="border-color:#333;color:var(--muted);">
-          Request full text →
         </a>
       </div>
