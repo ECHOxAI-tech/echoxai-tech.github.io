@@ -300,8 +300,7 @@
     margin-top: 0.35rem; line-height: 1.5;
   }
 
-  .email-send { display:none; margin-top:0.7rem; }
-  .email-send.show { display:flex; gap:0.5rem; }
+  .email-send { display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap; }
   .email-input {
     flex:1; background:var(--near); border:1px solid var(--rule);
     color:var(--text); font-family:'Inconsolata',monospace;
@@ -318,6 +317,25 @@
   }
   .btn-email:hover { background:var(--gold-dim); color:var(--black); }
 
+
+  .card-modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(8,8,6,0.95); z-index:200;
+    align-items:center; justify-content:center;
+    padding:1rem; flex-direction:column; gap:0.75rem;
+  }
+  .card-modal-overlay.open { display:flex; }
+  .card-modal-overlay img { max-width:100%; max-height:80vh; display:block; }
+  .card-modal-note {
+    font-family:'Inconsolata',monospace; font-size:0.55rem;
+    color:var(--muted); letter-spacing:0.1em; text-align:center; line-height:1.6;
+  }
+  .card-modal-close {
+    font-family:'Inconsolata',monospace; font-size:0.52rem;
+    letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
+    padding:0.55rem 1.2rem; cursor:pointer;
+  }
   canvas { display: none; }
   @media (max-width: 480px) {
     html { font-size: 22px; }
@@ -514,6 +532,12 @@
 
 <canvas id="share-canvas" width="1080" height="1080"></canvas>
 
+
+<div class="card-modal-overlay" id="card-modal">
+  <img id="card-preview" src="" alt="Your result card">
+  <p class="card-modal-note">On mobile: press and hold the image to save it.</p>
+  <button class="card-modal-close" onclick="document.getElementById('card-modal').classList.remove('open')">Close</button>
+</div>
 <script>
 // ══════════════════════════════════════════════
 // QUESTIONS
@@ -840,10 +864,10 @@ function saveResult(sc) {
   document.getElementById('code-box').textContent = code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
-  document.getElementById('email-send').classList.add('show');
+
   document.getElementById('btn-save').disabled    = true;
   document.getElementById('btn-save').textContent = 'Result saved';
-  document.getElementById('email-send').classList.add('show');
+
 }
 
 function resetSaveUI() {
@@ -951,10 +975,11 @@ async function generateShareCard(sc) {
   ctx.textAlign = 'center';
   ctx.fillText('echoxstudios.art', W / 2, 980);
 
-  const link  = document.createElement('a');
-  link.download = 'tdh-attachment-profile.png';
-  link.href     = canvas.toDataURL('image/png');
-  link.click();
+  const dataURL = canvas.toDataURL('image/png');
+  const preview = document.getElementById('card-preview');
+  preview.src = dataURL;
+  document.getElementById('card-modal').classList.add('open');
+  try { const l=document.createElement('a'); l.download='tdh-profile.png'; l.href=dataURL; l.click(); } catch(e){}
 }
 
 

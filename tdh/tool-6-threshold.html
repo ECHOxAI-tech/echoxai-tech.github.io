@@ -104,8 +104,7 @@
   .retake-link{display:block;text-align:center;margin-top:2.5rem;font-family:'Inconsolata',monospace;font-size: 0.6rem;color:var(--muted);letter-spacing:0.1em;text-decoration:none;transition:color 0.2s;}
   .retake-link:hover{color:var(--text);}
 
-  .email-send { display:none; margin-top:0.7rem; }
-  .email-send.show { display:flex; gap:0.5rem; }
+  .email-send { display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap; }
   .email-input {
     flex:1; background:var(--near); border:1px solid var(--rule);
     color:var(--text); font-family:'Inconsolata',monospace;
@@ -554,7 +553,7 @@ function saveResult(thr,arch,cost){
   document.getElementById('code-box').textContent=code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
-  document.getElementById('email-send').classList.add('show');
+
   const b=document.getElementById('btn-save');b.disabled=true;b.textContent='Result saved';
 }
 

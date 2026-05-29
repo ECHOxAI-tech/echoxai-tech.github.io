@@ -241,8 +241,7 @@
     border-top: 1px solid var(--rule);
   }
 
-  .email-send { display:none; margin-top:0.7rem; }
-  .email-send.show { display:flex; gap:0.5rem; }
+  .email-send { display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap; }
   .email-input {
     flex:1; background:var(--near); border:1px solid var(--rule);
     color:var(--text); font-family:'Inconsolata',monospace;
@@ -757,10 +756,10 @@ function saveResult(diag) {
   document.getElementById('code-box').textContent = code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
-  document.getElementById('email-send').classList.add('show');
+
   document.getElementById('btn-save').disabled    = true;
   document.getElementById('btn-save').textContent = 'Result saved';
-  document.getElementById('email-send').classList.add('show');
+
 }
 
 function resetSaveUI() {
