@@ -403,26 +403,6 @@
 
   <div class="code-box" id="code-box"></div>
 
-  <button class="btn-primary" id="btn-save" style="margin-top:0.7rem">Save result</button>
-
-  <!-- Email section — shown after saving -->
-  <div id="email-section" style="display:none; margin-top:1.2rem">
-    <div class="send-opts">
-      <label class="send-opt-label">
-        <input type="checkbox" id="opt-result" checked>
-        <span class="opt-box"></span>Result
-      </label>
-      <label class="send-opt-label">
-        <input type="checkbox" id="opt-code">
-        <span class="opt-box"></span>Code
-      </label>
-    </div>
-    <div class="send-row">
-      <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
-      <button class="btn-send-email" id="btn-email-send">Send</button>
-    </div>
-    <p class="send-feedback" id="send-feedback"></p>
-  </div>
 
 
   <p class="result-disclaimer">This tool is an instrument for reflective thinking within a specific philosophical framework. It does not constitute psychological, therapeutic, or clinical advice, does not produce a clinical diagnosis, and no professional relationship is formed by using it. The provisional diagnosis it generates is a reading of the book's categories — not a professional assessment of your relationship or mental health. If you are in distress, experiencing harm, or concerned about your safety or a partner's safety, please seek support from a qualified professional immediately.</p>
@@ -699,6 +679,8 @@ const DIAGNOSIS_TEXT = {
 // ══════════════════════════════════════════════
 
 function showResults(diag) {
+  // Auto-save result immediately
+  var __autoSaveTimer = setTimeout(function() { if(!savedCode) { var r = typeof currentGradient!=="undefined"&&currentGradient?currentGradient:typeof currentScores!=="undefined"&&currentScores?currentScores:{}; saveResult(r); } }, 100);
   document.getElementById('view-survey').style.display = 'none';
   const vr = document.getElementById('view-results');
   vr.style.display = 'block';

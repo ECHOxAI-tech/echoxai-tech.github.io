@@ -472,26 +472,6 @@
 
   <div class="code-box" id="code-box"></div>
 
-  <button class="btn-primary" id="btn-save" style="margin-top:0.7rem">Save result</button>
-
-  <!-- Email section — shown after saving -->
-  <div id="email-section" style="display:none; margin-top:1.2rem">
-    <div class="send-opts">
-      <label class="send-opt-label">
-        <input type="checkbox" id="opt-result" checked>
-        <span class="opt-box"></span>Result
-      </label>
-      <label class="send-opt-label">
-        <input type="checkbox" id="opt-code">
-        <span class="opt-box"></span>Code
-      </label>
-    </div>
-    <div class="send-row">
-      <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
-      <button class="btn-send-email" id="btn-email-send">Send</button>
-    </div>
-    <p class="send-feedback" id="send-feedback"></p>
-  </div>
 
 
   <p class="result-disclaimer">This profile describes patterns in your confirmation-seeking as information, not as pathology or clinical diagnosis. It does not constitute psychological or therapeutic advice, and no professional relationship is formed by using this tool. It deliberately avoids clinical attachment categories. If this material surfaces significant distress, please seek support from a qualified professional.</p>
@@ -779,6 +759,8 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 function showResults(sc) {
+  // Auto-save result immediately
+  var __autoSaveTimer = setTimeout(function() { if(!savedCode) { var r = typeof currentGradient!=="undefined"&&currentGradient?currentGradient:typeof currentScores!=="undefined"&&currentScores?currentScores:{}; saveResult(r); } }, 100);
   currentScores = sc;
   window.__currentResult = sc;
   document.getElementById('view-survey').style.display = 'none';
