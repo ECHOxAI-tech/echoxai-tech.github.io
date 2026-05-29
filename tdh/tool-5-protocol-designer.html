@@ -110,21 +110,6 @@
   .retake-link:hover { color: var(--text); }
 
   .email-send { display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap; }
-  .email-input {
-    flex:1; background:var(--near); border:1px solid var(--rule);
-    color:var(--text); font-family:'Inconsolata',monospace;
-    font-size:0.5rem; letter-spacing:0.06em;
-    padding:0.55rem 0.75rem; outline:none; transition:border-color 0.2s;
-  }
-  .email-input:focus { border-color:var(--gold-dim); }
-  .email-input::placeholder { color:var(--muted); }
-  .btn-email {
-    font-family:'Inconsolata',monospace; font-size:0.5rem;
-    letter-spacing:0.12em; text-transform:uppercase;
-    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
-    padding:0.55rem 0.85rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
-  }
-  .btn-email:hover { background:var(--gold-dim); color:var(--black); }
 
   @media print {
     body { background: white; color: #1a1a1a; max-width: none; padding: 2cm; }
@@ -138,6 +123,51 @@
     .section-lbl { color: #7a6128; }
   }
   @media (max-width: 480px) { html { font-size: 22px; } body { padding: 2rem 1.25rem 3rem; } }
+
+  /* ── EMAIL SEND ── */
+  .email-section { margin-top: 1rem; }
+  .email-opts {
+    display: flex; gap: 0.6rem; margin-bottom: 0.65rem; flex-wrap: wrap;
+  }
+  .email-opt-label {
+    display: flex; align-items: center; gap: 0.35rem; cursor: pointer;
+    font-family: 'Inconsolata', monospace; font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--bone); user-select: none;
+  }
+  .email-opt-label input[type="checkbox"] { display: none; }
+  .email-opt-box {
+    width: 1rem; height: 1rem; border: 1px solid var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.55rem; color: var(--black); flex-shrink: 0;
+    background: transparent; transition: background 0.15s, border-color 0.15s;
+  }
+  .email-opt-label input:checked ~ .email-opt-box {
+    background: var(--gold); border-color: var(--gold);
+  }
+  .email-opt-label input:checked ~ .email-opt-box::after { content: '✓'; }
+  .email-row { display: flex; gap: 0.5rem; }
+  .email-input {
+    flex: 1; background: var(--near); border: 1px solid rgba(212,169,62,0.35);
+    color: var(--text); font-family: 'Inconsolata', monospace;
+    font-size: 0.58rem; padding: 0.65rem 0.8rem; outline: none;
+    transition: border-color 0.2s; min-width: 0;
+  }
+  .email-input:focus { border-color: var(--gold); }
+  .email-input::placeholder { color: var(--muted); }
+  .btn-send {
+    font-family: 'Inconsolata', monospace; font-size: 0.58rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--black); background: var(--gold); border: none;
+    padding: 0.65rem 1.1rem; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+  }
+  .btn-send:hover { background: var(--off-white); }
+  .btn-send:disabled { opacity: 0.5; cursor: default; }
+  .email-feedback {
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.08em; margin-top: 0.4rem; min-height: 1rem;
+    color: var(--gold);
+  }
 </style>
 </head>
 <body>
@@ -202,16 +232,26 @@
       <button class="btn-outline" id="btn-retake" style="margin-top:0">Redesign</button>
     </div>
     <div class="code-box" id="code-box"></div>
-    <div class="email-send" id="email-send">
-    <div class="email-row">
-      <input type="email" id="code-email-input" placeholder="your@email.com" autocomplete="email">
-      <button class="btn-email" id="btn-email-send" onclick="sendCodeByEmail()">Send code →</button>
-    </div>
     <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
   </div>
-  <div class="email-send" id="email-send">
-    <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
-    <button class="btn-email" id="btn-email-send">Email me this</button>
+  <div class="email-section" id="email-section" style="display:none">
+    <div class="email-opts">
+      <label class="email-opt-label">
+        <input type="checkbox" id="opt-result" checked>
+        <span class="email-opt-box"></span>
+        Result
+      </label>
+      <label class="email-opt-label">
+        <input type="checkbox" id="opt-code">
+        <span class="email-opt-box"></span>
+        Code
+      </label>
+    </div>
+    <div class="email-row">
+      <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-send" id="btn-email-send">Send</button>
+    </div>
+    <p class="email-feedback" id="email-feedback"></p>
   </div>
 
   <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
@@ -797,6 +837,7 @@ document.getElementById('btn-save').addEventListener('click', () => {
   document.getElementById('code-box').textContent = code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
+  document.getElementById('email-section').style.display = 'block';
 
   const b = document.getElementById('btn-save');
   b.disabled=true; b.textContent='Protocol saved'; document.getElementById('email-send').classList.add('show');
@@ -828,6 +869,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
           document.getElementById('code-box').textContent=savedCode;
           document.getElementById('code-box').classList.add('show');
           document.getElementById('code-note').classList.add('show');
+  document.getElementById('email-section').style.display = 'block';
           const b=document.getElementById('btn-save'); b.disabled=true; b.textContent='Protocol saved'; document.getElementById('email-send').classList.add('show');
         });
         return;
@@ -838,45 +880,6 @@ document.getElementById('btn-retake').addEventListener('click', () => {
 })();
 
 
-  // Brevo email send
-  document.getElementById('btn-email-send').addEventListener('click', async function() {
-    var emailVal = document.getElementById('email-input').value.trim();
-    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
-      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
-      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
-      return;
-    }
-    var btn = document.getElementById('btn-email-send');
-    btn.textContent = 'Sending…';
-    btn.disabled = true;
-
-    var code = savedCode;
-    const returnURL = window.location.href.split('?')[0] + '?code=' + code;
-    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
-
-    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
-      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
-      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Protocol Designer</h1>'
-      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
-      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
-      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
-      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
-      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
-      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
-      + '</div>';
-
-    try {
-      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: [{ email: emailVal }],
-          subject: 'Your Protocol package code — The Dark Hierarchy',
-          htmlContent: htmlContent
-        })
-      });
       if (res.ok) {
         btn.textContent = 'Sent ✓';
         btn.style.borderColor = 'var(--gold)';
@@ -889,6 +892,83 @@ document.getElementById('btn-retake').addEventListener('click', () => {
     } catch(e) {
       btn.textContent = 'Error — try again';
       btn.disabled = false;
+    }
+  });
+
+
+  function buildResultEmailHTML(contentHTML) {
+    return '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 0.4rem">The Dark Hierarchy</p>'
+      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:0.5rem 0 1.5rem">'
+      + contentHTML
+      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:1.5rem 0 0.5rem">'
+      + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ &mdash; ECHO&times;STUDIOS &middot; Berlin</p>'
+      + '</div>';
+  }
+
+  // Email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@')) {
+      document.getElementById('email-feedback').textContent = 'Please enter a valid email address.';
+      document.getElementById('email-feedback').style.color = 'var(--gold)';
+      return;
+    }
+    var wantResult = document.getElementById('opt-result').checked;
+    var wantCode   = document.getElementById('opt-code').checked;
+    if (!wantResult && !wantCode) {
+      document.getElementById('email-feedback').textContent = 'Select at least one option.';
+      return;
+    }
+    if (!savedCode) saveResult(typeof currentGradient !== 'undefined' && currentGradient ? currentGradient : (typeof currentScores !== 'undefined' && currentScores ? currentScores : {}));
+
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…'; btn.disabled = true;
+    document.getElementById('email-feedback').textContent = '';
+
+    var returnURL = window.location.href.split('?')[0] + '?code=' + savedCode;
+    var shareURL  = (typeof makeShareURL === 'function' && typeof currentGradient !== 'undefined' && currentGradient) ? makeShareURL(currentGradient)
+                  : (typeof makeShareURL === 'function' && typeof currentScores !== 'undefined' && currentScores) ? makeShareURL(currentScores)
+                  : returnURL;
+
+    var codePart = '<p style="color:#c8c3bb;margin:0.5rem 0 0.25rem;font-family:monospace;font-size:13px">Your result code (device-specific):</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#d4a93e;margin:0.25rem 0 0.75rem">' + savedCode + '</p>'
+      + '<p style="margin:0.5rem 0"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
+      + (shareURL !== returnURL ? '<p style="color:#c8c3bb;font-size:13px;margin:0.5rem 0 0.25rem">Shareable link (any device):</p><p style="margin:0 0 0.75rem"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
+
+    var resultPart = document.getElementById('result-text-for-email') ? document.getElementById('result-text-for-email').innerText : document.querySelector('#view-results')?.innerText || '';
+    var resultHTML = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.7;color:#e2ddd2">' + resultPart.replace(/</g,'&lt;').replace(/>/g,'&gt;').substring(0, 3000) + '</p>';
+
+    var contentHTML = '';
+    if (wantResult && wantCode) contentHTML = resultHTML + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.15);margin:1.5rem 0">' + codePart;
+    else if (wantResult) contentHTML = resultHTML;
+    else contentHTML = codePart;
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: emailVal,
+          subject: 'Your Protocol Package — The Dark Hierarchy',
+          htmlContent: buildResultEmailHTML(contentHTML)
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent';
+        btn.style.background = 'var(--gold)';
+        document.getElementById('email-feedback').textContent = 'Check your inbox.';
+        document.getElementById('email-feedback').style.color = 'var(--gold)';
+      } else {
+        var errText = await res.text();
+        btn.textContent = 'Send'; btn.disabled = false;
+        document.getElementById('email-feedback').textContent = 'Failed (' + res.status + '). Check Brevo IP settings.';
+        document.getElementById('email-feedback').style.color = '#c84040';
+      }
+    } catch(e) {
+      btn.textContent = 'Send'; btn.disabled = false;
+      document.getElementById('email-feedback').textContent = 'Network error. Try again.';
+      document.getElementById('email-feedback').style.color = '#c84040';
     }
   });
 
