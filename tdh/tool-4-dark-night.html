@@ -729,7 +729,7 @@ function showResults(diag) {
 
   window.scrollTo({ top: 0 });
 
-  document.getElementById('btn-save').addEventListener('click', () => saveResult(diag));
+  // btn-save wired at bottom of script
   document.getElementById('btn-retake').addEventListener('click', () => {
     vr.style.display = 'none';
     responses = {}; savedCode = null; current = 0;

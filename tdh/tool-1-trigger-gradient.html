@@ -816,8 +816,7 @@ function showResults(pct) {
 
   window.scrollTo({ top: 0 });
 
-  // Wire buttons
-  document.getElementById('btn-save').addEventListener('click', () => saveResult(pct));
+  // btn-save wired at bottom of script
   // Update URL without reload
   try {
     const url = new URL(window.location.href);
