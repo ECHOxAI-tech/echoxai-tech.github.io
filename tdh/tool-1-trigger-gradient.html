@@ -799,10 +799,16 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 function showResults(pct) {
+  currentGradient = pct;
   window.__lastResult = pct; setTimeout(_saveAndShow, 80);
   hide('view-survey');
   const vr = document.getElementById('view-results');
   vr.style.display = 'block';
+  // Populate shareable link
+  try {
+    const su = document.getElementById('share-url-text');
+    if (su) su.textContent = makeShareURL(pct);
+  } catch(e) {}
 
   // Animate bars after a brief reflow
   requestAnimationFrame(() => {
