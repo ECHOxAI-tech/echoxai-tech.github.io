@@ -10,7 +10,7 @@
 <style>
   :root {
     --black:    #080806; --near:     #0e0e0b; --off-white:#f0ece3;
-    --bone:     #e8e4dc; --gold:     #b8963e; --gold-dim: #7a6128;
+    --bone:     #e8e4dc; --gold:     #d4a93e; --gold-dim: #b8963e;
     --text:     #f0ece3; --muted:    #c8c3bb; --rule:     rgba(184,150,62,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +30,7 @@
   .back-link::before { content: '\2190 '; }
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.32em; text-transform: uppercase;
     color: var(--gold); display: block; margin-bottom: 0.55rem;
     border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem;
@@ -44,9 +44,9 @@
   .body-text p + p { margin-top: 0.85em; }
   .body-text em { color: var(--bone); font-style: italic; }
   .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
-  .meta-item { font-family: 'Inconsolata', monospace; font-size: 0.48rem; letter-spacing: 0.12em; color: var(--muted); }
+  .meta-item { font-family: 'Inconsolata', monospace; font-size: 0.6rem; letter-spacing: 0.12em; color: var(--muted); }
   .meta-item strong { display: block; color: var(--gold-dim); font-weight: 400; margin-bottom: 0.15rem; letter-spacing: 0.18em; text-transform: uppercase; }
-  .disclaimer { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.05em; line-height: 1.7; opacity: 0.7; margin-top: 1.2rem; }
+  .disclaimer { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.05em; line-height: 1.7; opacity: 0.7; margin-top: 1.2rem; }
   .btn-primary {
     display: block; width: 100%; font-family: 'Inconsolata', monospace;
     font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
@@ -57,12 +57,12 @@
 
   /* ── SURVEY ── */
   #view-survey { display: none; }
-  .progress-label { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem; }
-  .progress-track { height: 1px; background: var(--rule); margin-bottom: 2rem; }
-  .progress-fill { height: 100%; background: var(--gold-dim); transition: width 0.3s ease; }
-  .phase-marker { font-family: 'Inconsolata', monospace; font-size: 0.44rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 1.5rem; }
+  .progress-label { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem; }
+  .progress-track { height: 4px; background: rgba(212,169,62,0.2); margin-bottom: 2rem; }
+  .progress-fill { height: 100%; background: var(--gold); transition: width 0.3s ease; }
+  .phase-marker { font-family: 'Inconsolata', monospace; font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 1.5rem; }
   .q-prompt { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; font-weight: 300; font-style: italic; color: var(--off-white); line-height: 1.6; margin-bottom: 1.5rem; }
-  .q-hint { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.9rem; line-height: 1.55; }
+  .q-hint { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.9rem; line-height: 1.55; }
   .sel-options { display: flex; flex-direction: column; gap: 0.5rem; }
   .sel-btn {
     font-family: 'Cormorant Garamond', Georgia, serif; font-size: 0.85rem;
@@ -73,23 +73,23 @@
   .sel-btn:hover { border-color: var(--gold-dim); color: var(--off-white); }
   .sel-btn.sel { border-color: var(--gold); color: var(--off-white); background: rgba(184,150,62,0.06); }
   .survey-nav { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; }
-  .btn-back, .btn-next { font-family: 'Inconsolata', monospace; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; padding: 0.65rem 1.1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .btn-back, .btn-next { font-family: 'Inconsolata', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; padding: 0.65rem 1.1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
   .btn-back { border: 1px solid var(--rule); color: var(--muted); }
   .btn-back:hover { border-color: var(--gold-dim); color: var(--text); }
   .btn-back:disabled { opacity: 0.25; cursor: default; }
   .btn-back:disabled:hover { border-color: var(--rule); color: var(--muted); }
   .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
   .btn-next:hover { border-color: var(--gold); color: var(--gold); }
-  .req-msg { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--gold-dim); letter-spacing: 0.08em; margin-top: 0.5rem; display: none; }
+  .req-msg { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--gold-dim); letter-spacing: 0.08em; margin-top: 0.5rem; display: none; }
   .req-msg.show { display: block; }
 
   /* ── PROTOCOL DOCUMENT ── */
   #view-protocol { display: none; }
-  .section-lbl { font-family: 'Inconsolata', monospace; font-size: 0.48rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .section-lbl { font-family: 'Inconsolata', monospace; font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
   .protocol-doc { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 300; }
   .proto-section-title { font-family: 'Inconsolata', monospace; font-size: 0.5rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin: 1.5rem 0 1rem; }
   .ritual-block { border-left: 1px solid var(--rule); padding: 0.75rem 1rem; margin-bottom: 1.1rem; }
-  .ritual-name { font-family: 'IM Fell English', Georgia, serif; font-size: 0.9rem; font-weight: 400; color: var(--off-white); margin-bottom: 0.3rem; }
+  .ritual-name { font-family: 'IM Fell English', Georgia, serif; font-size: 1.05rem; font-weight: 400; color: var(--off-white); margin-bottom: 0.3rem; }
   .ritual-desc { font-size: 0.78rem; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
   .ritual-meta { display: flex; flex-direction: column; gap: 0.2rem; }
   .ritual-meta-row { font-size: 0.68rem; color: var(--muted); line-height: 1.55; }
@@ -100,13 +100,13 @@
   /* actions */
   .code-box { font-family: 'Inconsolata', monospace; font-size: 1.15rem; letter-spacing: 0.35em; color: var(--gold); text-align: center; padding: 1.1rem; border: 1px solid var(--rule); margin: 1rem 0; display: none; }
   .code-box.show { display: block; }
-  .code-note { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.06em; text-align: center; line-height: 1.65; display: none; }
+  .code-note { font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.06em; text-align: center; line-height: 1.65; display: none; }
   .code-note.show { display: block; }
-  .btn-outline { font-family: 'Inconsolata', monospace; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); background: none; border: 1px solid var(--gold-dim); padding: 0.65rem 1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; width: 100%; margin-top: 0.7rem; display: block; }
+  .btn-outline { font-family: 'Inconsolata', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); background: none; border: 1px solid var(--gold-dim); padding: 0.65rem 1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; width: 100%; margin-top: 0.7rem; display: block; }
   .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
   .btn-outline:disabled { opacity: 0.35; cursor: default; }
   .result-disclaimer { font-family: 'Inconsolata', monospace; font-size: 0.42rem; color: var(--muted); letter-spacing: 0.05em; line-height: 1.65; opacity: 0.6; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
-  .retake-link { display: block; text-align: center; margin-top: 2.5rem; font-family: 'Inconsolata', monospace; font-size: 0.48rem; color: var(--muted); letter-spacing: 0.1em; text-decoration: none; transition: color 0.2s; }
+  .retake-link { display: block; text-align: center; margin-top: 2.5rem; font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; text-decoration: none; transition: color 0.2s; }
   .retake-link:hover { color: var(--text); }
 
   .email-send { display:none; margin-top:0.7rem; }

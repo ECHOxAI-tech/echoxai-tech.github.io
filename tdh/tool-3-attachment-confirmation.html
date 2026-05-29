@@ -13,8 +13,8 @@
     --near:     #0e0e0b;
     --off-white:#f0ece3;
     --bone:     #e8e4dc;
-    --gold:     #b8963e;
-    --gold-dim: #7a6128;
+    --gold:     #d4a93e;
+    --gold-dim: #b8963e;
     --text:     #f0ece3;
     --muted:    #c8c3bb;
     --rule:     rgba(184,150,62,0.2);
@@ -37,7 +37,7 @@
   .back-link::before { content: '\2190 '; }
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.32em; text-transform: uppercase;
     color: var(--gold); display: block; margin-bottom: 0.55rem;
     border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem;
@@ -54,19 +54,19 @@
   .intro-body p + p { margin-top: 0.85em; }
   .intro-body em { color: var(--bone); font-style: italic; }
   .framing-note {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--gold-dim); letter-spacing: 0.08em; line-height: 1.7;
     border-left: 1px solid var(--gold-dim); padding-left: 0.75rem;
     margin: 1.5rem 0;
   }
   .disclaimer {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.05em; line-height: 1.7;
     opacity: 0.7; margin-top: 1.2rem;
   }
   .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
   .meta-item {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.12em; color: var(--muted);
   }
   .meta-item strong {
@@ -86,12 +86,12 @@
   /* ── SURVEY ── */
   #view-survey { display: none; }
   .progress-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.15em;
     text-align: right; margin-bottom: 0.35rem;
   }
-  .progress-track { height: 1px; background: var(--rule); margin-bottom: 2.5rem; }
-  .progress-fill { height: 100%; background: var(--gold-dim); transition: width 0.3s ease; }
+  .progress-track { height: 4px; background: rgba(212,169,62,0.2); margin-bottom: 2.5rem; }
+  .progress-fill { height: 100%; background: var(--gold); transition: width 0.3s ease; }
   .question-text {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 1.15rem; font-weight: 300; font-style: italic;
@@ -107,9 +107,9 @@
     margin-bottom: 2rem;
   }
   .lbtn {
-    flex: 1; min-height: 2.8rem; min-width: 2.8rem; max-width: 3.2rem;
-    border: 1px solid var(--rule); background: transparent; color: var(--muted);
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    flex: 1; min-height: 3.2rem; min-width: 3.2rem; max-width: 3.6rem;
+    border: 1px solid rgba(212,169,62,0.4); background: transparent; color: var(--bone);
+    font-family: 'Inconsolata', monospace; font-size: 0.7rem;
     cursor: pointer; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     padding: 0; transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -118,7 +118,7 @@
   .lbtn.sel { border-color: var(--gold); background: var(--gold); color: var(--black); }
   .survey-nav { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
   .btn-back, .btn-next {
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.15em; text-transform: uppercase;
     background: none; padding: 0.65rem 1.1rem; cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
@@ -130,7 +130,7 @@
   .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
   .btn-next:hover { border-color: var(--gold); color: var(--gold); }
   .req-msg {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--gold-dim); letter-spacing: 0.08em;
     margin-top: 0.5rem; display: none;
   }
@@ -139,7 +139,7 @@
   /* ── RESULTS ── */
   #view-results { display: none; }
   .section-lbl {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.62rem;
     letter-spacing: 0.28em; text-transform: uppercase;
     color: var(--gold); margin-bottom: 1rem;
   }
@@ -148,7 +148,7 @@
   .dim-row { display: flex; align-items: flex-start; gap: 0.65rem; margin-bottom: 1.4rem; }
   .dim-label-col { width: 6.5rem; flex-shrink: 0; }
   .dim-name {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.62rem;
     letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted);
     display: block; margin-bottom: 0.2rem;
   }
@@ -161,7 +161,7 @@
   .bar-track { height: 4px; background: rgba(184,150,62,0.1); position: relative; }
   .bar-fill { height: 100%; background: var(--gold); width: 0; transition: width 0.9s ease; }
   .bar-pct {
-    font-family: 'Inconsolata', monospace; font-size: 0.5rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.75rem;
     color: var(--gold); text-align: right; margin-top: 0.25rem;
   }
 
@@ -181,7 +181,7 @@
     color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
   }
   .axis-value {
-    font-family: 'Inconsolata', monospace; font-size: 0.5rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.75rem;
     color: var(--gold); text-align: right; margin-top: 0.2rem;
   }
 
@@ -207,13 +207,13 @@
   }
   .code-box.show { display: block; }
   .code-note {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.06em; text-align: center;
     line-height: 1.65; display: none;
   }
   .code-note.show { display: block; }
   .btn-outline {
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.15em; text-transform: uppercase;
     color: var(--gold-dim); background: none;
     border: 1px solid var(--gold-dim);
@@ -228,7 +228,7 @@
   .action-pair .btn-outline { margin-top: 0; }
   .retake-link {
     display: block; text-align: center; margin-top: 2.5rem;
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.1em;
     text-decoration: none; transition: color 0.2s;
   }
@@ -246,19 +246,19 @@
     padding: 1.1rem 1.2rem; margin-bottom: 1.5rem;
   }
   .share-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--gold-dim); display: block; margin-bottom: 0.65rem;
   }
   .share-url-box { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
   .share-url-text {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted);
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem; color: var(--muted);
     background: var(--black); border: 1px solid var(--rule);
     padding: 0.45rem 0.65rem; flex: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .btn-copy {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--gold-dim); background: none; border: 1px solid var(--gold-dim);
     padding: 0.45rem 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
@@ -286,7 +286,7 @@
   .email-row input[type="email"]:focus { border-color: var(--gold-dim); }
   .email-row input[type="email"]::placeholder { color: var(--muted); }
   .email-row .btn-email {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--gold-dim); background: none;
     border: 1px solid var(--gold-dim);
@@ -483,7 +483,7 @@
 
   <!-- Save + share -->
   <p class="section-lbl">Save this result (private)</p>
-  <div class="intro-body" style="font-size:0.72rem; color:var(--muted); margin-bottom:1rem;">
+  <div class="intro-body" style="font-size: 0.75rem; color:var(--muted); margin-bottom:1rem;">
     <p>Saving generates an anonymous six-character code. No email, no account.</p>
   </div>
 
@@ -880,7 +880,7 @@ async function generateShareCard(sc) {
   ctx.textAlign = 'center';
   ctx.fillText('The Dark Hierarchy', W / 2, 156);
 
-  ctx.fillStyle = '#b8963e';
+  ctx.fillStyle = '#d4a93e';
   ctx.font = '32px Georgia, serif';
   ctx.fillText('\u2736', W / 2, 206);
 
@@ -912,9 +912,9 @@ async function generateShareCard(sc) {
     if (row.type === 'bar') {
       ctx.fillStyle = 'rgba(184,150,62,0.1)';
       ctx.fillRect(barX, y - 4, barW, barH);
-      ctx.fillStyle = '#b8963e';
+      ctx.fillStyle = '#d4a93e';
       ctx.fillRect(barX, y - 4, Math.round(barW * row.val / 100), barH);
-      ctx.fillStyle = '#b8963e';
+      ctx.fillStyle = '#d4a93e';
       ctx.font = '400 24px "Inconsolata", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(row.val + ' / 100', barX + barW + 70, y + 6);
@@ -932,10 +932,10 @@ async function generateShareCard(sc) {
       ctx.fillText('TOWARD', barX + barW, y + 22);
       // Marker
       const mx = barX + Math.round(barW * row.val / 100);
-      ctx.fillStyle = '#b8963e';
+      ctx.fillStyle = '#d4a93e';
       ctx.beginPath(); ctx.arc(mx, y, 7, 0, Math.PI * 2); ctx.fill();
       // Value
-      ctx.fillStyle = '#b8963e';
+      ctx.fillStyle = '#d4a93e';
       ctx.font = '400 24px "Inconsolata", monospace';
       ctx.textAlign = 'right';
       ctx.fillText(directionShort(row.val).toUpperCase(), barX + barW + 70, y + 6);

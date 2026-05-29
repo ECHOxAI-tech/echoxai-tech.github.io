@@ -13,8 +13,8 @@
     --near:     #0e0e0b;
     --off-white:#f0ece3;
     --bone:     #e8e4dc;
-    --gold:     #b8963e;
-    --gold-dim: #7a6128;
+    --gold:     #d4a93e;
+    --gold-dim: #b8963e;
     --text:     #f0ece3;
     --muted:    #c8c3bb;
     --rule:     rgba(184,150,62,0.2);
@@ -53,7 +53,7 @@
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem;
+    font-size: 0.6rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--gold-dim);
@@ -78,7 +78,7 @@
   .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
   .meta-item {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem;
+    font-size: 0.6rem;
     letter-spacing: 0.12em;
     color: var(--muted);
   }
@@ -106,14 +106,14 @@
 
   .progress-label {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.44rem; color: var(--muted);
+    font-size: 0.6rem; color: var(--muted);
     letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem;
   }
   .progress-track {
-    height: 1px; background: var(--rule); margin-bottom: 2.5rem;
+    height: 4px; background: rgba(212,169,62,0.2); margin-bottom: 2.5rem;
   }
   .progress-fill {
-    height: 100%; background: var(--gold-dim); transition: width 0.3s ease;
+    height: 100%; background: var(--gold); transition: width 0.3s ease;
   }
 
   .question-text {
@@ -138,10 +138,10 @@
 
   .lbtn {
     flex: 1;
-    min-height: 2.8rem; min-width: 2.8rem; max-width: 3.2rem;
+    min-height: 3.2rem; min-width: 3.2rem; max-width: 3.6rem;
     border: 1px solid var(--rule);
     background: transparent; color: var(--muted);
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.7rem;
     cursor: pointer; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     padding: 0; transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -154,7 +154,7 @@
   }
   .btn-back, .btn-next {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase;
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
     background: none; padding: 0.65rem 1.1rem; cursor: pointer;
     transition: border-color 0.2s, color 0.2s;
   }
@@ -167,7 +167,7 @@
 
   .req-msg {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.44rem; color: var(--gold-dim);
+    font-size: 0.6rem; color: var(--gold-dim);
     letter-spacing: 0.08em; margin-top: 0.5rem; display: none;
   }
   .req-msg.show { display: block; }
@@ -184,7 +184,7 @@
 
   .section-lbl {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem; letter-spacing: 0.28em;
+    font-size: 0.62rem; letter-spacing: 0.28em;
     text-transform: uppercase; color: var(--gold);
     margin-bottom: 1rem;
   }
@@ -196,7 +196,7 @@
   }
   .bar-lbl {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem; letter-spacing: 0.15em;
+    font-size: 0.62rem; letter-spacing: 0.15em;
     text-transform: uppercase; color: var(--muted);
     width: 6rem; flex-shrink: 0;
   }
@@ -208,7 +208,7 @@
   .bar-fill { height: 100%; background: var(--gold); width: 0; transition: width 0.9s ease; }
   .bar-pct {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.5rem; color: var(--gold);
+    font-size: 0.75rem; color: var(--gold);
     width: 2.4rem; text-align: right; flex-shrink: 0;
   }
 
@@ -231,7 +231,7 @@
   }
   .cmp-lbl {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem; letter-spacing: 0.15em;
+    font-size: 0.62rem; letter-spacing: 0.15em;
     text-transform: uppercase; color: var(--muted);
     width: 6rem; flex-shrink: 0;
   }
@@ -271,7 +271,7 @@
   .code-box.show { display: block; }
   .code-note {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.44rem; color: var(--muted);
+    font-size: 0.6rem; color: var(--muted);
     letter-spacing: 0.06em; text-align: center;
     line-height: 1.65; display: none;
   }
@@ -279,7 +279,7 @@
 
   .btn-outline {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase;
+    font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
     color: var(--gold-dim); background: none;
     border: 1px solid var(--gold-dim);
     padding: 0.65rem 1rem; cursor: pointer;
@@ -296,7 +296,7 @@
   .retake-link {
     display: block; text-align: center; margin-top: 2.5rem;
     font-family: 'Inconsolata', monospace;
-    font-size: 0.48rem; color: var(--muted);
+    font-size: 0.6rem; color: var(--muted);
     letter-spacing: 0.1em; text-decoration: none;
     transition: color 0.2s;
   }
@@ -305,7 +305,7 @@
 
   .disclaimer {
     font-family: 'Inconsolata', monospace;
-    font-size: 0.44rem;
+    font-size: 0.6rem;
     color: var(--muted);
     letter-spacing: 0.05em;
     line-height: 1.7;
@@ -332,7 +332,7 @@
     margin-bottom: 1.5rem;
   }
   .share-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--gold-dim); display: block; margin-bottom: 0.65rem;
   }
@@ -341,14 +341,14 @@
     margin-bottom: 0.6rem;
   }
   .share-url-text {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.04em;
     background: var(--black); border: 1px solid var(--rule);
     padding: 0.45rem 0.65rem; flex: 1;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .btn-copy {
-    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--gold-dim); background: none;
     border: 1px solid var(--gold-dim);
@@ -381,7 +381,7 @@
   .email-row input[type="email"]:focus { border-color: var(--gold-dim); }
   .email-row input[type="email"]::placeholder { color: var(--muted); }
   .email-row .btn-email {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     letter-spacing: 0.12em; text-transform: uppercase;
     color: var(--gold-dim); background: none;
     border: 1px solid var(--gold-dim);
@@ -536,7 +536,7 @@
   <!-- Save + Share -->
   <p class="section-lbl">Save this result</p>
 
-  <div class="interp" style="font-size:0.72rem; color:var(--muted); margin-bottom:1rem;">
+  <div class="interp" style="font-size: 0.75rem; color:var(--muted); margin-bottom:1rem;">
     <p>Saving generates an anonymous six-character code. No email, no account. Enter the code on the landing page at any time to return to this result.</p>
   </div>
 
@@ -603,7 +603,7 @@ const QUESTIONS = [
 ];
 
 const CH_NAME  = { V:'Visual', E:'Emotional', T:'Tactile', I:'Intellectual' };
-const CH_COLOR = { V:'#b8963e', E:'#b8963e', T:'#b8963e', I:'#b8963e' };
+const CH_COLOR = { V:'#d4a93e', E:'#d4a93e', T:'#d4a93e', I:'#d4a93e' };
 
 const CULTURAL_AVG = { V:60, E:20, T:10, I:10 };
 
@@ -938,7 +938,7 @@ async function generateShareCard(pct) {
   ctx.fillText('The Dark Hierarchy', W / 2, 168);
 
   // Ornament
-  ctx.fillStyle = '#b8963e';
+  ctx.fillStyle = '#d4a93e';
   ctx.font = '36px Georgia, serif';
   ctx.fillText('✦', W / 2, 224);
 
@@ -977,11 +977,11 @@ async function generateShareCard(pct) {
     ctx.fillRect(barX, y + 18, barW, barH);
 
     // Fill
-    ctx.fillStyle = '#b8963e';
+    ctx.fillStyle = '#d4a93e';
     ctx.fillRect(barX, y + 18, Math.round(barW * p / 100), barH);
 
     // Pct
-    ctx.fillStyle = '#b8963e';
+    ctx.fillStyle = '#d4a93e';
     ctx.font = '400 26px "Inconsolata", monospace';
     ctx.textAlign = 'right';
     ctx.fillText(p + '%', barX + barW + 60, y + 30);
@@ -996,7 +996,7 @@ async function generateShareCard(pct) {
 
   // Summary line
   const summary = `V${pct.V} · E${pct.E} · T${pct.T} · I${pct.I}`;
-  ctx.fillStyle = '#b8963e';
+  ctx.fillStyle = '#d4a93e';
   ctx.font = '400 32px "Inconsolata", monospace';
   ctx.textAlign = 'center';
   ctx.fillText(summary, W / 2, 860);
