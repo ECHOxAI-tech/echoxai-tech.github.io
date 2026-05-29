@@ -251,49 +251,64 @@
   }
 
 
-  /* ── SAVE + SEND ── */
-  .send-opts { display:flex; gap:0.9rem; margin-bottom:0.65rem; }
+
+
+  /* ── SAVE + SEND (canonical) ── */
+  .code-box {
+    display:none; font-family:'Inconsolata',monospace; font-size:1.6rem;
+    letter-spacing:0.35em; color:var(--gold); text-align:center;
+    padding:0.9rem; border:1px solid rgba(212,169,62,0.35);
+    background:rgba(212,169,62,0.05); margin-top:0.3rem;
+  }
+  .code-box.show { display:block; }
+  .code-hint {
+    font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.1em; color:var(--muted); text-align:center;
+    margin-top:0.4rem; line-height:1.6;
+  }
+  .send-opts { display:flex; gap:1rem; margin:1rem 0 0.7rem; }
   .send-opt-label {
     display:flex; align-items:center; gap:0.4rem; cursor:pointer;
     font-family:'Inconsolata',monospace; font-size:0.6rem;
-    letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--bone); user-select:none;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--bone); user-select:none;
   }
   .send-opt-label input { display:none; }
   .opt-box {
     width:1.1rem; height:1.1rem; border:1px solid var(--gold-dim);
     display:flex; align-items:center; justify-content:center;
-    font-size:0.6rem; color:var(--black); flex-shrink:0;
-    transition:background 0.15s, border-color 0.15s;
+    font-size:0.6rem; color:var(--black); flex-shrink:0; transition:background 0.15s,border-color 0.15s;
   }
-  .send-opt-label input:checked ~ .opt-box {
-    background:var(--gold); border-color:var(--gold);
-  }
+  .send-opt-label input:checked ~ .opt-box { background:var(--gold); border-color:var(--gold); }
   .send-opt-label input:checked ~ .opt-box::after { content:'\2713'; }
   .send-row { display:flex; gap:0.5rem; }
   .send-input {
     flex:1; background:var(--near); border:1px solid rgba(212,169,62,0.35);
-    color:var(--text); font-family:'Inconsolata',monospace;
-    font-size:0.6rem; padding:0.7rem 0.85rem; outline:none; min-width:0;
-    transition:border-color 0.2s;
+    color:var(--text); font-family:'Inconsolata',monospace; font-size:0.6rem;
+    padding:0.7rem 0.85rem; outline:none; min-width:0; transition:border-color 0.2s;
   }
   .send-input:focus { border-color:var(--gold); }
   .send-input::placeholder { color:var(--muted); }
   .btn-send-email {
     font-family:'Inconsolata',monospace; font-size:0.6rem;
-    letter-spacing:0.15em; text-transform:uppercase;
-    color:var(--black); background:var(--gold); border:none;
-    padding:0.7rem 1.2rem; cursor:pointer; flex-shrink:0;
-    transition:background 0.2s;
+    letter-spacing:0.15em; text-transform:uppercase; color:var(--black);
+    background:var(--gold); border:none; padding:0.7rem 1.2rem; cursor:pointer;
+    flex-shrink:0; transition:background 0.2s;
   }
   .btn-send-email:hover { background:var(--off-white); }
   .btn-send-email:disabled { opacity:0.5; cursor:default; }
   .send-feedback {
     font-family:'Inconsolata',monospace; font-size:0.55rem;
-    letter-spacing:0.06em; margin-top:0.45rem; min-height:1.1rem;
+    letter-spacing:0.06em; margin-top:0.5rem; min-height:1.1rem;
   }
-  .send-feedback.ok  { color:#5a9e6a; }
-  .send-feedback.err { color:#c84040; }
+  .send-feedback.ok  { color:#6ab07a; }
+  .send-feedback.err { color:#d06a6a; }
+  .retake-link {
+    display:inline-block; margin-top:2rem;
+    font-family:'Inconsolata',monospace; font-size:0.55rem;
+    letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--gold-dim); text-decoration:none; transition:color 0.2s;
+  }
+  .retake-link:hover { color:var(--gold); }
 
 </style>
 </head>
@@ -410,6 +425,22 @@
   <div class="code-box" id="code-box"></div>
 
 
+
+  <hr class="rule">
+  <p class="section-lbl">Save &amp; send</p>
+
+  <div class="code-box" id="code-box"></div>
+  <p class="code-hint">This code returns you to your result on this device. Save it, or email it to yourself below.</p>
+
+  <div class="send-opts">
+    <label class="send-opt-label"><input type="checkbox" id="opt-result" checked><span class="opt-box"></span>Result</label>
+    <label class="send-opt-label"><input type="checkbox" id="opt-code"><span class="opt-box"></span>Code</label>
+  </div>
+  <div class="send-row">
+    <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
+    <button class="btn-send-email" id="btn-email-send">Send</button>
+  </div>
+  <p class="send-feedback" id="send-feedback"></p>
 
   <p class="result-disclaimer">This profile is an instrument for personal reflection, not a clinical or therapeutic document. It does not constitute psychological advice and no professional relationship is formed by using this tool. The answers are yours; the interpretation is yours. If you are in distress, please seek support from a qualified professional.</p>
 
@@ -860,6 +891,7 @@ function buildProfile() {
 // ══════════════════════════════════════════════
 
 function showProfile() {
+  setTimeout(_saveAndShow, 80);
   document.getElementById('view-survey').style.display = 'none';
   document.getElementById('profile-doc').innerHTML = buildProfile();
   document.getElementById('view-profile').style.display = 'block';
@@ -976,80 +1008,88 @@ document.getElementById('btn-start').addEventListener('click', () => {
   } catch(e) {}
   document.getElementById('view-intro').style.display = 'block';
 })();
-  // ── SAVE + SEND ──
-  document.getElementById('btn-save').addEventListener('click', function() {
-    if (savedCode) return;
-    var result = typeof currentGradient !== 'undefined' && currentGradient ? currentGradient
-               : typeof currentScores   !== 'undefined' && currentScores   ? currentScores
-               : {};
-    saveResult(result);
-  });
 
-  function afterSave(code) {
+  // ── SAVE + SEND (canonical) ──
+  function _saveAndShow() {
+    if (window.savedCode) return;
+    var code = genCode();
+    window.savedCode = code;
+    var result = collectAnswers();
+    try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
-    box.textContent = code; box.classList.add('show');
-    var btn = document.getElementById('btn-save');
-    btn.textContent = 'Saved ✓'; btn.style.background = '#5a9e6a'; btn.disabled = true;
-    document.getElementById('email-section').style.display = 'block';
+    if (box) { box.textContent = code; box.classList.add('show'); }
+    try {
+      var u = new URL(window.location.href);
+      u.searchParams.set('code', code);
+      history.replaceState(null, '', u.toString());
+    } catch(e) {}
   }
 
-  document.getElementById('btn-email-send').addEventListener('click', async function() {
-    var emailVal = document.getElementById('email-input').value.trim();
-    var fb = document.getElementById('send-feedback');
-    if (!emailVal || !emailVal.includes('@')) {
-      fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
-    }
-    var wantResult = document.getElementById('opt-result').checked;
-    var wantCode   = document.getElementById('opt-code').checked;
-    if (!wantResult && !wantCode) {
-      fb.textContent = 'Select at least one option.'; fb.className = 'send-feedback err'; return;
-    }
-
-    var btn = document.getElementById('btn-email-send');
-    btn.textContent = 'Sending…'; btn.disabled = true; fb.textContent = '';
-
-    var returnURL = window.location.href.split('?')[0] + '?code=' + savedCode;
-    var shareURL  = (typeof makeShareURL === 'function' && (typeof currentGradient !== 'undefined' && currentGradient)) ? makeShareURL(currentGradient)
-                  : (typeof makeShareURL === 'function' && (typeof currentScores !== 'undefined' && currentScores))   ? makeShareURL(currentScores)
-                  : returnURL;
-
-    var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
-      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + savedCode + '</p>'
-      + '<p style="margin:0 0 6px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
-      + (shareURL !== returnURL ? '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Shareable (any device):</p><p><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
-
-    var resultEl = document.getElementById('view-results');
-    var resultText = resultEl ? resultEl.innerText.replace(/[<>]/g, '') : '';
-    var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + resultText.substring(0, 3000) + '</p>';
-
-    var body = wantResult && wantCode ? resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:1.5rem 0">' + codePart
-             : wantResult ? resultPart : codePart;
-
-    var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
-      + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
-      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:8px 0 20px">'
-      + body
-      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:20px 0 8px">'
-      + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p></div>';
-
-    try {
-      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ to: emailVal, subject: document.title + ' — The Dark Hierarchy', htmlContent: html })
-      });
-      if (res.ok) {
-        btn.textContent = '✓ Sent'; btn.style.background = '#5a9e6a';
-        fb.textContent = 'Email sent. Check your inbox.'; fb.className = 'send-feedback ok';
-      } else {
-        btn.textContent = 'Send'; btn.disabled = false;
-        fb.textContent = 'Send failed (error ' + res.status + '). Check Brevo IP settings in your account.';
-        fb.className = 'send-feedback err';
+  (function attachSend() {
+    var sendBtn = document.getElementById('btn-email-send');
+    if (!sendBtn) return;
+    sendBtn.addEventListener('click', async function() {
+      var emailVal = (document.getElementById('email-input').value || '').trim();
+      var fb = document.getElementById('send-feedback');
+      if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
+        fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-    } catch(e) {
-      btn.textContent = 'Send'; btn.disabled = false;
-      fb.textContent = 'Network error. Try again.'; fb.className = 'send-feedback err';
-    }
-  });
+      var wantResult = document.getElementById('opt-result').checked;
+      var wantCode   = document.getElementById('opt-code').checked;
+      if (!wantResult && !wantCode) {
+        fb.textContent = 'Select at least one option.'; fb.className = 'send-feedback err'; return;
+      }
+      _saveAndShow();
+
+      var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;
+      fb.textContent = ''; fb.className = 'send-feedback';
+
+      var returnURL = window.location.href.split('?')[0] + '?code=' + window.savedCode;
+      var shareURL = returnURL;
+      try {
+        if (typeof makeShareURL === 'function') {
+          var rv = (typeof currentGradient !== 'undefined' && currentGradient) ? currentGradient
+                 : (typeof currentScores !== 'undefined' && currentScores) ? currentScores : null;
+          if (rv) shareURL = makeShareURL(rv);
+        }
+      } catch(e) {}
+
+      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
+        + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + window.savedCode + '</p>'
+        + '<p style="margin:0 0 6px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
+        + (shareURL !== returnURL ? '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Shareable (any device):</p><p><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
+
+      var rEl = document.getElementById('view-results');
+      var rTxt = rEl ? rEl.innerText.replace(/[<>]/g,'') : '';
+      var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + rTxt.substring(0, 3000) + '</p>';
+
+      var body = (wantResult && wantCode) ? resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart
+               : wantResult ? resultPart : codePart;
+
+      var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
+        + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
+        + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:8px 0 20px">' + body
+        + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:20px 0 8px">'
+        + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ \u2014 ECHO\u00d7STUDIOS \u00b7 Berlin</p></div>';
+
+      try {
+        var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ to: emailVal, subject: 'Aspirational Self Profile \u2014 The Dark Hierarchy', htmlContent: html })
+        });
+        if (res.ok) {
+          btn.textContent = '\u2713 Sent'; btn.style.background = '#6ab07a';
+          fb.textContent = 'Email sent. Check your inbox.'; fb.className = 'send-feedback ok';
+        } else {
+          btn.textContent = 'Send'; btn.disabled = false;
+          fb.textContent = 'Send failed (error ' + res.status + ').'; fb.className = 'send-feedback err';
+        }
+      } catch(e) {
+        btn.textContent = 'Send'; btn.disabled = false;
+        fb.textContent = 'Network error. Try again.'; fb.className = 'send-feedback err';
+      }
+    });
+  })();
 
 </script>
 </body>
