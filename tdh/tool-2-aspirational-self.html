@@ -85,6 +85,39 @@
 
   /* ── SURVEY ── */
   #view-survey { display: none; }
+  #view-axes { display: none; }
+  #view-gate { display: none; }
+  /* axes */
+  .axes-wrap { max-width:36rem; margin:0 auto; padding:1rem 0; }
+  .axes-lead { font-size:0.9rem; line-height:1.75; color:var(--text); margin-bottom:2rem; }
+  .axes-lead em { color:var(--bone); font-style:italic; }
+  .axis-block { margin-bottom:2.1rem; }
+  .axis-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--bone); margin-bottom:0.5rem; }
+  .axis-ends .l { color:var(--gold); }
+  .axis-ends .r { color:var(--gold); }
+  .axis-slider { -webkit-appearance:none; appearance:none; width:100%; height:3px; background:rgba(212,169,62,0.25); outline:none; cursor:pointer; }
+  .axis-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:var(--gold); cursor:pointer; border:2px solid var(--near); }
+  .axis-slider::-moz-range-thumb { width:18px; height:18px; border-radius:50%; background:var(--gold); cursor:pointer; border:2px solid var(--near); }
+  .axis-caption { font-family:'Cormorant Garamond',serif; font-size:0.85rem; font-style:italic; color:var(--muted); text-align:center; margin-top:0.5rem; line-height:1.5; }
+  .axis-touched .axis-caption { color:var(--bone); }
+  /* gate */
+  #view-gate { display: none; }
+  .gate-wrap { max-width:34rem; margin:0 auto; padding:1rem 0; }
+  .gate-lead { font-size:0.9rem; line-height:1.75; color:var(--text); margin-bottom:1.5rem; }
+  .gate-lead em { color:var(--bone); font-style:italic; }
+  .gate-field { margin-bottom:1.4rem; }
+  .gate-label { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:0.6rem; }
+  .gate-opts { display:flex; flex-wrap:wrap; gap:0.5rem; }
+  .gate-opt { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.08em; color:var(--bone); background:transparent; border:1px solid rgba(212,169,62,0.4); padding:0.55rem 0.9rem; cursor:pointer; transition:all 0.18s; }
+  .gate-opt:hover { border-color:var(--gold); }
+  .gate-opt.sel { background:var(--gold); color:var(--black); border-color:var(--gold); }
+  .btn-reveal { width:100%; font-family:'Inconsolata',monospace; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--black); background:var(--gold); border:none; padding:0.9rem; cursor:pointer; margin-top:1rem; transition:background 0.2s; }
+  .btn-reveal:hover { background:var(--off-white); }
+  /* profile axis bars */
+  .pax-row { margin-bottom:1.1rem; }
+  .pax-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
+  .pax-track { position:relative; height:3px; background:rgba(212,169,62,0.2); }
+  .pax-mark { position:absolute; top:50%; width:12px; height:12px; border-radius:50%; background:var(--gold); transform:translate(-50%,-50%); }
   .progress-label {
     font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem;
@@ -385,6 +418,53 @@
 <!-- ══════════════════════════════════════════════
      PROFILE
 ══════════════════════════════════════════════ -->
+<div id="view-axes">
+  <div class="axes-wrap">
+    <div class="page-header">
+      <span class="tool-label">One more layer</span>
+      <h1>Locate yourself</h1>
+      <span class="ornament">✦</span>
+    </div>
+    <hr class="rule">
+    <p class="axes-lead">You've described your aspirational self in your own words. Now place it. Each line is a tension — move the marker toward whichever pole feels truer to the self you <em>want to feel like</em>, not the self you perform or think you should be. There is no centre you're obliged to hold; the middle is also an answer.</p>
+    <div id="axes-list"></div>
+    <button class="btn-reveal" id="btn-axes-next">Continue →</button>
+  </div>
+</div>
+
+<div id="view-gate">
+  <div class="gate-wrap">
+    <div class="page-header">
+      <span class="tool-label">Almost there</span>
+      <h1>Before your profile</h1>
+      <span class="ornament">✦</span>
+    </div>
+    <hr class="rule">
+    <p class="gate-lead">This tool is free. In exchange, two quick questions — stored <em>completely anonymously</em>, used only for aggregate research into how aspirational sexual selves distribute across people. No published data on this exists. No personal data, no tracking, no way to trace an answer to you. Both required to see your profile.</p>
+    <div class="gate-field">
+      <span class="gate-label">Gender</span>
+      <div class="gate-opts" id="gate-gender">
+        <button class="gate-opt" data-v="f">Woman</button>
+        <button class="gate-opt" data-v="m">Man</button>
+        <button class="gate-opt" data-v="nb">Non-binary</button>
+        <button class="gate-opt" data-v="o">Other</button>
+      </div>
+    </div>
+    <div class="gate-field">
+      <span class="gate-label">Age</span>
+      <div class="gate-opts" id="gate-age">
+        <button class="gate-opt" data-v="u25">Under 25</button>
+        <button class="gate-opt" data-v="25-34">25–34</button>
+        <button class="gate-opt" data-v="35-44">35–44</button>
+        <button class="gate-opt" data-v="45-54">45–54</button>
+        <button class="gate-opt" data-v="55p">55+</button>
+      </div>
+    </div>
+    <button class="btn-reveal" id="btn-reveal">Reveal my profile →</button>
+    <p class="send-feedback" id="gate-feedback"></p>
+  </div>
+</div>
+
 <div id="view-profile">
 
   <div class="page-header">
@@ -761,19 +841,83 @@ document.getElementById('btn-next').addEventListener('click', () => {
 
   const active = getActive();
   if (stepIdx === active.length - 1) {
-    // Done
-    showProfile();
+    // Done with text prompts — go to axes
+    showAxes();
   } else {
     advance();
   }
 });
+
+// ══════════════════════════════════════════════
+// AXES — aspirational self, 8 bipolar dimensions
+// ══════════════════════════════════════════════
+const AXES = [
+  { k:'dom', l:'Dominant',    r:'Submissive',      cap:'The power you want to feel — holding it, or giving it up.' },
+  { k:'see', l:'Seen',        r:'Hidden',          cap:'Whether you want to be witnessed precisely, or to dissolve into anonymity.' },
+  { k:'pur', l:'Pursued',     r:'Pursuing',        cap:'The direction desire moves — toward you, or out from you.' },
+  { k:'ref', l:'Refined',     r:'Primal',          cap:'Controlled elegance, or raw instinct without apology.' },
+  { k:'wor', l:'Worshipped',  r:'Useful',          cap:'Adored as an end in yourself, or valued for what you do.' },
+  { k:'pow', l:'Powerful',    r:'Surrendered',     cap:'Force you hold, or force you release into someone else.' },
+  { k:'sin', l:'Singular',    r:'Interchangeable', cap:'Irreplaceable to one, or one desirable body among many.' },
+  { k:'tra', l:'Transformed', r:'Confirmed',       cap:'Wanting to become someone new, or wanting your existing self affirmed.' }
+];
+window.__axisVals = {};
+
+function showAxes() {
+  var list = document.getElementById('axes-list');
+  list.innerHTML = AXES.map(function(a) {
+    return '<div class="axis-block" id="ab-' + a.k + '">'
+      + '<div class="axis-ends"><span class="l">' + a.l + '</span><span class="r">' + a.r + '</span></div>'
+      + '<input type="range" class="axis-slider" id="ax-' + a.k + '" min="0" max="100" step="1" value="50">'
+      + '<p class="axis-caption">' + a.cap + '</p></div>';
+  }).join('');
+  AXES.forEach(function(a) {
+    window.__axisVals[a.k] = 50;
+    var s = document.getElementById('ax-' + a.k);
+    s.addEventListener('input', function() {
+      window.__axisVals[a.k] = Number(s.value);
+      document.getElementById('ab-' + a.k).classList.add('axis-touched');
+    });
+  });
+  document.getElementById('view-survey').style.display = 'none';
+  document.getElementById('view-axes').style.display = 'block';
+  window.scrollTo({ top: 0 });
+}
+
+document.getElementById('btn-axes-next').addEventListener('click', function() {
+  document.getElementById('view-axes').style.display = 'none';
+  document.getElementById('view-gate').style.display = 'block';
+  window.scrollTo({ top: 0 });
+});
+
+// ── GATE ──
+window.__demo = { gender: null, age: null };
+(function() {
+  function wire(id, key) {
+    document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(b) {
+      b.addEventListener('click', function() {
+        document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(x){ x.classList.remove('sel'); });
+        b.classList.add('sel'); window.__demo[key] = b.getAttribute('data-v');
+      });
+    });
+  }
+  wire('gate-gender','gender'); wire('gate-age','age');
+  document.getElementById('btn-reveal').addEventListener('click', function() {
+    if (!window.__demo.gender || !window.__demo.age) {
+      var fb = document.getElementById('gate-feedback');
+      fb.textContent = 'Please answer both questions to continue.'; fb.className = 'send-feedback err'; return;
+    }
+    document.getElementById('view-gate').style.display = 'none';
+    showProfile();
+  });
+})();
 
 function advance() {
   stepIdx++;
   const active = getActive();
   // Re-check skips (Q5/Q6 may now be skippable)
   while (stepIdx < active.length && false) { stepIdx++; } // skip logic is in getActive()
-  if (stepIdx >= active.length) { showProfile(); return; }
+  if (stepIdx >= active.length) { showAxes(); return; }
   const next = active[stepIdx];
   if (next.movement) lastMovement = next.movement.num - 1; // force header to show
   render(stepIdx);
@@ -868,9 +1012,19 @@ function buildProfile() {
 // ══════════════════════════════════════════════
 
 function showProfile() {
+  window.__lastResult = window.__axisVals || {};
   setTimeout(_saveAndShow, 80);
   document.getElementById('view-survey').style.display = 'none';
-  document.getElementById('profile-doc').innerHTML = buildProfile();
+  var axesHTML = '';
+  if (window.__axisVals && Object.keys(window.__axisVals).length) {
+    axesHTML = '<hr class="rule"><p class="section-lbl">Where you placed yourself</p>'
+      + AXES.map(function(a) {
+          var v = window.__axisVals[a.k];
+          return '<div class="pax-row"><div class="pax-ends"><span>' + a.l + '</span><span>' + a.r + '</span></div>'
+            + '<div class="pax-track"><div class="pax-mark" style="left:' + v + '%"></div></div></div>';
+        }).join('');
+  }
+  document.getElementById('profile-doc').innerHTML = buildProfile() + axesHTML;
   document.getElementById('view-profile').style.display = 'block';
   window.scrollTo({ top: 0 });
 }
@@ -958,14 +1112,24 @@ document.getElementById('btn-start').addEventListener('click', () => {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
-    var result = (typeof collectAnswers==='function'?collectAnswers():{});
-    try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
+    var result = window.__axisVals || {};
+    try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ ts: Date.now(), result: result, answers: (typeof answers!=='undefined'?answers:{}) })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
     try {
       var u = new URL(window.location.href);
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
+    } catch(e) {}
+    // Anonymized stats — the 8 axis values + demographics
+    try {
+      if (result && Object.keys(result).length) {
+        var demo = window.__demo || {};
+        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ tool: 't2', data: result, gender: demo.gender, age: demo.age })
+        }).catch(function(){});
+      }
     } catch(e) {}
   }
 

@@ -39,6 +39,18 @@
   .btn-primary:hover{background:var(--gold);}
   /* survey */
   #view-survey{display:none;}
+  #view-demo{display:none;}
+  .demo-wrap{max-width:34rem;margin:0 auto;padding:1rem 0;}
+  .demo-lead{font-size:0.9rem;line-height:1.75;color:var(--text);margin-bottom:1.5rem;}
+  .demo-lead em{color:var(--bone);font-style:italic;}
+  .demo-field{margin-bottom:1.4rem;}
+  .demo-label{font-family:'Inconsolata',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:0.6rem;}
+  .demo-opts{display:flex;flex-wrap:wrap;gap:0.5rem;}
+  .demo-opt{font-family:'Inconsolata',monospace;font-size:0.62rem;letter-spacing:0.08em;color:var(--bone);background:transparent;border:1px solid rgba(212,169,62,0.4);padding:0.55rem 0.9rem;cursor:pointer;transition:all 0.18s;}
+  .demo-opt:hover{border-color:var(--gold);}
+  .demo-opt.sel{background:var(--gold);color:var(--black);border-color:var(--gold);}
+  .btn-reveal{width:100%;font-family:'Inconsolata',monospace;font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--black);background:var(--gold);border:none;padding:0.9rem;cursor:pointer;margin-top:1rem;transition:background 0.2s;}
+  .btn-reveal:hover{background:var(--off-white);}
   .progress-label{font-family:'Inconsolata',monospace;font-size: 0.6rem;color:var(--muted);letter-spacing:0.15em;text-align:right;margin-bottom:0.35rem;}
   .progress-track{height:4px;background:rgba(212,169,62,0.2);margin-bottom:2rem;}
   .progress-fill{height:100%;background:var(--gold-dim);transition:width 0.3s ease;}
@@ -211,6 +223,39 @@
 </div>
 
 <!-- ══ RESULTS ══ -->
+<div id="view-demo">
+  <div class="demo-wrap">
+    <div class="page-header">
+      <span class="tool-label">Before your reflection</span>
+      <h1>Two questions</h1>
+      <span class="ornament">✦</span>
+    </div>
+    <hr class="rule">
+    <p class="demo-lead">Two quick questions before your reflection — stored <em>completely anonymously</em>, used only to understand how thresholds distribute across people. No personal data, no tracking, no way to trace an answer to you. Both required.</p>
+    <div class="demo-field">
+      <span class="demo-label">Gender</span>
+      <div class="demo-opts" id="demo-gender">
+        <button class="demo-opt" data-v="f">Woman</button>
+        <button class="demo-opt" data-v="m">Man</button>
+        <button class="demo-opt" data-v="nb">Non-binary</button>
+        <button class="demo-opt" data-v="o">Other</button>
+      </div>
+    </div>
+    <div class="demo-field">
+      <span class="demo-label">Age</span>
+      <div class="demo-opts" id="demo-age">
+        <button class="demo-opt" data-v="u25">Under 25</button>
+        <button class="demo-opt" data-v="25-34">25–34</button>
+        <button class="demo-opt" data-v="35-44">35–44</button>
+        <button class="demo-opt" data-v="45-54">45–54</button>
+        <button class="demo-opt" data-v="55p">55+</button>
+      </div>
+    </div>
+    <button class="btn-reveal" id="btn-reveal">See my reflection →</button>
+    <p class="send-feedback" id="demo-feedback"></p>
+  </div>
+</div>
+
 <div id="view-results">
   <div class="page-header">
     <span class="tool-label">Your reflection</span>
@@ -424,7 +469,7 @@ document.getElementById('btn-back').addEventListener('click',()=>{
 document.getElementById('btn-skip').addEventListener('click',()=>{
   // Only for optional step — skip without saving
   openText='';
-  generate();
+  gotoDemo();
 });
 
 document.getElementById('btn-next').addEventListener('click',()=>{
@@ -433,8 +478,35 @@ document.getElementById('btn-next').addEventListener('click',()=>{
     document.getElementById('req-msg').classList.add('show'); return;
   }
   if(current<STEPS.length-1){ current++; render(current); }
-  else { generate(); }
+  else { gotoDemo(); }
 });
+
+// ── DEMOGRAPHIC GATE ──
+window.__demo = { gender: null, age: null };
+function gotoDemo() {
+  document.getElementById('view-survey').style.display='none';
+  document.getElementById('view-demo').style.display='block';
+  window.scrollTo({ top: 0 });
+}
+(function() {
+  function wire(id, key) {
+    document.querySelectorAll('#' + id + ' .demo-opt').forEach(function(b) {
+      b.addEventListener('click', function() {
+        document.querySelectorAll('#' + id + ' .demo-opt').forEach(function(x){ x.classList.remove('sel'); });
+        b.classList.add('sel'); window.__demo[key] = b.getAttribute('data-v');
+      });
+    });
+  }
+  wire('demo-gender','gender'); wire('demo-age','age');
+  document.getElementById('btn-reveal').addEventListener('click', function() {
+    if (!window.__demo.gender || !window.__demo.age) {
+      var fb = document.getElementById('demo-feedback');
+      fb.textContent = 'Please answer both questions to continue.'; fb.className = 'send-feedback err'; return;
+    }
+    document.getElementById('view-demo').style.display = 'none';
+    generate();
+  });
+})();
 
 // ════════════════════════════════════════════
 // SCORING
@@ -531,6 +603,16 @@ function generate() {
   const thr  = determineThreshold();
   const arch = determineArchitecture();
   const cost = determineCost();
+  // Store numeric vector for stats
+  var threshMap = { T1:1, T2:2, T3:3, T4:4 };
+  var archMap   = { 'not-yet':1, 'excavation':2, 'deliberate':3, 'multiple':4 };
+  var costMap   = { 'crossing-heavier':1, 'not-crossing-heavier':2, 'comparable':3 };
+  window.__lastResult = {
+    threshold: threshMap[thr.primary] || 0,
+    architecture: archMap[arch] || 0,
+    cost: costMap[cost] || 0,
+    maxVal: thr.maxVal
+  };
 
   // Crisis detection on open text
   if(openText && detectCrisis(openText)) {
@@ -611,6 +693,16 @@ function resetSaveUI(){
       var u = new URL(window.location.href);
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
+    } catch(e) {}
+    // Anonymized stats — threshold/architecture/cost categories
+    try {
+      if (result && result.threshold !== undefined) {
+        var demo = window.__demo || {};
+        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ tool: 't6', data: { threshold: result.threshold, architecture: result.architecture, cost: result.cost }, gender: demo.gender, age: demo.age })
+        }).catch(function(){});
+      }
     } catch(e) {}
   }
 
