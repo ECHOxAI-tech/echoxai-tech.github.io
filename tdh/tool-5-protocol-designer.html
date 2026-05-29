@@ -899,26 +899,6 @@ document.getElementById('btn-retake').addEventListener('click', () => {
   } catch(e){}
   document.getElementById('view-intro').style.display='block';
 })();
-
-
-      if (res.ok) {
-        btn.textContent = 'Sent ✓';
-        btn.style.borderColor = 'var(--gold)';
-        btn.style.color = 'var(--gold)';
-        document.getElementById('email-input').value = '';
-      } else {
-        btn.textContent = 'Failed — try again';
-        btn.disabled = false;
-      }
-    } catch(e) {
-      btn.textContent = 'Error — try again';
-      btn.disabled = false;
-    }
-  });
-
-
-
-
   // ── SAVE + SEND ──
   document.getElementById('btn-save').addEventListener('click', function() {
     if (savedCode) return;
