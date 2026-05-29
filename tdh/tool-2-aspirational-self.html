@@ -16,7 +16,7 @@
     --gold:     #b8963e;
     --gold-dim: #7a6128;
     --text:     #e2ddd2;
-    --muted:    #6e6a64;
+    --muted:    #a09890;
     --rule:     rgba(184,150,62,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -297,9 +297,9 @@
   </div>
 
   <div class="intro-body">
-    <p>The trigger is the person who makes you feel like the person you intellectually would like to be. Sexually.</p>
-    <p>This tool helps you articulate your <em>aspirational sexual self</em> — the specific, formed version of yourself you want to feel like in a sexual dynamic. Not what acts you want. Who you want to be.</p>
-    <p>You already know it. The tool gives you the architecture in which to describe it.</p>
+    <p>The book argues that desire is the confirmation of a specific self — the version of yourself you most want to feel like, sexually. This self is usually formed before it is named. Most people have carried it for years without adequate language for it.</p>
+    <p>This tool gives you the architecture to describe it. Not what acts you want — who you want to be. Claimed or claiming. Seen precisely or anonymously. Ferocious or tender. Contained or dissolved. Fourteen prompts, mostly open text. You write; the tool assembles your answers into a single profile you can keep.</p>
+    <p>Nothing you write here is sent anywhere. It lives on your device unless you choose to save it.</p>
   </div>
 
   <div class="privacy-note">
@@ -879,6 +879,7 @@ document.getElementById('btn-save').addEventListener('click', () => {
   note.classList.add('show');
   document.getElementById('btn-save').disabled    = true;
   document.getElementById('btn-save').textContent = 'Profile saved';
+  document.getElementById('email-send').classList.add('show');
 });
 
 document.getElementById('btn-edit').addEventListener('click', () => {
@@ -889,6 +890,25 @@ document.getElementById('btn-edit').addEventListener('click', () => {
   render(0);
   window.scrollTo({ top: 0 });
 });
+
+
+function sendCodeByEmail() {
+  const emailEl = document.getElementById('code-email-input');
+  const email   = emailEl ? emailEl.value.trim() : '';
+  if (!email || !email.includes('@')) {
+    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
+    return;
+  }
+  const toolName = document.title.split(' —')[0].trim();
+  const subject  = encodeURIComponent('My result code — ' + toolName);
+  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
+  const body     = encodeURIComponent(
+    'Result code: ' + savedCode +
+    '\n\nReturn to result: ' + base + savedCode +
+    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
+  );
+  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
+}
 
 // ══════════════════════════════════════════════
 // INIT
@@ -933,6 +953,62 @@ document.getElementById('btn-start').addEventListener('click', () => {
   } catch(e) {}
   document.getElementById('view-intro').style.display = 'block';
 })();
+
+
+  // Brevo email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
+      return;
+    }
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var code = savedCode;
+    const returnURL = window.location.href.split('?')[0] + '?code=' + code;
+    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
+
+    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
+      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Aspirational Self Profile</h1>'
+      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
+      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
+      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
+      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
+      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
+      + '</div>';
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: [{ email: emailVal }],
+          subject: 'Your Aspirational Self Profile code — The Dark Hierarchy',
+          htmlContent: htmlContent
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.borderColor = 'var(--gold)';
+        btn.style.color = 'var(--gold)';
+        document.getElementById('email-input').value = '';
+      } else {
+        btn.textContent = 'Failed — try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+
 </script>
 </body>
 </html>

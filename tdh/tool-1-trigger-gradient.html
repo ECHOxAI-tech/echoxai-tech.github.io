@@ -16,7 +16,7 @@
     --gold:     #b8963e;
     --gold-dim: #7a6128;
     --text:     #e2ddd2;
-    --muted:    #6e6a64;
+    --muted:    #a09890;
     --rule:     rgba(184,150,62,0.2);
   }
 
@@ -323,6 +323,96 @@
     padding-top: 1.5rem;
     border-top: 1px solid var(--rule);
   }
+
+  /* ── SHARE SECTION ── */
+  .share-section {
+    background: rgba(184,150,62,0.06);
+    border: 1px solid var(--rule);
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .share-label {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold-dim); display: block; margin-bottom: 0.65rem;
+  }
+  .share-url-box {
+    display: flex; gap: 0.5rem; align-items: center;
+    margin-bottom: 0.6rem;
+  }
+  .share-url-text {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); letter-spacing: 0.04em;
+    background: var(--black); border: 1px solid var(--rule);
+    padding: 0.45rem 0.65rem; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .btn-copy {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.45rem 0.75rem; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-copy:hover { background: var(--gold-dim); color: var(--black); }
+  .btn-copy.copied { border-color: var(--gold); color: var(--gold); }
+  .share-note {
+    font-family: 'Inconsolata', monospace; font-size: 0.4rem;
+    color: var(--muted); opacity: 0.8; letter-spacing: 0.04em; line-height: 1.55;
+  }
+  .share-actions { display: flex; gap: 0.6rem; margin-top: 0.65rem; }
+  .share-actions .btn-copy { flex: 1; text-align: center; }
+
+  .email-send {
+    display: none; margin-top: 0.65rem;
+  }
+  .email-send.show { display: block; }
+  .email-row {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .email-row input[type="email"] {
+    flex: 1; background: var(--near); border: 1px solid var(--rule);
+    color: var(--text); font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem; letter-spacing: 0.06em;
+    padding: 0.55rem 0.75rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-row input[type="email"]:focus { border-color: var(--gold-dim); }
+  .email-row input[type="email"]::placeholder { color: var(--muted); }
+  .email-row .btn-email {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.55rem 0.85rem; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .email-row .btn-email:hover { background: var(--gold-dim); color: var(--black); }
+  .email-note {
+    font-family: 'Inconsolata', monospace; font-size: 0.4rem;
+    color: var(--muted); letter-spacing: 0.04em;
+    margin-top: 0.35rem; line-height: 1.5;
+  }
+
+  .email-send { display:none; margin-top:0.7rem; }
+  .email-send.show { display:flex; gap:0.5rem; }
+  .email-input {
+    flex:1; background:var(--near); border:1px solid var(--rule);
+    color:var(--text); font-family:'Inconsolata',monospace;
+    font-size:0.5rem; letter-spacing:0.06em;
+    padding:0.55rem 0.75rem; outline:none; transition:border-color 0.2s;
+  }
+  .email-input:focus { border-color:var(--gold-dim); }
+  .email-input::placeholder { color:var(--muted); }
+  .btn-email {
+    font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
+    padding:0.55rem 0.85rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-email:hover { background:var(--gold-dim); color:var(--black); }
+
   canvas { display: none; }
 
   @media (max-width: 480px) {
@@ -347,9 +437,9 @@
   </div>
 
   <div class="intro-body">
-    <p>Desire does not arrive through one channel. It arrives through nearly all four simultaneously, in proportions that are specific to each person and shaped by both nature and culture.</p>
-    <p>This tool maps your personal distribution across the four channels — <em>Visual, Emotional, Tactile, Intellectual</em> — and shows you where your desire actually lives, and how that distribution compares to the culturally produced average.</p>
-    <p>There are no correct answers. The gradient is yours.</p>
+    <p>Desire arrives as confirmation — the experience of feeling like the version of yourself you most want to be, in the presence of another person. That confirmation can arrive through four channels: <em>Visual</em> (appearance, form), <em>Emotional</em> (connection, relational atmosphere), <em>Tactile</em> (touch, physical presence), or <em>Intellectual</em> (framework, quality of mind). Most people have all four active — but in different proportions.</p>
+    <p>This tool maps your personal gradient across the four channels and shows which ones carry most of the confirmatory weight for you. It also compares your distribution to the culturally produced average, which heavily overweights the visual channel at the expense of the rest.</p>
+    <p>No reading of the book is required. Answer for yourself as you actually are.</p>
   </div>
 
   <div class="meta-row">
@@ -451,6 +541,18 @@
   </div>
 
   <div class="code-box" id="code-box"></div>
+  <div class="email-send" id="email-send">
+    <div class="email-row">
+      <input type="email" id="code-email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-email" id="btn-email-send" onclick="sendCodeByEmail()">Send code →</button>
+    </div>
+    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
+  </div>
+  <div class="email-send" id="email-send">
+    <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+    <button class="btn-email" id="btn-email-send">Email me this</button>
+  </div>
+
   <div class="code-note" id="code-note">Your result is saved to this device. Copy the code above, or bookmark this page — the URL now contains your code.</div>
 
   <button class="btn-outline" id="btn-save">Save with an anonymous code</button>
@@ -506,10 +608,10 @@ const CH_COLOR = { V:'#b8963e', E:'#b8963e', T:'#b8963e', I:'#b8963e' };
 const CULTURAL_AVG = { V:60, E:20, T:10, I:10 };
 
 const PRIMARY_MAIN = {
-  V: 'Appearance, form, and the specific way someone looks carry more weight in how desire forms for you than they do for most people. The visual channel is not decorative for you — it is load-bearing. What the eye takes in, the body responds to. The desire is downstream of the image.',
-  E: 'The relational atmosphere is where desire lives for you. Before the body can want, the emotional field must be right. This is not a limitation. It is a specific architecture: the quality of what exists between two people is the ground on which everything else stands.',
-  T: 'The body knows before the mind does. For you, physical contact is not confirmation of desire that already exists — it is one of its primary sources. The specific way someone touches you, and the way your body responds to being touched, carries genuine philosophical weight. The nervous system reads what the eye and the mind have not yet processed.',
-  I: 'The mind generates charge for you. Not metaphorically — desire for you is produced by how someone thinks, what they carry, the specific structure of their attention. This is among the rarer gradient distributions. The book describes it from inside.'
+  V: 'Visual confirmation carries the most weight for you — appearance, form, and how someone looks are the primary channel through which desire arrives. When someone activates the aspirational self visually, that is the confirmation. The visual channel is load-bearing for you, not decorative.',
+  E: 'Emotional confirmation carries the most weight for you — the relational atmosphere is the primary channel through which desire arrives. The quality of what exists between two people is the ground on which the aspirational self becomes real. Without the right emotional register, the confirmation does not occur.',
+  T: 'Tactile confirmation carries the most weight for you — touch is the primary channel through which the aspirational self is confirmed. Physical contact is not a consequence of desire already formed; it is the mechanism through which desire arrives. The body reads what the eye and mind have not yet processed.',
+  I: 'Intellectual confirmation carries the most weight for you — the quality of someone\'s mind, how they think, the framework they carry, is the primary channel through which the aspirational self is confirmed. Desire arrives through comprehension and recognition. The book describes this distribution from inside.'
 };
 
 const SECONDARY_FRAG = {
@@ -729,7 +831,7 @@ function showResults(pct) {
 
   // Wire buttons
   document.getElementById('btn-save').addEventListener('click', () => saveResult(pct));
-  document.getElementById('btn-share-card').addEventListener('click', () => generateShareCard(pct));
+  // Share card handled by btn-share-card-2 via onclick
   document.getElementById('btn-retake').addEventListener('click', () => {
     responses  = {};
     savedCode  = null;
@@ -841,7 +943,7 @@ async function generateShareCard(pct) {
   ctx.fillText('✦', W / 2, 224);
 
   // Subtitle
-  ctx.fillStyle = '#6e6a64';
+  ctx.fillStyle = '#a09890';
   ctx.font = '300 26px "Inconsolata", monospace';
   ctx.letterSpacing = '6px';
   ctx.fillText('TRIGGER GRADIENT PROFILER', W / 2, 274);
@@ -865,7 +967,7 @@ async function generateShareCard(pct) {
     const p = pct[ch];
 
     // Label
-    ctx.fillStyle = '#6e6a64';
+    ctx.fillStyle = '#a09890';
     ctx.font = '300 22px "Inconsolata", monospace';
     ctx.textAlign = 'left';
     ctx.fillText(chNames[ch], barX, y + 7);
@@ -900,7 +1002,7 @@ async function generateShareCard(pct) {
   ctx.fillText(summary, W / 2, 860);
 
   // Footer
-  ctx.fillStyle = '#6e6a64';
+  ctx.fillStyle = '#a09890';
   ctx.font = '300 20px "Inconsolata", monospace';
   ctx.fillText('echoxstudios.art', W / 2, 980);
 
@@ -909,6 +1011,82 @@ async function generateShareCard(pct) {
   link.download = `tdh-gradient-${summary.replace(/ /g,'')}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
+}
+
+
+// ══════════════════════════════════════════════
+// SHARE — URL-ENCODED RESULTS
+// ══════════════════════════════════════════════
+
+let currentGradient = null;
+
+function makeShareURL(pct) {
+  try {
+    const base = window.location.origin + window.location.pathname;
+    return `${base}?v=${pct.V}&e=${pct.E}&t=${pct.T}&i=${pct.I}`;
+  } catch(e) { return ''; }
+}
+
+function copyShareURL() {
+  const url = document.getElementById('share-url-text').textContent.trim();
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('btn-copy-url');
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('btn-copy-url');
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyResultText() {
+  if (!currentGradient) return;
+  const p = currentGradient;
+  const text = `My desire gradient — The Dark Hierarchy\nVisual: ${p.V}%\nEmotional: ${p.E}%\nTactile: ${p.T}%\nIntellectual: ${p.I}%\n\nTake the test: echoxstudios.art/tdh/`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btn-copy-text');
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy as text'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function loadFromURLParams() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const v = parseInt(p.get('v')), e = parseInt(p.get('e')),
+          t = parseInt(p.get('t')), i = parseInt(p.get('i'));
+    if ([v,e,t,i].every(n => !isNaN(n) && n >= 0 && n <= 100) && v+e+t+i === 100) {
+      return { V:v, E:e, T:t, I:i };
+    }
+  } catch(x) {}
+  return null;
+}
+
+
+function sendCodeByEmail() {
+  const emailEl = document.getElementById('code-email-input');
+  const email   = emailEl ? emailEl.value.trim() : '';
+  if (!email || !email.includes('@')) {
+    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
+    return;
+  }
+  const toolName = document.title.split(' —')[0].trim();
+  const subject  = encodeURIComponent('My result code — ' + toolName);
+  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
+  const body     = encodeURIComponent(
+    'Result code: ' + savedCode +
+    '\n\nReturn to result: ' + base + savedCode +
+    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
+  );
+  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
 }
 
 // ══════════════════════════════════════════════
@@ -947,8 +1125,16 @@ document.getElementById('btn-next').addEventListener('click', () => {
   }
 });
 
-// Check URL for saved code on load
+// Check URL on load — URL params take priority (shareable links), then saved code
 (function() {
+  // 1. Check for shared gradient in URL params
+  const urlGradient = loadFromURLParams();
+  if (urlGradient) {
+    hide('view-intro');
+    showResults(urlGradient);
+    return;
+  }
+  // 2. Check for saved code
   try {
     const params = new URLSearchParams(window.location.search);
     const code   = params.get('code');
@@ -958,6 +1144,64 @@ document.getElementById('btn-next').addEventListener('click', () => {
   } catch(e) {}
   show('view-intro');
 })();
+
+
+  // Brevo email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
+      return;
+    }
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var code = savedCode;
+    const returnURL = makeShareURL(window.__currentResult);
+    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
+
+    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
+      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Trigger Gradient Profiler</h1>'
+      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
+      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
+      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
+      + '<p style="margin:1em 0"><a href="' + returnURL + '" style="color:#b8963e">' + returnURL + '</a></p>'
+      + '<p style="color:#9a9590;font-size:13px">This link works on any device.</p>'
+      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
+      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
+      + '</div>';
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: [{ email: emailVal }],
+          subject: 'Your Trigger Gradient result — The Dark Hierarchy',
+          htmlContent: htmlContent
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.borderColor = 'var(--gold)';
+        btn.style.color = 'var(--gold)';
+        document.getElementById('email-input').value = '';
+      } else {
+        btn.textContent = 'Failed — try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+
 </script>
 </body>
 </html>

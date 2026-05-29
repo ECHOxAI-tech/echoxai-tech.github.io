@@ -10,7 +10,7 @@
 <style>
   :root {
     --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
-    --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#6e6a64;
+    --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#a09890;
     --rule:rgba(184,150,62,0.2);--care:rgba(184,150,62,0.07);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -103,6 +103,25 @@
   .result-disclaimer{font-family:'Inconsolata',monospace;font-size:0.42rem;color:var(--muted);letter-spacing:0.05em;line-height:1.65;opacity:0.6;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);}
   .retake-link{display:block;text-align:center;margin-top:2.5rem;font-family:'Inconsolata',monospace;font-size:0.48rem;color:var(--muted);letter-spacing:0.1em;text-decoration:none;transition:color 0.2s;}
   .retake-link:hover{color:var(--text);}
+
+  .email-send { display:none; margin-top:0.7rem; }
+  .email-send.show { display:flex; gap:0.5rem; }
+  .email-input {
+    flex:1; background:var(--near); border:1px solid var(--rule);
+    color:var(--text); font-family:'Inconsolata',monospace;
+    font-size:0.5rem; letter-spacing:0.06em;
+    padding:0.55rem 0.75rem; outline:none; transition:border-color 0.2s;
+  }
+  .email-input:focus { border-color:var(--gold-dim); }
+  .email-input::placeholder { color:var(--muted); }
+  .btn-email {
+    font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
+    padding:0.55rem 0.85rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-email:hover { background:var(--gold-dim); color:var(--black); }
+
   @media (max-width:480px){html{font-size:20px;}body{padding:2rem 1.25rem 3rem;}.lbtn{min-height:2.2rem;min-width:0;}}
 </style>
 </head>
@@ -118,10 +137,9 @@
     <span class="ornament">✦</span>
   </div>
   <div class="body-text">
-    <p>The threshold is the point at which the framework becomes <em>lived</em> rather than imagined.</p>
-    <p>This tool is for the reader who recognises themselves at a threshold — of entering a dynamic, of crossing into a deeper commitment, of acknowledging an orientation, or of leaving a dynamic that no longer fits.</p>
-    <p>It does not tell you whether to cross. It helps you see which threshold you are at, and what the architecture of your hesitation actually is.</p>
-    <p>The threshold can be honoured without being crossed.</p>
+    <p>Some readers arrive at this book already inside what it describes. Others arrive at the edge of it — recognising something in themselves they haven't fully named, or standing at a point of decision they haven't been able to articulate.</p>
+    <p>This tool is for the second group. It helps you identify which kind of threshold you are at: acknowledging an orientation you've been avoiding; entering a dynamic for the first time honestly; committing more deeply to an existing one; or leaving something that no longer fits. And it helps you see what kind of hesitation you're inside — whether you're not yet ready, or still working out what you'd be crossing into, or whether you've actually already decided and haven't named it.</p>
+    <p>It does not tell you what to do. It reflects back what you've described. The threshold can be honoured without being crossed.</p>
   </div>
   <div class="meta-row">
     <div class="meta-item"><strong>Questions</strong>12 + 1 optional</div>
@@ -192,6 +210,18 @@
     <p>Saving is opt-in. The result is stored to this device only.</p>
   </div>
   <div class="code-box" id="code-box"></div>
+  <div class="email-send" id="email-send">
+    <div class="email-row">
+      <input type="email" id="code-email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-email" id="btn-email-send" onclick="sendCodeByEmail()">Send code →</button>
+    </div>
+    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
+  </div>
+  <div class="email-send" id="email-send">
+    <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+    <button class="btn-email" id="btn-email-send">Email me this</button>
+  </div>
+
   <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
   <div class="action-pair">
     <button class="btn-outline" id="btn-save">Save with anonymous code</button>
@@ -524,6 +554,7 @@ function saveResult(thr,arch,cost){
   document.getElementById('code-box').textContent=code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
+  document.getElementById('email-send').classList.add('show');
   const b=document.getElementById('btn-save');b.disabled=true;b.textContent='Result saved';
 }
 
@@ -557,6 +588,62 @@ function resetSaveUI(){
   }catch(e){}
   document.getElementById('view-intro').style.display='block';
 })();
+
+
+  // Brevo email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
+      return;
+    }
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var code = savedCode;
+    const returnURL = window.location.href.split('?')[0] + '?code=' + code;
+    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
+
+    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
+      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Threshold Self-Assessment</h1>'
+      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
+      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
+      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
+      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
+      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
+      + '</div>';
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: [{ email: emailVal }],
+          subject: 'Your Threshold Assessment code — The Dark Hierarchy',
+          htmlContent: htmlContent
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.borderColor = 'var(--gold)';
+        btn.style.color = 'var(--gold)';
+        document.getElementById('email-input').value = '';
+      } else {
+        btn.textContent = 'Failed — try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+
 </script>
 </body>
 </html>

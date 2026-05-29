@@ -16,7 +16,7 @@
     --gold:     #b8963e;
     --gold-dim: #7a6128;
     --text:     #e2ddd2;
-    --muted:    #6e6a64;
+    --muted:    #a09890;
     --rule:     rgba(184,150,62,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -239,6 +239,84 @@
     border-top: 1px solid var(--rule);
   }
 
+
+  .share-section {
+    background: rgba(184,150,62,0.06); border: 1px solid var(--rule);
+    padding: 1.1rem 1.2rem; margin-bottom: 1.5rem;
+  }
+  .share-label {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold-dim); display: block; margin-bottom: 0.65rem;
+  }
+  .share-url-box { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.6rem; }
+  .share-url-text {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted);
+    background: var(--black); border: 1px solid var(--rule);
+    padding: 0.45rem 0.65rem; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .btn-copy {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); background: none; border: 1px solid var(--gold-dim);
+    padding: 0.45rem 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-copy:hover { background: var(--gold-dim); color: var(--black); }
+  .btn-copy.copied { border-color: var(--gold); color: var(--gold); }
+  .share-note { font-family: 'Inconsolata', monospace; font-size: 0.4rem; color: var(--muted); opacity: 0.8; letter-spacing: 0.04em; line-height: 1.55; }
+  .share-actions { display: flex; gap: 0.6rem; margin-top: 0.65rem; }
+  .share-actions .btn-copy { flex: 1; text-align: center; }
+
+  .email-send {
+    display: none; margin-top: 0.65rem;
+  }
+  .email-send.show { display: block; }
+  .email-row {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .email-row input[type="email"] {
+    flex: 1; background: var(--near); border: 1px solid var(--rule);
+    color: var(--text); font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem; letter-spacing: 0.06em;
+    padding: 0.55rem 0.75rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-row input[type="email"]:focus { border-color: var(--gold-dim); }
+  .email-row input[type="email"]::placeholder { color: var(--muted); }
+  .email-row .btn-email {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.55rem 0.85rem; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .email-row .btn-email:hover { background: var(--gold-dim); color: var(--black); }
+  .email-note {
+    font-family: 'Inconsolata', monospace; font-size: 0.4rem;
+    color: var(--muted); letter-spacing: 0.04em;
+    margin-top: 0.35rem; line-height: 1.5;
+  }
+
+  .email-send { display:none; margin-top:0.7rem; }
+  .email-send.show { display:flex; gap:0.5rem; }
+  .email-input {
+    flex:1; background:var(--near); border:1px solid var(--rule);
+    color:var(--text); font-family:'Inconsolata',monospace;
+    font-size:0.5rem; letter-spacing:0.06em;
+    padding:0.55rem 0.75rem; outline:none; transition:border-color 0.2s;
+  }
+  .email-input:focus { border-color:var(--gold-dim); }
+  .email-input::placeholder { color:var(--muted); }
+  .btn-email {
+    font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
+    padding:0.55rem 0.85rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-email:hover { background:var(--gold-dim); color:var(--black); }
+
   canvas { display: none; }
   @media (max-width: 480px) {
     html { font-size: 20px; }
@@ -262,9 +340,8 @@
   </div>
 
   <div class="intro-body">
-    <p>Attachment theory describes the symptom. The trigger theory describes the mechanism.</p>
-    <p>What looks like <em>neediness</em> is actually precision. What looks like <em>withdrawal</em> is the result of asking for confirmation in a register the available frameworks could not deliver.</p>
-    <p>This tool maps your attachment behaviour not as pathology but as a precise report — about how acutely you read confirmation signals, which direction you move when they go quiet, how reliably your history has matched your need, and how specifically you need to be seen.</p>
+    <p>Attachment theory describes the symptom — anxious, avoidant, secure. The book describes the mechanism: what we call anxious attachment is usually a precise instrument pointed at people who won't deliver confirmation of the specific self it is seeking. The sensitivity is not the problem. The mismatch is.</p>
+    <p>This tool maps how acutely you read confirmation signals from a partner, which direction you move when they go quiet, how reliably your history has matched what you needed, and how specifically you need to be seen. It produces a description of your confirmation-seeking architecture — not a category, not a diagnosis, not a thing to fix.</p>
   </div>
 
   <div class="framing-note">
@@ -386,20 +463,46 @@
   <p class="section-lbl">Two things this profile separates</p>
   <div class="distinction" id="distinction-text"></div>
 
+  <!-- Share -->
+  <p class="section-lbl">Share your profile</p>
+  <div class="share-section">
+    <span class="share-label">Shareable link</span>
+    <div class="share-url-box">
+      <span class="share-url-text" id="share-url-text">&nbsp;</span>
+      <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
+    </div>
+    <div class="share-actions">
+      <button class="btn-copy" onclick="copyResultText()">Copy as text</button>
+      <button class="btn-copy" onclick="generateShareCard(currentScores)">Download diagram card</button>
+    </div>
+    <p class="share-note">Anyone with the link sees your result. The diagram card is 1080×1080.</p>
+  </div>
+
   <hr class="rule">
 
   <!-- Save + share -->
-  <p class="section-lbl">Save this result</p>
+  <p class="section-lbl">Save this result (private)</p>
   <div class="intro-body" style="font-size:0.72rem; color:var(--muted); margin-bottom:1rem;">
     <p>Saving generates an anonymous six-character code. No email, no account.</p>
   </div>
 
   <div class="code-box" id="code-box"></div>
+  <div class="email-send" id="email-send">
+    <div class="email-row">
+      <input type="email" id="code-email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-email" id="btn-email-send" onclick="sendCodeByEmail()">Send code →</button>
+    </div>
+    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
+  </div>
+  <div class="email-send" id="email-send">
+    <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+    <button class="btn-email" id="btn-email-send">Email me this</button>
+  </div>
+
   <div class="code-note" id="code-note">Your result is saved to this device. Copy the code above, or bookmark this page.</div>
 
   <button class="btn-outline" id="btn-save">Save with an anonymous code</button>
   <div class="action-pair">
-    <button class="btn-outline" id="btn-share-card" style="margin-top:0">Download diagram card</button>
     <button class="btn-outline" id="btn-retake" style="margin-top:0">Retake</button>
   </div>
 
@@ -682,9 +785,14 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 function showResults(sc) {
+  currentScores = sc;
+  window.__currentResult = sc;
   document.getElementById('view-survey').style.display = 'none';
   const vr = document.getElementById('view-results');
   vr.style.display = 'block';
+  const shareURL = makeShareURL(sc);
+  document.getElementById('share-url-text').textContent = shareURL;
+  try { history.replaceState(null, '', shareURL); } catch(x) {}
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.getElementById('bar-A').style.width = sc.A + '%';
@@ -703,7 +811,7 @@ function showResults(sc) {
   window.scrollTo({ top: 0 });
 
   document.getElementById('btn-save').addEventListener('click', () => saveResult(sc));
-  document.getElementById('btn-share-card').addEventListener('click', () => generateShareCard(sc));
+  // Share card handled inline via onclick
   document.getElementById('btn-retake').addEventListener('click', () => {
     responses = {}; savedCode = null; current = 0;
     shuffled = shuffle(QUESTIONS);
@@ -731,8 +839,10 @@ function saveResult(sc) {
   document.getElementById('code-box').textContent = code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
+  document.getElementById('email-send').classList.add('show');
   document.getElementById('btn-save').disabled    = true;
   document.getElementById('btn-save').textContent = 'Result saved';
+  document.getElementById('email-send').classList.add('show');
 }
 
 function resetSaveUI() {
@@ -773,7 +883,7 @@ async function generateShareCard(sc) {
   ctx.font = '32px Georgia, serif';
   ctx.fillText('\u2736', W / 2, 206);
 
-  ctx.fillStyle = '#6e6a64';
+  ctx.fillStyle = '#a09890';
   ctx.font = '300 22px "Inconsolata", monospace';
   ctx.fillText('ATTACHMENT CONFIRMATION PROFILE', W / 2, 248);
 
@@ -793,7 +903,7 @@ async function generateShareCard(sc) {
   rows.forEach((row, i) => {
     const y = startY + i * gap;
 
-    ctx.fillStyle = '#6e6a64';
+    ctx.fillStyle = '#a09890';
     ctx.font = '300 20px "Inconsolata", monospace';
     ctx.textAlign = 'left';
     ctx.fillText(row.name, labelX, y + 6);
@@ -813,7 +923,7 @@ async function generateShareCard(sc) {
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(barX, y); ctx.lineTo(barX + barW, y); ctx.stroke();
       // Labels
-      ctx.fillStyle = '#6e6a64';
+      ctx.fillStyle = '#a09890';
       ctx.font = '300 16px "Inconsolata", monospace';
       ctx.textAlign = 'left';
       ctx.fillText('AWAY', barX, y + 22);
@@ -835,7 +945,7 @@ async function generateShareCard(sc) {
   ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(120, 920); ctx.lineTo(W - 120, 920); ctx.stroke();
 
-  ctx.fillStyle = '#6e6a64';
+  ctx.fillStyle = '#a09890';
   ctx.font = '300 20px "Inconsolata", monospace';
   ctx.textAlign = 'center';
   ctx.fillText('echoxstudios.art', W / 2, 980);
@@ -844,6 +954,76 @@ async function generateShareCard(sc) {
   link.download = 'tdh-attachment-profile.png';
   link.href     = canvas.toDataURL('image/png');
   link.click();
+}
+
+
+// ══════════════════════════════════
+// SHARE
+// ══════════════════════════════════
+let currentScores = null;
+
+function makeShareURL(sc) {
+  try {
+    const base = window.location.origin + window.location.pathname;
+    return `${base}?a=${sc.A}&b=${sc.B}&c=${sc.C}&d=${sc.D}`;
+  } catch(e) { return ''; }
+}
+
+function copyShareURL() {
+  const url = document.getElementById('share-url-text').textContent.trim();
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('btn-copy-url');
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyResultText() {
+  if (!currentScores) return;
+  const sc = currentScores;
+  const dLabel = sc.B > 60 ? 'Toward' : sc.B < 40 ? 'Away' : 'Variable';
+  const text = `My Attachment Confirmation Profile — The Dark Hierarchy
+Sensitivity: ${sc.A} / 100
+Direction: ${dLabel}
+History of accurate seeing: ${sc.C} / 100
+Specificity of confirmation needed: ${sc.D} / 100
+
+Take the assessment: echoxstudios.art/tdh/`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btns = document.querySelectorAll('.btn-copy');
+    btns.forEach(b => { if (b.textContent.includes('text')) { b.textContent = 'Copied ✓'; b.classList.add('copied'); setTimeout(() => { b.textContent = 'Copy as text'; b.classList.remove('copied'); }, 2000); }});
+  });
+}
+
+function loadFromURLParams() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const a = parseInt(p.get('a')), b = parseInt(p.get('b')),
+          cc = parseInt(p.get('c')), d = parseInt(p.get('d'));
+    if ([a,b,cc,d].every(n => !isNaN(n) && n >= 0 && n <= 100)) {
+      return { A:a, B:b, C:cc, D:d };
+    }
+  } catch(x) {}
+  return null;
+}
+
+
+function sendCodeByEmail() {
+  const emailEl = document.getElementById('code-email-input');
+  const email   = emailEl ? emailEl.value.trim() : '';
+  if (!email || !email.includes('@')) {
+    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
+    return;
+  }
+  const toolName = document.title.split(' —')[0].trim();
+  const subject  = encodeURIComponent('My result code — ' + toolName);
+  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
+  const body     = encodeURIComponent(
+    'Result code: ' + savedCode +
+    '\n\nReturn to result: ' + base + savedCode +
+    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
+  );
+  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
 }
 
 // ══════════════════════════════════════════════
@@ -903,6 +1083,64 @@ document.getElementById('btn-next').addEventListener('click', () => {
   } catch(e) {}
   document.getElementById('view-intro').style.display = 'block';
 })();
+
+
+  // Brevo email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
+      return;
+    }
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var code = savedCode;
+    const returnURL = makeShareURL(window.__currentResult);
+    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
+
+    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
+      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Attachment Confirmation Profile</h1>'
+      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
+      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
+      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
+      + '<p style="margin:1em 0"><a href="' + returnURL + '" style="color:#b8963e">' + returnURL + '</a></p>'
+      + '<p style="color:#9a9590;font-size:13px">This link works on any device.</p>'
+      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
+      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
+      + '</div>';
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: [{ email: emailVal }],
+          subject: 'Your Attachment Confirmation Profile — The Dark Hierarchy',
+          htmlContent: htmlContent
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.borderColor = 'var(--gold)';
+        btn.style.color = 'var(--gold)';
+        document.getElementById('email-input').value = '';
+      } else {
+        btn.textContent = 'Failed — try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+
 </script>
 </body>
 </html>

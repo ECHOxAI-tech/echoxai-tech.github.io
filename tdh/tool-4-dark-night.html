@@ -16,7 +16,7 @@
     --gold:     #b8963e;
     --gold-dim: #7a6128;
     --text:     #e2ddd2;
-    --muted:    #6e6a64;
+    --muted:    #a09890;
     --rule:     rgba(184,150,62,0.2);
     --care:     rgba(184,150,62,0.08);
   }
@@ -239,6 +239,25 @@
     opacity: 0.6; margin-top: 2rem; padding-top: 1.5rem;
     border-top: 1px solid var(--rule);
   }
+
+  .email-send { display:none; margin-top:0.7rem; }
+  .email-send.show { display:flex; gap:0.5rem; }
+  .email-input {
+    flex:1; background:var(--near); border:1px solid var(--rule);
+    color:var(--text); font-family:'Inconsolata',monospace;
+    font-size:0.5rem; letter-spacing:0.06em;
+    padding:0.55rem 0.75rem; outline:none; transition:border-color 0.2s;
+  }
+  .email-input:focus { border-color:var(--gold-dim); }
+  .email-input::placeholder { color:var(--muted); }
+  .btn-email {
+    font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-dim); background:none; border:1px solid var(--gold-dim);
+    padding:0.55rem 0.85rem; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0;
+  }
+  .btn-email:hover { background:var(--gold-dim); color:var(--black); }
+
   @media (max-width: 480px) {
     html { font-size: 20px; }
     body { padding: 2rem 1.25rem 3rem; }
@@ -261,7 +280,8 @@
   </div>
 
   <div class="body-text">
-    <p>This tool is for practitioners currently in or near crisis within an established dynamic. It does not diagnose. It helps you distinguish between two specific conditions the framework names: a dark night that is real but survivable, and a system failure that is being maintained against the evidence.</p>
+    <p>This tool is for people inside an established power dynamic — dominant/submissive, or any structured hierarchical relationship — who are currently in difficulty and trying to understand what kind of difficulty it is.</p>
+    <p>There are two very different things that can look identical from the inside: a genuine crisis within a framework that is still working (what the book calls a <em>dark night</em> — exhausting, real, but survivable), and a situation where the framework itself has developed conditions that make it impossible to succeed as it stands (a <em>system failure</em>). They require completely opposite responses. This tool helps you distinguish between them.</p>
   </div>
 
   <div class="care-frame">
@@ -382,6 +402,18 @@
     <p>Results are saved to this device only. No data leaves your browser. The anonymous code below lets you return to this result.</p>
   </div>
   <div class="code-box" id="code-box"></div>
+  <div class="email-send" id="email-send">
+    <div class="email-row">
+      <input type="email" id="code-email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-email" id="btn-email-send" onclick="sendCodeByEmail()">Send code →</button>
+    </div>
+    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
+  </div>
+  <div class="email-send" id="email-send">
+    <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+    <button class="btn-email" id="btn-email-send">Email me this</button>
+  </div>
+
   <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
   <button class="btn-outline" id="btn-save">Save with an anonymous code</button>
   <button class="btn-outline" id="btn-retake" style="margin-top:0.5rem">Retake</button>
@@ -724,8 +756,10 @@ function saveResult(diag) {
   document.getElementById('code-box').textContent = code;
   document.getElementById('code-box').classList.add('show');
   document.getElementById('code-note').classList.add('show');
+  document.getElementById('email-send').classList.add('show');
   document.getElementById('btn-save').disabled    = true;
   document.getElementById('btn-save').textContent = 'Result saved';
+  document.getElementById('email-send').classList.add('show');
 }
 
 function resetSaveUI() {
@@ -768,6 +802,62 @@ function genCode() {
   } catch(e) {}
   document.getElementById('view-gate').style.display = 'block';
 })();
+
+
+  // Brevo email send
+  document.getElementById('btn-email-send').addEventListener('click', async function() {
+    var emailVal = document.getElementById('email-input').value.trim();
+    if (!emailVal || !emailVal.includes('@') || !emailVal.includes('.')) {
+      document.getElementById('email-input').style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(function(){ document.getElementById('email-input').style.borderColor=''; }, 800);
+      return;
+    }
+    var btn = document.getElementById('btn-email-send');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    var code = savedCode;
+    const returnURL = window.location.href.split('?')[0] + '?code=' + code;
+    var deviceURL = window.location.href.split('?')[0] + '?code=' + code;
+
+    var htmlContent = '<div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2.5rem 2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a6128;margin-bottom:0.5rem">The Dark Hierarchy</p>'
+      + '<h1 style="font-size:1.3rem;color:#f0ece3;font-weight:400;margin:0 0 1.5rem">Dark Night Diagnostic</h1>'
+      + '<p style="color:#a09890;margin-bottom:0.5rem">Your result code:</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#b8963e;margin:0.5rem 0 1.5rem">' + code + '</p>'
+      + '<p style="color:#a09890;font-size:14px">Return to your result on this device:</p>'
+      + '<p style="margin:0.4em 0 1.5rem"><a href="' + deviceURL + '" style="color:#b8963e">' + deviceURL + '</a></p>'
+      + '<hr style="border:none;border-top:1px solid rgba(184,150,62,0.2);margin:1.5rem 0">'
+      + '<p style="font-family:monospace;font-size:11px;color:#6e6a64">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p>'
+      + '</div>';
+
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: [{ email: emailVal }],
+          subject: 'Your Dark Night Diagnostic code — The Dark Hierarchy',
+          htmlContent: htmlContent
+        })
+      });
+      if (res.ok) {
+        btn.textContent = 'Sent ✓';
+        btn.style.borderColor = 'var(--gold)';
+        btn.style.color = 'var(--gold)';
+        document.getElementById('email-input').value = '';
+      } else {
+        btn.textContent = 'Failed — try again';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+
 </script>
 </body>
 </html>

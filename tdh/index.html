@@ -16,7 +16,7 @@
     --gold:     #b8963e;
     --gold-dim: #7a6128;
     --text:     #e2ddd2;
-    --muted:    #6e6a64;
+    --muted:    #a09890;
     --rule:     rgba(184,150,62,0.2);
   }
 
@@ -357,6 +357,57 @@
 
   .modal-cancel:hover { color: var(--text); }
 
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    text-align: center;
+    padding: 1.5rem 0 0.5rem;
+  }
+  .pull-quote p {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--off-white);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .pull-quote .pq-attr {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.42rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-top: 0.6rem;
+    display: block;
+  }
+
+  /* ── START HERE NUDGE ── */
+  .start-here {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.75rem 0;
+    margin-bottom: 0.5rem;
+  }
+  .start-here-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    flex-shrink: 0;
+  }
+  .start-here-link {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .start-here-link:hover { color: var(--gold-dim); border-color: var(--gold-dim); }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 480px) {
     html { font-size: 20px; }
@@ -370,19 +421,28 @@
 <header>
   <h1>The Dark Hierarchy</h1>
   <span class="ornament">✦</span>
-  <p class="byline">Echo Kronborg</p>
+  <p class="byline">by Echo Kronborg</p>
 </header>
 
 <hr class="rule">
 
+<div class="pull-quote">
+  <p>Desire is not what you feel <em>for</em> someone.<br>It is what you feel <em>about yourself</em>, in their presence.</p>
+  <span class="pq-attr">The Dark Hierarchy — Book II</span>
+</div>
+
+<hr class="rule">
+
 <section class="lead">
-  <p>This book proposes that desire is the confirmation of an <em>aspirational sexual self</em> — the specific version of yourself you most want to feel like, sexually. The framework describes how this works, through which channels it operates, and what its failure conditions are.</p>
-  <p>These tools apply the framework to you.</p>
+  <p>Most people understand desire as something they feel <em>toward</em> another person. The book argues it is something else: the confirmation, in another's presence, of the specific version of yourself you most want to be. What we call attraction is that confirmation arriving. The channels through which it arrives — visual, emotional, tactile, intellectual — are your personal trigger gradient.</p>
+  <p>These tools map that gradient, help you describe the self being confirmed, and give language to the patterns you already carry. Free, anonymous, no account. Start anywhere.</p>
 </section>
 
 <hr class="rule">
 
-<p class="tools-heading">Apply the framework</p>
+<p class="tools-heading">The tools</p>
+
+<div class="start-here"><span class="start-here-label">New here?</span><a href="./tool-1-trigger-gradient.html" class="start-here-link">Start with the Trigger Gradient Profiler — 5 minutes →</a></div>
 
 <ul class="tool-list">
   <li>
@@ -392,7 +452,7 @@
         <span class="tool-name">Trigger Gradient Profiler</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">Where does your desire actually live? <span class="tool-meta">24 questions · 5 min</span></div>
+      <div class="tool-desc">Map your personal distribution of desire across four channels. Most people are surprised by what they find. <span class="tool-meta">24 questions · 5 min</span></div>
     </a>
   </li>
   <li>
@@ -402,7 +462,7 @@
         <span class="tool-name">Aspirational Self Profile</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">Who do you want to feel like, sexually? <span class="tool-meta">15 prompts · 12 min</span></div>
+      <div class="tool-desc">A structured space to describe the version of yourself you most want to inhabit. You already know it. <span class="tool-meta">15 prompts · 12 min</span></div>
     </a>
   </li>
   <li>
@@ -412,7 +472,7 @@
         <span class="tool-name">Attachment Confirmation Profile</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">What looks like neediness is precision. <span class="tool-meta">20 questions · 7 min</span></div>
+      <div class="tool-desc">Maps your attachment patterns as information rather than pathology. No categories. No diagnosis. <span class="tool-meta">20 questions · 7 min</span></div>
     </a>
   </li>
 </ul>
@@ -427,7 +487,7 @@
         <span class="tool-name">Dark Night Diagnostic</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">Dark night or system failure — the distinction that matters. <span class="tool-meta">18 questions · 12 min</span></div>
+      <div class="tool-desc">For practitioners in difficulty — helps you read whether the framework is still working or has genuinely failed. <span class="tool-meta">18 questions · 12 min</span></div>
     </a>
   </li>
   <li>
@@ -437,7 +497,7 @@
         <span class="tool-name">Protocol Designer</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">The Tuesday is the proof. Generate a daily protocol package. <span class="tool-meta">10 questions · 8 min</span></div>
+      <div class="tool-desc">Generates a personalised set of daily and weekly rituals suited to your living situation and dynamic. <span class="tool-meta">10 questions · 8 min</span></div>
     </a>
   </li>
   <li>
@@ -447,7 +507,7 @@
         <span class="tool-name">Threshold Self-Assessment</span>
         <span class="tool-arrow">→</span>
       </div>
-      <div class="tool-desc">The threshold can be honored without being crossed. <span class="tool-meta">12 questions · 7 min</span></div>
+      <div class="tool-desc">For readers standing at an edge — of acknowledging something, entering something, or leaving. Reflects without pushing. <span class="tool-meta">12 questions · 7 min</span></div>
     </a>
   </li>
 </ul>
@@ -458,8 +518,8 @@
 
 <section>
   <div class="about-text">
-    <p><em>The Dark Hierarchy</em> is a five-book work of narrative philosophy. It moves from aphorism through philosophical prolegomena into one fully built theology of the hierarchical orientation — with a daily-practice manual and thirty scholarly endnotes.</p>
-    <p>The book is currently in submission.</p>
+    <p><em>The Dark Hierarchy</em> is a five-book work of philosophy and theology — a complete account of desire, authority, and the hierarchical orientation, written from inside the framework it describes. It dismantles the Lacanian model of desire, builds a new one from the ground up, and follows it all the way into daily practice.</p>
+    <p>374 pages. Currently in submission. Written under the construct Echo Kronborg.</p>
   </div>
   <div class="about-links">
     <a href="./about.html" class="about-link">About the book</a>
@@ -477,14 +537,14 @@
   <span class="sep">·</span>
   <span>© 2026</span>
   <span class="sep">·</span>
-  <a href="#" class="result-code-link" id="open-code-modal">I have a result code</a>
+  <a href="#" class="result-code-link" id="open-code-modal">Return to a saved result →</a>
 </footer>
 
 <!-- Result code modal -->
 <div class="modal-overlay" id="code-modal" role="dialog" aria-modal="true" aria-label="Enter result code">
   <div class="modal">
-    <h2>Return to your result</h2>
-    <p>Enter the six-character code you received when saving a result. No account required.</p>
+    <h2>Return to a saved result</h2>
+    <p>When you save a result in any of the tools, you receive a six-character code. Enter it here to retrieve your result on this device. No account required.</p>
     <input type="text" id="result-code-input" placeholder="AB1C2D" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false">
     <div class="modal-actions">
       <button class="modal-submit" id="code-submit">Retrieve result</button>
