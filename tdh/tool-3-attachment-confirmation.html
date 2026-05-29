@@ -199,40 +199,8 @@
   .distinction strong { color: var(--bone); font-weight: 500; }
 
   /* save/share */
-  .code-box {
-    font-family: 'Inconsolata', monospace; font-size: 1.15rem;
-    letter-spacing: 0.35em; color: var(--gold); text-align: center;
-    padding: 1.1rem; border: 1px solid var(--rule);
-    margin: 1rem 0; display: none;
-  }
-  .code-box.show { display: block; }
-  .code-note {
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
-    color: var(--muted); letter-spacing: 0.06em; text-align: center;
-    line-height: 1.65; display: none;
-  }
-  .code-note.show { display: block; }
-  .btn-outline {
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--gold-dim); background: none;
-    border: 1px solid var(--gold-dim);
-    padding: 0.65rem 1rem; cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    width: 100%; margin-top: 0.7rem; display: block;
-  }
-  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-  .btn-outline:disabled { opacity: 0.35; cursor: default; }
-  .btn-outline:disabled:hover { border-color: var(--gold-dim); color: var(--gold-dim); }
   .action-pair { display: flex; gap: 0.7rem; margin-top: 0.7rem; }
   .action-pair .btn-outline { margin-top: 0; }
-  .retake-link {
-    display: block; text-align: center; margin-top: 2.5rem;
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
-    color: var(--muted); letter-spacing: 0.1em;
-    text-decoration: none; transition: color 0.2s;
-  }
-  .retake-link:hover { color: var(--text); }
   .result-disclaimer {
     font-family: 'Inconsolata', monospace; font-size: 0.42rem;
     color: var(--muted); letter-spacing: 0.05em; line-height: 1.65;
@@ -269,34 +237,7 @@
   .share-actions { display: flex; gap: 0.6rem; margin-top: 0.65rem; }
   .share-actions .btn-copy { flex: 1; text-align: center; }
 
-  .email-row {
-    display: flex; gap: 0.5rem; align-items: center;
-  }
-  .email-row input[type="email"] {
-    flex: 1; background: var(--near); border: 1px solid var(--rule);
-    color: var(--text); font-family: 'Inconsolata', monospace;
-    font-size: 0.5rem; letter-spacing: 0.06em;
-    padding: 0.55rem 0.75rem; outline: none;
-    transition: border-color 0.2s;
-  }
-  .email-row input[type="email"]:focus { border-color: var(--gold-dim); }
-  .email-row input[type="email"]::placeholder { color: var(--muted); }
-  .email-row .btn-email {
-    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--gold-dim); background: none;
-    border: 1px solid var(--gold-dim);
-    padding: 0.55rem 0.85rem; cursor: pointer;
-    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
-  }
-  .email-row .btn-email:hover { background: var(--gold-dim); color: var(--black); }
-  .email-note {
-    font-family: 'Inconsolata', monospace; font-size: 0.4rem;
-    color: var(--muted); letter-spacing: 0.04em;
-    margin-top: 0.35rem; line-height: 1.5;
-  }
 
-  .email-send { display:flex; gap:0.5rem; margin-top:0.7rem; flex-wrap:wrap; }
 
 
   .card-modal-overlay {
@@ -324,50 +265,51 @@
     .lbtn { min-height: 2.2rem; min-width: 0; }
   }
 
-  /* ── EMAIL SEND ── */
-  .email-section { margin-top: 1rem; }
-  .email-opts {
-    display: flex; gap: 0.6rem; margin-bottom: 0.65rem; flex-wrap: wrap;
+
+  /* ── SAVE + SEND ── */
+  .send-opts { display:flex; gap:0.9rem; margin-bottom:0.65rem; }
+  .send-opt-label {
+    display:flex; align-items:center; gap:0.4rem; cursor:pointer;
+    font-family:'Inconsolata',monospace; font-size:0.6rem;
+    letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--bone); user-select:none;
   }
-  .email-opt-label {
-    display: flex; align-items: center; gap: 0.35rem; cursor: pointer;
-    font-family: 'Inconsolata', monospace; font-size: 0.58rem;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--bone); user-select: none;
+  .send-opt-label input { display:none; }
+  .opt-box {
+    width:1.1rem; height:1.1rem; border:1px solid var(--gold-dim);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.6rem; color:var(--black); flex-shrink:0;
+    transition:background 0.15s, border-color 0.15s;
   }
-  .email-opt-label input[type="checkbox"] { display: none; }
-  .email-opt-box {
-    width: 1rem; height: 1rem; border: 1px solid var(--gold-dim);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.55rem; color: var(--black); flex-shrink: 0;
-    background: transparent; transition: background 0.15s, border-color 0.15s;
+  .send-opt-label input:checked ~ .opt-box {
+    background:var(--gold); border-color:var(--gold);
   }
-  .email-opt-label input:checked ~ .email-opt-box {
-    background: var(--gold); border-color: var(--gold);
+  .send-opt-label input:checked ~ .opt-box::after { content:'\2713'; }
+  .send-row { display:flex; gap:0.5rem; }
+  .send-input {
+    flex:1; background:var(--near); border:1px solid rgba(212,169,62,0.35);
+    color:var(--text); font-family:'Inconsolata',monospace;
+    font-size:0.6rem; padding:0.7rem 0.85rem; outline:none; min-width:0;
+    transition:border-color 0.2s;
   }
-  .email-opt-label input:checked ~ .email-opt-box::after { content: '✓'; }
-  .email-row { display: flex; gap: 0.5rem; }
-  .email-input {
-    flex: 1; background: var(--near); border: 1px solid rgba(212,169,62,0.35);
-    color: var(--text); font-family: 'Inconsolata', monospace;
-    font-size: 0.58rem; padding: 0.65rem 0.8rem; outline: none;
-    transition: border-color 0.2s; min-width: 0;
+  .send-input:focus { border-color:var(--gold); }
+  .send-input::placeholder { color:var(--muted); }
+  .btn-send-email {
+    font-family:'Inconsolata',monospace; font-size:0.6rem;
+    letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--black); background:var(--gold); border:none;
+    padding:0.7rem 1.2rem; cursor:pointer; flex-shrink:0;
+    transition:background 0.2s;
   }
-  .email-input:focus { border-color: var(--gold); }
-  .email-input::placeholder { color: var(--muted); }
-  .btn-send {
-    font-family: 'Inconsolata', monospace; font-size: 0.58rem;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--black); background: var(--gold); border: none;
-    padding: 0.65rem 1.1rem; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+  .btn-send-email:hover { background:var(--off-white); }
+  .btn-send-email:disabled { opacity:0.5; cursor:default; }
+  .send-feedback {
+    font-family:'Inconsolata',monospace; font-size:0.55rem;
+    letter-spacing:0.06em; margin-top:0.45rem; min-height:1.1rem;
   }
-  .btn-send:hover { background: var(--off-white); }
-  .btn-send:disabled { opacity: 0.5; cursor: default; }
-  .email-feedback {
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
-    letter-spacing: 0.08em; margin-top: 0.4rem; min-height: 1rem;
-    color: var(--gold);
-  }
+  .send-feedback.ok  { color:#5a9e6a; }
+  .send-feedback.err { color:#c84040; }
+
 </style>
 </head>
 <body>
@@ -525,41 +467,32 @@
 
   <hr class="rule">
 
-  <!-- Save + share -->
-  <p class="section-lbl">Save this result (private)</p>
-  <div class="intro-body" style="font-size: 0.75rem; color:var(--muted); margin-bottom:1rem;">
-    <p>Saving generates an anonymous six-character code. No email, no account.</p>
-  </div>
+  <!-- SAVE + SEND -->
+  <p class="section-lbl">Save &amp; send</p>
 
   <div class="code-box" id="code-box"></div>
-    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
-  </div>
-  <div class="email-section" id="email-section" style="display:none">
-    <div class="email-opts">
-      <label class="email-opt-label">
+
+  <button class="btn-primary" id="btn-save" style="margin-top:0.7rem">Save result</button>
+
+  <!-- Email section — shown after saving -->
+  <div id="email-section" style="display:none; margin-top:1.2rem">
+    <div class="send-opts">
+      <label class="send-opt-label">
         <input type="checkbox" id="opt-result" checked>
-        <span class="email-opt-box"></span>
-        Result
+        <span class="opt-box"></span>Result
       </label>
-      <label class="email-opt-label">
+      <label class="send-opt-label">
         <input type="checkbox" id="opt-code">
-        <span class="email-opt-box"></span>
-        Code
+        <span class="opt-box"></span>Code
       </label>
     </div>
-    <div class="email-row">
-      <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
-      <button class="btn-send" id="btn-email-send">Send</button>
+    <div class="send-row">
+      <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-send-email" id="btn-email-send">Send</button>
     </div>
-    <p class="email-feedback" id="email-feedback"></p>
+    <p class="send-feedback" id="send-feedback"></p>
   </div>
 
-  <div class="code-note" id="code-note">Your result is saved to this device. Copy the code above, or bookmark this page.</div>
-
-  <button class="btn-outline" id="btn-save">Save with an anonymous code</button>
-  <div class="action-pair">
-    <button class="btn-outline" id="btn-retake" style="margin-top:0">Retake</button>
-  </div>
 
   <p class="result-disclaimer">This profile describes patterns in your confirmation-seeking as information, not as pathology or clinical diagnosis. It does not constitute psychological or therapeutic advice, and no professional relationship is formed by using this tool. It deliberately avoids clinical attachment categories. If this material surfaces significant distress, please seek support from a qualified professional.</p>
 
@@ -872,64 +805,6 @@ function showResults(sc) {
   window.scrollTo({ top: 0 });
 
   document.getElementById('btn-save').addEventListener('click', () => saveResult(sc));
-  // Share card handled inline via onclick
-  document.getElementById('btn-retake').addEventListener('click', () => {
-    responses = {}; savedCode = null; current = 0;
-    shuffled = shuffle(QUESTIONS);
-    vr.style.display = 'none';
-    resetSaveUI();
-    document.getElementById('view-intro').style.display = 'block';
-    window.scrollTo({ top: 0 });
-  });
-}
-
-// ══════════════════════════════════════════════
-// SAVE / RETRIEVE
-// ══════════════════════════════════════════════
-
-function saveResult(sc) {
-  if (savedCode) return;
-  const code = genCode();
-  savedCode  = code;
-  try { localStorage.setItem('tdh_t3_' + code, JSON.stringify({ sc, ts: Date.now() })); } catch(e) {}
-  try {
-    const url = new URL(window.location.href);
-    url.searchParams.set('code', code);
-    history.replaceState(null, '', url.toString());
-  } catch(e) {}
-  document.getElementById('code-box').textContent = code;
-  document.getElementById('code-box').classList.add('show');
-  document.getElementById('code-note').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-
-  document.getElementById('btn-save').disabled    = true;
-  document.getElementById('btn-save').textContent = 'Result saved';
-
-}
-
-function resetSaveUI() {
-  document.getElementById('code-box').textContent = '';
-  document.getElementById('code-box').classList.remove('show');
-  document.getElementById('code-note').classList.remove('show');
-  const b = document.getElementById('btn-save');
-  b.disabled = false;
-  b.textContent = 'Save with an anonymous code';
-}
-
-// ══════════════════════════════════════════════
-// SHARE CARD — diagram only (1080×1080)
-// ══════════════════════════════════════════════
-
-async function generateShareCard(sc) {
-  await document.fonts.ready;
-  const canvas = document.getElementById('share-canvas');
-  const ctx    = canvas.getContext('2d');
-  const W = 1080, H = 1080;
-  ctx.clearRect(0, 0, W, H);
-
-  ctx.fillStyle = '#080806';
-  ctx.fillRect(0, 0, W, H);
-
   // Border
   ctx.strokeStyle = 'rgba(184,150,62,0.18)';
   ctx.lineWidth = 1;
@@ -1093,7 +968,6 @@ function sendCodeByEmail() {
     '\n\nReturn to result: ' + base + savedCode +
     '\n\n' + toolName + ' — echoxstudios.art/tdh/'
   );
-  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
 }
 
 // ══════════════════════════════════════════════
@@ -1172,79 +1046,80 @@ document.getElementById('btn-next').addEventListener('click', () => {
   });
 
 
-  function buildResultEmailHTML(contentHTML) {
-    return '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
-      + '<p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 0.4rem">The Dark Hierarchy</p>'
-      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:0.5rem 0 1.5rem">'
-      + contentHTML
-      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:1.5rem 0 0.5rem">'
-      + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ &mdash; ECHO&times;STUDIOS &middot; Berlin</p>'
-      + '</div>';
+
+
+  // ── SAVE + SEND ──
+  document.getElementById('btn-save').addEventListener('click', function() {
+    if (savedCode) return;
+    var result = typeof currentGradient !== 'undefined' && currentGradient ? currentGradient
+               : typeof currentScores   !== 'undefined' && currentScores   ? currentScores
+               : {};
+    saveResult(result);
+  });
+
+  function afterSave(code) {
+    var box = document.getElementById('code-box');
+    box.textContent = code; box.classList.add('show');
+    var btn = document.getElementById('btn-save');
+    btn.textContent = 'Saved ✓'; btn.style.background = '#5a9e6a'; btn.disabled = true;
+    document.getElementById('email-section').style.display = 'block';
   }
 
-  // Email send
   document.getElementById('btn-email-send').addEventListener('click', async function() {
     var emailVal = document.getElementById('email-input').value.trim();
+    var fb = document.getElementById('send-feedback');
     if (!emailVal || !emailVal.includes('@')) {
-      document.getElementById('email-feedback').textContent = 'Please enter a valid email address.';
-      document.getElementById('email-feedback').style.color = 'var(--gold)';
-      return;
+      fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
     }
     var wantResult = document.getElementById('opt-result').checked;
     var wantCode   = document.getElementById('opt-code').checked;
     if (!wantResult && !wantCode) {
-      document.getElementById('email-feedback').textContent = 'Select at least one option.';
-      return;
+      fb.textContent = 'Select at least one option.'; fb.className = 'send-feedback err'; return;
     }
-    if (!savedCode) saveResult(typeof currentGradient !== 'undefined' && currentGradient ? currentGradient : (typeof currentScores !== 'undefined' && currentScores ? currentScores : {}));
 
     var btn = document.getElementById('btn-email-send');
-    btn.textContent = 'Sending…'; btn.disabled = true;
-    document.getElementById('email-feedback').textContent = '';
+    btn.textContent = 'Sending…'; btn.disabled = true; fb.textContent = '';
 
     var returnURL = window.location.href.split('?')[0] + '?code=' + savedCode;
-    var shareURL  = (typeof makeShareURL === 'function' && typeof currentGradient !== 'undefined' && currentGradient) ? makeShareURL(currentGradient)
-                  : (typeof makeShareURL === 'function' && typeof currentScores !== 'undefined' && currentScores) ? makeShareURL(currentScores)
+    var shareURL  = (typeof makeShareURL === 'function' && (typeof currentGradient !== 'undefined' && currentGradient)) ? makeShareURL(currentGradient)
+                  : (typeof makeShareURL === 'function' && (typeof currentScores !== 'undefined' && currentScores))   ? makeShareURL(currentScores)
                   : returnURL;
 
-    var codePart = '<p style="color:#c8c3bb;margin:0.5rem 0 0.25rem;font-family:monospace;font-size:13px">Your result code (device-specific):</p>'
-      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:0.3em;color:#d4a93e;margin:0.25rem 0 0.75rem">' + savedCode + '</p>'
-      + '<p style="margin:0.5rem 0"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
-      + (shareURL !== returnURL ? '<p style="color:#c8c3bb;font-size:13px;margin:0.5rem 0 0.25rem">Shareable link (any device):</p><p style="margin:0 0 0.75rem"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
+    var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
+      + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + savedCode + '</p>'
+      + '<p style="margin:0 0 6px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
+      + (shareURL !== returnURL ? '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Shareable (any device):</p><p><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
 
-    var resultPart = document.getElementById('result-text-for-email') ? document.getElementById('result-text-for-email').innerText : document.querySelector('#view-results')?.innerText || '';
-    var resultHTML = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.7;color:#e2ddd2">' + resultPart.replace(/</g,'&lt;').replace(/>/g,'&gt;').substring(0, 3000) + '</p>';
+    var resultEl = document.getElementById('view-results');
+    var resultText = resultEl ? resultEl.innerText.replace(/[<>]/g, '') : '';
+    var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + resultText.substring(0, 3000) + '</p>';
 
-    var contentHTML = '';
-    if (wantResult && wantCode) contentHTML = resultHTML + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.15);margin:1.5rem 0">' + codePart;
-    else if (wantResult) contentHTML = resultHTML;
-    else contentHTML = codePart;
+    var body = wantResult && wantCode ? resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,0.2);margin:1.5rem 0">' + codePart
+             : wantResult ? resultPart : codePart;
+
+    var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
+      + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
+      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:8px 0 20px">'
+      + body
+      + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:20px 0 8px">'
+      + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ — ECHO×STUDIOS · Berlin</p></div>';
 
     try {
       var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: emailVal,
-          subject: 'Your Attachment Confirmation Profile — The Dark Hierarchy',
-          htmlContent: buildResultEmailHTML(contentHTML)
-        })
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ to: emailVal, subject: document.title + ' — The Dark Hierarchy', htmlContent: html })
       });
       if (res.ok) {
-        btn.textContent = 'Sent';
-        btn.style.background = 'var(--gold)';
-        document.getElementById('email-feedback').textContent = 'Check your inbox.';
-        document.getElementById('email-feedback').style.color = 'var(--gold)';
+        btn.textContent = '✓ Sent'; btn.style.background = '#5a9e6a';
+        fb.textContent = 'Email sent. Check your inbox.'; fb.className = 'send-feedback ok';
       } else {
-        var errText = await res.text();
         btn.textContent = 'Send'; btn.disabled = false;
-        document.getElementById('email-feedback').textContent = 'Failed (' + res.status + '). Check Brevo IP settings.';
-        document.getElementById('email-feedback').style.color = '#c84040';
+        fb.textContent = 'Send failed (error ' + res.status + '). Check Brevo IP settings in your account.';
+        fb.className = 'send-feedback err';
       }
     } catch(e) {
       btn.textContent = 'Send'; btn.disabled = false;
-      document.getElementById('email-feedback').textContent = 'Network error. Try again.';
-      document.getElementById('email-feedback').style.color = '#c84040';
+      fb.textContent = 'Network error. Try again.'; fb.className = 'send-feedback err';
     }
   });
 
