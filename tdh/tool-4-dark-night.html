@@ -495,7 +495,7 @@ document.getElementById('btn-from-more').addEventListener('click', startSurvey);
 
 function startSurvey() {
   ['view-gate','view-more'].forEach(id => { document.getElementById(id).style.display = 'none'; });
-  document.getElementById('view-survey').style.display = '';
+  document.getElementById('view-survey').style.display = 'block';
   current   = 0;
   responses = {};
   savedCode = null;
@@ -669,7 +669,7 @@ const DIAGNOSIS_TEXT = {
 function showResults(diag) {
   document.getElementById('view-survey').style.display = 'none';
   const vr = document.getElementById('view-results');
-  vr.style.display = '';
+  vr.style.display = 'block';
 
   // If severe distress, care frame first — already always rendered first in HTML
   // Add emphasis class if needed
@@ -702,7 +702,7 @@ function showResults(diag) {
     vr.style.display = 'none';
     responses = {}; savedCode = null; current = 0;
     resetSaveUI();
-    document.getElementById('view-gate').style.display = '';
+    document.getElementById('view-gate').style.display = 'block';
     window.scrollTo({ top: 0 });
   });
 }
@@ -766,7 +766,7 @@ function genCode() {
       }
     }
   } catch(e) {}
-  document.getElementById('view-gate').style.display = '';
+  document.getElementById('view-gate').style.display = 'block';
 })();
 </script>
 </body>

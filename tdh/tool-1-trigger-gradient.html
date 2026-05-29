@@ -708,7 +708,7 @@ function renderQuestion(idx) {
 function showResults(pct) {
   hide('view-survey');
   const vr = document.getElementById('view-results');
-  vr.style.display = '';
+  vr.style.display = 'block';
 
   // Animate bars after a brief reflow
   requestAnimationFrame(() => {
@@ -917,7 +917,7 @@ async function generateShareCard(pct) {
 
 document.getElementById('btn-start').addEventListener('click', () => {
   hide('view-intro');
-  document.getElementById('view-survey').style.display = '';
+  document.getElementById('view-survey').style.display = 'block';
   shuffled  = shuffle(QUESTIONS);
   current   = 0;
   responses = {};

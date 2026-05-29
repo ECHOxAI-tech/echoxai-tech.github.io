@@ -838,7 +838,7 @@ function buildProfile() {
 function showProfile() {
   document.getElementById('view-survey').style.display = 'none';
   document.getElementById('profile-doc').innerHTML = buildProfile();
-  document.getElementById('view-profile').style.display = '';
+  document.getElementById('view-profile').style.display = 'block';
   window.scrollTo({ top: 0 });
 }
 
@@ -896,7 +896,7 @@ document.getElementById('btn-edit').addEventListener('click', () => {
 
 document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('view-intro').style.display  = 'none';
-  document.getElementById('view-survey').style.display = '';
+  document.getElementById('view-survey').style.display = 'block';
   stepIdx      = 0;
   lastMovement = 0;
   answers      = {};
@@ -931,7 +931,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
       }
     }
   } catch(e) {}
-  document.getElementById('view-intro').style.display = '';
+  document.getElementById('view-intro').style.display = 'block';
 })();
 </script>
 </body>

@@ -357,7 +357,7 @@ function render(idx) {
 
 document.getElementById('btn-start').addEventListener('click',()=>{
   document.getElementById('view-intro').style.display='none';
-  document.getElementById('view-survey').style.display='';
+  document.getElementById('view-survey').style.display='block';
   current=0; resp={}; openText=''; savedCode=null; lastMv=0;
   render(0); window.scrollTo({top:0});
 });
@@ -474,7 +474,7 @@ function buildReflection(thr, arch, cost) {
 function generate() {
   document.getElementById('view-survey').style.display='none';
   const vr=document.getElementById('view-results');
-  vr.style.display='';
+  vr.style.display = 'block';
 
   const thr  = determineThreshold();
   const arch = determineArchitecture();
@@ -502,7 +502,7 @@ function generate() {
   document.getElementById('btn-retake').addEventListener('click',()=>{
     vr.style.display='none'; resp={}; openText=''; savedCode=null; current=0; lastMv=0;
     resetSaveUI();
-    document.getElementById('view-intro').style.display='';
+    document.getElementById('view-intro').style.display='block';
     window.scrollTo({top:0});
   });
 }
@@ -555,7 +555,7 @@ function resetSaveUI(){
       }
     }
   }catch(e){}
-  document.getElementById('view-intro').style.display='';
+  document.getElementById('view-intro').style.display='block';
 })();
 </script>
 </body>

@@ -546,7 +546,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
 
 document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('view-intro').style.display  = 'none';
-  document.getElementById('view-survey').style.display = '';
+  document.getElementById('view-survey').style.display = 'block';
   stepIdx = 0; answers = {}; savedCode = null;
   render(0);
 });
@@ -742,7 +742,7 @@ function buildProtocolDoc() {
 function showProtocol() {
   document.getElementById('view-survey').style.display   = 'none';
   document.getElementById('protocol-doc').innerHTML      = buildProtocolDoc();
-  document.getElementById('view-protocol').style.display = '';
+  document.getElementById('view-protocol').style.display = 'block';
   window.scrollTo({ top: 0 });
 }
 
@@ -777,7 +777,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
   document.getElementById('code-box').classList.remove('show');
   document.getElementById('code-note').classList.remove('show');
   const b=document.getElementById('btn-save'); b.disabled=false; b.textContent='Save with anonymous code';
-  document.getElementById('view-intro').style.display='';
+  document.getElementById('view-intro').style.display='block';
   window.scrollTo({top:0});
 });
 
@@ -802,7 +802,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
       }
     }
   } catch(e){}
-  document.getElementById('view-intro').style.display='';
+  document.getElementById('view-intro').style.display='block';
 })();
 </script>
 </body>

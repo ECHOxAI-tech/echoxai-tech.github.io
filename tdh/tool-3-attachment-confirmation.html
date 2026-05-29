@@ -684,7 +684,7 @@ function renderQuestion(idx) {
 function showResults(sc) {
   document.getElementById('view-survey').style.display = 'none';
   const vr = document.getElementById('view-results');
-  vr.style.display = '';
+  vr.style.display = 'block';
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.getElementById('bar-A').style.width = sc.A + '%';
@@ -709,7 +709,7 @@ function showResults(sc) {
     shuffled = shuffle(QUESTIONS);
     vr.style.display = 'none';
     resetSaveUI();
-    document.getElementById('view-intro').style.display = '';
+    document.getElementById('view-intro').style.display = 'block';
     window.scrollTo({ top: 0 });
   });
 }
@@ -852,7 +852,7 @@ async function generateShareCard(sc) {
 
 document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('view-intro').style.display  = 'none';
-  document.getElementById('view-survey').style.display = '';
+  document.getElementById('view-survey').style.display = 'block';
   shuffled  = shuffle(QUESTIONS);
   current   = 0;
   responses = {};
@@ -901,7 +901,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
       }
     }
   } catch(e) {}
-  document.getElementById('view-intro').style.display = '';
+  document.getElementById('view-intro').style.display = 'block';
 })();
 </script>
 </body>
