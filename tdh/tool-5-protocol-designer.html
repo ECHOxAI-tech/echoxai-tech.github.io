@@ -233,30 +233,7 @@
   <div class="protocol-actions">
     <p class="section-lbl">Actions</p>
     <button class="btn-outline" id="btn-print">Print / Save as PDF</button>
-    <div style="display:flex;gap:0.7rem;margin-top:0.7rem">
-      <button class="btn-outline" id="btn-save" style="margin-top:0">Save with anonymous code</button>
-      <button class="btn-outline" id="btn-retake" style="margin-top:0">Redesign</button>
-    </div>
-    <div class="code-box" id="code-box"></div>
-    <p class="email-note">Opens your email app with the code pre-filled. You send it to yourself.</p>
   </div>
-    <div class="email-row">
-      <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
-      <button class="btn-send" id="btn-email-send">Send</button>
-    </div>
-    <p class="email-feedback" id="email-feedback"></p>
-  </div>
-
-  <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
-  </div>
-  <hr class="rule">
-
-  <!-- SAVE + SEND -->
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-
-
 
   <hr class="rule">
   <p class="section-lbl">Save &amp; send</p>
@@ -848,28 +825,12 @@ function genCode() {
   return s;
 }
 
-document.getElementById('btn-save').addEventListener('click', () => {
-  if (savedCode) return;
-  const code = genCode(); savedCode = code;
-  try { localStorage.setItem('tdh_t5_'+code, JSON.stringify({ answers, ts:Date.now() })); } catch(e){}
-  afterSave(code);
-  try { const u=new URL(window.location.href); u.searchParams.set('code',code); history.replaceState(null,'',u.toString()); } catch(e){}
-  document.getElementById('code-box').textContent = code;
-  document.getElementById('code-box').classList.add('show');
-  document.getElementById('code-note').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-
-  const b = document.getElementById('btn-save');
-  b.disabled=true; b.textContent='Protocol saved'; document.getElementById('email-send').classList.add('show');
-});
 
 document.getElementById('btn-retake').addEventListener('click', () => {
   document.getElementById('view-protocol').style.display = 'none';
   answers={}; savedCode=null; stepIdx=0;
   document.getElementById('code-box').textContent='';
   document.getElementById('code-box').classList.remove('show');
-  document.getElementById('code-note').classList.remove('show');
-  const b=document.getElementById('btn-save'); b.disabled=false; b.textContent='Save with anonymous code';
   document.getElementById('view-intro').style.display='block';
   window.scrollTo({top:0});
 });
@@ -888,9 +849,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
         requestAnimationFrame(()=>{
           document.getElementById('code-box').textContent=savedCode;
           document.getElementById('code-box').classList.add('show');
-          document.getElementById('code-note').classList.add('show');
   document.getElementById('email-section').style.display = 'block';
-          const b=document.getElementById('btn-save'); b.disabled=true; b.textContent='Protocol saved'; document.getElementById('email-send').classList.add('show');
         });
         return;
       }
@@ -904,7 +863,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
-    var result = {};
+    var result = window.__lastResult || {};
     try { localStorage.setItem('tdh_t5_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }

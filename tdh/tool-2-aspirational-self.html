@@ -407,24 +407,10 @@
     </div>
 
     <button class="btn-outline" id="btn-print">Print / Save as PDF</button>
-
-    <div class="action-pair">
-      <button class="btn-outline" id="btn-save">Save with anonymous code</button>
-      <button class="btn-outline" id="btn-edit">Edit answers</button>
-    </div>
-
-    <div class="code-box" id="code-box"></div>
-    <div class="code-note show" id="code-note" style="display:none">Your profile is saved to this device. Use this code on the landing page to return to it.</div>
+    <button class="btn-outline" id="btn-edit" style="margin-top:0.7rem">Edit answers</button>
   </div>
 
   <hr class="rule">
-
-  <!-- SAVE + SEND -->
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-
-
 
   <hr class="rule">
   <p class="section-lbl">Save &amp; send</p>
@@ -917,35 +903,7 @@ function genCode() {
   return c;
 }
 
-document.getElementById('btn-save').addEventListener('click', () => {
-  if (savedCode) return;
-  const code = genCode();
-  savedCode  = code;
-  try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ answers, ts: Date.now() })); } catch(e) {}
-  try {
-    const url = new URL(window.location.href);
-    url.searchParams.set('code', code);
-    history.replaceState(null, '', url.toString());
-  } catch(e) {}
-  const box  = document.getElementById('code-box');
-  const note = document.getElementById('code-note');
-  box.textContent = code;
-  box.classList.add('show');
-  note.style.display = '';
-  note.classList.add('show');
-  document.getElementById('btn-save').disabled    = true;
-  document.getElementById('btn-save').textContent = 'Profile saved';
 
-});
-
-document.getElementById('btn-edit').addEventListener('click', () => {
-  document.getElementById('view-profile').style.display = 'none';
-  document.getElementById('view-survey').style.display  = '';
-  stepIdx      = 0;
-  lastMovement = 0;
-  render(0);
-  window.scrollTo({ top: 0 });
-});
 
 
 function sendCodeByEmail() {
@@ -994,13 +952,8 @@ document.getElementById('btn-start').addEventListener('click', () => {
         showProfile();
         requestAnimationFrame(() => {
           const box  = document.getElementById('code-box');
-          const note = document.getElementById('code-note');
           box.textContent = code;
           box.classList.add('show');
-          note.style.display = '';
-          note.classList.add('show');
-          document.getElementById('btn-save').disabled    = true;
-          document.getElementById('btn-save').textContent = 'Profile saved';
         });
         return;
       }
@@ -1014,7 +967,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
-    var result = collectAnswers();
+    var result = (typeof collectAnswers==='function'?collectAnswers():{});
     try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }

@@ -531,13 +531,6 @@
 
   <hr class="rule">
 
-  <!-- SAVE + SEND -->
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-
-
-
   <hr class="rule">
   <p class="section-lbl">Save &amp; send</p>
 
@@ -806,7 +799,7 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 function showResults(pct) {
-  setTimeout(_saveAndShow, 80);
+  window.__lastResult = pct; setTimeout(_saveAndShow, 80);
   hide('view-survey');
   const vr = document.getElementById('view-results');
   vr.style.display = 'block';
@@ -828,33 +821,8 @@ function showResults(pct) {
 
   window.scrollTo({ top: 0 });
 
-  // btn-save wired at bottom of script
-  // Update URL without reload
-  try {
-    const url = new URL(window.location.href);
-    url.searchParams.set('code', code);
-    history.replaceState(null, '', url.toString());
-  } catch(e) {}
-
-  const box  = document.getElementById('code-box');
-  const note = document.getElementById('code-note');
-  box.textContent = code;
-  box.classList.add('show');
-  note.classList.add('show');
-  document.getElementById('btn-save').disabled = true;
-  document.getElementById('btn-save').textContent = 'Result saved';
 }
 
-function resetSaveUI() {
-  const box  = document.getElementById('code-box');
-  const note = document.getElementById('code-note');
-  box.textContent = '';
-  box.classList.remove('show');
-  note.classList.remove('show');
-  const saveBtn = document.getElementById('btn-save');
-  saveBtn.disabled = false;
-  saveBtn.textContent = 'Save with an anonymous code';
-}
 
 function tryRetrieve(code) {
   let stored;
@@ -868,13 +836,8 @@ function tryRetrieve(code) {
       // Mark as already saved
       requestAnimationFrame(() => {
         const box  = document.getElementById('code-box');
-        const note = document.getElementById('code-note');
         box.textContent = code;
         box.classList.add('show');
-        note.classList.add('show');
-        const saveBtn = document.getElementById('btn-save');
-        saveBtn.disabled = true;
-        saveBtn.textContent = 'Result saved';
       });
       return true;
     } catch(e) {}
@@ -1121,7 +1084,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
-    var result = pct;
+    var result = window.__lastResult || {};
     try { localStorage.setItem('tdh_t1_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }

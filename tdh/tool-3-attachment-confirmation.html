@@ -481,15 +481,6 @@
   </div>
 
   <hr class="rule">
-
-  <!-- SAVE + SEND -->
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-
-
-
-  <hr class="rule">
   <p class="section-lbl">Save &amp; send</p>
 
   <div class="code-box" id="code-box"></div>
@@ -790,7 +781,7 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 function showResults(sc) {
-  setTimeout(_saveAndShow, 80);
+  window.__lastResult = sc; setTimeout(_saveAndShow, 80);
   currentScores = sc;
   window.__currentResult = sc;
   document.getElementById('view-survey').style.display = 'none';
@@ -815,8 +806,6 @@ function showResults(sc) {
   document.getElementById('distinction-text').innerHTML = buildDistinction();
 
   window.scrollTo({ top: 0 });
-
-  // btn-save wired at bottom of script
   // Border
   ctx.strokeStyle = 'rgba(184,150,62,0.18)';
   ctx.lineWidth = 1;
@@ -1029,10 +1018,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
         requestAnimationFrame(() => {
           document.getElementById('code-box').textContent = savedCode;
           document.getElementById('code-box').classList.add('show');
-          document.getElementById('code-note').classList.add('show');
   document.getElementById('email-section').style.display = 'block';
-          const b = document.getElementById('btn-save');
-          b.disabled = true; b.textContent = 'Result saved';
         });
         return;
       }
@@ -1046,7 +1032,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
-    var result = sc;
+    var result = window.__lastResult || {};
     try { localStorage.setItem('tdh_t3_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
