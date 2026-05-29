@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aspirational Self Profile — The Dark Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #080806;
+    --near:     #0e0e0b;
+    --off-white:#f0ece3;
+    --bone:     #d4cfc4;
+    --gold:     #b8963e;
+    --gold-dim: #7a6128;
+    --text:     #e2ddd2;
+    --muted:    #6e6a64;
+    --rule:     rgba(184,150,62,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 24px; background: var(--black); color: var(--text); }
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300; line-height: 1.65;
+    min-height: 100vh; max-width: 38rem;
+    margin: 0 auto; padding: 3rem 1.5rem 4rem;
+  }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+  .back-link {
+    font-family: 'Inconsolata', monospace; font-size: 0.5rem;
+    color: var(--muted); text-decoration: none; letter-spacing: 0.1em;
+    display: inline-block; margin-bottom: 2.5rem; transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold-dim); }
+  .back-link::before { content: '\2190 '; }
+  .page-header { text-align: center; margin-bottom: 1.5rem; }
+  .tool-label {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold-dim); display: block; margin-bottom: 0.4rem;
+  }
+  .page-header h1 {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-weight: 400; font-size: 1.4rem;
+    letter-spacing: 0.06em; color: var(--off-white); line-height: 1.2;
+  }
+  .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
+
+  /* ── INTRO ── */
+  .intro-body { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .intro-body p + p { margin-top: 0.85em; }
+  .intro-body em { color: var(--bone); font-style: italic; }
+  .privacy-note {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    color: var(--gold-dim); letter-spacing: 0.08em; line-height: 1.7;
+    border-left: 1px solid var(--gold-dim); padding-left: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  .disclaimer {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); letter-spacing: 0.05em; line-height: 1.7;
+    opacity: 0.7; margin-top: 1.2rem;
+  }
+  .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
+  .meta-item {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.12em; color: var(--muted);
+  }
+  .meta-item strong {
+    display: block; color: var(--gold-dim); font-weight: 400;
+    margin-bottom: 0.15rem; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .btn-primary {
+    display: block; width: 100%;
+    font-family: 'Inconsolata', monospace; font-size: 0.58rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--black); background: var(--gold-dim);
+    border: none; padding: 0.85rem 1.5rem; cursor: pointer;
+    transition: background 0.2s; margin-top: 1.5rem;
+  }
+  .btn-primary:hover { background: var(--gold); }
+
+  /* ── SURVEY ── */
+  #view-survey { display: none; }
+  .progress-label {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem;
+  }
+  .progress-track { height: 1px; background: var(--rule); margin-bottom: 2rem; }
+  .progress-fill { height: 100%; background: var(--gold-dim); transition: width 0.3s ease; }
+
+  .movement-header { margin-bottom: 1.5rem; }
+  .movement-num {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold-dim); margin-bottom: 0.2rem;
+  }
+  .movement-title {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-size: 1rem; color: var(--off-white);
+    font-weight: 400; margin-bottom: 0.5rem;
+  }
+  .movement-intro {
+    font-size: 0.72rem; color: var(--muted);
+    font-style: italic; line-height: 1.65;
+  }
+
+  .question-prompt {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem; font-weight: 300; font-style: italic;
+    color: var(--off-white); line-height: 1.6; margin-bottom: 0.6rem;
+  }
+  .question-hint {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.9rem; line-height: 1.55;
+  }
+
+  /* textarea */
+  textarea {
+    display: block; width: 100%;
+    background: var(--near); border: 1px solid var(--rule);
+    color: var(--text); font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.85rem; font-weight: 300; line-height: 1.7;
+    padding: 0.85rem 1rem; resize: vertical; min-height: 5rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--gold-dim); }
+  textarea::placeholder { color: var(--muted); font-style: italic; }
+
+  .word-count {
+    font-family: 'Inconsolata', monospace; font-size: 0.42rem;
+    color: var(--muted); text-align: right; margin-top: 0.3rem;
+    letter-spacing: 0.06em;
+  }
+  .word-count.over { color: var(--gold-dim); }
+
+  /* adjective cloud */
+  .adj-cloud { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.75rem 0 1rem; }
+  .adj-chip {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); border: 1px solid var(--rule);
+    padding: 0.25rem 0.5rem; cursor: pointer; letter-spacing: 0.06em;
+    transition: border-color 0.15s, color 0.15s; background: none;
+  }
+  .adj-chip:hover { border-color: var(--gold-dim); color: var(--text); }
+  .adj-chip.used { border-color: var(--gold-dim); color: var(--gold-dim); }
+
+  /* select options (Q4) */
+  .select-options { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .sel-btn {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 0.85rem; font-weight: 300; font-style: italic;
+    color: var(--text); background: none;
+    border: 1px solid var(--rule);
+    padding: 0.75rem 1rem; cursor: pointer; text-align: left;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .sel-btn:hover { border-color: var(--gold-dim); color: var(--off-white); }
+  .sel-btn.sel { border-color: var(--gold); color: var(--off-white); background: rgba(184,150,62,0.06); }
+
+  /* nav */
+  .survey-nav { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+  .btn-back, .btn-next, .btn-skip {
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    background: none; padding: 0.65rem 1.1rem; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-back { border: 1px solid var(--rule); color: var(--muted); }
+  .btn-back:hover { border-color: var(--gold-dim); color: var(--text); }
+  .btn-back:disabled { opacity: 0.25; cursor: default; }
+  .btn-back:disabled:hover { border-color: var(--rule); color: var(--muted); }
+  .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
+  .btn-next:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-skip {
+    border: none; color: var(--muted); font-size: 0.44rem;
+    padding: 0.65rem 0; margin-left: auto; text-decoration: none; display: none;
+  }
+  .btn-skip.show { display: inline-block; }
+  .btn-skip:hover { color: var(--text); }
+  .req-msg {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--gold-dim); letter-spacing: 0.08em;
+    margin-top: 0.5rem; display: none;
+  }
+  .req-msg.show { display: block; }
+
+  /* ── PROFILE VIEW ── */
+  #view-profile { display: none; }
+
+  .profile-doc {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300; font-size: 0.82rem; line-height: 1.8;
+    color: var(--text);
+  }
+  .profile-top {
+    text-align: center; padding: 1rem 0 0.5rem;
+  }
+  .profile-title {
+    font-family: 'Inconsolata', monospace; font-size: 0.5rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--bone); margin-bottom: 0.4rem;
+  }
+  .profile-date {
+    font-family: 'Inconsolata', monospace; font-size: 0.42rem;
+    color: var(--muted); letter-spacing: 0.1em; margin-top: 0.3rem;
+  }
+  .profile-section-title {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); margin: 1.5rem 0 0.6rem;
+  }
+  .profile-para { margin-bottom: 0.75em; }
+  .profile-footer {
+    text-align: center; margin-top: 1.5rem;
+    font-size: 0.72rem; color: var(--muted); font-style: italic;
+    line-height: 1.65;
+  }
+
+  /* profile actions */
+  .section-lbl {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+  }
+  .code-box {
+    font-family: 'Inconsolata', monospace; font-size: 1.15rem;
+    letter-spacing: 0.35em; color: var(--gold); text-align: center;
+    padding: 1.1rem; border: 1px solid var(--rule);
+    margin: 1rem 0; display: none;
+  }
+  .code-box.show { display: block; }
+  .code-note {
+    font-family: 'Inconsolata', monospace; font-size: 0.44rem;
+    color: var(--muted); letter-spacing: 0.06em; text-align: center;
+    line-height: 1.65; display: none;
+  }
+  .code-note.show { display: block; }
+  .btn-outline {
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.65rem 1rem; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    width: 100%; margin-top: 0.7rem; display: block;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-outline:disabled { opacity: 0.35; cursor: default; }
+  .btn-outline:disabled:hover { border-color: var(--gold-dim); color: var(--gold-dim); }
+  .action-pair { display: flex; gap: 0.7rem; margin-top: 0.7rem; }
+  .action-pair .btn-outline { margin-top: 0; }
+  .retake-link {
+    display: block; text-align: center; margin-top: 2.5rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    color: var(--muted); letter-spacing: 0.1em;
+    text-decoration: none; transition: color 0.2s;
+  }
+  .retake-link:hover { color: var(--text); }
+  .result-disclaimer {
+    font-family: 'Inconsolata', monospace; font-size: 0.42rem;
+    color: var(--muted); letter-spacing: 0.05em; line-height: 1.65;
+    opacity: 0.6; margin-top: 2.5rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* print */
+  @media print {
+    body { background: white; color: #1a1a1a; max-width: none; padding: 2cm; }
+    .profile-doc { color: #1a1a1a; font-size: 11pt; }
+    .profile-section-title { color: #7a6128; }
+    .profile-footer { color: #555; }
+    #view-intro, #view-survey, .profile-actions, .retake-link, .result-disclaimer { display: none !important; }
+    #view-profile { display: block !important; }
+  }
+
+  @media (max-width: 480px) {
+    html { font-size: 20px; }
+    body { padding: 2rem 1.25rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<a href="./index.html" class="back-link">The Dark Hierarchy</a>
+
+<!-- ══════════════════════════════════════════════
+     INTRO
+══════════════════════════════════════════════ -->
+<div id="view-intro">
+  <div class="page-header">
+    <span class="tool-label">Tool II of VI</span>
+    <h1>Aspirational<br>Self Profile</h1>
+    <span class="ornament">✦</span>
+  </div>
+
+  <div class="intro-body">
+    <p>The trigger is the person who makes you feel like the person you intellectually would like to be. Sexually.</p>
+    <p>This tool helps you articulate your <em>aspirational sexual self</em> — the specific, formed version of yourself you want to feel like in a sexual dynamic. Not what acts you want. Who you want to be.</p>
+    <p>You already know it. The tool gives you the architecture in which to describe it.</p>
+  </div>
+
+  <div class="privacy-note">
+    This is intimate material. Nothing you write here is sent anywhere. All processing happens on your device. Results exist only on your screen unless you choose to save them.
+  </div>
+
+  <div class="meta-row">
+    <div class="meta-item"><strong>Prompts</strong>14</div>
+    <div class="meta-item"><strong>Time</strong>12–18 min</div>
+    <div class="meta-item"><strong>Format</strong>Open text</div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="intro-body">
+    <p>Most prompts are open text — answer in your own words, at whatever length feels right. Two prompts are optional and can be skipped. There are no correct answers. Brevity is honoured.</p>
+  </div>
+
+  <button class="btn-primary" id="btn-start">Begin</button>
+
+  <p class="disclaimer">This tool is an instrument for personal reflection only. It does not constitute psychological, therapeutic, or clinical advice, and no professional relationship is formed by using it. The profile it generates is a self-portrait for your own use, not a diagnosis or clinical assessment. If you are experiencing distress, please seek support from a qualified professional.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SURVEY
+══════════════════════════════════════════════ -->
+<div id="view-survey">
+  <div class="progress-label" id="progress-label">&nbsp;</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+  <div id="movement-header" class="movement-header" style="display:none">
+    <p class="movement-num" id="mv-num"></p>
+    <h2 class="movement-title" id="mv-title"></h2>
+    <p class="movement-intro" id="mv-intro"></p>
+    <hr class="rule">
+  </div>
+
+  <p class="question-prompt" id="q-prompt"></p>
+  <p class="question-hint" id="q-hint" style="display:none"></p>
+
+  <div id="q-cloud" class="adj-cloud" style="display:none"></div>
+  <div id="q-input"></div>
+
+  <p class="req-msg" id="req-msg">Please respond before continuing — or use Skip if this question is optional.</p>
+
+  <div class="survey-nav">
+    <button class="btn-back" id="btn-back" disabled>Back</button>
+    <button class="btn-skip" id="btn-skip">Skip</button>
+    <button class="btn-next" id="btn-next">Next</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PROFILE
+══════════════════════════════════════════════ -->
+<div id="view-profile">
+
+  <div class="page-header">
+    <span class="tool-label">Your profile</span>
+    <h1>Aspirational Self Profile</h1>
+    <span class="ornament">✦</span>
+  </div>
+
+  <hr class="rule">
+
+  <div class="profile-doc" id="profile-doc"></div>
+
+  <hr class="rule">
+
+  <div class="profile-actions">
+    <p class="section-lbl">Actions</p>
+
+    <div class="intro-body" style="font-size:0.72rem; color:var(--muted); margin-bottom:1rem;">
+      <p>This profile is yours. Print it, save it, return to it. The aspirational self is more articulate each time it is described.</p>
+    </div>
+
+    <button class="btn-outline" id="btn-print">Print / Save as PDF</button>
+
+    <div class="action-pair">
+      <button class="btn-outline" id="btn-save">Save with anonymous code</button>
+      <button class="btn-outline" id="btn-edit">Edit answers</button>
+    </div>
+
+    <div class="code-box" id="code-box"></div>
+    <div class="code-note show" id="code-note" style="display:none">Your profile is saved to this device. Use this code on the landing page to return to it.</div>
+  </div>
+
+  <p class="result-disclaimer">This profile is an instrument for personal reflection, not a clinical or therapeutic document. It does not constitute psychological advice and no professional relationship is formed by using this tool. The answers are yours; the interpretation is yours. If you are in distress, please seek support from a qualified professional.</p>
+
+  <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// STEPS
+// ══════════════════════════════════════════════
+
+const ADJECTIVES = [
+  'claimed','claiming','contained','containing','seen','anonymous',
+  'ferocious','tender','precise','surrendered','surrendered to',
+  'watched','hidden','exposed','owned','owning','dissolved','sovereign'
+];
+
+const Q4_OPTIONS = [
+  { value: 'claims',       label: 'claims' },
+  { value: 'yields',       label: 'yields' },
+  { value: 'both-diff',    label: 'both, at different times' },
+  { value: 'both-same',    label: 'both, in the same moment' },
+  { value: 'neither',      label: 'neither \u2014 the dynamic for me is something else' },
+];
+
+const STEPS = [
+  {
+    id: 'Q1',
+    movement: { num: 1, title: 'Identity',
+      intro: 'These first three questions ask you to describe the version of yourself you most want to feel like, sexually. Not who you are. Who you want to feel yourself as. Answer with whatever language comes.'
+    },
+    type: 'textarea',
+    prompt: 'When I feel most fully myself sexually, I am\u2026',
+    hint: 'Adjectives, images, sentence fragments \u2014 all valid.',
+    cloud: true, maxWords: 40, required: true,
+  },
+  {
+    id: 'Q2',
+    type: 'textarea',
+    prompt: 'The version of myself I most want to feel like in a sexual encounter is\u2026',
+    maxWords: 80, required: true,
+  },
+  {
+    id: 'Q3',
+    type: 'textarea',
+    prompt: 'What I most want to feel about myself in the moment of being desired is\u2026',
+    maxWords: 40, required: true,
+  },
+  {
+    id: 'Q4',
+    movement: { num: 2, title: 'Posture',
+      intro: 'These questions are about the architecture of the dynamic \u2014 where you sit in it, what your body knows about its own position.'
+    },
+    type: 'select',
+    prompt: 'When the dynamic is working, I am most often the one who:',
+    required: true,
+  },
+  {
+    id: 'Q5',
+    type: 'textarea',
+    prompt: 'When I claim, what I am most reaching toward is\u2026',
+    maxWords: 60, required: true,
+    skip: () => { const v = answers.Q4; return v === 'yields' || v === 'neither'; },
+  },
+  {
+    id: 'Q6',
+    type: 'textarea',
+    prompt: 'When I yield, what I am most reaching toward is\u2026',
+    maxWords: 60, required: true,
+    skip: () => { const v = answers.Q4; return v === 'claims' || v === 'neither'; },
+  },
+  {
+    id: 'Q7',
+    type: 'textarea',
+    prompt: 'The specific posture of my body that feels most like home in desire is\u2026',
+    hint: 'e.g. \u201ckneeling at the foot of the bed; standing while she is seated; held against a wall\u201d',
+    maxWords: 40, required: true,
+  },
+  {
+    id: 'Q8',
+    movement: { num: 3, title: 'Confirmation',
+      intro: 'Desire works as confirmation: the moment someone makes the version of you you want to feel like, real. These questions ask what kind of confirmation you specifically need.'
+    },
+    type: 'textarea',
+    prompt: 'I feel most confirmed in my sexual self when the other person\u2026',
+    maxWords: 60, required: true,
+  },
+  {
+    id: 'Q9',
+    type: 'textarea',
+    prompt: 'The aspect of myself I most need to have recognized \u2014 and most often is not \u2014 is\u2026',
+    maxWords: 60, required: true,
+  },
+  {
+    id: 'Q10',
+    type: 'textarea',
+    prompt: 'The specific quality of attention from the other person that turns the framework on, for me, is\u2026',
+    maxWords: 40, required: true,
+  },
+  {
+    id: 'Q11',
+    movement: { num: 4, title: 'Resistance',
+      intro: 'The aspirational self has often been asked to be something else \u2014 by partners, by culture, by what we thought we were supposed to want. These questions name what has been asked, and what has been suppressed.'
+    },
+    type: 'textarea',
+    prompt: 'The version of me I have been told to perform but does not feel like me is\u2026',
+    maxWords: 60, required: true,
+  },
+  {
+    id: 'Q12',
+    type: 'textarea',
+    prompt: 'What I have learned to suppress in order to be acceptable to the person I want is\u2026',
+    maxWords: 60, required: true,
+  },
+  {
+    id: 'Q13',
+    movement: { num: 5, title: 'Threshold',
+      intro: 'One final question, harder than the rest. It is the question the aspirational self carries into every new encounter, and rarely gets to ask.'
+    },
+    type: 'textarea',
+    prompt: 'If I could ask the next person who matters to me one thing \u2014 about how to be with me \u2014 it would be\u2026',
+    maxWords: 80, required: true,
+  },
+  {
+    id: 'Q14',
+    type: 'textarea',
+    prompt: 'The thing I most want to be told, that I have never been told and have stopped expecting to hear, is\u2026',
+    maxWords: 60, required: false, optional: true,
+  },
+];
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+
+let stepIdx   = 0;
+let answers   = {};
+let savedCode = null;
+let lastMovement = 0;
+
+// ══════════════════════════════════════════════
+// NAVIGATION HELPERS
+// ══════════════════════════════════════════════
+
+function isSkipped(step) {
+  return step.skip ? step.skip() : false;
+}
+
+function getActive() {
+  return STEPS.filter(s => !isSkipped(s));
+}
+
+function countWords(str) {
+  return str.trim().split(/\s+/).filter(Boolean).length;
+}
+
+// ══════════════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════════════
+
+function render(idx) {
+  const active = getActive();
+  const step   = active[idx];
+
+  // Progress
+  document.getElementById('progress-label').textContent =
+    step.optional ? `Prompt ${idx + 1} of ${active.length} (optional)` : `Prompt ${idx + 1} of ${active.length}`;
+  document.getElementById('progress-fill').style.width =
+    ((idx + 1) / active.length * 100).toFixed(0) + '%';
+
+  // Movement header — show only when we cross into a new movement
+  const mvEl    = document.getElementById('movement-header');
+  const mvNum   = step.movement ? step.movement.num : 0;
+  if (step.movement && mvNum !== lastMovement) {
+    document.getElementById('mv-num').textContent   = 'Movement ' + step.movement.num;
+    document.getElementById('mv-title').textContent = step.movement.title;
+    document.getElementById('mv-intro').textContent = step.movement.intro;
+    mvEl.style.display = '';
+    lastMovement = mvNum;
+  } else if (!step.movement) {
+    mvEl.style.display = 'none';
+  } else {
+    mvEl.style.display = 'none';
+  }
+
+  // Prompt + hint
+  document.getElementById('q-prompt').textContent = step.prompt;
+  const hintEl = document.getElementById('q-hint');
+  if (step.hint) { hintEl.textContent = step.hint; hintEl.style.display = ''; }
+  else { hintEl.style.display = 'none'; }
+
+  // Adjective cloud
+  const cloudEl = document.getElementById('q-cloud');
+  if (step.cloud) {
+    cloudEl.style.display = '';
+    cloudEl.innerHTML = '';
+    ADJECTIVES.forEach(word => {
+      const chip = document.createElement('button');
+      chip.className = 'adj-chip';
+      chip.textContent = word;
+      chip.addEventListener('click', () => {
+        const ta = document.querySelector('#q-input textarea');
+        if (!ta) return;
+        const cur = ta.value;
+        ta.value = cur + (cur && !cur.endsWith(' ') ? ' ' : '') + word + ' ';
+        ta.focus();
+        chip.classList.add('used');
+        updateWordCount(ta, step.maxWords);
+      });
+      cloudEl.appendChild(chip);
+    });
+  } else {
+    cloudEl.style.display = 'none';
+  }
+
+  // Input area
+  const inputEl = document.getElementById('q-input');
+  inputEl.innerHTML = '';
+  document.getElementById('req-msg').classList.remove('show');
+
+  if (step.type === 'textarea') {
+    const ta = document.createElement('textarea');
+    ta.rows = 4;
+    ta.placeholder = '\u2026';
+    ta.value = answers[step.id] || '';
+    if (step.maxWords) {
+      const wc = document.createElement('p');
+      wc.className = 'word-count';
+      wc.id = 'word-count';
+      const updateWC = () => updateWordCount(ta, step.maxWords);
+      ta.addEventListener('input', updateWC);
+      inputEl.appendChild(ta);
+      inputEl.appendChild(wc);
+      updateWC();
+    } else {
+      inputEl.appendChild(ta);
+    }
+  } else if (step.type === 'select') {
+    const wrap = document.createElement('div');
+    wrap.className = 'select-options';
+    Q4_OPTIONS.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'sel-btn' + (answers.Q4 === opt.value ? ' sel' : '');
+      btn.textContent = opt.label;
+      btn.addEventListener('click', () => {
+        wrap.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        answers.Q4 = opt.value;
+        document.getElementById('req-msg').classList.remove('show');
+      });
+      wrap.appendChild(btn);
+    });
+    inputEl.appendChild(wrap);
+  }
+
+  // Nav buttons
+  document.getElementById('btn-back').disabled = idx === 0;
+  const nextBtn = document.getElementById('btn-next');
+  const skipBtn = document.getElementById('btn-skip');
+  const isLast  = idx === active.length - 1;
+  nextBtn.textContent = isLast ? 'Generate profile' : 'Next';
+  if (step.optional) {
+    skipBtn.classList.add('show');
+  } else {
+    skipBtn.classList.remove('show');
+  }
+
+  window.scrollTo({ top: 0 });
+}
+
+function updateWordCount(ta, max) {
+  const wc = document.getElementById('word-count');
+  if (!wc) return;
+  const n = countWords(ta.value);
+  wc.textContent = n + ' / ' + max + ' words (suggested)';
+  wc.classList.toggle('over', n > max);
+  answers[ta.closest('#view-survey').querySelector('.question-prompt') ? getCurrentStep().id : ''] = ta.value;
+  // simpler: just save on input
+  saveCurrentAnswer(ta.value);
+}
+
+function getCurrentStep() {
+  return getActive()[stepIdx];
+}
+
+function saveCurrentAnswer(val) {
+  const step = getCurrentStep();
+  if (step) answers[step.id] = val;
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+
+function getAnswer() {
+  const step = getActive()[stepIdx];
+  if (step.type === 'textarea') {
+    const ta = document.querySelector('#q-input textarea');
+    return ta ? ta.value.trim() : (answers[step.id] || '');
+  }
+  if (step.type === 'select') return answers.Q4 || '';
+  return '';
+}
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  // Save current before going back
+  const step = getActive()[stepIdx];
+  if (step.type === 'textarea') {
+    const ta = document.querySelector('#q-input textarea');
+    if (ta) answers[step.id] = ta.value;
+  }
+  if (stepIdx > 0) {
+    // If going back past a step that came right after a movement header,
+    // reset lastMovement so header re-shows
+    stepIdx--;
+    const prevStep = getActive()[stepIdx];
+    if (prevStep.movement) lastMovement = prevStep.movement.num - 1;
+    render(stepIdx);
+  }
+});
+
+document.getElementById('btn-skip').addEventListener('click', () => {
+  const step = getActive()[stepIdx];
+  delete answers[step.id]; // omit from profile
+  advance();
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  const step = getActive()[stepIdx];
+  const val  = getAnswer();
+
+  if (step.required && !val) {
+    document.getElementById('req-msg').classList.add('show');
+    return;
+  }
+  if (step.type === 'textarea') {
+    const ta = document.querySelector('#q-input textarea');
+    if (ta) answers[step.id] = ta.value;
+  }
+
+  const active = getActive();
+  if (stepIdx === active.length - 1) {
+    // Done
+    showProfile();
+  } else {
+    advance();
+  }
+});
+
+function advance() {
+  stepIdx++;
+  const active = getActive();
+  // Re-check skips (Q5/Q6 may now be skippable)
+  while (stepIdx < active.length && false) { stepIdx++; } // skip logic is in getActive()
+  if (stepIdx >= active.length) { showProfile(); return; }
+  const next = active[stepIdx];
+  if (next.movement) lastMovement = next.movement.num - 1; // force header to show
+  render(stepIdx);
+}
+
+// ══════════════════════════════════════════════
+// PROFILE ASSEMBLY
+// ══════════════════════════════════════════════
+
+const Q4_ROLE = {
+  'claims':    'the one who claims',
+  'yields':    'the one who yields',
+  'both-diff': 'sometimes the one who claims, sometimes the one who yields — the posture shifts',
+  'both-same': 'simultaneously claiming and yielding — both at once, in the same moment',
+  'neither':   'neither claiming nor yielding in the conventional sense; the dynamic takes another shape',
+};
+
+function nowDate() {
+  const d = new Date();
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function line(label, val) {
+  if (!val || !val.trim()) return '';
+  return `<p class="profile-para">${label} ${escHtml(val.trim())}</p>`;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildProfile() {
+  const a = answers;
+  const role = Q4_ROLE[a.Q4] || '';
+
+  let html = '';
+
+  // Header
+  html += `<div class="profile-top">
+    <p class="profile-title">Your Aspirational Sexual Self</p>
+    <div class="ornament">\u2736</div>
+    <p class="profile-date">${nowDate()}</p>
+  </div>`;
+
+  html += `<hr class="rule">`;
+
+  // I — Identity
+  html += `<p class="profile-section-title">Who you are reaching toward</p>`;
+  html += line('You are most fully yourself sexually when you are', a.Q1);
+  html += line('The version of yourself you most want to feel like is', a.Q2);
+  html += line('What you most want to feel about yourself in the moment of being desired is', a.Q3);
+
+  // II — Posture
+  html += `<hr class="rule">`;
+  html += `<p class="profile-section-title">The posture</p>`;
+  if (a.Q4) {
+    html += `<p class="profile-para">In the dynamic that fits you, you are ${escHtml(role)}.</p>`;
+  }
+  if (a.Q5) html += line('When you claim, what you are reaching toward is', a.Q5);
+  if (a.Q6) html += line('When you yield, what you are reaching toward is', a.Q6);
+  html += line('The posture of your body that feels most like home in desire is', a.Q7);
+
+  // III — Confirmation
+  html += `<hr class="rule">`;
+  html += `<p class="profile-section-title">What confirms you</p>`;
+  html += line('You feel most confirmed in your sexual self when the other person', a.Q8);
+  html += line('The aspect of yourself you most need to have recognized \u2014 and most often is not \u2014 is', a.Q9);
+  html += line('The specific quality of attention that turns the framework on, for you, is', a.Q10);
+
+  // IV — Resistance
+  html += `<hr class="rule">`;
+  html += `<p class="profile-section-title">What you have been asked to be instead</p>`;
+  html += line('The version of you that you have been told to perform but does not feel like you is', a.Q11);
+  html += line('What you have learned to suppress in order to be acceptable to the person you want is', a.Q12);
+
+  // V — Threshold
+  html += `<hr class="rule">`;
+  html += `<p class="profile-section-title">The question you carry</p>`;
+  html += line('If you could ask the next person who matters to you one thing \u2014 about how to be with you \u2014 it would be', a.Q13);
+  if (a.Q14) html += line('The thing you most want to be told, that you have never been told and have stopped expecting to hear, is', a.Q14);
+
+  // Footer
+  html += `<hr class="rule">`;
+  html += `<p class="profile-footer">This is a self-portrait drawn from a single sitting. Return to it. Edit it. The aspirational self is more articulate each time it is described.</p>`;
+  html += `<div class="ornament" style="text-align:center;margin-top:0.75rem;">\u2736</div>`;
+
+  return html;
+}
+
+// ══════════════════════════════════════════════
+// SHOW PROFILE
+// ══════════════════════════════════════════════
+
+function showProfile() {
+  document.getElementById('view-survey').style.display = 'none';
+  document.getElementById('profile-doc').innerHTML = buildProfile();
+  document.getElementById('view-profile').style.display = '';
+  window.scrollTo({ top: 0 });
+}
+
+// ══════════════════════════════════════════════
+// PRINT
+// ══════════════════════════════════════════════
+
+document.getElementById('btn-print').addEventListener('click', () => {
+  window.print();
+});
+
+// ══════════════════════════════════════════════
+// SAVE / RETRIEVE
+// ══════════════════════════════════════════════
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
+  return c;
+}
+
+document.getElementById('btn-save').addEventListener('click', () => {
+  if (savedCode) return;
+  const code = genCode();
+  savedCode  = code;
+  try { localStorage.setItem('tdh_t2_' + code, JSON.stringify({ answers, ts: Date.now() })); } catch(e) {}
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('code', code);
+    history.replaceState(null, '', url.toString());
+  } catch(e) {}
+  const box  = document.getElementById('code-box');
+  const note = document.getElementById('code-note');
+  box.textContent = code;
+  box.classList.add('show');
+  note.style.display = '';
+  note.classList.add('show');
+  document.getElementById('btn-save').disabled    = true;
+  document.getElementById('btn-save').textContent = 'Profile saved';
+});
+
+document.getElementById('btn-edit').addEventListener('click', () => {
+  document.getElementById('view-profile').style.display = 'none';
+  document.getElementById('view-survey').style.display  = '';
+  stepIdx      = 0;
+  lastMovement = 0;
+  render(0);
+  window.scrollTo({ top: 0 });
+});
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  document.getElementById('view-intro').style.display  = 'none';
+  document.getElementById('view-survey').style.display = '';
+  stepIdx      = 0;
+  lastMovement = 0;
+  answers      = {};
+  savedCode    = null;
+  render(0);
+});
+
+// Check URL for saved code
+(function() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code   = (params.get('code') || '').toUpperCase();
+    if (code.length === 6) {
+      const stored = localStorage.getItem('tdh_t2_' + code);
+      if (stored) {
+        const data = JSON.parse(stored);
+        answers    = data.answers || {};
+        savedCode  = code;
+        document.getElementById('view-intro').style.display = 'none';
+        showProfile();
+        requestAnimationFrame(() => {
+          const box  = document.getElementById('code-box');
+          const note = document.getElementById('code-note');
+          box.textContent = code;
+          box.classList.add('show');
+          note.style.display = '';
+          note.classList.add('show');
+          document.getElementById('btn-save').disabled    = true;
+          document.getElementById('btn-save').textContent = 'Profile saved';
+        });
+        return;
+      }
+    }
+  } catch(e) {}
+  document.getElementById('view-intro').style.display = '';
+})();
+</script>
+</body>
+</html>

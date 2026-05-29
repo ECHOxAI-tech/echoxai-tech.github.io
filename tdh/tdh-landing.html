@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Dark Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #080806;
+    --near:     #0e0e0b;
+    --off-white:#f0ece3;
+    --bone:     #d4cfc4;
+    --gold:     #b8963e;
+    --gold-dim: #7a6128;
+    --text:     #e2ddd2;
+    --muted:    #6e6a64;
+    --rule:     rgba(184,150,62,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-size: 24px;
+    background: var(--black);
+    color: var(--text);
+  }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.65;
+    min-height: 100vh;
+    max-width: 38rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* ── RULES ── */
+  .rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 2.5rem 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding-bottom: 0;
+  }
+
+  h1 {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-weight: 400;
+    font-size: 1.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--off-white);
+    line-height: 1.2;
+  }
+
+  .ornament {
+    display: block;
+    color: var(--gold);
+    font-size: 1rem;
+    margin: 0.6rem 0;
+    letter-spacing: 0.05em;
+  }
+
+  .byline {
+    font-family: 'Inconsolata', monospace;
+    font-weight: 300;
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  /* ── LEAD ── */
+  .lead {
+    font-size: 0.85rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .lead p + p {
+    margin-top: 0.85em;
+  }
+
+  .lead em {
+    font-style: italic;
+    color: var(--bone);
+  }
+
+  /* ── TOOLS SECTION ── */
+  .tools-heading {
+    font-family: 'Inconsolata', monospace;
+    font-weight: 400;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+
+  .tool-list {
+    list-style: none;
+  }
+
+  .tool-item {
+    display: block;
+    text-decoration: none;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.2s;
+  }
+
+  .tool-item:first-child {
+    border-top: 1px solid var(--rule);
+  }
+
+  .tool-item:hover .tool-name {
+    color: var(--off-white);
+  }
+
+  .tool-item:hover .tool-arrow {
+    color: var(--gold);
+    transform: translateX(3px);
+  }
+
+  .tool-inner {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .tool-bullet {
+    color: var(--gold-dim);
+    font-size: 0.5rem;
+    flex-shrink: 0;
+    position: relative;
+    top: -0.05em;
+  }
+
+  .tool-name {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-size: 0.9rem;
+    color: var(--bone);
+    transition: color 0.2s;
+    flex: 1;
+  }
+
+  .tool-arrow {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    color: var(--gold-dim);
+    transition: color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .tool-desc {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    padding-left: 1rem;
+    line-height: 1.5;
+  }
+
+  .tool-meta {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+    margin-left: 0.5rem;
+  }
+
+  /* ── PRACTITIONERS CLUSTER ── */
+  .practitioners-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  /* ── ABOUT ── */
+  .about-text {
+    font-size: 0.8rem;
+    line-height: 1.75;
+    color: var(--muted);
+  }
+
+  .about-text p + p {
+    margin-top: 0.85em;
+  }
+
+  .about-text em {
+    font-style: italic;
+    color: var(--text);
+  }
+
+  .about-links {
+    margin-top: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .about-link {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.55rem;
+    color: var(--gold-dim);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    transition: color 0.2s;
+  }
+
+  .about-link::before { content: '→ '; }
+
+  .about-link:hover { color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 1rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  footer .studio { color: var(--gold-dim); }
+
+  footer .sep { color: var(--rule); }
+
+  .disclaimer {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.7;
+    opacity: 0.7;
+  }
+
+  .result-code-link {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .result-code-link:hover {
+    color: var(--gold-dim);
+    border-color: var(--gold-dim);
+  }
+
+  /* ── RESULT CODE MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(8,8,6,0.92);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .modal-overlay.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--near);
+    border: 1px solid var(--rule);
+    padding: 2rem 1.75rem;
+    max-width: 22rem;
+    width: 100%;
+  }
+
+  .modal h2 {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-size: 0.85rem;
+    color: var(--off-white);
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+  }
+
+  .modal p {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+    line-height: 1.6;
+  }
+
+  .modal input {
+    display: block;
+    width: 100%;
+    background: var(--black);
+    border: 1px solid var(--rule);
+    color: var(--text);
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.6rem 0.75rem;
+    outline: none;
+    margin-bottom: 1rem;
+  }
+
+  .modal input:focus {
+    border-color: var(--gold-dim);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .modal-submit {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold-dim);
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .modal-submit:hover { background: var(--gold); }
+
+  .modal-cancel {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+
+  .modal-cancel:hover { color: var(--text); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    html { font-size: 20px; }
+    body { padding: 2rem 1.25rem 3rem; }
+    h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Dark Hierarchy</h1>
+  <span class="ornament">✦</span>
+  <p class="byline">Echo Kronborg</p>
+</header>
+
+<hr class="rule">
+
+<section class="lead">
+  <p>This book proposes that desire is the confirmation of an <em>aspirational sexual self</em> — the specific version of yourself you most want to feel like, sexually. The framework describes how this works, through which channels it operates, and what its failure conditions are.</p>
+  <p>These tools apply the framework to you.</p>
+</section>
+
+<hr class="rule">
+
+<p class="tools-heading">Apply the framework</p>
+
+<ul class="tool-list">
+  <li>
+    <a href="./tool-1-trigger-gradient.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Trigger Gradient Profiler</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">Where does your desire actually live? <span class="tool-meta">24 questions · 5 min</span></div>
+    </a>
+  </li>
+  <li>
+    <a href="./tool-2-aspirational-self.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Aspirational Self Profile</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">Who do you want to feel like, sexually? <span class="tool-meta">15 prompts · 12 min</span></div>
+    </a>
+  </li>
+  <li>
+    <a href="./tool-3-attachment-confirmation.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Attachment Confirmation Profile</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">What looks like neediness is precision. <span class="tool-meta">20 questions · 7 min</span></div>
+    </a>
+  </li>
+</ul>
+
+<p class="practitioners-label">For practitioners</p>
+
+<ul class="tool-list">
+  <li>
+    <a href="./tool-4-dark-night.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Dark Night Diagnostic</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">Dark night or system failure — the distinction that matters. <span class="tool-meta">18 questions · 12 min</span></div>
+    </a>
+  </li>
+  <li>
+    <a href="./tool-5-protocol-designer.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Protocol Designer</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">The Tuesday is the proof. Generate a daily protocol package. <span class="tool-meta">10 questions · 8 min</span></div>
+    </a>
+  </li>
+  <li>
+    <a href="./tool-6-threshold.html" class="tool-item">
+      <div class="tool-inner">
+        <span class="tool-bullet">●</span>
+        <span class="tool-name">Threshold Self-Assessment</span>
+        <span class="tool-arrow">→</span>
+      </div>
+      <div class="tool-desc">The threshold can be honored without being crossed. <span class="tool-meta">12 questions · 7 min</span></div>
+    </a>
+  </li>
+</ul>
+
+<p class="disclaimer">These tools are instruments for personal reflection. They do not constitute psychological, therapeutic, or clinical advice, and no professional relationship is formed by using them. Results describe patterns for self-understanding only. If you are experiencing distress, please seek support from a qualified professional.</p>
+
+<hr class="rule">
+
+<section>
+  <div class="about-text">
+    <p><em>The Dark Hierarchy</em> is a five-book work of narrative philosophy. It moves from aphorism through philosophical prolegomena into one fully built theology of the hierarchical orientation — with a daily-practice manual and thirty scholarly endnotes.</p>
+    <p>The book is currently in submission.</p>
+  </div>
+  <div class="about-links">
+    <a href="./about.html" class="about-link">About the book</a>
+    <a href="./excerpts.html" class="about-link">Read excerpts</a>
+    <a href="https://echoxstudios.art" class="about-link">ECHO×STUDIOS</a>
+  </div>
+</section>
+
+<hr class="rule">
+
+<footer>
+  <span class="studio">ECHO×STUDIOS · Berlin</span>
+  <span class="sep">·</span>
+  <span>inbox@echoxstudios.art</span>
+  <span class="sep">·</span>
+  <span>© 2026</span>
+  <span class="sep">·</span>
+  <a href="#" class="result-code-link" id="open-code-modal">I have a result code</a>
+</footer>
+
+<!-- Result code modal -->
+<div class="modal-overlay" id="code-modal" role="dialog" aria-modal="true" aria-label="Enter result code">
+  <div class="modal">
+    <h2>Return to your result</h2>
+    <p>Enter the six-character code you received when saving a result. No account required.</p>
+    <input type="text" id="result-code-input" placeholder="AB1C2D" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="modal-actions">
+      <button class="modal-submit" id="code-submit">Retrieve result</button>
+      <button class="modal-cancel" id="close-code-modal">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay  = document.getElementById('code-modal');
+  const openBtn  = document.getElementById('open-code-modal');
+  const closeBtn = document.getElementById('close-code-modal');
+  const input    = document.getElementById('result-code-input');
+  const submit   = document.getElementById('code-submit');
+
+  openBtn.addEventListener('click', e => {
+    e.preventDefault();
+    overlay.classList.add('open');
+    input.focus();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('open');
+    input.value = '';
+  });
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) {
+      overlay.classList.remove('open');
+      input.value = '';
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      overlay.classList.remove('open');
+      input.value = '';
+    }
+  });
+
+  input.addEventListener('input', () => {
+    input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  });
+
+  submit.addEventListener('click', () => {
+    const code = input.value.trim();
+    if (code.length === 6) {
+      window.location.href = `./result.html?code=${code}`;
+    } else {
+      input.style.borderColor = 'rgba(184,150,62,0.6)';
+      setTimeout(() => { input.style.borderColor = ''; }, 800);
+      input.focus();
+    }
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submit.click();
+  });
+</script>
+</body>
+</html>

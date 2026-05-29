@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrieving result — The Dark Hierarchy</title>
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root { --black:#080806; --gold-dim:#7a6128; --muted:#6e6a64; --rule:rgba(184,150,62,0.2); }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { font-size:24px; background:var(--black); color:var(--muted); }
+  body { font-family:'Inconsolata',monospace; font-weight:300; min-height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:2rem; text-align:center; }
+  .msg { font-size:0.55rem; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:1.5rem; line-height:1.8; }
+  .code-display { font-size:1rem; letter-spacing:0.3em; color:var(--gold-dim);
+    border:1px solid var(--rule); padding:0.85rem 1.5rem; margin-bottom:1.5rem; }
+  .err { font-size:0.5rem; letter-spacing:0.12em; color:var(--muted); line-height:1.7; }
+  .err a { color:var(--gold-dim); text-decoration:none; }
+  .err a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<p class="msg" id="msg">Looking up your result&hellip;</p>
+<p class="code-display" id="code-el"></p>
+<p class="err" id="err" style="display:none">
+  No result found for this code on this device.<br>
+  Results are stored locally — they can only be retrieved on the device that saved them.<br><br>
+  <a href="./index.html">&larr; Return to the tool suite</a>
+</p>
+<script>
+const TOOLS = [
+  { prefix:'tdh_t1_', path:'./tool-1-trigger-gradient.html' },
+  { prefix:'tdh_t2_', path:'./tool-2-aspirational-self.html' },
+  { prefix:'tdh_t3_', path:'./tool-3-attachment-confirmation.html' },
+  { prefix:'tdh_t4_', path:'./tool-4-dark-night.html' },
+  { prefix:'tdh_t5_', path:'./tool-5-protocol-designer.html' },
+  { prefix:'tdh_t6_', path:'./tool-6-threshold.html' },
+];
+
+(function(){
+  const code = (new URLSearchParams(window.location.search)).get('code') || '';
+  const norm = code.toUpperCase().trim();
+  document.getElementById('code-el').textContent = norm || '——';
+
+  if (!norm || norm.length !== 6) {
+    document.getElementById('msg').textContent = 'No code provided.';
+    document.getElementById('err').style.display = '';
+    return;
+  }
+
+  try {
+    for (const tool of TOOLS) {
+      if (localStorage.getItem(tool.prefix + norm)) {
+        document.getElementById('msg').textContent = 'Result found. Redirecting\u2026';
+        window.location.replace(tool.path + '?code=' + norm);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  document.getElementById('msg').textContent = 'Code not found on this device.';
+  document.getElementById('err').style.display = '';
+})();
+</script>
+</body>
+</html>

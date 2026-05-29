@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trigger Gradient Profiler — The Dark Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #080806;
+    --near:     #0e0e0b;
+    --off-white:#f0ece3;
+    --bone:     #d4cfc4;
+    --gold:     #b8963e;
+    --gold-dim: #7a6128;
+    --text:     #e2ddd2;
+    --muted:    #6e6a64;
+    --rule:     rgba(184,150,62,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 24px; background: var(--black); color: var(--text); }
+
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.65;
+    min-height: 100vh;
+    max-width: 38rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+
+  .back-link {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold-dim); }
+  .back-link::before { content: '← '; }
+
+  /* ── SHARED HEADING ── */
+  .page-header { text-align: center; margin-bottom: 1.5rem; }
+  .tool-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .page-header h1 {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: 0.06em;
+    color: var(--off-white);
+    line-height: 1.2;
+  }
+  .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
+
+  /* ── INTRO ── */
+  .intro-body { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .intro-body p + p { margin-top: 0.85em; }
+  .intro-body em { color: var(--bone); font-style: italic; }
+
+  .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
+  .meta-item {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .meta-item strong {
+    display: block;
+    color: var(--gold-dim);
+    font-weight: 400;
+    margin-bottom: 0.15rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    display: block; width: 100%;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--black); background: var(--gold-dim);
+    border: none; padding: 0.85rem 1.5rem; cursor: pointer;
+    transition: background 0.2s; margin-top: 1.5rem;
+  }
+  .btn-primary:hover { background: var(--gold); }
+
+  /* ── SURVEY ── */
+  #view-survey { display: none; }
+
+  .progress-label {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem; color: var(--muted);
+    letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem;
+  }
+  .progress-track {
+    height: 1px; background: var(--rule); margin-bottom: 2.5rem;
+  }
+  .progress-fill {
+    height: 100%; background: var(--gold-dim); transition: width 0.3s ease;
+  }
+
+  .question-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1rem; font-weight: 300; font-style: italic;
+    color: var(--off-white); line-height: 1.6;
+    margin-bottom: 2rem; min-height: 3rem;
+  }
+
+  .likert-labels {
+    display: flex; justify-content: space-between; margin-bottom: 0.6rem;
+  }
+  .likert-labels span {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.4rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+
+  .likert-row {
+    display: flex; gap: 0.35rem; justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .lbtn {
+    flex: 1;
+    min-height: 2.4rem; min-width: 2.4rem; max-width: 3rem;
+    border: 1px solid var(--rule);
+    background: transparent; color: var(--muted);
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    cursor: pointer; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .lbtn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .lbtn.sel { border-color: var(--gold); background: var(--gold); color: var(--black); }
+
+  .survey-nav {
+    display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;
+  }
+  .btn-back, .btn-next {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase;
+    background: none; padding: 0.65rem 1.1rem; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-back { border: 1px solid var(--rule); color: var(--muted); }
+  .btn-back:hover { border-color: var(--gold-dim); color: var(--text); }
+  .btn-back:disabled { opacity: 0.25; cursor: default; }
+  .btn-back:disabled:hover { border-color: var(--rule); color: var(--muted); }
+  .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
+  .btn-next:hover { border-color: var(--gold); color: var(--gold); }
+
+  .req-msg {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem; color: var(--gold-dim);
+    letter-spacing: 0.08em; margin-top: 0.5rem; display: none;
+  }
+  .req-msg.show { display: block; }
+
+  /* ── RESULTS ── */
+  #view-results { display: none; }
+
+  .results-title {
+    font-family: 'IM Fell English', Georgia, serif;
+    font-weight: 400; font-size: 1.1rem;
+    color: var(--off-white); text-align: center;
+    letter-spacing: 0.08em; margin-bottom: 0.3rem;
+  }
+
+  .section-lbl {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  /* gradient bars */
+  .bar-row {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin-bottom: 0.95rem;
+  }
+  .bar-lbl {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    width: 6rem; flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1; height: 4px;
+    background: rgba(184,150,62,0.1);
+    position: relative;
+  }
+  .bar-fill { height: 100%; background: var(--gold); width: 0; transition: width 0.9s ease; }
+  .bar-pct {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.5rem; color: var(--gold);
+    width: 2.4rem; text-align: right; flex-shrink: 0;
+  }
+
+  /* comparison */
+  .cmp-legend {
+    display: flex; gap: 1.5rem; margin-bottom: 1rem;
+  }
+  .cmp-legend-item {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.42rem; color: var(--muted); letter-spacing: 0.06em;
+  }
+  .cmp-legend-line { width: 1rem; height: 2px; flex-shrink: 0; }
+  .cmp-legend-line.you { background: var(--gold); }
+  .cmp-legend-line.avg { background: var(--muted); opacity: 0.5; }
+
+  .cmp-row {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin-bottom: 1rem;
+  }
+  .cmp-lbl {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+    width: 6rem; flex-shrink: 0;
+  }
+  .cmp-tracks { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .cmp-bar-track { height: 3px; background: rgba(184,150,62,0.08); }
+  .cmp-bar-you { height: 100%; background: var(--gold); width: 0; transition: width 0.9s ease; }
+  .cmp-bar-avg { height: 100%; background: var(--muted); opacity: 0.45; }
+
+  /* interpretation */
+  .interp {
+    font-size: 0.78rem; line-height: 1.78; color: var(--text);
+  }
+  .interp p + p { margin-top: 0.85em; }
+  .interp strong { color: var(--bone); font-weight: 500; }
+  .interp em { font-style: italic; color: var(--bone); }
+
+  /* reading recs */
+  .rec-item {
+    padding: 0.6rem 0; border-bottom: 1px solid var(--rule);
+    font-size: 0.7rem; color: var(--muted); line-height: 1.55;
+  }
+  .rec-item:first-child { border-top: 1px solid var(--rule); }
+  .rec-item strong {
+    display: block; font-family: 'IM Fell English', Georgia, serif;
+    font-size: 0.75rem; font-weight: 400; font-style: italic;
+    color: var(--bone); margin-bottom: 0.1rem;
+  }
+
+  /* save / share */
+  .code-box {
+    font-family: 'Inconsolata', monospace;
+    font-size: 1.15rem; letter-spacing: 0.35em;
+    color: var(--gold); text-align: center;
+    padding: 1.1rem; border: 1px solid var(--rule);
+    margin: 1rem 0; display: none;
+  }
+  .code-box.show { display: block; }
+  .code-note {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem; color: var(--muted);
+    letter-spacing: 0.06em; text-align: center;
+    line-height: 1.65; display: none;
+  }
+  .code-note.show { display: block; }
+
+  .btn-outline {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.65rem 1rem; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s; width: 100%;
+    margin-top: 0.7rem; display: block;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-outline:disabled { opacity: 0.35; cursor: default; }
+  .btn-outline:disabled:hover { border-color: var(--gold-dim); color: var(--gold-dim); }
+
+  .action-pair { display: flex; gap: 0.7rem; margin-top: 0.7rem; }
+  .action-pair .btn-outline { margin-top: 0; }
+
+  .retake-link {
+    display: block; text-align: center; margin-top: 2.5rem;
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.48rem; color: var(--muted);
+    letter-spacing: 0.1em; text-decoration: none;
+    transition: color 0.2s;
+  }
+  .retake-link:hover { color: var(--text); }
+
+
+  .disclaimer {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.44rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.7;
+    opacity: 0.7;
+    margin-top: 1.2rem;
+  }
+  .result-disclaimer {
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.42rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.65;
+    opacity: 0.6;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+  canvas { display: none; }
+
+  @media (max-width: 480px) {
+    html { font-size: 20px; }
+    body { padding: 2rem 1.25rem 3rem; }
+    .lbtn { min-height: 2.2rem; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<a href="./index.html" class="back-link">The Dark Hierarchy</a>
+
+<!-- ══════════════════════════════════════════════════════
+     INTRO VIEW
+══════════════════════════════════════════════════════ -->
+<div id="view-intro">
+  <div class="page-header">
+    <span class="tool-label">Tool I of VI</span>
+    <h1>Trigger Gradient<br>Profiler</h1>
+    <span class="ornament">✦</span>
+  </div>
+
+  <div class="intro-body">
+    <p>Desire does not arrive through one channel. It arrives through nearly all four simultaneously, in proportions that are specific to each person and shaped by both nature and culture.</p>
+    <p>This tool maps your personal distribution across the four channels — <em>Visual, Emotional, Tactile, Intellectual</em> — and shows you where your desire actually lives, and how that distribution compares to the culturally produced average.</p>
+    <p>There are no correct answers. The gradient is yours.</p>
+  </div>
+
+  <div class="meta-row">
+    <div class="meta-item"><strong>Questions</strong>24</div>
+    <div class="meta-item"><strong>Time</strong>5 minutes</div>
+    <div class="meta-item"><strong>Login</strong>None required</div>
+  </div>
+
+  <hr class="rule">
+
+  <div class="intro-body">
+    <p>Answer each statement on a scale of 1 to 7, where 1 is <em>strongly disagree</em> and 7 is <em>strongly agree</em>. Answer for yourself as you are, not as you think you should be.</p>
+  </div>
+
+  <button class="btn-primary" id="btn-start">Begin</button>
+
+  <p class="disclaimer">This tool is an instrument for personal reflection only. It does not constitute psychological, therapeutic, or clinical advice, and no professional relationship is formed by using it. No data you enter is transmitted anywhere — all computation happens on your device.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SURVEY VIEW
+══════════════════════════════════════════════════════ -->
+<div id="view-survey">
+  <div class="progress-label" id="progress-label">1 of 24</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:4%"></div></div>
+
+  <p class="question-text" id="question-text"></p>
+
+  <div class="likert-labels">
+    <span>Strongly disagree</span>
+    <span>Strongly agree</span>
+  </div>
+  <div class="likert-row" id="likert-row"></div>
+
+  <div class="survey-nav">
+    <button class="btn-back" id="btn-back" disabled>Back</button>
+    <button class="btn-next" id="btn-next">Next</button>
+  </div>
+  <p class="req-msg" id="req-msg">Please select a response before continuing.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     RESULTS VIEW
+══════════════════════════════════════════════════════ -->
+<div id="view-results">
+
+  <div class="page-header">
+    <span class="tool-label">Your gradient</span>
+    <h1 class="results-title">Trigger Gradient Profiler</h1>
+    <span class="ornament">✦</span>
+  </div>
+
+  <hr class="rule">
+
+  <!-- Gradient bars -->
+  <p class="section-lbl">Your desire gradient</p>
+
+  <div class="bar-row"><span class="bar-lbl">Visual</span><div class="bar-track"><div class="bar-fill" id="bar-V"></div></div><span class="bar-pct" id="pct-V"></span></div>
+  <div class="bar-row"><span class="bar-lbl">Emotional</span><div class="bar-track"><div class="bar-fill" id="bar-E"></div></div><span class="bar-pct" id="pct-E"></span></div>
+  <div class="bar-row"><span class="bar-lbl">Tactile</span><div class="bar-track"><div class="bar-fill" id="bar-T"></div></div><span class="bar-pct" id="pct-T"></span></div>
+  <div class="bar-row"><span class="bar-lbl">Intellectual</span><div class="bar-track"><div class="bar-fill" id="bar-I"></div></div><span class="bar-pct" id="pct-I"></span></div>
+
+  <hr class="rule">
+
+  <!-- Interpretation -->
+  <p class="section-lbl">Interpretation</p>
+  <div class="interp" id="interp-text"></div>
+
+  <hr class="rule">
+
+  <!-- Cultural comparison -->
+  <p class="section-lbl">Your distribution vs the cultural average</p>
+
+  <div class="cmp-legend">
+    <div class="cmp-legend-item"><div class="cmp-legend-line you"></div>You</div>
+    <div class="cmp-legend-item"><div class="cmp-legend-line avg"></div>Cultural average</div>
+  </div>
+
+  <div class="cmp-row"><span class="cmp-lbl">Visual</span><div class="cmp-tracks"><div class="cmp-bar-track"><div class="cmp-bar-you" id="cmp-V"></div></div><div class="cmp-bar-track"><div class="cmp-bar-avg" style="width:60%"></div></div></div></div>
+  <div class="cmp-row"><span class="cmp-lbl">Emotional</span><div class="cmp-tracks"><div class="cmp-bar-track"><div class="cmp-bar-you" id="cmp-E"></div></div><div class="cmp-bar-track"><div class="cmp-bar-avg" style="width:20%"></div></div></div></div>
+  <div class="cmp-row"><span class="cmp-lbl">Tactile</span><div class="cmp-tracks"><div class="cmp-bar-track"><div class="cmp-bar-you" id="cmp-T"></div></div><div class="cmp-bar-track"><div class="cmp-bar-avg" style="width:10%"></div></div></div></div>
+  <div class="cmp-row"><span class="cmp-lbl">Intellectual</span><div class="cmp-tracks"><div class="cmp-bar-track"><div class="cmp-bar-you" id="cmp-I"></div></div><div class="cmp-bar-track"><div class="cmp-bar-avg" style="width:10%"></div></div></div></div>
+
+  <div class="interp" id="cmp-text" style="margin-top:1rem"></div>
+
+  <hr class="rule">
+
+  <!-- Reading recommendations -->
+  <p class="section-lbl">Read more in the book</p>
+  <div id="reading-recs"></div>
+
+  <hr class="rule">
+
+  <!-- Save + Share -->
+  <p class="section-lbl">Save this result</p>
+
+  <div class="interp" style="font-size:0.72rem; color:var(--muted); margin-bottom:1rem;">
+    <p>Saving generates an anonymous six-character code. No email, no account. Enter the code on the landing page at any time to return to this result.</p>
+  </div>
+
+  <div class="code-box" id="code-box"></div>
+  <div class="code-note" id="code-note">Your result is saved to this device. Copy the code above, or bookmark this page — the URL now contains your code.</div>
+
+  <button class="btn-outline" id="btn-save">Save with an anonymous code</button>
+
+  <div class="action-pair" style="margin-top:0.7rem">
+    <button class="btn-outline" id="btn-share-card" style="margin-top:0">Download share card</button>
+    <button class="btn-outline" id="btn-retake" style="margin-top:0">Retake</button>
+  </div>
+
+  <p class="result-disclaimer">This result is an instrument for personal reflection, not a clinical or diagnostic assessment. It does not constitute psychological or therapeutic advice. No professional relationship is formed by using this tool. If you are experiencing distress, please seek support from a qualified professional.</p>
+
+  <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
+
+</div>
+
+<canvas id="share-canvas" width="1080" height="1080"></canvas>
+
+<script>
+// ══════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════
+
+const QUESTIONS = [
+  { id:'V1', ch:'V', rev:false, text:'The first thing that draws me to someone is how they look.' },
+  { id:'V2', ch:'V', rev:false, text:'I can feel desire toward someone purely based on what I see, before I know anything else about them.' },
+  { id:'V3', ch:'V', rev:false, text:'The way someone is dressed or styled affects my attraction to them more than I usually admit.' },
+  { id:'V4', ch:'V', rev:false, text:'I notice physical details — eyes, hands, the line of a jaw — and they stay with me.' },
+  { id:'V5', ch:'V', rev:true,  text:'I can be deeply attracted to someone whose appearance does not match what I am usually drawn to.' },
+  { id:'V6', ch:'V', rev:false, text:'When I imagine a sexual encounter, the visual image of the other person is central to the imagining.' },
+  { id:'E1', ch:'E', rev:false, text:'I cannot feel sexual desire toward someone I do not feel something emotional for.' },
+  { id:'E2', ch:'E', rev:false, text:'The quality of emotional connection between two people is what makes the room feel charged.' },
+  { id:'E3', ch:'E', rev:true,  text:'Sex with someone I have no emotional connection to can be just as charged as sex with someone I love.' },
+  { id:'E4', ch:'E', rev:false, text:'When the emotional tone of a relationship shifts, my desire shifts with it almost immediately.' },
+  { id:'E5', ch:'E', rev:false, text:'I am most aroused when I feel that the other person sees who I actually am.' },
+  { id:'E6', ch:'E', rev:false, text:'The desire I feel is inseparable from the relational atmosphere it lives in.' },
+  { id:'T1', ch:'T', rev:false, text:'The specific way someone touches me matters more to my desire than how they look.' },
+  { id:'T2', ch:'T', rev:false, text:'I can tell within seconds of physical contact whether the desire is real.' },
+  { id:'T3', ch:'T', rev:false, text:'Texture, pressure, temperature, the weight of a hand — these matter to me in ways others don\'t seem to notice.' },
+  { id:'T4', ch:'T', rev:true,  text:'I rarely think about physical sensation when I think about what attracts me to someone.' },
+  { id:'T5', ch:'T', rev:false, text:'A specific kind of touch can produce desire faster than any other channel does.' },
+  { id:'T6', ch:'T', rev:false, text:'The body\'s response to being held a certain way is, for me, the most reliable signal of what I want.' },
+  { id:'I1', ch:'I', rev:false, text:'I need to understand someone — how they think, what they carry — before I can want them.' },
+  { id:'I2', ch:'I', rev:false, text:'The framework or dynamic I share with someone is what generates the charge between us.' },
+  { id:'I3', ch:'I', rev:false, text:'What someone says, how they say it, the structure of their attention — these arouse me directly.' },
+  { id:'I4', ch:'I', rev:true,  text:'I can be powerfully attracted to someone I have not yet had a meaningful conversation with.' },
+  { id:'I5', ch:'I', rev:false, text:'The charge is strongest when I sense that the other person reads the same situation the same way I do.' },
+  { id:'I6', ch:'I', rev:false, text:'I am drawn to specific qualities of mind — precision, depth, the particular way someone thinks — as physically as others are drawn to bodies.' },
+];
+
+const CH_NAME  = { V:'Visual', E:'Emotional', T:'Tactile', I:'Intellectual' };
+const CH_COLOR = { V:'#b8963e', E:'#b8963e', T:'#b8963e', I:'#b8963e' };
+
+const CULTURAL_AVG = { V:60, E:20, T:10, I:10 };
+
+const PRIMARY_MAIN = {
+  V: 'Appearance, form, and the specific way someone looks carry more weight in how desire forms for you than they do for most people. The visual channel is not decorative for you — it is load-bearing. What the eye takes in, the body responds to. The desire is downstream of the image.',
+  E: 'The relational atmosphere is where desire lives for you. Before the body can want, the emotional field must be right. This is not a limitation. It is a specific architecture: the quality of what exists between two people is the ground on which everything else stands.',
+  T: 'The body knows before the mind does. For you, physical contact is not confirmation of desire that already exists — it is one of its primary sources. The specific way someone touches you, and the way your body responds to being touched, carries genuine philosophical weight. The nervous system reads what the eye and the mind have not yet processed.',
+  I: 'The mind generates charge for you. Not metaphorically — desire for you is produced by how someone thinks, what they carry, the specific structure of their attention. This is among the rarer gradient distributions. The book describes it from inside.'
+};
+
+const SECONDARY_FRAG = {
+  V: 'the visual element is present — how someone looks does matter — but it does not generate desire independently',
+  E: 'emotional context amplifies what already exists; you are not indifferent to the relational atmosphere, but it does not have to be established before desire can arrive',
+  T: 'physical presence and the quality of touch are real and meaningful, but they follow rather than lead in your gradient',
+  I: 'intellectual connection deepens whatever desire arrives through other channels, but you do not require it in order to want someone'
+};
+
+const LOW_FRAG = {
+  V: 'how someone looks carries less weight in your distribution — you can want someone whose appearance is unremarkable to you',
+  E: 'the relational atmosphere is not required — you can want someone you do not have an established emotional connection with',
+  T: 'the body\'s specific response to physical sensation is not the primary register in which desire speaks to you',
+  I: 'intellectual connection is not required for desire to arrive — the specific quality of how someone thinks does not need to be present first'
+};
+
+const READING_RECS = {
+  V: [
+    { section:'Book II, Section IV — The Visual Channel',    note:'The mechanics of visual desire and what it actually responds to.' },
+    { section:'Book II, Section VI — Cultural Distortion',   note:'Why the cultural average overweights this channel, and what that has done.' },
+  ],
+  E: [
+    { section:'Book II, Section IV — The Emotional Channel', note:'The specific way emotional atmosphere generates or suppresses desire.' },
+    { section:'Book II, Section V — Attachment Theory: The Symptom Without the Mechanism', note:'Why the emotional channel is so often misread as neediness.' },
+  ],
+  T: [
+    { section:'Book II, Section IV — The Tactile Channel',   note:'The body as philosophical instrument; the specific logic of tactile desire.' },
+    { section:'Book III — Gospel of the Body, Parts I–III',  note:'The theological argument for the body as primary site of recognition.' },
+  ],
+  I: [
+    { section:'Book II, Section IV — The Intellectual Channel',    note:'The architecture of intellectually generated desire.' },
+    { section:'Book II, Section VII — The Intellectual Framework as Ground', note:'The book describes this distribution from inside. You may find it recognizable.' },
+  ],
+};
+
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+
+let shuffled   = [];
+let current    = 0;
+let responses  = {};
+let savedCode  = null;
+
+// ══════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function show(id)  { document.getElementById(id).style.display = ''; }
+function hide(id)  { document.getElementById(id).style.display = 'none'; }
+
+// ══════════════════════════════════════════════
+// SCORING
+// ══════════════════════════════════════════════
+
+function computeGradient(resp) {
+  const raw = { V:0, E:0, T:0, I:0 };
+  QUESTIONS.forEach(q => {
+    const r = resp[q.id] || 4;
+    raw[q.ch] += q.rev ? (8 - r) : r;
+  });
+  const total = raw.V + raw.E + raw.T + raw.I;
+  let pct = { V:0, E:0, T:0, I:0 };
+  ['V','E','T','I'].forEach(ch => { pct[ch] = Math.round(raw[ch] / total * 100); });
+  // Fix rounding so sum = 100
+  const diff = 100 - (pct.V + pct.E + pct.T + pct.I);
+  if (diff !== 0) {
+    const largest = ['V','E','T','I'].reduce((a,b) => pct[a] >= pct[b] ? a : b);
+    pct[largest] += diff;
+  }
+  return pct;
+}
+
+// ══════════════════════════════════════════════
+// INTERPRETATION
+// ══════════════════════════════════════════════
+
+function buildInterpretation(pct) {
+  const sorted = ['V','E','T','I'].sort((a,b) => pct[b] - pct[a]);
+  const primary   = sorted[0];
+  const secondary = sorted[1];
+  const lows      = sorted.slice(2);
+
+  // Check edge cases
+  const allEven = sorted.every(ch => Math.abs(pct[ch] - 25) <= 5);
+  const belowFive = sorted.find(ch => pct[ch] < 5);
+
+  let paras = [];
+
+  if (allEven) {
+    paras.push(`Your gradient is unusually even — all four channels fall within a few points of equal weight. Desire reaches you through Visual (${pct.V}%), Emotional (${pct.E}%), Tactile (${pct.T}%), and Intellectual (${pct.I}%) at comparable strength. This is rare. It means no single channel dominates, and desire can arrive through whichever one opens first. The cost is that no channel is dispensable. The benefit is that desire is more available, more routes are open.`);
+  } else {
+    // Primary paragraph
+    let p1 = `Your desire arrives most strongly through the <strong>${CH_NAME[primary]}</strong> — ${pct[primary]}% of how you experience attraction routes through this channel. ${PRIMARY_MAIN[primary]}`;
+
+    // Edge case overlays
+    if (primary === 'I' && pct.I >= 50) {
+      p1 += ` Your Intellectual channel above 50% places you in territory the book describes from inside. The intellectual-channel sections may be especially recognizable.`;
+    }
+    if (primary === 'V' && pct.V >= 60) {
+      p1 += ` Your distribution is near the culturally produced average, which also peaks in the Visual. This does not mean your gradient is inauthentic — it may mean the cultural training and your natural distribution are reinforcing each other, or that the cultural training has been thorough. The book's discussion of cultural distortion is relevant here.`;
+    }
+    paras.push(p1);
+
+    // Secondary paragraph
+    paras.push(`Your secondary channel is <strong>${CH_NAME[secondary]}</strong> at ${pct[secondary]}%, which means ${SECONDARY_FRAG[secondary]}.`);
+
+    // Low channels
+    if (lows.length === 1) {
+      const lo = lows[0];
+      if (pct[lo] < 5) {
+        paras.push(`The <strong>${CH_NAME[lo]}</strong> channel carries very little weight in your gradient — ${pct[lo]}%. This is information, not deficiency. It tells you which channel does not need to be present for desire to arrive.`);
+      } else {
+        paras.push(`The channel carrying the least weight in your distribution is <strong>${CH_NAME[lo]}</strong> at ${pct[lo]}%, which means ${LOW_FRAG[lo]}.`);
+      }
+    } else {
+      const lo0 = lows[0], lo1 = lows[1];
+      paras.push(`The channels carrying the least weight in your distribution are <strong>${CH_NAME[lo0]}</strong> (${pct[lo0]}%) and <strong>${CH_NAME[lo1]}</strong> (${pct[lo1]}%), which means ${LOW_FRAG[lo0]}, and ${LOW_FRAG[lo1]}.`);
+    }
+
+    if (belowFive && !allEven) {
+      // Already handled above if it's in lows — but could be secondary in unusual cases
+    }
+  }
+
+  return paras.map(p => `<p>${p}</p>`).join('');
+}
+
+function buildComparison(pct) {
+  const diffs = ['V','E','T','I'].map(ch => ({ ch, d: Math.abs(pct[ch] - CULTURAL_AVG[ch]) }));
+  const biggest = diffs.reduce((a,b) => a.d >= b.d ? a : b);
+  const dir = pct[biggest.ch] > CULTURAL_AVG[biggest.ch] ? 'higher than' : 'lower than';
+  return `<p>The cultural average heavily weights the Visual channel (60%) and compresses the rest. Your distribution diverges from that average most markedly in the <strong>${CH_NAME[biggest.ch]}</strong> channel — yours is ${dir} the average by ${biggest.d} points. This is not unusual; the cultural average is not the natural distribution of human desire. It is a produced distribution.</p>`;
+}
+
+function buildRecs(pct) {
+  const primary = ['V','E','T','I'].reduce((a,b) => pct[a] >= pct[b] ? a : b);
+  return READING_RECS[primary].map(r =>
+    `<div class="rec-item"><strong>${r.section}</strong>${r.note}</div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+// SURVEY RENDER
+// ══════════════════════════════════════════════
+
+function renderQuestion(idx) {
+  const q = shuffled[idx];
+  document.getElementById('question-text').textContent = q.text;
+  document.getElementById('progress-label').textContent = `${idx + 1} of ${shuffled.length}`;
+  const pct = ((idx + 1) / shuffled.length * 100).toFixed(0);
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  document.getElementById('btn-back').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === shuffled.length - 1 ? 'Calculate' : 'Next';
+
+  // Build Likert buttons
+  const row = document.getElementById('likert-row');
+  row.innerHTML = '';
+  for (let v = 1; v <= 7; v++) {
+    const btn = document.createElement('button');
+    btn.className = 'lbtn' + (responses[q.id] === v ? ' sel' : '');
+    btn.textContent = v;
+    btn.setAttribute('aria-label', `${v} of 7`);
+    btn.addEventListener('click', () => {
+      responses[q.id] = v;
+      row.querySelectorAll('.lbtn').forEach((b,i) => b.classList.toggle('sel', i === v-1));
+      document.getElementById('req-msg').classList.remove('show');
+    });
+    row.appendChild(btn);
+  }
+
+  document.getElementById('req-msg').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════
+// RESULTS RENDER
+// ══════════════════════════════════════════════
+
+function showResults(pct) {
+  hide('view-survey');
+  const vr = document.getElementById('view-results');
+  vr.style.display = '';
+
+  // Animate bars after a brief reflow
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      ['V','E','T','I'].forEach(ch => {
+        document.getElementById('bar-' + ch).style.width  = pct[ch] + '%';
+        document.getElementById('pct-' + ch).textContent  = pct[ch] + '%';
+        document.getElementById('cmp-' + ch).style.width  = pct[ch] + '%';
+      });
+    });
+  });
+
+  document.getElementById('interp-text').innerHTML  = buildInterpretation(pct);
+  document.getElementById('cmp-text').innerHTML     = buildComparison(pct);
+  document.getElementById('reading-recs').innerHTML = buildRecs(pct);
+
+  window.scrollTo({ top: 0 });
+
+  // Wire buttons
+  document.getElementById('btn-save').addEventListener('click', () => saveResult(pct));
+  document.getElementById('btn-share-card').addEventListener('click', () => generateShareCard(pct));
+  document.getElementById('btn-retake').addEventListener('click', () => {
+    responses  = {};
+    savedCode  = null;
+    current    = 0;
+    shuffled   = shuffle(QUESTIONS);
+    vr.style.display = 'none';
+    resetSaveUI();
+    hide('view-results');
+    show('view-intro');
+    window.scrollTo({ top: 0 });
+  });
+}
+
+// ══════════════════════════════════════════════
+// SAVE / RETRIEVE
+// ══════════════════════════════════════════════
+
+function saveResult(pct) {
+  if (savedCode) return; // already saved
+  const code = genCode();
+  savedCode  = code;
+  try {
+    localStorage.setItem('tdh_t1_' + code, JSON.stringify({ pct, ts: Date.now() }));
+  } catch(e) {}
+
+  // Update URL without reload
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('code', code);
+    history.replaceState(null, '', url.toString());
+  } catch(e) {}
+
+  const box  = document.getElementById('code-box');
+  const note = document.getElementById('code-note');
+  box.textContent = code;
+  box.classList.add('show');
+  note.classList.add('show');
+  document.getElementById('btn-save').disabled = true;
+  document.getElementById('btn-save').textContent = 'Result saved';
+}
+
+function resetSaveUI() {
+  const box  = document.getElementById('code-box');
+  const note = document.getElementById('code-note');
+  box.textContent = '';
+  box.classList.remove('show');
+  note.classList.remove('show');
+  const saveBtn = document.getElementById('btn-save');
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save with an anonymous code';
+}
+
+function tryRetrieve(code) {
+  let stored;
+  try { stored = localStorage.getItem('tdh_t1_' + code); } catch(e) {}
+  if (stored) {
+    try {
+      const data = JSON.parse(stored);
+      savedCode = code;
+      hide('view-intro');
+      showResults(data.pct);
+      // Mark as already saved
+      requestAnimationFrame(() => {
+        const box  = document.getElementById('code-box');
+        const note = document.getElementById('code-note');
+        box.textContent = code;
+        box.classList.add('show');
+        note.classList.add('show');
+        const saveBtn = document.getElementById('btn-save');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Result saved';
+      });
+      return true;
+    } catch(e) {}
+  }
+  return false;
+}
+
+// ══════════════════════════════════════════════
+// SHARE CARD (1080×1080 PNG)
+// ══════════════════════════════════════════════
+
+async function generateShareCard(pct) {
+  await document.fonts.ready;
+
+  const canvas = document.getElementById('share-canvas');
+  const ctx    = canvas.getContext('2d');
+  const W = 1080, H = 1080;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#080806';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle gold border
+  ctx.strokeStyle = 'rgba(184,150,62,0.18)';
+  ctx.lineWidth   = 1;
+  ctx.strokeRect(48, 48, W - 96, H - 96);
+
+  // Title
+  ctx.fillStyle = '#f0ece3';
+  ctx.font = 'italic 52px "IM Fell English", Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('The Dark Hierarchy', W / 2, 168);
+
+  // Ornament
+  ctx.fillStyle = '#b8963e';
+  ctx.font = '36px Georgia, serif';
+  ctx.fillText('✦', W / 2, 224);
+
+  // Subtitle
+  ctx.fillStyle = '#6e6a64';
+  ctx.font = '300 26px "Inconsolata", monospace';
+  ctx.letterSpacing = '6px';
+  ctx.fillText('TRIGGER GRADIENT PROFILER', W / 2, 274);
+  ctx.letterSpacing = '0px';
+
+  // Rule
+  ctx.strokeStyle = 'rgba(184,150,62,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(120, 310); ctx.lineTo(W - 120, 310);
+  ctx.stroke();
+
+  // Bars
+  const channels = ['V','E','T','I'];
+  const chNames  = { V:'VISUAL', E:'EMOTIONAL', T:'TACTILE', I:'INTELLECTUAL' };
+  const barX     = 200, barW = 620, barH = 10;
+  const startY   = 390, gap  = 100;
+
+  channels.forEach((ch, i) => {
+    const y = startY + i * gap;
+    const p = pct[ch];
+
+    // Label
+    ctx.fillStyle = '#6e6a64';
+    ctx.font = '300 22px "Inconsolata", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(chNames[ch], barX, y + 7);
+
+    // Track
+    ctx.fillStyle = 'rgba(184,150,62,0.1)';
+    ctx.fillRect(barX, y + 18, barW, barH);
+
+    // Fill
+    ctx.fillStyle = '#b8963e';
+    ctx.fillRect(barX, y + 18, Math.round(barW * p / 100), barH);
+
+    // Pct
+    ctx.fillStyle = '#b8963e';
+    ctx.font = '400 26px "Inconsolata", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(p + '%', barX + barW + 60, y + 30);
+  });
+
+  // Rule
+  ctx.strokeStyle = 'rgba(184,150,62,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(120, 800); ctx.lineTo(W - 120, 800);
+  ctx.stroke();
+
+  // Summary line
+  const summary = `V${pct.V} · E${pct.E} · T${pct.T} · I${pct.I}`;
+  ctx.fillStyle = '#b8963e';
+  ctx.font = '400 32px "Inconsolata", monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(summary, W / 2, 860);
+
+  // Footer
+  ctx.fillStyle = '#6e6a64';
+  ctx.font = '300 20px "Inconsolata", monospace';
+  ctx.fillText('echoxstudios.art', W / 2, 980);
+
+  // Trigger download
+  const link = document.createElement('a');
+  link.download = `tdh-gradient-${summary.replace(/ /g,'')}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  hide('view-intro');
+  document.getElementById('view-survey').style.display = '';
+  shuffled  = shuffle(QUESTIONS);
+  current   = 0;
+  responses = {};
+  renderQuestion(0);
+  window.scrollTo({ top: 0 });
+});
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  if (current > 0) { current--; renderQuestion(current); window.scrollTo({ top: 0 }); }
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  const q = shuffled[current];
+  if (!responses[q.id]) {
+    document.getElementById('req-msg').classList.add('show');
+    return;
+  }
+  if (current < shuffled.length - 1) {
+    current++;
+    renderQuestion(current);
+    window.scrollTo({ top: 0 });
+  } else {
+    // Final question — calculate
+    const pct = computeGradient(responses);
+    hide('view-survey');
+    showResults(pct);
+  }
+});
+
+// Check URL for saved code on load
+(function() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const code   = params.get('code');
+    if (code && code.length === 6) {
+      if (tryRetrieve(code.toUpperCase())) return;
+    }
+  } catch(e) {}
+  show('view-intro');
+})();
+</script>
+</body>
+</html>

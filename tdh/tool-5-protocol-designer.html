@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocol Designer — The Dark Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #080806; --near:     #0e0e0b; --off-white:#f0ece3;
+    --bone:     #d4cfc4; --gold:     #b8963e; --gold-dim: #7a6128;
+    --text:     #e2ddd2; --muted:    #6e6a64; --rule:     rgba(184,150,62,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 24px; background: var(--black); color: var(--text); }
+  body {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 300;
+    line-height: 1.65; min-height: 100vh; max-width: 38rem;
+    margin: 0 auto; padding: 3rem 1.5rem 4rem;
+  }
+  hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2rem 0; }
+  .back-link {
+    font-family: 'Inconsolata', monospace; font-size: 0.5rem; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.1em; display: inline-block;
+    margin-bottom: 2.5rem; transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--gold-dim); }
+  .back-link::before { content: '\2190 '; }
+  .page-header { text-align: center; margin-bottom: 1.5rem; }
+  .tool-label {
+    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--gold-dim); display: block; margin-bottom: 0.4rem;
+  }
+  .page-header h1 {
+    font-family: 'IM Fell English', Georgia, serif; font-weight: 400;
+    font-size: 1.4rem; letter-spacing: 0.06em; color: var(--off-white); line-height: 1.2;
+  }
+  .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
+  .body-text { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .body-text p + p { margin-top: 0.85em; }
+  .body-text em { color: var(--bone); font-style: italic; }
+  .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
+  .meta-item { font-family: 'Inconsolata', monospace; font-size: 0.48rem; letter-spacing: 0.12em; color: var(--muted); }
+  .meta-item strong { display: block; color: var(--gold-dim); font-weight: 400; margin-bottom: 0.15rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .disclaimer { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.05em; line-height: 1.7; opacity: 0.7; margin-top: 1.2rem; }
+  .btn-primary {
+    display: block; width: 100%; font-family: 'Inconsolata', monospace;
+    font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--black); background: var(--gold-dim); border: none;
+    padding: 0.85rem 1.5rem; cursor: pointer; transition: background 0.2s; margin-top: 1.5rem;
+  }
+  .btn-primary:hover { background: var(--gold); }
+
+  /* ── SURVEY ── */
+  #view-survey { display: none; }
+  .progress-label { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem; }
+  .progress-track { height: 1px; background: var(--rule); margin-bottom: 2rem; }
+  .progress-fill { height: 100%; background: var(--gold-dim); transition: width 0.3s ease; }
+  .phase-marker { font-family: 'Inconsolata', monospace; font-size: 0.44rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 1.5rem; }
+  .q-prompt { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1rem; font-weight: 300; font-style: italic; color: var(--off-white); line-height: 1.6; margin-bottom: 1.5rem; }
+  .q-hint { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.06em; margin-bottom: 0.9rem; line-height: 1.55; }
+  .sel-options { display: flex; flex-direction: column; gap: 0.5rem; }
+  .sel-btn {
+    font-family: 'Cormorant Garamond', Georgia, serif; font-size: 0.85rem;
+    font-weight: 300; font-style: italic; color: var(--text); background: none;
+    border: 1px solid var(--rule); padding: 0.75rem 1rem; cursor: pointer;
+    text-align: left; transition: border-color 0.15s, color 0.15s;
+  }
+  .sel-btn:hover { border-color: var(--gold-dim); color: var(--off-white); }
+  .sel-btn.sel { border-color: var(--gold); color: var(--off-white); background: rgba(184,150,62,0.06); }
+  .survey-nav { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; }
+  .btn-back, .btn-next { font-family: 'Inconsolata', monospace; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; background: none; padding: 0.65rem 1.1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+  .btn-back { border: 1px solid var(--rule); color: var(--muted); }
+  .btn-back:hover { border-color: var(--gold-dim); color: var(--text); }
+  .btn-back:disabled { opacity: 0.25; cursor: default; }
+  .btn-back:disabled:hover { border-color: var(--rule); color: var(--muted); }
+  .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
+  .btn-next:hover { border-color: var(--gold); color: var(--gold); }
+  .req-msg { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--gold-dim); letter-spacing: 0.08em; margin-top: 0.5rem; display: none; }
+  .req-msg.show { display: block; }
+
+  /* ── PROTOCOL DOCUMENT ── */
+  #view-protocol { display: none; }
+  .section-lbl { font-family: 'Inconsolata', monospace; font-size: 0.48rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+  .protocol-doc { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 300; }
+  .proto-section-title { font-family: 'Inconsolata', monospace; font-size: 0.5rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin: 1.5rem 0 1rem; }
+  .ritual-block { border-left: 1px solid var(--rule); padding: 0.75rem 1rem; margin-bottom: 1.1rem; }
+  .ritual-name { font-family: 'IM Fell English', Georgia, serif; font-size: 0.9rem; font-weight: 400; color: var(--off-white); margin-bottom: 0.3rem; }
+  .ritual-desc { font-size: 0.78rem; color: var(--text); line-height: 1.7; margin-bottom: 0.5rem; }
+  .ritual-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+  .ritual-meta-row { font-size: 0.68rem; color: var(--muted); line-height: 1.55; }
+  .ritual-meta-row strong { font-family: 'Inconsolata', monospace; font-size: 0.42rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); font-weight: 400; margin-right: 0.3rem; }
+  .proto-fixed { font-size: 0.78rem; line-height: 1.78; color: var(--muted); font-style: italic; }
+  .proto-fixed p + p { margin-top: 0.85em; }
+  .opening-note { font-size: 0.78rem; line-height: 1.75; color: var(--muted); font-style: italic; margin-bottom: 1.5rem; border-left: 1px solid var(--rule); padding-left: 1rem; }
+  /* actions */
+  .code-box { font-family: 'Inconsolata', monospace; font-size: 1.15rem; letter-spacing: 0.35em; color: var(--gold); text-align: center; padding: 1.1rem; border: 1px solid var(--rule); margin: 1rem 0; display: none; }
+  .code-box.show { display: block; }
+  .code-note { font-family: 'Inconsolata', monospace; font-size: 0.44rem; color: var(--muted); letter-spacing: 0.06em; text-align: center; line-height: 1.65; display: none; }
+  .code-note.show { display: block; }
+  .btn-outline { font-family: 'Inconsolata', monospace; font-size: 0.52rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); background: none; border: 1px solid var(--gold-dim); padding: 0.65rem 1rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; width: 100%; margin-top: 0.7rem; display: block; }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-outline:disabled { opacity: 0.35; cursor: default; }
+  .result-disclaimer { font-family: 'Inconsolata', monospace; font-size: 0.42rem; color: var(--muted); letter-spacing: 0.05em; line-height: 1.65; opacity: 0.6; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
+  .retake-link { display: block; text-align: center; margin-top: 2.5rem; font-family: 'Inconsolata', monospace; font-size: 0.48rem; color: var(--muted); letter-spacing: 0.1em; text-decoration: none; transition: color 0.2s; }
+  .retake-link:hover { color: var(--text); }
+  @media print {
+    body { background: white; color: #1a1a1a; max-width: none; padding: 2cm; }
+    .protocol-doc { color: #1a1a1a; }
+    .proto-section-title { color: #7a6128; }
+    .ritual-name { color: #1a1a1a; }
+    .ritual-meta-row strong { color: #7a6128; }
+    #view-intro, #view-survey, .protocol-actions, .retake-link, .result-disclaimer { display: none !important; }
+    #view-protocol { display: block !important; }
+    .ritual-block { border-left: 1px solid #c9a84c; }
+    .section-lbl { color: #7a6128; }
+  }
+  @media (max-width: 480px) { html { font-size: 20px; } body { padding: 2rem 1.25rem 3rem; } }
+</style>
+</head>
+<body>
+
+<a href="./index.html" class="back-link">The Dark Hierarchy</a>
+
+<!-- ══ INTRO ══ -->
+<div id="view-intro">
+  <div class="page-header">
+    <span class="tool-label">Tool V of VI &nbsp;·&nbsp; For practitioners</span>
+    <h1>Protocol<br>Designer</h1>
+    <span class="ornament">✦</span>
+  </div>
+  <div class="body-text">
+    <p><em>The dungeon is the confirmation. The Tuesday is the proof.</em></p>
+    <p>Daily protocols keep the framework alive across ordinary life — in messages, gestures, thresholds, words. This tool generates a personalised protocol package: small daily rituals, a weekly check-in structure, and a framework for temporary intensification, drawn from the book's protocol theory and adapted to your living context.</p>
+    <p>The output is a starting draft, not a prescription. Take what is useful. Leave what is not.</p>
+  </div>
+  <div class="meta-row">
+    <div class="meta-item"><strong>Questions</strong>10</div>
+    <div class="meta-item"><strong>Time</strong>7–10 min</div>
+    <div class="meta-item"><strong>Output</strong>Protocol doc</div>
+  </div>
+  <hr class="rule">
+  <div class="body-text">
+    <p>This tool works for practitioners currently in a dynamic, those designing a practice in advance, and solo practitioners whose framework is internal.</p>
+  </div>
+  <button class="btn-primary" id="btn-start">Begin</button>
+  <p class="disclaimer">This tool generates a suggested daily practice document for personal use. It does not constitute psychological, therapeutic, relationship, or sexual health advice, and no professional relationship is formed by using it. The suggested protocols are instruments for reflection and adaptation — not prescriptions. If you are in an unsafe dynamic, please seek support from a qualified professional rather than this tool.</p>
+</div>
+
+<!-- ══ SURVEY ══ -->
+<div id="view-survey">
+  <div class="progress-label" id="progress-label">&nbsp;</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <p class="phase-marker" id="phase-marker"></p>
+  <p class="q-prompt" id="q-prompt"></p>
+  <p class="q-hint" id="q-hint" style="display:none"></p>
+  <div class="sel-options" id="q-options"></div>
+  <div class="survey-nav">
+    <button class="btn-back" id="btn-back" disabled>Back</button>
+    <button class="btn-next" id="btn-next">Next</button>
+  </div>
+  <p class="req-msg" id="req-msg">Please select an option before continuing.</p>
+</div>
+
+<!-- ══ PROTOCOL ══ -->
+<div id="view-protocol">
+  <div class="page-header">
+    <span class="tool-label">Your protocol package</span>
+    <h1>Protocol Designer</h1>
+    <span class="ornament">✦</span>
+  </div>
+  <hr class="rule">
+  <div class="protocol-doc" id="protocol-doc"></div>
+  <hr class="rule">
+  <div class="protocol-actions">
+    <p class="section-lbl">Actions</p>
+    <button class="btn-outline" id="btn-print">Print / Save as PDF</button>
+    <div style="display:flex;gap:0.7rem;margin-top:0.7rem">
+      <button class="btn-outline" id="btn-save" style="margin-top:0">Save with anonymous code</button>
+      <button class="btn-outline" id="btn-retake" style="margin-top:0">Redesign</button>
+    </div>
+    <div class="code-box" id="code-box"></div>
+    <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
+  </div>
+  <p class="result-disclaimer">This protocol package is a suggested daily practice document for personal use. It does not constitute psychological, therapeutic, relationship, or sexual health advice, and no professional relationship is formed by using this tool. Protocols involving another person require that person's full and ongoing consent. The book's framework assumes consent as a structural precondition, not an optional feature. If you are in an unsafe dynamic, please seek professional support.</p>
+  <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// PROTOCOL LIBRARY
+// ════════════════════════════════════════════
+
+// living: 'coloc' | 'dist' | 'any'
+// privacy: 1=very private, 2=some, 3=significant outside presence
+// explicitness: 1=highly explicit, 2=moderate, 3=subtle, 4=ambient
+// posture: 'dom'|'sub'|'any'
+// channel: primary channel affinity
+
+const DAILY_LIBRARY = [
+  {
+    id:'threshold', name:'The Threshold',
+    desc:'A specific physical gesture at the moment of arrival or departure — a hand at the back of the neck, a specific form of address, a single named word. It marks the boundary between ordinary life and the framework.',
+    when:'The moment of arrival home, or of the partner arriving.',
+    form:'A touch, a word, or a posture held for a moment at the doorway.',
+    confirms:'That the threshold between ordinary life and the framework is being marked, every time, without ceremony.',
+    living:'coloc', privacy:2, explMin:1, explMax:3, posture:'any', channel:['T','E'],
+  },
+  {
+    id:'first_word', name:'The First Word',
+    desc:'An opening message that carries the framework\'s specific language — a title, an address, a single agreed signal — sent before logistics begin.',
+    when:'The first message of the day, in whatever channel you use.',
+    form:'An opening that names the dynamic: a specific address, a title, or an agreed opening phrase.',
+    confirms:'That the framework is alive across the distance of the day before anything else is said.',
+    living:'any', privacy:3, explMin:2, explMax:4, posture:'any', channel:['I','E'],
+  },
+  {
+    id:'the_hand', name:'The Hand',
+    desc:'A specific touch — at the back of the neck, on the lower back, at the wrist — in passing during the ordinary day. Invisible to others; precise to the two of you.',
+    when:'In passing during shared daily life.',
+    form:'A specific, agreed touch. Brief. Not a gesture of affection generally — a specific one.',
+    confirms:'That the framework lives in the body, not only in the named encounter.',
+    living:'coloc', privacy:2, explMin:1, explMax:3, posture:'dom', channel:['T'],
+  },
+  {
+    id:'evening_reading', name:'The Evening Reading',
+    desc:'A short daily check-in that lets each of you read the other\'s state. Not a debrief of the day. Specifically: where is the charge, where is the drift, what does the other person need from the framework today.',
+    when:'End of day, before sleep, or during shared time at home.',
+    form:'Verbal or non-verbal — a question, a posture, a gesture of attention that specifically asks about the framework\'s state.',
+    confirms:'That the framework is being attended to, not assumed.',
+    living:'coloc', privacy:2, explMin:2, explMax:4, posture:'any', channel:['E','I'],
+  },
+  {
+    id:'the_address', name:'The Address',
+    desc:'The consistent use of a specific title or form of address in private — one that is specific to the dynamic and carries its architecture in a single word.',
+    when:'In private conversation; never enforced in public unless mutually chosen.',
+    form:'A title, a name within the dynamic, or a specific form of address agreed between the two of you.',
+    confirms:'That the framework exists as language, and that the language is living.',
+    living:'coloc', privacy:1, explMin:1, explMax:2, posture:'any', channel:['I','E'],
+  },
+  {
+    id:'morning_posture', name:'The Morning Posture',
+    desc:'A specific physical position or gesture on waking — kneeling, a specific placement of the body — that begins the day in the framework before anything else enters it.',
+    when:'On waking, before the day\'s structure begins.',
+    form:'A position, a gesture, or a physical arrangement specific to the dynamic. Brief — the posture is the signal, not a ceremony.',
+    confirms:'That the dynamic exists before the world does.',
+    living:'coloc', privacy:1, explMin:1, explMax:2, posture:'sub', channel:['T','E'],
+  },
+  {
+    id:'the_record', name:'The Record',
+    desc:'A brief daily note — a few sentences — sent by the submissive to the dominant, describing the day\'s state in relation to the framework. Not a diary. A report.',
+    when:'At a fixed time each day — morning, evening, or before sleep.',
+    form:'A short written message. The dominant does not necessarily respond at length — the act of sending is the ritual.',
+    confirms:'That the framework has a witness, even on ordinary days.',
+    living:'any', privacy:3, explMin:2, explMax:3, posture:'sub', channel:['I','E'],
+  },
+  {
+    id:'the_permission', name:'The Permission',
+    desc:'A small daily ask — a gesture in which the submissive requests and the dominant grants something ordinary, keeping the architecture of authority present in daily life.',
+    when:'Once daily, at a natural moment of the day\'s rhythm.',
+    form:'A specific, agreed-upon ask. Small enough to be daily; specific enough to carry the framework.',
+    confirms:'That authority is present in the small, not only in the named encounter.',
+    living:'coloc', privacy:1, explMin:1, explMax:2, posture:'dom', channel:['I'],
+  },
+  {
+    id:'evening_word', name:'The Evening Word',
+    desc:'A single agreed phrase said at the end of each day — in private, before sleep. Its content belongs to the dynamic. Its function is closure and continuity.',
+    when:'Before sleep.',
+    form:'A specific phrase, consistent. Said once.',
+    confirms:'That the day, however ordinary, was lived inside the framework.',
+    living:'coloc', privacy:2, explMin:2, explMax:4, posture:'any', channel:['E'],
+  },
+  {
+    id:'midday_check', name:'The Midday Signal',
+    desc:'A brief message sent at midday — not a logistical update, but a single line that confirms the framework is present in the middle of the working day.',
+    when:'Midday, or at a natural break in the day.',
+    form:'One line. An agreed signal, a specific phrase, or a word that carries the framework without requiring context.',
+    confirms:'That the ordinary day is held inside something the two of you share.',
+    living:'any', privacy:3, explMin:3, explMax:4, posture:'any', channel:['E'],
+  },
+  {
+    id:'ambient_posture', name:'The Ambient Posture',
+    desc:'A specific way of holding the body — a particular way of sitting, standing, or moving in the dominant\'s presence — that is visible only to the two of you.',
+    when:'Whenever in the same space as the dominant.',
+    form:'A posture. Not a gesture of submission that would be legible to outsiders — a precision of carriage that the dominant reads.',
+    confirms:'That the framework is in the body at all times, not only in named moments.',
+    living:'coloc', privacy:2, explMin:3, explMax:4, posture:'sub', channel:['T'],
+  },
+  {
+    id:'internal_anchor', name:'The Internal Anchor',
+    desc:'A private mental practice — a brief daily moment of deliberate attention to the aspirational self the framework is carrying. Useful for solo practice and for distance dynamics.',
+    when:'Morning, or at a consistent time each day.',
+    form:'Thirty seconds of deliberate recall: the version of yourself the framework confirms. Nothing external. Entirely internal.',
+    confirms:'That the framework exists as internal architecture, independent of the other person\'s presence.',
+    living:'any', privacy:3, explMin:4, explMax:4, posture:'any', channel:['I'],
+  },
+];
+
+const WEEKLY_LIBRARY = [
+  {
+    id:'sunday_reading', name:'The Sunday Reading',
+    desc:'Once a week, at an agreed time, a conversation that is specifically about the framework itself — not about logistics or the week\'s events. Where has the charge been alive? Where has it gone quiet? What needs adjustment?',
+    living:'any', posture:'any',
+  },
+  {
+    id:'sabbath', name:'The Sabbath of the Dynamic',
+    desc:'Once a week, an explicit pause — a day or part of a day in which the framework is deliberately suspended. You are simply two people. No protocol. The return to the framework on the following day refreshes it. For established dynamics where the framework risks becoming everything.',
+    living:'coloc', posture:'any',
+  },
+  {
+    id:'weekly_account', name:'The Weekly Account',
+    desc:'Once a week, the submissive sends a structured reflection — three questions answered in writing: where was the framework most alive this week; where did it go quiet; what does the submissive most need from the dominant in the coming week.',
+    living:'any', posture:'sub',
+  },
+  {
+    id:'calibration', name:'The Weekly Calibration',
+    desc:'A brief exchange — fifteen minutes, at the same time each week — in which the dominant checks the calibration: is what I am doing matching what my partner can actually receive? Are we still reading the same framework?',
+    living:'any', posture:'dom',
+  },
+  {
+    id:'solo_review', name:'The Practitioner\'s Review',
+    desc:'Once a week, a written or mental review of the protocols: which ones are being inhabited? Which ones have become performance? What needs to be stripped back or changed? The protocol is a living document, not a rule.',
+    living:'any', posture:'any',
+  },
+];
+
+// ════════════════════════════════════════════
+// STEPS
+// ════════════════════════════════════════════
+
+// Check for stored Tool 1 / Tool 2 results
+function hasT1() {
+  try { return Object.keys(localStorage).some(k => k.startsWith('tdh_t1_')); } catch(e) { return false; }
+}
+function hasT2() {
+  try { return Object.keys(localStorage).some(k => k.startsWith('tdh_t2_')); } catch(e) { return false; }
+}
+function getT1Gradient() {
+  try {
+    const key = Object.keys(localStorage).find(k => k.startsWith('tdh_t1_'));
+    if (!key) return null;
+    const d = JSON.parse(localStorage.getItem(key));
+    return d.pct || null;
+  } catch(e) { return null; }
+}
+
+const STEPS = [
+  // A1 — use stored T1 gradient?
+  {
+    id:'A1', phase:'A — Import',
+    prompt:'You have a saved Trigger Gradient result. Use it to inform the protocol?',
+    hint: null,
+    options:[
+      { value:'yes',   label:'Yes, use my saved gradient' },
+      { value:'no',    label:'No, I\'ll calibrate manually' },
+    ],
+    skip: () => !hasT1(),
+    required: true,
+  },
+  // A2 — use stored T2 profile?
+  {
+    id:'A2', phase:'A — Import',
+    prompt:'You have a saved Aspirational Self Profile. Use it as context for the protocol?',
+    hint:null,
+    options:[
+      { value:'yes', label:'Yes, inform the protocol from my profile' },
+      { value:'no',  label:'No, proceed without it' },
+    ],
+    skip: () => !hasT2(),
+    required: true,
+  },
+  // A3 — manual channel calibration (skip if A1=yes)
+  {
+    id:'A3', phase:'A — Import',
+    prompt:'Which channel of confirmation matters most to you in daily life?',
+    hint:null,
+    options:[
+      { value:'V', label:'Visual \u2014 how I am seen, the image of the dynamic' },
+      { value:'E', label:'Emotional \u2014 the relational atmosphere between us' },
+      { value:'T', label:'Tactile \u2014 specific touch, physical presence' },
+      { value:'I', label:'Intellectual \u2014 the framework itself, how we name things' },
+      { value:'X', label:'Roughly equal across all four' },
+    ],
+    skip: () => answers.A1 === 'yes',
+    required: true,
+  },
+  // B1 — living situation
+  {
+    id:'B1', phase:'B \u2014 Context',
+    prompt:'Your living situation:',
+    hint:null,
+    options:[
+      { value:'coloc',     label:'I live with my partner' },
+      { value:'near',      label:'Partner is close, not living together \u2014 we see each other often' },
+      { value:'dist_reg',  label:'We are at a distance; we see each other regularly' },
+      { value:'dist_rare', label:'We are at a distance; we see each other rarely' },
+      { value:'solo',      label:'No current partner \u2014 I am designing a solo practice, or in advance' },
+    ],
+    required: true,
+  },
+  // B2 — privacy
+  {
+    id:'B2', phase:'B \u2014 Context',
+    prompt:'How much of your daily life is shared with people outside the dynamic?',
+    hint:'Housemates, family, children, work colleagues.',
+    options:[
+      { value:'1', label:'Very private \u2014 almost no one else around' },
+      { value:'2', label:'Some outside presence \u2014 most rituals can be private if chosen' },
+      { value:'3', label:'Significant outside presence \u2014 explicit ritual is mostly inviable; subtle or ambient is the only option' },
+    ],
+    required: true,
+  },
+  // B3 — time of day
+  {
+    id:'B3', phase:'B \u2014 Context',
+    prompt:'Where in the day\'s rhythm does the framework sit most easily?',
+    hint:null,
+    options:[
+      { value:'morning',  label:'Morning, before the day begins' },
+      { value:'midday',   label:'Midday, in a break' },
+      { value:'evening',  label:'Evening, at the end of the day' },
+      { value:'night',    label:'Late night, before sleep' },
+      { value:'weekend',  label:'Weekends only' },
+      { value:'varies',   label:'It varies \u2014 no fixed time' },
+    ],
+    required: true,
+  },
+  // C1 — posture
+  {
+    id:'C1', phase:'C \u2014 Posture',
+    prompt:'Which side of the dynamic are you designing this protocol from?',
+    hint:null,
+    options:[
+      { value:'dom',   label:'The dominant / claiming side' },
+      { value:'sub',   label:'The submissive / yielding side' },
+      { value:'both',  label:'Both \u2014 I am designing for the relationship together' },
+      { value:'switch',label:'Switch \u2014 the posture shifts depending on the encounter' },
+    ],
+    required: true,
+  },
+  // C2 — state of dynamic
+  {
+    id:'C2', phase:'C \u2014 Posture',
+    prompt:'The current state of the dynamic:',
+    hint:null,
+    options:[
+      { value:'new',     label:'Newly established \u2014 less than six months' },
+      { value:'mid',     label:'Established \u2014 six months to two years' },
+      { value:'long',    label:'Long-term \u2014 over two years' },
+      { value:'repair',  label:'In repair after drift or crisis' },
+      { value:'imagined',label:'Imagined / aspirational \u2014 no current partner' },
+    ],
+    required: true,
+  },
+  // D1 — explicitness
+  {
+    id:'D1', phase:'D \u2014 Intensity',
+    prompt:'The level of explicitness you want in the daily protocol:',
+    hint:null,
+    options:[
+      { value:'1', label:'Highly explicit \u2014 formal address, named roles, visible ceremony in private' },
+      { value:'2', label:'Moderate \u2014 recognisable to both of us, invisible to outsiders' },
+      { value:'3', label:'Subtle \u2014 readable only to the two of us' },
+      { value:'4', label:'Almost ambient \u2014 the framework lives in tone and posture, not named acts' },
+    ],
+    required: true,
+  },
+  // D2 — intensification
+  {
+    id:'D2', phase:'D \u2014 Intensity',
+    prompt:'Frequency of temporary intensification \u2014 weekends, retreats, designated periods of heightened protocol:',
+    hint:null,
+    options:[
+      { value:'weekly',  label:'Weekly' },
+      { value:'monthly', label:'Monthly' },
+      { value:'few_yr',  label:'A few times a year' },
+      { value:'rarely',  label:'Rarely' },
+      { value:'never',   label:'Never \u2014 the daily IS the practice' },
+    ],
+    required: true,
+  },
+];
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+
+let stepIdx = 0;
+let answers = {};
+let savedCode = null;
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+
+function getActive() { return STEPS.filter(s => !s.skip || !s.skip()); }
+
+function render(idx) {
+  const active = getActive();
+  const step   = active[idx];
+
+  document.getElementById('progress-label').textContent = `${idx + 1} of ${active.length}`;
+  document.getElementById('progress-fill').style.width  = ((idx+1)/active.length*100).toFixed(0) + '%';
+  document.getElementById('phase-marker').textContent    = step.phase;
+  document.getElementById('q-prompt').textContent        = step.prompt;
+
+  const hintEl = document.getElementById('q-hint');
+  if (step.hint) { hintEl.textContent = step.hint; hintEl.style.display=''; }
+  else { hintEl.style.display='none'; }
+
+  const wrap = document.getElementById('q-options');
+  wrap.innerHTML = '';
+  step.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'sel-btn' + (answers[step.id] === opt.value ? ' sel' : '');
+    btn.textContent = opt.label;
+    btn.addEventListener('click', () => {
+      answers[step.id] = opt.value;
+      wrap.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      document.getElementById('req-msg').classList.remove('show');
+    });
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('btn-back').disabled = idx === 0;
+  document.getElementById('btn-next').textContent = idx === active.length - 1 ? 'Generate protocol' : 'Next';
+  document.getElementById('req-msg').classList.remove('show');
+  window.scrollTo({ top: 0 });
+}
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  if (stepIdx > 0) { stepIdx--; render(stepIdx); }
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  const step = getActive()[stepIdx];
+  if (!answers[step.id]) { document.getElementById('req-msg').classList.add('show'); return; }
+  const active = getActive();
+  if (stepIdx < active.length - 1) { stepIdx++; render(stepIdx); }
+  else { showProtocol(); }
+});
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  document.getElementById('view-intro').style.display  = 'none';
+  document.getElementById('view-survey').style.display = '';
+  stepIdx = 0; answers = {}; savedCode = null;
+  render(0);
+});
+
+// ════════════════════════════════════════════
+// PROTOCOL GENERATION
+// ════════════════════════════════════════════
+
+function getPrimaryChannel() {
+  if (answers.A1 === 'yes') {
+    const g = getT1Gradient();
+    if (g) return ['V','E','T','I'].reduce((a,b) => g[a] >= g[b] ? a : b);
+  }
+  return answers.A3 || 'E';
+}
+
+function scoreRitual(r) {
+  let s = 0;
+  const living  = answers.B1; // coloc/near/dist_reg/dist_rare/solo
+  const privacy = parseInt(answers.B2 || '2');
+  const expl    = parseInt(answers.D1 || '2');
+  const posture = answers.C1; // dom/sub/both/switch
+  const channel = getPrimaryChannel();
+
+  // Living match
+  const colocTypes   = ['coloc','near'];
+  const distTypes    = ['dist_reg','dist_rare'];
+  const rLiving      = r.living;
+  if (rLiving === 'any') s += 1;
+  else if (rLiving === 'coloc' && (colocTypes.includes(living) || living==='solo'))
+    s += (colocTypes.includes(living) ? 2 : 0);
+  else if (rLiving === 'dist' && distTypes.includes(living)) s += 2;
+  else if (rLiving === 'any') s += 1;
+  else s -= 1; // penalise mismatch
+
+  // Privacy / explicitness fit
+  if (privacy <= r.privacy) s += 1; // user's privacy allows this ritual
+  if (expl >= r.explMin && expl <= r.explMax) s += 2;
+  else if (expl > r.explMax) s -= 1; // user wants more ambient than ritual allows
+
+  // Posture match
+  if (r.posture === 'any') s += 1;
+  else if (r.posture === posture) s += 2;
+  else if (posture === 'both' || posture === 'switch') s += 1;
+
+  // Channel affinity
+  if (r.channel.includes(channel)) s += 1;
+
+  return s;
+}
+
+function filterDailyRituals() {
+  const living   = answers.B1;
+  const privacy  = parseInt(answers.B2 || '2');
+  const expl     = parseInt(answers.D1 || '2');
+  const isSolo   = living === 'solo' || answers.C2 === 'imagined';
+  const isDist   = living === 'dist_rare' || living === 'dist_reg';
+
+  // For solo/imagined: keep only ambient/internal rituals
+  let candidates = DAILY_LIBRARY.filter(r => {
+    if (isSolo) return r.living === 'any' || r.id === 'internal_anchor';
+    if (isDist) return r.living === 'any' || r.living === 'dist';
+    // Privacy gate
+    if (privacy >= 3 && r.privacy < 3) return false;
+    return true;
+  });
+
+  // Score and sort
+  candidates = candidates.map(r => ({ r, s: scoreRitual(r) }))
+                          .sort((a,b) => b.s - a.s);
+
+  // Take top 3-4, ensure variety
+  const take = privacy >= 3 ? 2 : (answers.C2 === 'repair' ? 2 : 3);
+  return candidates.slice(0, take).map(x => x.r);
+}
+
+function filterWeeklyStructures() {
+  const living  = answers.B1;
+  const posture = answers.C1;
+  const state   = answers.C2;
+  const isSolo  = living === 'solo' || state === 'imagined';
+  const isDist  = living === 'dist_rare' || living === 'dist_reg';
+
+  let candidates = WEEKLY_LIBRARY.filter(r => {
+    if (isSolo) return r.id === 'solo_review';
+    if (r.posture !== 'any' && r.posture !== posture &&
+        !(posture === 'both' || posture === 'switch')) return false;
+    if (r.living === 'coloc' && isDist) return false;
+    return true;
+  });
+
+  // Repair state: prefer calibration
+  if (state === 'repair') {
+    candidates.sort((a,b) => (b.id === 'calibration' ? 1 : 0) - (a.id === 'calibration' ? 1 : 0));
+  }
+
+  return candidates.slice(0, 2);
+}
+
+function escalationText() {
+  const freq = answers.D2;
+  if (freq === 'never') return null;
+
+  const freqLabel = { weekly:'weekly', monthly:'monthly', few_yr:'a few times a year', rarely:'occasionally' }[freq] || 'periodically';
+
+  return `You have indicated an interest in temporary intensification ${freqLabel}.
+
+The book's discipline for entering a period of heightened protocol is threefold: explicit agreement on duration, scope, and intensity before the period begins; increased frequency or depth of protocol inside it; and a clear, named return to ordinary protocol at the end, followed by a debrief.
+
+What the escalation is not: an attempt to compress the dynamic into a defined period. It is a rehearsal of the framework at a different register — useful for refreshing what daily life can flatten. The entry and exit matter as much as the period itself. An escalation without a named exit tends to drift into the performed charge the book warns against.
+
+A suggested structure: agree a specific start and end point. Name in advance one or two aspects of the protocol that will be intensified. After the period, spend fifteen minutes reflecting on what it confirmed and what it revealed. Do not assume the elevated level continues without renewing the agreement.`;
+}
+
+// ════════════════════════════════════════════
+// BUILD HTML DOCUMENT
+// ════════════════════════════════════════════
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function ritualHTML(r) {
+  return `<div class="ritual-block">
+    <p class="ritual-name">${esc(r.name)}</p>
+    <p class="ritual-desc">${esc(r.desc)}</p>
+    <div class="ritual-meta">
+      <p class="ritual-meta-row"><strong>When</strong>${esc(r.when)}</p>
+      <p class="ritual-meta-row"><strong>Form</strong>${esc(r.form)}</p>
+      <p class="ritual-meta-row"><strong>What it confirms</strong>${esc(r.confirms)}</p>
+    </div>
+  </div>`;
+}
+
+function weeklyHTML(r) {
+  return `<div class="ritual-block">
+    <p class="ritual-name">${esc(r.name)}</p>
+    <p class="ritual-desc">${esc(r.desc)}</p>
+  </div>`;
+}
+
+function buildProtocolDoc() {
+  const daily   = filterDailyRituals();
+  const weekly  = filterWeeklyStructures();
+  const escl    = escalationText();
+  const state   = answers.C2;
+  const isSolo  = answers.B1 === 'solo' || state === 'imagined';
+
+  let html = '';
+
+  // Opening note for special states
+  if (state === 'repair') {
+    html += `<p class="opening-note">Protocols built during repair should be deliberately modest. Not an attempt to recreate what was, but a small new architecture suited to the current state. The framework is being re-established, not resumed. Start with less than you think you need.</p>`;
+  } else if (isSolo) {
+    html += `<p class="opening-note">This protocol is designed for solo practice \u2014 for maintaining the framework as internal architecture. The rituals below are addressed to the relationship with yourself. They hold the aspirational self in readiness, independent of a partner's presence.</p>`;
+  }
+
+  // Daily
+  html += `<p class="proto-section-title">Daily</p>`;
+  if (daily.length === 0) {
+    html += `<p style="font-size:0.75rem;color:var(--muted);font-style:italic;">No daily rituals were matched for your context. The ambient daily practice is the framework itself, present in how you speak and move.</p>`;
+  } else {
+    html += daily.map(r => ritualHTML(r)).join('');
+  }
+
+  // Weekly
+  html += `<p class="proto-section-title">Weekly</p>`;
+  if (weekly.length === 0) {
+    html += `<p style="font-size:0.75rem;color:var(--muted);font-style:italic;">Consider a weekly moment of deliberate attention to the framework's state, however brief.</p>`;
+  } else {
+    html += weekly.map(r => weeklyHTML(r)).join('');
+  }
+
+  // Escalation
+  if (escl) {
+    html += `<p class="proto-section-title">Temporary intensification</p>`;
+    html += escl.split('\n\n').map(p => `<p class="ritual-desc" style="margin-bottom:0.75em;">${esc(p)}</p>`).join('');
+  }
+
+  // Fixed closing
+  html += `<p class="proto-section-title">What the protocol is not</p>`;
+  html += `<div class="proto-fixed">
+    <p>A protocol is not a guarantee of intimacy. It is a structure within which intimacy is more reliably available. The dynamic is not the protocol; the protocol is the daily proof that the dynamic exists.</p>
+    <p>If the protocol begins to feel like performance \u2014 if you are executing it without inhabiting it \u2014 that is information. The protocol is meant to be edited as the dynamic edits itself.</p>
+    <p>This document is a starting draft. Take what is useful. Leave what is not. Replace what does not fit with what does.</p>
+  </div>`;
+
+  return html;
+}
+
+// ════════════════════════════════════════════
+// SHOW PROTOCOL
+// ════════════════════════════════════════════
+
+function showProtocol() {
+  document.getElementById('view-survey').style.display   = 'none';
+  document.getElementById('protocol-doc').innerHTML      = buildProtocolDoc();
+  document.getElementById('view-protocol').style.display = '';
+  window.scrollTo({ top: 0 });
+}
+
+// ════════════════════════════════════════════
+// ACTIONS
+// ════════════════════════════════════════════
+
+document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+function genCode() {
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s='';
+  for (let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  return s;
+}
+
+document.getElementById('btn-save').addEventListener('click', () => {
+  if (savedCode) return;
+  const code = genCode(); savedCode = code;
+  try { localStorage.setItem('tdh_t5_'+code, JSON.stringify({ answers, ts:Date.now() })); } catch(e){}
+  try { const u=new URL(window.location.href); u.searchParams.set('code',code); history.replaceState(null,'',u.toString()); } catch(e){}
+  document.getElementById('code-box').textContent = code;
+  document.getElementById('code-box').classList.add('show');
+  document.getElementById('code-note').classList.add('show');
+  const b = document.getElementById('btn-save');
+  b.disabled=true; b.textContent='Protocol saved';
+});
+
+document.getElementById('btn-retake').addEventListener('click', () => {
+  document.getElementById('view-protocol').style.display = 'none';
+  answers={}; savedCode=null; stepIdx=0;
+  document.getElementById('code-box').textContent='';
+  document.getElementById('code-box').classList.remove('show');
+  document.getElementById('code-note').classList.remove('show');
+  const b=document.getElementById('btn-save'); b.disabled=false; b.textContent='Save with anonymous code';
+  document.getElementById('view-intro').style.display='';
+  window.scrollTo({top:0});
+});
+
+// URL code retrieval
+(function(){
+  try {
+    const code=(new URLSearchParams(window.location.search)).get('code');
+    if(code&&code.length===6){
+      const stored=localStorage.getItem('tdh_t5_'+code.toUpperCase());
+      if(stored){
+        const data=JSON.parse(stored);
+        answers=data.answers||{}; savedCode=code.toUpperCase();
+        document.getElementById('view-intro').style.display='none';
+        showProtocol();
+        requestAnimationFrame(()=>{
+          document.getElementById('code-box').textContent=savedCode;
+          document.getElementById('code-box').classList.add('show');
+          document.getElementById('code-note').classList.add('show');
+          const b=document.getElementById('btn-save'); b.disabled=true; b.textContent='Protocol saved';
+        });
+        return;
+      }
+    }
+  } catch(e){}
+  document.getElementById('view-intro').style.display='';
+})();
+</script>
+</body>
+</html>

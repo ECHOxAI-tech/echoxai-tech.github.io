@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threshold Self-Assessment — The Dark Hierarchy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+    --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;--muted:#6e6a64;
+    --rule:rgba(184,150,62,0.2);--care:rgba(184,150,62,0.07);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{font-size:24px;background:var(--black);color:var(--text);}
+  body{font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;line-height:1.65;
+    min-height:100vh;max-width:38rem;margin:0 auto;padding:3rem 1.5rem 4rem;}
+  hr.rule{border:none;border-top:1px solid var(--rule);margin:2rem 0;}
+  .back-link{font-family:'Inconsolata',monospace;font-size:0.5rem;color:var(--muted);
+    text-decoration:none;letter-spacing:0.1em;display:inline-block;margin-bottom:2.5rem;transition:color 0.2s;}
+  .back-link:hover{color:var(--gold-dim);}
+  .back-link::before{content:'\2190 ';}
+  .page-header{text-align:center;margin-bottom:1.5rem;}
+  .tool-label{font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.28em;
+    text-transform:uppercase;color:var(--gold-dim);display:block;margin-bottom:0.4rem;}
+  .page-header h1{font-family:'IM Fell English',Georgia,serif;font-weight:400;font-size:1.4rem;
+    letter-spacing:0.06em;color:var(--off-white);line-height:1.2;}
+  .ornament{display:block;color:var(--gold);font-size:0.85rem;margin:0.5rem 0;}
+  .body-text{font-size:0.8rem;line-height:1.75;color:var(--text);}
+  .body-text p+p{margin-top:0.85em;}
+  .body-text em{color:var(--bone);font-style:italic;}
+  .meta-row{display:flex;gap:2rem;margin:1.5rem 0;}
+  .meta-item{font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.12em;color:var(--muted);}
+  .meta-item strong{display:block;color:var(--gold-dim);font-weight:400;margin-bottom:0.15rem;letter-spacing:0.18em;text-transform:uppercase;}
+  .disclaimer{font-family:'Inconsolata',monospace;font-size:0.44rem;color:var(--muted);letter-spacing:0.05em;line-height:1.7;opacity:0.7;margin-top:1.2rem;}
+  .btn-primary{display:block;width:100%;font-family:'Inconsolata',monospace;font-size:0.58rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--black);background:var(--gold-dim);border:none;padding:0.85rem 1.5rem;cursor:pointer;transition:background 0.2s;margin-top:1.5rem;}
+  .btn-primary:hover{background:var(--gold);}
+  /* survey */
+  #view-survey{display:none;}
+  .progress-label{font-family:'Inconsolata',monospace;font-size:0.44rem;color:var(--muted);letter-spacing:0.15em;text-align:right;margin-bottom:0.35rem;}
+  .progress-track{height:1px;background:var(--rule);margin-bottom:2rem;}
+  .progress-fill{height:100%;background:var(--gold-dim);transition:width 0.3s ease;}
+  .mv-header{margin-bottom:1.5rem;}
+  .mv-num{font-family:'Inconsolata',monospace;font-size:0.44rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.2rem;}
+  .mv-title{font-family:'IM Fell English',Georgia,serif;font-size:0.95rem;color:var(--off-white);font-weight:400;margin-bottom:0.4rem;}
+  .mv-intro{font-size:0.7rem;color:var(--muted);font-style:italic;line-height:1.6;}
+  .q-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;font-weight:300;font-style:italic;color:var(--off-white);line-height:1.6;margin-bottom:2rem;}
+  .likert-labels{display:flex;justify-content:space-between;margin-bottom:0.6rem;}
+  .likert-labels span{font-family:'Inconsolata',monospace;font-size:0.4rem;color:var(--muted);letter-spacing:0.06em;}
+  .likert-row{display:flex;gap:0.35rem;justify-content:space-between;margin-bottom:2rem;}
+  .lbtn{flex:1;min-height:2.4rem;min-width:2.4rem;max-width:3rem;border:1px solid var(--rule);background:transparent;color:var(--muted);font-family:'Inconsolata',monospace;font-size:0.52rem;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;transition:border-color 0.15s,background 0.15s,color 0.15s;}
+  .lbtn:hover{border-color:var(--gold-dim);color:var(--text);}
+  .lbtn.sel{border-color:var(--gold);background:var(--gold);color:var(--black);}
+  /* open text question */
+  .q-hint{font-family:'Inconsolata',monospace;font-size:0.44rem;color:var(--muted);letter-spacing:0.06em;margin-bottom:0.9rem;line-height:1.55;}
+  textarea{display:block;width:100%;background:var(--near);border:1px solid var(--rule);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-size:0.85rem;font-weight:300;line-height:1.7;padding:0.85rem 1rem;resize:vertical;min-height:5rem;outline:none;transition:border-color 0.2s;margin-bottom:0.3rem;}
+  textarea:focus{border-color:var(--gold-dim);}
+  textarea::placeholder{color:var(--muted);font-style:italic;}
+  .word-count{font-family:'Inconsolata',monospace;font-size:0.42rem;color:var(--muted);text-align:right;letter-spacing:0.06em;}
+  /* nav */
+  .survey-nav{display:flex;align-items:center;gap:0.75rem;margin-top:1rem;}
+  .btn-back,.btn-next,.btn-skip{font-family:'Inconsolata',monospace;font-size:0.52rem;letter-spacing:0.15em;text-transform:uppercase;background:none;padding:0.65rem 1.1rem;cursor:pointer;transition:border-color 0.2s,color 0.2s;}
+  .btn-back{border:1px solid var(--rule);color:var(--muted);}
+  .btn-back:hover{border-color:var(--gold-dim);color:var(--text);}
+  .btn-back:disabled{opacity:0.25;cursor:default;}
+  .btn-back:disabled:hover{border-color:var(--rule);color:var(--muted);}
+  .btn-next{border:1px solid var(--gold-dim);color:var(--gold-dim);margin-left:auto;}
+  .btn-next:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-skip{border:none;color:var(--muted);font-size:0.44rem;padding:0.65rem 0;display:none;}
+  .btn-skip.show{display:inline-block;}
+  .btn-skip:hover{color:var(--text);}
+  .req-msg{font-family:'Inconsolata',monospace;font-size:0.44rem;color:var(--gold-dim);letter-spacing:0.08em;margin-top:0.5rem;display:none;}
+  .req-msg.show{display:block;}
+  /* results */
+  #view-results{display:none;}
+  .section-lbl{font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;}
+  .care-frame{background:var(--care);border:1px solid var(--rule);padding:1.1rem 1.2rem;margin-bottom:1.5rem;font-size:0.72rem;line-height:1.75;color:var(--text);}
+  .care-frame strong{font-family:'Inconsolata',monospace;font-size:0.46rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold-dim);display:block;margin-bottom:0.5rem;}
+  .care-frame a{color:var(--gold-dim);text-decoration:underline;text-decoration-color:var(--rule);}
+  .care-frame a:hover{color:var(--gold);}
+  .reflection{font-size:0.82rem;line-height:1.8;color:var(--text);}
+  .reflection p+p{margin-top:0.9em;}
+  .reflection strong{color:var(--bone);font-weight:500;}
+  .reflection em{font-style:italic;color:var(--bone);}
+  .user-words{border-left:1px solid var(--rule);padding:0.85rem 1.1rem;margin:1rem 0;}
+  .user-words-lbl{font-family:'Inconsolata',monospace;font-size:0.44rem;letter-spacing:0.15em;color:var(--muted);margin-bottom:0.6rem;}
+  .user-words-text{font-size:0.82rem;font-style:italic;color:var(--bone);line-height:1.75;}
+  .user-words-note{font-size:0.72rem;color:var(--muted);margin-top:0.65rem;font-style:italic;line-height:1.6;}
+  .closing-frame{font-size:0.78rem;line-height:1.78;color:var(--muted);font-style:italic;}
+  .closing-frame p+p{margin-top:0.85em;}
+  /* save */
+  .code-box{font-family:'Inconsolata',monospace;font-size:1.15rem;letter-spacing:0.35em;color:var(--gold);text-align:center;padding:1.1rem;border:1px solid var(--rule);margin:1rem 0;display:none;}
+  .code-box.show{display:block;}
+  .code-note{font-family:'Inconsolata',monospace;font-size:0.44rem;color:var(--muted);letter-spacing:0.06em;text-align:center;line-height:1.65;display:none;}
+  .code-note.show{display:block;}
+  .btn-outline{font-family:'Inconsolata',monospace;font-size:0.52rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-dim);background:none;border:1px solid var(--gold-dim);padding:0.65rem 1rem;cursor:pointer;transition:border-color 0.2s,color 0.2s;width:100%;margin-top:0.7rem;display:block;}
+  .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-outline:disabled{opacity:0.35;cursor:default;}
+  .action-pair{display:flex;gap:0.7rem;margin-top:0.7rem;}
+  .action-pair .btn-outline{margin-top:0;}
+  .result-disclaimer{font-family:'Inconsolata',monospace;font-size:0.42rem;color:var(--muted);letter-spacing:0.05em;line-height:1.65;opacity:0.6;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--rule);}
+  .retake-link{display:block;text-align:center;margin-top:2.5rem;font-family:'Inconsolata',monospace;font-size:0.48rem;color:var(--muted);letter-spacing:0.1em;text-decoration:none;transition:color 0.2s;}
+  .retake-link:hover{color:var(--text);}
+  @media (max-width:480px){html{font-size:20px;}body{padding:2rem 1.25rem 3rem;}.lbtn{min-height:2.2rem;min-width:0;}}
+</style>
+</head>
+<body>
+
+<a href="./index.html" class="back-link">The Dark Hierarchy</a>
+
+<!-- ══ INTRO ══ -->
+<div id="view-intro">
+  <div class="page-header">
+    <span class="tool-label">Tool VI of VI &nbsp;·&nbsp; For practitioners</span>
+    <h1>Threshold<br>Self-Assessment</h1>
+    <span class="ornament">✦</span>
+  </div>
+  <div class="body-text">
+    <p>The threshold is the point at which the framework becomes <em>lived</em> rather than imagined.</p>
+    <p>This tool is for the reader who recognises themselves at a threshold — of entering a dynamic, of crossing into a deeper commitment, of acknowledging an orientation, or of leaving a dynamic that no longer fits.</p>
+    <p>It does not tell you whether to cross. It helps you see which threshold you are at, and what the architecture of your hesitation actually is.</p>
+    <p>The threshold can be honoured without being crossed.</p>
+  </div>
+  <div class="meta-row">
+    <div class="meta-item"><strong>Questions</strong>12 + 1 optional</div>
+    <div class="meta-item"><strong>Time</strong>6–8 min</div>
+    <div class="meta-item"><strong>Output</strong>Reflection</div>
+  </div>
+  <hr class="rule">
+  <div class="body-text">
+    <p>The closed questions use a 1–7 scale. The final question is open text and optional. Answer for yourself as you are in this moment — not as you were, not as you expect to be.</p>
+  </div>
+  <button class="btn-primary" id="btn-start">Begin</button>
+  <p class="disclaimer">This tool is an instrument for personal reflection only. It does not constitute psychological, therapeutic, or relationship advice, and no professional relationship is formed by using it. It does not assess your readiness to enter, deepen, or leave any relationship or dynamic. If you are in an unsafe situation, experiencing harm, or in distress, please seek support from a qualified professional rather than this tool.</p>
+</div>
+
+<!-- ══ SURVEY ══ -->
+<div id="view-survey">
+  <div class="progress-label" id="progress-label">&nbsp;</div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div id="mv-header" class="mv-header" style="display:none">
+    <p class="mv-num" id="mv-num"></p>
+    <h2 class="mv-title" id="mv-title"></h2>
+    <p class="mv-intro" id="mv-intro"></p>
+    <hr class="rule">
+  </div>
+  <p class="q-text" id="q-text"></p>
+  <p class="q-hint" id="q-hint" style="display:none"></p>
+  <div id="q-input"></div>
+  <p class="req-msg" id="req-msg">Please respond before continuing.</p>
+  <div class="survey-nav">
+    <button class="btn-back" id="btn-back" disabled>Back</button>
+    <button class="btn-skip" id="btn-skip">Skip</button>
+    <button class="btn-next" id="btn-next">Next</button>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div id="view-results">
+  <div class="page-header">
+    <span class="tool-label">Your reflection</span>
+    <h1>Threshold<br>Self-Assessment</h1>
+    <span class="ornament">✦</span>
+  </div>
+  <div class="care-frame" id="care-crisis" style="display:none">
+    <strong>Before the reflection</strong>
+    <p>Some of what you wrote suggests you may be in significant pain right now. The reflection below is still here for you. But before you read it: please consider reaching out to someone who knows you, or to a crisis line. You do not have to be at the threshold alone.</p>
+    <p>Crisis support: <a href="https://www.befrienders.org" target="_blank" rel="noopener">befrienders.org</a> &nbsp;·&nbsp; 988 (US) &nbsp;·&nbsp; 116 123 (UK/Samaritans).</p>
+  </div>
+  <hr class="rule">
+  <p class="section-lbl">The reflection</p>
+  <div class="reflection" id="reflection-text"></div>
+  <div id="user-words-block" style="display:none">
+    <hr class="rule">
+    <p class="section-lbl">Your own words</p>
+    <div class="user-words">
+      <p class="user-words-lbl">You wrote:</p>
+      <p class="user-words-text" id="user-words-text"></p>
+      <p class="user-words-note">Return to this sentence. It may be the most accurate description of where you are that you have written yet. The aspirational self is more articulate each time it is described.</p>
+    </div>
+  </div>
+  <hr class="rule">
+  <div class="closing-frame">
+    <p>This tool does not tell you whether to cross. It cannot. The crossing is the work the framework asks of the practitioner who chooses it; the non-crossing is the work of the practitioner who chooses otherwise. Both are work. Neither is failure.</p>
+    <p>If you return to this tool a month from now, six months from now, a year from now — your answers may be different. The threshold moves with you.</p>
+  </div>
+  <hr class="rule">
+  <p class="section-lbl">Save this result</p>
+  <div class="body-text" style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;">
+    <p>Saving is opt-in. The result is stored to this device only.</p>
+  </div>
+  <div class="code-box" id="code-box"></div>
+  <div class="code-note" id="code-note">Saved to this device. Use this code on the landing page to return.</div>
+  <div class="action-pair">
+    <button class="btn-outline" id="btn-save">Save with anonymous code</button>
+    <button class="btn-outline" id="btn-retake">Retake</button>
+  </div>
+  <p class="result-disclaimer">This reflection is an instrument for personal thinking, not a clinical or therapeutic assessment. It does not evaluate readiness, diagnose a relationship condition, or constitute advice of any kind. No professional relationship is formed by using this tool. If you are in an unsafe situation or experiencing significant distress, please seek support from a qualified professional.</p>
+  <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// QUESTIONS
+// ════════════════════════════════════════════
+
+const STEPS = [
+  // Movement 1 — Which threshold
+  { id:'T1', mv:1, type:'likert',
+    mvTitle:'Which Threshold',
+    mvIntro:'These four questions ask where you are. They are not exclusive — more than one may be true at once. Answer for where you actually are today.',
+    text:'I am at the edge of acknowledging an orientation I have been refusing to acknowledge to myself.' },
+  { id:'T2', mv:1, type:'likert',
+    text:'I am at the edge of entering a dynamic for the first time, or for the first time honestly.' },
+  { id:'T3', mv:1, type:'likert',
+    text:'I am at the edge of crossing into a deeper commitment within an existing dynamic.' },
+  { id:'T4', mv:1, type:'likert',
+    text:'I am at the edge of leaving a dynamic that no longer fits, even though I have not yet left.' },
+
+  // Movement 2 — Architecture of hesitation
+  { id:'H1', mv:2, type:'likert',
+    mvTitle:'The Architecture of Hesitation',
+    mvIntro:'These questions ask about the specific shape of the hesitation — not whether it is there, but what kind it is.',
+    text:'The hesitation I feel is not about whether the threshold is real — it is about whether I am ready, today, to cross.' },
+  { id:'H2', mv:2, type:'likert',
+    text:'I am not entirely sure what I would be crossing into. The framework on the other side is not yet articulate to me.' },
+  { id:'H3', mv:2, type:'likert',
+    text:'When I try to picture the version of myself that would have crossed, the picture is blurry — I have not yet drawn it precisely enough.' },
+  { id:'H4', mv:2, type:'likert',
+    text:'I have seen the threshold clearly. What I am refusing to cross is not unknown to me; it is precisely known.' },
+  { id:'H5', mv:2, type:'likert',
+    text:'My non-crossing is not the result of fear or lack of clarity. It is a position I have arrived at deliberately.' },
+
+  // Movement 3 — The cost
+  { id:'C1', mv:3, type:'likert',
+    mvTitle:'What the Crossing Would Cost',
+    mvIntro:'An honest accounting. These questions ask about both sides of the ledger — the cost of crossing and the cost of not crossing.',
+    text:'The cost of crossing, for me, would include changes to relationships, identities, or stories about myself that I am not sure I am ready to revise.' },
+  { id:'C2', mv:3, type:'likert',
+    text:'The cost of not crossing, for me, includes a specific kind of self-knowledge I would have to continue not having.' },
+  { id:'C3', mv:3, type:'likert',
+    text:'Both costs are real, and I have not yet decided which is the cost I am more able to carry.' },
+
+  // Optional open text
+  { id:'OT', mv:3, type:'textarea', optional:true,
+    text:'In your own words, what is the most precise sentence you can write about what you are at the edge of right now?',
+    hint:'Optional. 30–100 words suggested. Nothing you write here is stored anywhere unless you explicitly save.',
+    maxWords:100 },
+];
+
+const TOTAL_CLOSED = 12;
+const TOTAL_ALL    = 13;
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+
+let current = 0;
+let resp    = {};      // likert responses {id: 1-7}
+let openText = '';
+let savedCode = null;
+let lastMv    = 0;
+
+// ════════════════════════════════════════════
+// CRISIS DETECTION
+// ════════════════════════════════════════════
+
+const CRISIS_PHRASES = [
+  'want to die','wants to die','wanna die','going to die','going to kill',
+  'end my life','end their life','kill myself','kill myself','killing myself',
+  'not worth living','no point in living','can\'t go on','cannot go on',
+  'hurting myself','hurt myself','no reason to live','take my own life'
+];
+
+function detectCrisis(text) {
+  const t = text.toLowerCase();
+  return CRISIS_PHRASES.some(p => t.includes(p));
+}
+
+// ════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════
+
+function render(idx) {
+  const step = STEPS[idx];
+
+  // Progress (open text counts as 1)
+  const total = TOTAL_ALL;
+  document.getElementById('progress-label').textContent =
+    step.optional ? `${idx+1} of ${total} (optional)` : `${idx+1} of ${total}`;
+  document.getElementById('progress-fill').style.width = ((idx+1)/total*100).toFixed(0)+'%';
+
+  // Movement header
+  const mvEl = document.getElementById('mv-header');
+  if (step.mvTitle && step.mv !== lastMv) {
+    document.getElementById('mv-num').textContent   = 'Movement ' + step.mv;
+    document.getElementById('mv-title').textContent = step.mvTitle;
+    document.getElementById('mv-intro').textContent = step.mvIntro || '';
+    mvEl.style.display = '';
+    lastMv = step.mv;
+  } else {
+    mvEl.style.display = 'none';
+  }
+
+  document.getElementById('q-text').textContent = step.text;
+
+  const hintEl = document.getElementById('q-hint');
+  if (step.hint) { hintEl.textContent = step.hint; hintEl.style.display=''; }
+  else { hintEl.style.display='none'; }
+
+  const inputEl = document.getElementById('q-input');
+  inputEl.innerHTML = '';
+  document.getElementById('req-msg').classList.remove('show');
+
+  if (step.type === 'likert') {
+    const labelsEl = document.createElement('div'); labelsEl.className='likert-labels';
+    labelsEl.innerHTML='<span>Strongly disagree</span><span>Strongly agree</span>';
+    const rowEl = document.createElement('div'); rowEl.className='likert-row';
+    for (let v=1; v<=7; v++) {
+      const btn = document.createElement('button');
+      btn.className='lbtn'+(resp[step.id]===v?' sel':'');
+      btn.textContent=v; btn.setAttribute('aria-label',`${v} of 7`);
+      btn.addEventListener('click',()=>{
+        resp[step.id]=v;
+        rowEl.querySelectorAll('.lbtn').forEach((b,i)=>b.classList.toggle('sel',i===v-1));
+        document.getElementById('req-msg').classList.remove('show');
+      });
+      rowEl.appendChild(btn);
+    }
+    inputEl.appendChild(labelsEl);
+    inputEl.appendChild(rowEl);
+  } else if (step.type === 'textarea') {
+    const ta = document.createElement('textarea');
+    ta.rows=4; ta.placeholder='\u2026'; ta.value=openText;
+    const wc = document.createElement('p'); wc.className='word-count';
+    const update=()=>{
+      openText=ta.value;
+      const n=ta.value.trim().split(/\s+/).filter(Boolean).length;
+      wc.textContent=n+' / '+(step.maxWords||100)+' words (suggested)';
+    };
+    ta.addEventListener('input',update);
+    inputEl.appendChild(ta); inputEl.appendChild(wc); update();
+  }
+
+  const skipBtn = document.getElementById('btn-skip');
+  if (step.optional) skipBtn.classList.add('show'); else skipBtn.classList.remove('show');
+  document.getElementById('btn-back').disabled = idx===0;
+  document.getElementById('btn-next').textContent = idx===STEPS.length-1 ? 'See reflection' : 'Next';
+  window.scrollTo({top:0});
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+
+document.getElementById('btn-start').addEventListener('click',()=>{
+  document.getElementById('view-intro').style.display='none';
+  document.getElementById('view-survey').style.display='';
+  current=0; resp={}; openText=''; savedCode=null; lastMv=0;
+  render(0); window.scrollTo({top:0});
+});
+
+document.getElementById('btn-back').addEventListener('click',()=>{
+  if(current>0){
+    const prev=STEPS[current-1];
+    if(prev.mvTitle) lastMv=prev.mv-1;
+    current--; render(current);
+  }
+});
+
+document.getElementById('btn-skip').addEventListener('click',()=>{
+  // Only for optional step — skip without saving
+  openText='';
+  generate();
+});
+
+document.getElementById('btn-next').addEventListener('click',()=>{
+  const step=STEPS[current];
+  if(step.type==='likert'&&!resp[step.id]){
+    document.getElementById('req-msg').classList.add('show'); return;
+  }
+  if(current<STEPS.length-1){ current++; render(current); }
+  else { generate(); }
+});
+
+// ════════════════════════════════════════════
+// SCORING
+// ════════════════════════════════════════════
+
+function v(id){ return resp[id]||1; }
+
+function determineThreshold() {
+  const ts = {T1:v('T1'),T2:v('T2'),T3:v('T3'),T4:v('T4')};
+  const maxVal = Math.max(...Object.values(ts));
+  const highOnes = Object.entries(ts).filter(([,val])=>val>=5).map(([k])=>k);
+  const allLow   = maxVal<4;
+  const allHigh  = highOnes.length>=3;
+  const primary  = Object.entries(ts).reduce((a,b)=>b[1]>a[1]?b:a)[0];
+  return {primary, highOnes, allLow, allHigh, maxVal};
+}
+
+function determineArchitecture() {
+  const h1=v('H1'), h23=(v('H2')+v('H3'))/2, h45=(v('H4')+v('H5'))/2;
+  const max=Math.max(h1,h23,h45);
+  const tied = [h1,h23,h45].filter(x=>Math.abs(x-max)<=1).length>=2;
+  if(tied) return 'multiple';
+  if(h1>=h23&&h1>=h45) return 'not-yet';
+  if(h23>=h1&&h23>=h45) return 'excavation';
+  return 'deliberate';
+}
+
+function determineCost() {
+  const c1=v('C1'), c2=v('C2'), c3=v('C3');
+  if(c3>=5) return 'comparable';
+  if(c1>c2+1) return 'crossing-heavier';
+  if(c2>c1+1) return 'not-crossing-heavier';
+  return 'comparable';
+}
+
+// ════════════════════════════════════════════
+// REFLECTION TEXT
+// ════════════════════════════════════════════
+
+const T_NAMES = {
+  T1:'acknowledging an orientation',
+  T2:'entering a dynamic for the first time — or for the first time honestly',
+  T3:'crossing into a deeper commitment within an existing dynamic',
+  T4:'leaving a dynamic that no longer fits',
+};
+
+const ARCH_TEXT = {
+  'not-yet': `What you are inside is patience, not refusal. The crossing is real to you. The readiness has not yet arrived. There is no work to do here other than to keep returning until the readiness is also real. The framework does not require speed.`,
+  'excavation': `What you are inside is articulation. The crossing is not yet refused or accepted because what you would be crossing into has not yet been drawn precisely enough. The work, before the crossing, is description. <em>The Aspirational Self Profile</em> — Tool II of this suite — exists for this purpose, if you have not yet taken it.`,
+  'deliberate': `What you are inside is a position. You have seen the threshold and chosen, knowingly, not to cross it. This is also a legitimate inhabitation. The book does not require crossing of every reader. What it requires is the honesty of naming what one is doing. You appear to be doing that.`,
+  'multiple': `What you are inside is layered. More than one kind of non-crossing is active at once. This is common at thresholds that are real. The work, if there is work to do, is to separate the layers — to ask which part is patience, which part is incomplete articulation, and which part is a position you have actually chosen.`,
+};
+
+const COST_TEXT = {
+  'crossing-heavier':     `The cost of crossing — the changes to identity, relationships, and stories about yourself — weighs more heavily in what you have described. That weight is real information. It does not mean the crossing is wrong. It means it is expensive.`,
+  'not-crossing-heavier': `The cost of not crossing — the specific self-knowledge you would continue not having — weighs more heavily in what you have described. That, too, is real information. The threshold holds something you have already half-named.`,
+  'comparable':           `The costs feel comparable. You have not yet decided which is the cost you are more able to carry. This is honest, not evasive. Some thresholds cannot be assessed until they are closer.`,
+};
+
+function buildReflection(thr, arch, cost) {
+  let paras = [];
+
+  // Threshold identification
+  if(thr.allLow) {
+    paras.push(`What you are inside is not yet, or not now, a threshold in the specific sense the book describes. This tool may not be the right one for where you are. The other tools in this suite may be more useful at the place you are currently reading from.`);
+    return paras.map(p=>`<p>${p}</p>`).join('');
+  }
+
+  if(thr.allHigh) {
+    paras.push(`You are at multiple thresholds simultaneously. This is information about the moment you are in — a convergence of questions that do not usually arrive together. It may be worth asking which threshold is most active <em>today</em>, and returning to the others when this one resolves.`);
+  } else {
+    paras.push(`What you are at the edge of, by your own account, is <strong>${T_NAMES[thr.primary]}</strong>.`);
+  }
+
+  // Architecture
+  paras.push(ARCH_TEXT[arch]);
+
+  // Cost
+  paras.push(COST_TEXT[cost]);
+
+  return paras.map(p=>`<p>${p}</p>`).join('');
+}
+
+// ════════════════════════════════════════════
+// GENERATE
+// ════════════════════════════════════════════
+
+function generate() {
+  document.getElementById('view-survey').style.display='none';
+  const vr=document.getElementById('view-results');
+  vr.style.display='';
+
+  const thr  = determineThreshold();
+  const arch = determineArchitecture();
+  const cost = determineCost();
+
+  // Crisis detection on open text
+  if(openText && detectCrisis(openText)) {
+    document.getElementById('care-crisis').style.display='';
+  }
+
+  document.getElementById('reflection-text').innerHTML = buildReflection(thr, arch, cost);
+
+  // User's own words
+  const uwBlock = document.getElementById('user-words-block');
+  if(openText && openText.trim()) {
+    document.getElementById('user-words-text').textContent = '\u201c' + openText.trim() + '\u201d';
+    uwBlock.style.display='';
+  } else {
+    uwBlock.style.display='none';
+  }
+
+  window.scrollTo({top:0});
+
+  document.getElementById('btn-save').addEventListener('click',()=>saveResult(thr,arch,cost));
+  document.getElementById('btn-retake').addEventListener('click',()=>{
+    vr.style.display='none'; resp={}; openText=''; savedCode=null; current=0; lastMv=0;
+    resetSaveUI();
+    document.getElementById('view-intro').style.display='';
+    window.scrollTo({top:0});
+  });
+}
+
+// ════════════════════════════════════════════
+// SAVE
+// ════════════════════════════════════════════
+
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';
+  for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;
+}
+
+function saveResult(thr,arch,cost){
+  if(savedCode)return;
+  const code=genCode(); savedCode=code;
+  try{localStorage.setItem('tdh_t6_'+code,JSON.stringify({resp,openText,thr,arch,cost,ts:Date.now()}));}catch(e){}
+  try{const u=new URL(window.location.href);u.searchParams.set('code',code);history.replaceState(null,'',u.toString());}catch(e){}
+  document.getElementById('code-box').textContent=code;
+  document.getElementById('code-box').classList.add('show');
+  document.getElementById('code-note').classList.add('show');
+  const b=document.getElementById('btn-save');b.disabled=true;b.textContent='Result saved';
+}
+
+function resetSaveUI(){
+  document.getElementById('code-box').textContent='';
+  document.getElementById('code-box').classList.remove('show');
+  document.getElementById('code-note').classList.remove('show');
+  const b=document.getElementById('btn-save');b.disabled=false;b.textContent='Save with anonymous code';
+}
+
+// URL retrieval
+(function(){
+  try{
+    const code=(new URLSearchParams(window.location.search)).get('code');
+    if(code&&code.length===6){
+      const stored=localStorage.getItem('tdh_t6_'+code.toUpperCase());
+      if(stored){
+        const d=JSON.parse(stored);
+        resp=d.resp||{}; openText=d.openText||''; savedCode=code.toUpperCase();
+        document.getElementById('view-intro').style.display='none';
+        generate();
+        requestAnimationFrame(()=>{
+          document.getElementById('code-box').textContent=savedCode;
+          document.getElementById('code-box').classList.add('show');
+          document.getElementById('code-note').classList.add('show');
+          const b=document.getElementById('btn-save');b.disabled=true;b.textContent='Result saved';
+        });
+        return;
+      }
+    }
+  }catch(e){}
+  document.getElementById('view-intro').style.display='';
+})();
+</script>
+</body>
+</html>
