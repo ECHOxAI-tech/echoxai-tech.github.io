@@ -12,11 +12,11 @@
     --black:    #080806;
     --near:     #0e0e0b;
     --off-white:#f0ece3;
-    --bone:     #d4cfc4;
+    --bone:     #e8e4dc;
     --gold:     #b8963e;
     --gold-dim: #7a6128;
-    --text:     #e2ddd2;
-    --muted:    #a09890;
+    --text:     #f0ece3;
+    --muted:    #c8c3bb;
     --rule:     rgba(184,150,62,0.2);
   }
 
@@ -71,7 +71,7 @@
   .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
 
   /* ── INTRO ── */
-  .intro-body { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .intro-body { font-size: 0.9rem; line-height: 1.78; color: var(--text); }
   .intro-body p + p { margin-top: 0.85em; }
   .intro-body em { color: var(--bone); font-style: italic; }
 
@@ -138,10 +138,10 @@
 
   .lbtn {
     flex: 1;
-    min-height: 2.4rem; min-width: 2.4rem; max-width: 3rem;
+    min-height: 2.8rem; min-width: 2.8rem; max-width: 3.2rem;
     border: 1px solid var(--rule);
     background: transparent; color: var(--muted);
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     cursor: pointer; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     padding: 0; transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -242,7 +242,7 @@
 
   /* interpretation */
   .interp {
-    font-size: 0.78rem; line-height: 1.78; color: var(--text);
+    font-size: 0.88rem; line-height: 1.78; color: var(--text);
   }
   .interp p + p { margin-top: 0.85em; }
   .interp strong { color: var(--bone); font-weight: 500; }
@@ -251,7 +251,7 @@
   /* reading recs */
   .rec-item {
     padding: 0.6rem 0; border-bottom: 1px solid var(--rule);
-    font-size: 0.7rem; color: var(--muted); line-height: 1.55;
+    font-size: 0.8rem; color: var(--muted); line-height: 1.55;
   }
   .rec-item:first-child { border-top: 1px solid var(--rule); }
   .rec-item strong {
@@ -416,7 +416,7 @@
   canvas { display: none; }
 
   @media (max-width: 480px) {
-    html { font-size: 20px; }
+    html { font-size: 22px; }
     body { padding: 2rem 1.25rem 3rem; }
     .lbtn { min-height: 2.2rem; min-width: 0; }
   }

@@ -12,11 +12,11 @@
     --black:    #080806;
     --near:     #0e0e0b;
     --off-white:#f0ece3;
-    --bone:     #d4cfc4;
+    --bone:     #e8e4dc;
     --gold:     #b8963e;
     --gold-dim: #7a6128;
-    --text:     #e2ddd2;
-    --muted:    #a09890;
+    --text:     #f0ece3;
+    --muted:    #c8c3bb;
     --rule:     rgba(184,150,62,0.2);
     --care:     rgba(184,150,62,0.08);
   }
@@ -38,9 +38,10 @@
   .back-link::before { content: '\2190 '; }
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--gold-dim); display: block; margin-bottom: 0.4rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); display: block; margin-bottom: 0.55rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem;
   }
   .page-header h1 {
     font-family: 'IM Fell English', Georgia, serif;
@@ -48,7 +49,7 @@
     letter-spacing: 0.06em; color: var(--off-white); line-height: 1.2;
   }
   .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
-  .body-text { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .body-text { font-size: 0.9rem; line-height: 1.78; color: var(--text); }
   .body-text p + p { margin-top: 0.85em; }
   .body-text em { color: var(--bone); font-style: italic; }
   .body-text strong { color: var(--bone); font-weight: 500; }
@@ -100,7 +101,7 @@
     font-weight: 400; margin-bottom: 0.5rem;
   }
   .phase-desc {
-    font-size: 0.7rem; color: var(--muted);
+    font-size: 0.8rem; color: var(--muted);
     font-style: italic; line-height: 1.6; margin-bottom: 1.5rem;
   }
   .progress-label {
@@ -112,8 +113,8 @@
   .progress-fill { height: 100%; background: var(--gold-dim); transition: width 0.3s ease; }
   .question-text {
     font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 1rem; font-weight: 300; font-style: italic;
-    color: var(--off-white); line-height: 1.6; margin-bottom: 2rem;
+    font-size: 1.15rem; font-weight: 300; font-style: italic;
+    color: var(--off-white); line-height: 1.65; margin-bottom: 2rem;
   }
   .likert-labels { display: flex; justify-content: space-between; margin-bottom: 0.6rem; }
   .likert-labels span {
@@ -125,9 +126,9 @@
     margin-bottom: 2rem;
   }
   .lbtn {
-    flex: 1; min-height: 2.4rem; min-width: 2.4rem; max-width: 3rem;
+    flex: 1; min-height: 2.8rem; min-width: 2.8rem; max-width: 3.2rem;
     border: 1px solid var(--rule); background: transparent; color: var(--muted);
-    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     cursor: pointer; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     padding: 0; transition: border-color 0.15s, background 0.15s, color 0.15s;
@@ -259,7 +260,7 @@
   .btn-email:hover { background:var(--gold-dim); color:var(--black); }
 
   @media (max-width: 480px) {
-    html { font-size: 20px; }
+    html { font-size: 22px; }
     body { padding: 2rem 1.25rem 3rem; }
     .lbtn { min-height: 2.2rem; min-width: 0; }
   }

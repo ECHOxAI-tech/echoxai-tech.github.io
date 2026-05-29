@@ -12,11 +12,11 @@
     --black:    #080806;
     --near:     #0e0e0b;
     --off-white:#f0ece3;
-    --bone:     #d4cfc4;
+    --bone:     #e8e4dc;
     --gold:     #b8963e;
     --gold-dim: #7a6128;
-    --text:     #e2ddd2;
-    --muted:    #a09890;
+    --text:     #f0ece3;
+    --muted:    #c8c3bb;
     --rule:     rgba(184,150,62,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,9 +37,10 @@
   .back-link::before { content: '\2190 '; }
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--gold-dim); display: block; margin-bottom: 0.4rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); display: block; margin-bottom: 0.55rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem;
   }
   .page-header h1 {
     font-family: 'IM Fell English', Georgia, serif;
@@ -49,7 +50,7 @@
   .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
 
   /* ── INTRO ── */
-  .intro-body { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .intro-body { font-size: 0.9rem; line-height: 1.78; color: var(--text); }
   .intro-body p + p { margin-top: 0.85em; }
   .intro-body em { color: var(--bone); font-style: italic; }
   .privacy-note {
@@ -122,7 +123,7 @@
     display: block; width: 100%;
     background: var(--near); border: 1px solid var(--rule);
     color: var(--text); font-family: 'Cormorant Garamond', Georgia, serif;
-    font-size: 0.85rem; font-weight: 300; line-height: 1.7;
+    font-size: 1rem; font-weight: 300; line-height: 1.75;
     padding: 0.85rem 1rem; resize: vertical; min-height: 5rem;
     outline: none; transition: border-color 0.2s;
   }
@@ -277,7 +278,7 @@
   }
 
   @media (max-width: 480px) {
-    html { font-size: 20px; }
+    html { font-size: 22px; }
     body { padding: 2rem 1.25rem 3rem; }
   }
 </style>

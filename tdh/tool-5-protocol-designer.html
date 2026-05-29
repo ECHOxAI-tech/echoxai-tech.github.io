@@ -10,8 +10,8 @@
 <style>
   :root {
     --black:    #080806; --near:     #0e0e0b; --off-white:#f0ece3;
-    --bone:     #d4cfc4; --gold:     #b8963e; --gold-dim: #7a6128;
-    --text:     #e2ddd2; --muted:    #a09890; --rule:     rgba(184,150,62,0.2);
+    --bone:     #e8e4dc; --gold:     #b8963e; --gold-dim: #7a6128;
+    --text:     #f0ece3; --muted:    #c8c3bb; --rule:     rgba(184,150,62,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: 24px; background: var(--black); color: var(--text); }
@@ -30,16 +30,17 @@
   .back-link::before { content: '\2190 '; }
   .page-header { text-align: center; margin-bottom: 1.5rem; }
   .tool-label {
-    font-family: 'Inconsolata', monospace; font-size: 0.48rem;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--gold-dim); display: block; margin-bottom: 0.4rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.52rem;
+    letter-spacing: 0.32em; text-transform: uppercase;
+    color: var(--gold); display: block; margin-bottom: 0.55rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: 0.5rem;
   }
   .page-header h1 {
     font-family: 'IM Fell English', Georgia, serif; font-weight: 400;
     font-size: 1.4rem; letter-spacing: 0.06em; color: var(--off-white); line-height: 1.2;
   }
   .ornament { display: block; color: var(--gold); font-size: 0.85rem; margin: 0.5rem 0; }
-  .body-text { font-size: 0.8rem; line-height: 1.75; color: var(--text); }
+  .body-text { font-size: 0.9rem; line-height: 1.78; color: var(--text); }
   .body-text p + p { margin-top: 0.85em; }
   .body-text em { color: var(--bone); font-style: italic; }
   .meta-row { display: flex; gap: 2rem; margin: 1.5rem 0; }
@@ -93,9 +94,9 @@
   .ritual-meta { display: flex; flex-direction: column; gap: 0.2rem; }
   .ritual-meta-row { font-size: 0.68rem; color: var(--muted); line-height: 1.55; }
   .ritual-meta-row strong { font-family: 'Inconsolata', monospace; font-size: 0.42rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); font-weight: 400; margin-right: 0.3rem; }
-  .proto-fixed { font-size: 0.78rem; line-height: 1.78; color: var(--muted); font-style: italic; }
+  .proto-fixed { font-size: 0.88rem; line-height: 1.78; color: var(--muted); font-style: italic; }
   .proto-fixed p + p { margin-top: 0.85em; }
-  .opening-note { font-size: 0.78rem; line-height: 1.75; color: var(--muted); font-style: italic; margin-bottom: 1.5rem; border-left: 1px solid var(--rule); padding-left: 1rem; }
+  .opening-note { font-size: 0.88rem; line-height: 1.78; color: var(--muted); font-style: italic; margin-bottom: 1.5rem; border-left: 1px solid var(--rule); padding-left: 1rem; }
   /* actions */
   .code-box { font-family: 'Inconsolata', monospace; font-size: 1.15rem; letter-spacing: 0.35em; color: var(--gold); text-align: center; padding: 1.1rem; border: 1px solid var(--rule); margin: 1rem 0; display: none; }
   .code-box.show { display: block; }
@@ -137,7 +138,7 @@
     .ritual-block { border-left: 1px solid #c9a84c; }
     .section-lbl { color: #7a6128; }
   }
-  @media (max-width: 480px) { html { font-size: 20px; } body { padding: 2rem 1.25rem 3rem; } }
+  @media (max-width: 480px) { html { font-size: 22px; } body { padding: 2rem 1.25rem 3rem; } }
 </style>
 </head>
 <body>
