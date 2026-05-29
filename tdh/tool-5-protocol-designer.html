@@ -236,15 +236,8 @@
   </div>
 
   <hr class="rule">
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-  <p class="code-hint">This code returns you to your result on this device. Save it, or email it to yourself below.</p>
-
-  <div class="send-opts">
-    <label class="send-opt-label"><input type="checkbox" id="opt-result" checked><span class="opt-box"></span>Result</label>
-    <label class="send-opt-label"><input type="checkbox" id="opt-code"><span class="opt-box"></span>Code</label>
-  </div>
+  <p class="section-lbl">Email my result</p>
+  <p class="code-hint">Enter your email to receive your full result and a link back to this page.</p>
   <div class="send-row">
     <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
     <button class="btn-send-email" id="btn-email-send">Send</button>
@@ -883,11 +876,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      var wantResult = document.getElementById('opt-result').checked;
-      var wantCode   = document.getElementById('opt-code').checked;
-      if (!wantResult && !wantCode) {
-        fb.textContent = 'Select at least one option.'; fb.className = 'send-feedback err'; return;
-      }
+      _saveAndShow();
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;
@@ -912,8 +901,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
       var rTxt = rEl ? rEl.innerText.replace(/[<>]/g,'') : '';
       var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + rTxt.substring(0, 3000) + '</p>';
 
-      var body = (wantResult && wantCode) ? resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart
-               : wantResult ? resultPart : codePart;
+      var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;
 
       var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
         + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'

@@ -530,35 +530,22 @@
   <div id="reading-recs"></div>
 
   <hr class="rule">
-  <p class="section-lbl">Share your gradient</p>
-  <div class="share-section">
-    <span class="share-label">Shareable link</span>
-    <div class="share-url-box">
-      <span class="share-url-text" id="share-url-text">&nbsp;</span>
-      <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
-    </div>
-    <div class="share-actions">
-      <button class="btn-copy" onclick="copyResultText()">Copy as text</button>
-      <button class="btn-copy" onclick="generateShareCard(currentGradient)">Download card</button>
-    </div>
-    <p class="share-note">Anyone with the link sees your result. The share card is 1080×1080 — for forums and social.</p>
-  </div>
-
-  <hr class="rule">
-  <p class="section-lbl">Save &amp; send</p>
-
-  <div class="code-box" id="code-box"></div>
-  <p class="code-hint">This code returns you to your result on this device. Save it, or email it to yourself below.</p>
-
-  <div class="send-opts">
-    <label class="send-opt-label"><input type="checkbox" id="opt-result" checked><span class="opt-box"></span>Result</label>
-    <label class="send-opt-label"><input type="checkbox" id="opt-code"><span class="opt-box"></span>Code</label>
-  </div>
+  <p class="section-lbl">Email my result</p>
+  <p class="code-hint">Enter your email to receive your full gradient result and a link back to this page.</p>
   <div class="send-row">
     <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
     <button class="btn-send-email" id="btn-email-send">Send</button>
   </div>
   <p class="send-feedback" id="send-feedback"></p>
+
+  <hr class="rule">
+  <p class="section-lbl">Share your result</p>
+  <p class="code-hint">This link opens your exact result on any device — share it anywhere.</p>
+  <div class="share-url-box">
+    <span class="share-url-text" id="share-url-text">&nbsp;</span>
+    <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
+  </div>
+  <button class="btn-copy" style="width:100%;margin-top:0.6rem" onclick="downloadCard()">Download result image (for social media)</button>
 
   <p class="result-disclaimer">This result is an instrument for personal reflection, not a clinical or diagnostic assessment. It does not constitute psychological or therapeutic advice. No professional relationship is formed by using this tool. If you are experiencing distress, please seek support from a qualified professional.</p>
 
@@ -862,7 +849,17 @@ function tryRetrieve(code) {
 // SHARE CARD (1080×1080 PNG)
 // ══════════════════════════════════════════════
 
+function downloadCard() {
+  if (!currentGradient) { _saveAndShow(); }
+  if (!currentGradient) {
+    var fb = document.getElementById('send-feedback');
+    return;
+  }
+  generateShareCard(currentGradient);
+}
+
 async function generateShareCard(pct) {
+  if (!pct) return;
   await document.fonts.ready;
 
   const canvas = document.getElementById('share-canvas');
@@ -1117,11 +1114,6 @@ document.getElementById('btn-next').addEventListener('click', () => {
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      var wantResult = document.getElementById('opt-result').checked;
-      var wantCode   = document.getElementById('opt-code').checked;
-      if (!wantResult && !wantCode) {
-        fb.textContent = 'Select at least one option.'; fb.className = 'send-feedback err'; return;
-      }
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;
@@ -1146,8 +1138,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
       var rTxt = rEl ? rEl.innerText.replace(/[<>]/g,'') : '';
       var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + rTxt.substring(0, 3000) + '</p>';
 
-      var body = (wantResult && wantCode) ? resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart
-               : wantResult ? resultPart : codePart;
+      var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;
 
       var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
         + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
