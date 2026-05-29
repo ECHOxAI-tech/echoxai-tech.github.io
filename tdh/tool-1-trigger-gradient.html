@@ -530,6 +530,19 @@
   <div id="reading-recs"></div>
 
   <hr class="rule">
+  <p class="section-lbl">Share your gradient</p>
+  <div class="share-section">
+    <span class="share-label">Shareable link</span>
+    <div class="share-url-box">
+      <span class="share-url-text" id="share-url-text">&nbsp;</span>
+      <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
+    </div>
+    <div class="share-actions">
+      <button class="btn-copy" onclick="copyResultText()">Copy as text</button>
+      <button class="btn-copy" onclick="generateShareCard(currentGradient)">Download card</button>
+    </div>
+    <p class="share-note">Anyone with the link sees your result. The share card is 1080×1080 — for forums and social.</p>
+  </div>
 
   <hr class="rule">
   <p class="section-lbl">Save &amp; send</p>
