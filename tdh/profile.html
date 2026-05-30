@@ -69,6 +69,13 @@
     color:var(--gold-dim); text-decoration:none; }
   .back:hover { color:var(--gold); }
   svg { max-width:100%; display:block; margin:0 auto; }
+  .pax-row { margin-bottom:1rem; }
+  .pax-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:0.45rem; }
+  .pax-ends .lean { color:var(--gold); }
+  .pax-track { position:relative; height:9px; border-radius:5px; background:linear-gradient(90deg, rgba(212,169,62,0.18), rgba(212,169,62,0.05) 50%, rgba(212,169,62,0.18)); }
+  .pax-center { position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:rgba(212,169,62,0.5); transform:translateX(-50%); }
+  .pax-fill { position:absolute; top:0; bottom:0; left:50%; width:0; background:linear-gradient(90deg,var(--gold-dim),var(--gold)); border-radius:5px; }
+  .pax-mark { position:absolute; top:50%; width:14px; height:14px; border-radius:50%; background:var(--gold); transform:translate(-50%,-50%); box-shadow:0 0 0 3px rgba(212,169,62,0.16),0 0 10px rgba(212,169,62,0.5); }
   /* matrix */
   .intro-lead { font-size:0.92rem; color:var(--muted); line-height:1.75; margin:0 auto 2rem; max-width:34rem; text-align:center; }
   .matrix-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:1.2rem; }
@@ -99,7 +106,23 @@
   .cmp-col { min-width:0; }
   .cmp-col-name { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; }
   .cmp-col-empty { font-size:0.85rem; color:var(--muted); font-style:italic; }
-  .person-summary { font-family:'IM Fell English',Georgia,serif; font-size:1.4rem; color:var(--off-white); margin:0 0 1.5rem; text-align:center; }</style>
+  .person-summary { font-family:'IM Fell English',Georgia,serif; font-size:1.4rem; color:var(--off-white); margin:0 0 1.5rem; text-align:center; }
+  /* interpretation + dual-viz */
+  .dual-viz { display:flex; justify-content:center; margin:0.5rem auto 1.2rem; }
+  .dual-viz svg { max-width:100%; height:auto; }
+  .legend { display:flex; gap:1.4rem; justify-content:center; flex-wrap:wrap; margin:0.2rem 0 1.4rem; }
+  .legend-item { display:flex; align-items:center; gap:0.5rem; font-family:'IM Fell English',Georgia,serif; font-size:1.05rem; }
+  .legend-dot { width:0.85rem; height:0.85rem; border-radius:50%; flex-shrink:0; box-shadow:0 0 8px rgba(0,0,0,0.6); }
+  .reading { border:1px solid var(--rule); border-left:3px solid var(--gold); background:rgba(212,169,62,0.035); padding:1.3rem 1.5rem; margin:1.2rem 0; }
+  .reading .tag { display:block; font-family:'Inconsolata',monospace; font-size:0.56rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold); margin-bottom:0.7rem; }
+  .reading p { font-family:'Cormorant Garamond',Georgia,serif; font-size:1.12rem; line-height:1.72; color:var(--off-white); margin:0 0 0.85rem; }
+  .reading p:last-child { margin-bottom:0; }
+  .reading strong { color:var(--gold-dim); font-weight:600; }
+  .reading em { color:var(--bone); font-style:italic; }
+  .verdict { display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin:0.4rem 0 1rem; }
+  .verdict-chip { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--bone); border:1px solid var(--rule); padding:0.4rem 0.85rem; }
+  .verdict-chip strong { color:var(--gold); font-weight:400; }
+  .cmp-axis-name { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }</style>
 </head>
 <body>
 <div class="wrap">
@@ -172,8 +195,10 @@ function renderT2(d) {
   return T2_AXES.map(function(a){
     var v = r[a[2]];
     if (v === undefined) return '';
-    return '<div class="pax-row"><div class="pax-ends"><span>' + a[0] + '</span><span>' + a[1] + '</span></div>'
-      + '<div class="pax-track"><div class="pax-mark" style="left:' + v + '%"></div></div></div>';
+    var fl = v >= 50 ? 'left:50%;width:' + (v-50) + '%' : 'left:' + v + '%;width:' + (50-v) + '%';
+    var lL = v < 45 ? ' lean' : '', rL = v > 55 ? ' lean' : '';
+    return '<div class="pax-row"><div class="pax-ends"><span class="l' + lL + '">' + a[0] + '</span><span class="r' + rL + '">' + a[1] + '</span></div>'
+      + '<div class="pax-track"><div class="pax-center"></div><div class="pax-fill" style="' + fl + '"></div><div class="pax-mark" style="left:' + v + '%"></div></div></div>';
   }).join('');
 }
 
@@ -205,6 +230,216 @@ function renderT6(d) {
   if (thr.primary) out += '<p class="cat-line"><strong>' + (threshLabels[thr.primary] || thr.primary) + '</strong></p>';
   if (arch) out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.4rem">Architecture: ' + (archLabels[arch] || arch) + '</p>';
   return out;
+}
+
+// ══════════════════════════════════════════════
+// INTERPRETATION + DUAL VISUALISATION
+// ══════════════════════════════════════════════
+
+// Per-person colours — luminous, mutually distinct, high-contrast on near-black.
+var PALETTE = [
+  { stroke:'#d4a93e', fill:'rgba(212,169,62,0.16)',  dot:'#f0d878' },  // gold
+  { stroke:'#5fb8cc', fill:'rgba(95,184,204,0.16)',  dot:'#8fe0f0' },  // cyan
+  { stroke:'#d48fb0', fill:'rgba(212,143,176,0.16)', dot:'#f0b8d4' },  // rose
+  { stroke:'#a8c46b', fill:'rgba(168,196,107,0.16)', dot:'#cfe89a' }   // sage
+];
+
+function axisComposites(v) {
+  return {
+    x: (v.dom + v.pow + v.pur) / 3,      // low = commanding, high = surrendered
+    y: (v.see + v.wor) / 2,              // low = concealed, high = witnessed
+    stakes: ((100 - v.tra) + v.sin) / 2  // low = quiet, high = high-stakes
+  };
+}
+
+function legendHTML(people) {
+  return '<div class="legend">' + people.map(function(p, i){
+    return '<div class="legend-item"><span class="legend-dot" style="background:' + PALETTE[i % 4].stroke + '"></span>' + escapeHTML(p.name) + '</div>';
+  }).join('') + '</div>';
+}
+
+// ---- T1: overlay radar (Visual/Emotional/Tactile/Intellectual) ----
+function dualRadarT1(people) {
+  // people: [{name, r:{V,E,T,I}}, ...]
+  var W = 460, H = 460, cx = W/2, cy = H/2, R = 150;
+  var axes = [ {k:'V',label:'VISUAL',ang:-90}, {k:'E',label:'EMOTIONAL',ang:0},
+               {k:'T',label:'TACTILE',ang:90}, {k:'I',label:'INTELLECTUAL',ang:180} ];
+  function pt(ang, rad){ var a=ang*Math.PI/180; return [cx+Math.cos(a)*rad, cy+Math.sin(a)*rad]; }
+  // scale so the largest single value across everyone reaches ~edge (min ceiling 50)
+  var maxV = 1;
+  people.forEach(function(p){ axes.forEach(function(ax){ maxV = Math.max(maxV, p.r[ax.k]||0); }); });
+  var scale = R / Math.max(maxV, 50);
+  var svg = '<svg viewBox="-78 -16 616 492" width="500" style="max-width:100%;height:auto">';
+  // rings
+  [0.25,0.5,0.75,1].forEach(function(f){
+    var pts = axes.map(function(ax){ var p=pt(ax.ang,R*f); return p[0]+','+p[1]; }).join(' ');
+    svg += '<polygon points="'+pts+'" fill="none" stroke="rgba(212,169,62,0.14)" stroke-width="1"/>';
+  });
+  // axis lines + labels
+  axes.forEach(function(ax){
+    var p = pt(ax.ang, R);
+    svg += '<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'" stroke="rgba(212,169,62,0.20)" stroke-width="1"/>';
+    var lp = pt(ax.ang, R + (ax.ang===0||ax.ang===180?16:20));
+    var anchor = ax.ang===0?'start':ax.ang===180?'end':'middle';
+    svg += '<text x="'+lp[0]+'" y="'+lp[1]+'" fill="#c8c3bb" font-family="Inconsolata,monospace" font-size="13" letter-spacing="1.5" text-anchor="'+anchor+'" dominant-baseline="middle">'+ax.label+'</text>';
+  });
+  // shared core = per-axis minimum (the confirmation both/all genuinely hold)
+  if (people.length >= 2) {
+    var minPts = axes.map(function(ax){
+      var m = Math.min.apply(null, people.map(function(p){ return p.r[ax.k]||0; }));
+      var p = pt(ax.ang, m*scale); return p[0]+','+p[1];
+    }).join(' ');
+    svg += '<polygon points="'+minPts+'" fill="rgba(240,236,227,0.16)" stroke="rgba(240,236,227,0.45)" stroke-width="1" stroke-dasharray="3 3"/>';
+  }
+  // each person's shape
+  people.forEach(function(p, i){
+    var col = PALETTE[i % 4];
+    var pts = axes.map(function(ax){ var q=pt(ax.ang,(p.r[ax.k]||0)*scale); return q[0]+','+q[1]; }).join(' ');
+    svg += '<polygon points="'+pts+'" fill="'+col.fill+'" stroke="'+col.stroke+'" stroke-width="2.5" stroke-linejoin="round"/>';
+    axes.forEach(function(ax){ var q=pt(ax.ang,(p.r[ax.k]||0)*scale);
+      svg += '<circle cx="'+q[0]+'" cy="'+q[1]+'" r="4.5" fill="'+col.dot+'"/>'; });
+  });
+  svg += '</svg>';
+  return '<div class="dual-viz">'+svg+'</div>';
+}
+
+// ---- T2: overlay authority/visibility map ----
+function dualMapT2(people) {
+  // people: [{name, v:{8 axes}}]
+  var W=460, H=460, pad=84, plotW=W-pad*2, plotH=H-pad*2, cxm=W/2, cym=H/2;
+  var lbl='font-family:Inconsolata,monospace;font-size:13px;letter-spacing:1.5px;fill:#e8c95a;';
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" width="500" style="max-width:100%;height:auto">';
+  svg+='<rect x="'+pad+'" y="'+pad+'" width="'+plotW+'" height="'+plotH+'" fill="none" stroke="rgba(212,169,62,0.30)" stroke-width="1.5"/>';
+  [0.25,0.5,0.75].forEach(function(f){ var gx=pad+f*plotW, gy=pad+f*plotH;
+    svg+='<line x1="'+gx+'" y1="'+pad+'" x2="'+gx+'" y2="'+(H-pad)+'" stroke="rgba(212,169,62,0.12)" stroke-width="1"/>';
+    svg+='<line x1="'+pad+'" y1="'+gy+'" x2="'+(W-pad)+'" y2="'+gy+'" stroke="rgba(212,169,62,0.12)" stroke-width="1"/>'; });
+  svg+='<line x1="'+pad+'" y1="'+cym+'" x2="'+(W-pad)+'" y2="'+cym+'" stroke="rgba(212,169,62,0.5)" stroke-width="1.5"/>';
+  svg+='<line x1="'+cxm+'" y1="'+pad+'" x2="'+cxm+'" y2="'+(H-pad)+'" stroke="rgba(212,169,62,0.5)" stroke-width="1.5"/>';
+  svg+='<text x="'+cxm+'" y="'+(pad-18)+'" text-anchor="middle" style="'+lbl+'">WITNESSED</text>';
+  svg+='<text x="'+cxm+'" y="'+(H-pad+30)+'" text-anchor="middle" style="'+lbl+'">CONCEALED</text>';
+  svg+='<text x="'+(pad-14)+'" y="'+cym+'" text-anchor="middle" style="'+lbl+'" transform="rotate(-90 '+(pad-14)+' '+cym+')">COMMANDING</text>';
+  svg+='<text x="'+(W-pad+14)+'" y="'+cym+'" text-anchor="middle" style="'+lbl+'" transform="rotate(90 '+(W-pad+14)+' '+cym+')">SURRENDERED</text>';
+  // connecting line for exactly two
+  var pts = people.map(function(p){ var c=axisComposites(p.v);
+    return { x: pad + (c.x/100)*plotW, y: pad + (1-c.y/100)*plotH, r: 14+(c.stakes/100)*26 }; });
+  if (people.length===2) {
+    svg+='<line x1="'+pts[0].x+'" y1="'+pts[0].y+'" x2="'+pts[1].x+'" y2="'+pts[1].y+'" stroke="rgba(240,236,227,0.4)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+  }
+  people.forEach(function(p,i){ var col=PALETTE[i%4], m=pts[i];
+    svg+='<circle cx="'+m.x+'" cy="'+m.y+'" r="'+m.r+'" fill="'+col.fill+'" stroke="'+col.stroke+'" stroke-width="3"/>';
+    svg+='<circle cx="'+m.x+'" cy="'+m.y+'" r="5" fill="'+col.dot+'"/>'; });
+  svg+='</svg>';
+  return '<div class="dual-viz">'+svg+'</div>';
+}
+
+// ---------- INTERPRETATION (single person, across their own tests) ----------
+var CH_FULL = { V:'Visual', E:'Emotional', T:'Tactile', I:'Intellectual' };
+var CH_GLOSS = {
+  V:'what is seen — form, presentation, the visible shape of the dynamic',
+  E:'the bond — closeness, trust, the relational atmosphere',
+  T:'the body — touch, pressure, physical contact',
+  I:'shared sexual understanding — being recognised as the self you reach for'
+};
+function topChannel(r){ return ['V','E','T','I'].sort(function(a,b){return (r[b]||0)-(r[a]||0);})[0]; }
+function lowChannel(r){ return ['V','E','T','I'].sort(function(a,b){return (r[a]||0)-(r[b]||0);})[0]; }
+
+function authorityWord(c){ return c.x < 40 ? 'commanding' : c.x > 60 ? 'surrendered' : 'mobile between command and surrender'; }
+function visibilityWord(c){ return c.y > 60 ? 'witnessed' : c.y < 40 ? 'concealed' : 'half-lit'; }
+function stakesWord(c){ return c.stakes > 66 ? 'transformation' : c.stakes > 33 ? 'a real but bounded change' : 'confirmation of who you already are'; }
+
+function interpretSingle(person) {
+  var R = person.results || {}; // {t1:data, t2:data, ...}
+  var paras = [];
+  var t1 = R.t1 && (R.t1.result || R.t1);
+  var t2 = R.t2 && (R.t2.result || R.t2);
+  if (t1 && t1.V !== undefined) {
+    var tc = topChannel(t1), lc = lowChannel(t1);
+    var p = 'Desire reaches you most strongly through the <strong>' + CH_FULL[tc] + '</strong> channel — ' + CH_GLOSS[tc] + '. ';
+    if (t1[tc] - t1[lc] > 25) p += 'It is a pronounced gradient: the <em>' + CH_FULL[lc] + '</em> channel carries far less of the charge, which means confirmation that arrives only through it may not register as desire at all.';
+    else p += 'Your channels are relatively even, so confirmation can arrive through whichever one opens first — a wider set of doors, none of them indispensable.';
+    paras.push(p);
+  }
+  if (t2 && t2.dom !== undefined) {
+    var c = axisComposites(t2);
+    paras.push('The self you reach for is <strong>' + authorityWord(c) + '</strong>, and wants to be <strong>' + visibilityWord(c) + '</strong>. What it is reaching for is <em>' + stakesWord(c) + '</em>.');
+  }
+  if (t1 && t1.V !== undefined && t2 && t2.dom !== undefined) {
+    var tc2 = topChannel(t1), c2 = axisComposites(t2);
+    paras.push('Put together: you are most fully yourself when a partner confirms you through the <strong>' + CH_FULL[tc2] + '</strong> channel <em>and</em> meets the ' + authorityWord(c2) + ' self you reach for. When both happen at once, the ordinary day — what the book calls <em>the Tuesday</em> — carries the charge without anyone having to stage it.');
+  }
+  if (!paras.length) return '';
+  return '<div class="reading"><span class="tag">Reading — your profile together</span>' + paras.map(function(x){return '<p>'+x+'</p>';}).join('') + '</div>';
+}
+
+// ---------- INTERPRETATION (two people) ----------
+function interpretT1Pair(a, b, nameA, nameB) {
+  var keys=['V','E','T','I'];
+  var align = Math.round(100 - keys.reduce(function(s,k){return s+Math.abs((a[k]||0)-(b[k]||0));},0)/keys.length);
+  var ta=topChannel(a), tb=topChannel(b);
+  var chips = '<div class="verdict"><span class="verdict-chip">Channel alignment <strong>'+align+'%</strong></span>'
+    + '<span class="verdict-chip">'+escapeHTML(nameA)+': <strong>'+CH_FULL[ta]+'</strong></span>'
+    + '<span class="verdict-chip">'+escapeHTML(nameB)+': <strong>'+CH_FULL[tb]+'</strong></span></div>';
+  var paras=[];
+  if (ta===tb) {
+    paras.push('You are both confirmed most strongly through the <strong>' + CH_FULL[ta] + '</strong> channel. Desire flows between you in the same currency: when one of you reaches for the other in your instinctive way, it lands as confirmation rather than needing translation. This is the easiest kind of match to live inside day to day.');
+  } else {
+    paras.push('<strong>' + escapeHTML(nameA) + '</strong> is confirmed most through the <strong>' + CH_FULL[ta] + '</strong> channel; <strong>' + escapeHTML(nameB) + '</strong> through the <strong>' + CH_FULL[tb] + '</strong> channel. Your instinctive ways of expressing desire are not the same — what most confirms one of you is not automatically what the other reaches for. This is not a fault; it is a <em>translation</em> the two of you have to learn to do on purpose.');
+    // asymmetry: is A's top B's weakest?
+    if (lowChannel(b)===ta) paras.push('Worth naming directly: the channel that most confirms ' + escapeHTML(nameA) + ' (' + CH_FULL[ta] + ') is the one that registers <em>least</em> for ' + escapeHTML(nameB) + '. ' + escapeHTML(nameA) + '\'s most natural gesture of desire can pass ' + escapeHTML(nameB) + ' almost unfelt unless it is deliberately paired with something in ' + CH_FULL[tb] + '.');
+    if (lowChannel(a)===tb) paras.push('And in the other direction: what most confirms ' + escapeHTML(nameB) + ' (' + CH_FULL[tb] + ') is where ' + escapeHTML(nameA) + ' is least sensitive — so ' + escapeHTML(nameB) + '\'s instinctive expression may not reach ' + escapeHTML(nameA) + ' as desire on its own.');
+  }
+  if (align >= 75) paras.push('Overall the two gradients sit close together. Confirmation is broadly mutual — the work is fine-tuning, not bridging a gap.');
+  else if (align < 55) paras.push('Overall the two gradients diverge widely. Nothing here says the desire is not real on both sides — but a great deal of it will need to be made explicit, because very little of it will arrive automatically in the other\'s preferred channel.');
+  return '<div class="reading"><span class="tag">Reading — how desire moves between you</span>'+chips+paras.map(function(x){return '<p>'+x+'</p>';}).join('')+'</div>';
+}
+
+function interpretT2Pair(a, b, nameA, nameB) {
+  var ca=axisComposites(a), cb=axisComposites(b);
+  var paras=[];
+  // authority complementarity
+  var aCmd = ca.x<45, aSur = ca.x>55, bCmd = cb.x<45, bSur = cb.x>55;
+  if ((aCmd&&bSur)||(aSur&&bCmd)) {
+    paras.push('On the axis that matters most for a power dynamic, you are <strong>complementary</strong>: one of you reaches for the commanding position, the other for the surrendered one. The aspirational selves fit — each can occupy the place the other\'s self needs them to occupy.');
+  } else if ((aCmd&&bCmd)) {
+    paras.push('Both of you reach for the <strong>commanding</strong> position. Two selves that each want to hold authority will compete for the same ground unless you build something deliberate — alternating contexts, separate domains, or an explicit agreement about when each leads. Left unspoken, this is the most predictable source of friction between you.');
+  } else if ((aSur&&bSur)) {
+    paras.push('Both of you reach for the <strong>surrendered</strong> position. Two selves that each want to yield can leave the dynamic with no one holding it — a quiet stalemate where each waits to be led. This is workable, but only if you name it and decide consciously who carries authority, and when.');
+  } else {
+    paras.push('On authority you are both near the centre — <em>mobile</em> rather than fixed. That flexibility is an asset, but it also means the dynamic has no default; you will define who leads situation by situation rather than once and for all.');
+  }
+  // visibility
+  if (Math.abs(ca.y-cb.y) > 30) {
+    var moreSeen = ca.y>cb.y ? nameA : nameB, moreHidden = ca.y>cb.y ? nameB : nameA;
+    paras.push('You differ on visibility: <strong>' + escapeHTML(moreSeen) + '</strong> wants the dynamic <em>witnessed</em> — acknowledged, expressed, perhaps semi-public — while <strong>' + escapeHTML(moreHidden) + '</strong> wants it <em>concealed</em>, kept private. Expect tension around how openly the relationship is lived; it will need negotiation rather than assumption.');
+  } else if (ca.y>60 && cb.y>60) {
+    paras.push('You both want the dynamic <em>witnessed</em> — seen and acknowledged. That shared appetite for visibility is itself a kind of confirmation, and an easy thing to give each other.');
+  } else if (ca.y<40 && cb.y<40) {
+    paras.push('You both want the dynamic <em>concealed</em> — private, undeclared. Neither will pressure the other toward exposure, which removes a common source of strain.');
+  }
+  // stakes
+  if (Math.abs(ca.stakes-cb.stakes) > 30) {
+    var moreTrans = ca.stakes>cb.stakes ? nameA : nameB, moreConf = ca.stakes>cb.stakes ? nameB : nameA;
+    paras.push('One last asymmetry: <strong>' + escapeHTML(moreTrans) + '</strong> is reaching for <em>transformation</em> — to be changed by the dynamic — while <strong>' + escapeHTML(moreConf) + '</strong> is reaching for <em>confirmation</em> of a self already known. These are different appetites. If unspoken, one can feel the other is either pushing too hard or not taking it seriously enough.');
+  }
+  return '<div class="reading"><span class="tag">Reading — the two aspirational selves</span>'+paras.map(function(x){return '<p>'+x+'</p>';}).join('')+'</div>';
+}
+
+function interpretT3Pair(a, b, nameA, nameB) {
+  var sensGap = Math.abs((a.A||0)-(b.A||0));
+  var paras=[];
+  if (sensGap>30) {
+    var moreS = (a.A||0)>(b.A||0)?nameA:nameB, lessS = (a.A||0)>(b.A||0)?nameB:nameA;
+    paras.push('<strong>' + escapeHTML(moreS) + '</strong> is markedly more sensitive to confirmation and its absence than <strong>' + escapeHTML(lessS) + '</strong>. A withdrawal that ' + escapeHTML(lessS) + ' barely registers can land hard for ' + escapeHTML(moreS) + '. Knowing this gap exists is most of what it takes to stop it becoming a wound.');
+  } else {
+    paras.push('You read confirmation at similar intensities, so a gesture given or withheld tends to mean roughly the same thing to each of you — fewer crossed wires about what registered and what didn\'t.');
+  }
+  return '<div class="reading"><span class="tag">Reading — sensitivity to confirmation</span>'+paras.map(function(x){return '<p>'+x+'</p>';}).join('')+'</div>';
+}
+
+function overallPairNote(shared, nameA, nameB) {
+  if (!shared.length) return '';
+  return '<div class="reading" style="border-left-color:var(--bone)"><span class="tag" style="color:var(--bone)">In sum</span>'
+    + '<p>None of this is a verdict on whether it works — these instruments describe shape, not fate. Where your shapes align, confirmation will arrive on its own; where they diverge, it will need to be made explicit and given on purpose. Most durable dynamics are built precisely on the second kind of work, not the absence of it.</p></div>';
 }
 
 // ══════════════════════════════════════════════
@@ -342,10 +577,13 @@ async function analyse() {
 }
 
 // One person, many tests → vertical overlapping profile
+function toolKeyOf(ri){ return TESTS[ri].key.replace('tdh_','').replace('_',''); } // 'tdh_t1_' -> 't1'
+
 function renderSinglePerson(resolved, p) {
   var name = personName(p);
   var out = '<p class="person-summary">' + escapeHTML(name) + '</p>';
   var any = false;
+  var bag = {}; // {t1:data,...} for the synthesis
   TESTS.forEach(function(t, ri) {
     if (!resolved[ri] || resolved[ri][p] === undefined) return;
     var data = resolved[ri][p];
@@ -357,41 +595,85 @@ function renderSinglePerson(resolved, p) {
     var html = t.render(data);
     if (!html) return;
     any = true;
+    bag[toolKeyOf(ri)] = data;
     out += '<div class="test-block"><p class="test-title">' + t.title + '</p>'
       + (data.ts ? '<p class="test-date">' + fmtDate(data.ts) + '</p>' : '')
       + html + '</div>';
   });
-  if (!any) out += '<p class="empty">None of those codes resolved to a stored result.</p>';
+  if (!any) { out += '<p class="empty">None of those codes resolved to a stored result.</p>'; content.innerHTML = out; return; }
+  // Synthesis across this person's own tests
+  var synth = interpretSingle({ results: bag });
+  if (synth) out += synth;
   content.innerHTML = out;
 }
 
-// Multiple persons → per-test comparison, columns side by side
+// Collect, for a test row, the people (in palette order) who have usable data.
+function peopleFor(resolved, ri, persons) {
+  var arr = [];
+  persons.forEach(function(p, idx){
+    var d = resolved[ri] && resolved[ri][p];
+    if (d) arr.push({ name: personName(p), data: (d.result||d.diag||d), raw: d, idx: idx });
+  });
+  return arr;
+}
+
+// Multiple persons → per-test comparison with overlay viz + interpretation.
 function renderComparison(resolved, persons) {
   var gridCols = 'repeat(' + persons.length + ', minmax(0, 1fr))';
   var out = '<p class="section-lbl">Comparison — ' + persons.length + ' people</p>';
+  out += legendHTML(persons.map(function(p){ return { name: personName(p) }; }));
   var anyTest = false;
+  var sharedQuant = [];
+  var nameA = personName(persons[0]), nameB = persons.length>1 ? personName(persons[1]) : '';
 
   TESTS.forEach(function(t, ri) {
-    if (!resolved[ri]) return;            // this test not filled for anyone
+    if (!resolved[ri]) return;
     anyTest = true;
-    out += '<div class="cmp-test"><p class="cmp-test-title">' + t.title + '</p>'
-      + '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
-    persons.forEach(function(p) {
-      out += '<div class="cmp-col"><p class="cmp-col-name">' + escapeHTML(personName(p)) + '</p>';
-      if (resolved[ri][p] === undefined) {
-        out += '<p class="cmp-col-empty">— no code —</p>';
-      } else if (!resolved[ri][p]) {
-        out += '<p class="cmp-col-empty">not found</p>';
-      } else {
-        var html = t.render(resolved[ri][p]);
-        out += html || '<p class="cmp-col-empty">unreadable</p>';
-      }
+    var tk = toolKeyOf(ri);
+    out += '<div class="cmp-test"><p class="cmp-test-title">' + t.title + '</p>';
+    var pe = peopleFor(resolved, ri, persons);
+
+    // ---- T1: overlay radar + interpretation ----
+    if (tk === 't1' && pe.length >= 2 && pe[0].data.V !== undefined) {
+      sharedQuant.push('t1');
+      out += dualRadarT1(pe.map(function(x){ return { name:x.name, r:x.data }; }));
+      if (pe.length === 2) out += interpretT1Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name);
+    }
+    // ---- T2: overlay map + interpretation ----
+    else if (tk === 't2' && pe.length >= 2 && pe[0].data.dom !== undefined) {
+      sharedQuant.push('t2');
+      out += dualMapT2(pe.map(function(x){ return { name:x.name, v:x.data }; }));
+      if (pe.length === 2) out += interpretT2Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name);
+    }
+    // ---- T3: side-by-side bars + light interpretation ----
+    else if (tk === 't3') {
+      out += '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
+      persons.forEach(function(p){
+        out += '<div class="cmp-col"><p class="cmp-col-name">' + escapeHTML(personName(p)) + '</p>';
+        var d = resolved[ri][p];
+        out += d === undefined ? '<p class="cmp-col-empty">— no code —</p>' : (!d ? '<p class="cmp-col-empty">not found</p>' : (t.render(d) || '<p class="cmp-col-empty">unreadable</p>'));
+        out += '</div>';
+      });
       out += '</div>';
-    });
-    out += '</div></div>';
+      if (pe.length === 2 && pe[0].data.A !== undefined) { sharedQuant.push('t3'); out += interpretT3Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name); }
+    }
+    // ---- T4 / T6: individual diagnostics, side by side + framing ----
+    else {
+      out += '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
+      persons.forEach(function(p){
+        out += '<div class="cmp-col"><p class="cmp-col-name">' + escapeHTML(personName(p)) + '</p>';
+        var d = resolved[ri][p];
+        out += d === undefined ? '<p class="cmp-col-empty">— no code —</p>' : (!d ? '<p class="cmp-col-empty">not found</p>' : (t.render(d) || '<p class="cmp-col-empty">unreadable</p>'));
+        out += '</div>';
+      });
+      out += '</div>';
+      out += '<p class="matrix-note" style="text-align:left;margin-top:0.6rem">This is an individual diagnostic, not a compatibility measure — shown side by side for context, not scored against each other.</p>';
+    }
+    out += '</div>';
   });
 
   if (!anyTest) { content.innerHTML = '<p class="empty">No shared tests to compare.</p>'; return; }
+  if (persons.length === 2) out += overallPairNote(sharedQuant, nameA, nameB);
   content.innerHTML = out;
 }
 

@@ -210,9 +210,9 @@
     <p>It does not tell you what to do. It reflects back what you've described. The threshold can be honoured without being crossed.</p>
   </div>
   <div class="meta-row">
-    <div class="meta-item"><strong>Questions</strong>12 + 1 optional</div>
+    <div class="meta-item"><strong>Items</strong>12 + 1 optional</div>
     <div class="meta-item"><strong>Time</strong>6–8 min</div>
-    <div class="meta-item"><strong>Output</strong>Reflection</div>
+    <div class="meta-item"><strong>Format</strong>Reflection</div>
   </div>
   <hr class="rule">
   <div class="body-text">
@@ -708,15 +708,15 @@ function copyShareURL() {
 }
 
 function genCode() {
-  // Shared profile code — reused across all tests so a combined profile can be assembled
+  // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
-    var existing = localStorage.getItem('tdh_profile_code');
+    var existing = localStorage.getItem('tdh_code_t6');
     if (existing && existing.length === 6) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
   for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  try { localStorage.setItem('tdh_code_t6', code); } catch(e) {}
   return code;
 }
 
@@ -807,13 +807,12 @@ function genCode() {
         }
       } catch(e) {}
 
-      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
-        + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + window.savedCode + '</p>'
-        + '<p style="margin:0 0 6px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
-        + (shareURL !== returnURL ? '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Shareable (any device):</p><p><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
-
-      var rEl = document.getElementById('view-results');
-      var rTxt = rEl ? rEl.innerText.replace(/[<>]/g,'') : '';
+      var _emailCode = window.savedCode || '';
+      var codePart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 6px">Your code for this test</p>'
+        + '<p style="font-family:monospace;font-size:28px;letter-spacing:8px;color:#f0d878;background:#0e0e0b;border:1px solid rgba(212,169,62,.35);padding:14px 18px;margin:0 0 8px;text-align:center">' + _emailCode + '</p>'
+        + '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:0 0 14px">Keep this code. Enter it on the profile page to revisit this result, or alongside your other codes to build a combined profile or compare with a partner.</p>'
+        + '<p style="font-family:monospace;color:#c8c3bb;font-size:12px;margin:0 0 4px">Direct link to this result:</p>'
+        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:13px">' + shareURL + '</a></p>';
       var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + rTxt.substring(0, 3000) + '</p>';
 
       var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;

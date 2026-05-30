@@ -114,10 +114,13 @@
   .btn-reveal { width:100%; font-family:'Inconsolata',monospace; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--black); background:var(--gold); border:none; padding:0.9rem; cursor:pointer; margin-top:1rem; transition:background 0.2s; }
   .btn-reveal:hover { background:var(--off-white); }
   /* profile axis bars */
-  .pax-row { margin-bottom:1.1rem; }
-  .pax-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
-  .pax-track { position:relative; height:3px; background:rgba(212,169,62,0.2); }
-  .pax-mark { position:absolute; top:50%; width:12px; height:12px; border-radius:50%; background:var(--gold); transform:translate(-50%,-50%); }
+  .pax-row { margin-bottom:1.2rem; }
+  .pax-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; transition:color 0.4s ease; }
+  .pax-ends .lean { color:var(--gold); }
+  .pax-track { position:relative; height:10px; border-radius:6px; background:linear-gradient(90deg, rgba(212,169,62,0.18), rgba(212,169,62,0.05) 50%, rgba(212,169,62,0.18)); }
+  .pax-center { position:absolute; left:50%; top:-3px; bottom:-3px; width:1px; background:rgba(212,169,62,0.5); transform:translateX(-50%); }
+  .pax-fill { position:absolute; top:0; bottom:0; left:50%; width:0; background:linear-gradient(90deg,var(--gold-dim),var(--gold)); border-radius:6px; transition:left 0.9s ease, width 0.9s ease; }
+  .pax-mark { position:absolute; top:50%; width:16px; height:16px; border-radius:50%; background:var(--gold); transform:translate(-50%,-50%); box-shadow:0 0 0 4px rgba(212,169,62,0.16), 0 0 12px rgba(212,169,62,0.5); }
   .card-modal-overlay { display:none; position:fixed; inset:0; z-index:1000; background:rgba(8,8,6,0.94); flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; gap:1rem; }
   .card-modal-overlay.open { display:flex; }
   .card-modal-overlay img { max-width:100%; max-height:78vh; display:block; border:1px solid var(--rule); }
@@ -420,7 +423,7 @@
   </div>
 
   <div class="meta-row">
-    <div class="meta-item"><strong>Prompts</strong>14</div>
+    <div class="meta-item"><strong>Items</strong>14 prompts</div>
     <div class="meta-item"><strong>Time</strong>12–18 min</div>
     <div class="meta-item"><strong>Format</strong>Open text</div>
   </div>
@@ -1198,8 +1201,10 @@ function showProfile() {
       + '<hr class="rule"><p class="section-lbl">Where you placed yourself</p>'
       + AXES.map(function(a) {
           var val = v[a.k];
-          return '<div class="pax-row"><div class="pax-ends"><span>' + a.l + '</span><span>' + a.r + '</span></div>'
-            + '<div class="pax-track"><div class="pax-mark" style="left:' + val + '%"></div></div></div>';
+          var fl = val >= 50 ? 'left:50%;width:' + (val-50) + '%' : 'left:' + val + '%;width:' + (50-val) + '%';
+          var lL = val < 45 ? ' lean' : '', rL = val > 55 ? ' lean' : '';
+          return '<div class="pax-row"><div class="pax-ends"><span class="l' + lL + '">' + a.l + '</span><span class="r' + rL + '">' + a.r + '</span></div>'
+            + '<div class="pax-track"><div class="pax-center"></div><div class="pax-fill" style="' + fl + '"></div><div class="pax-mark" style="left:' + val + '%"></div></div></div>';
         }).join('');
   }
   document.getElementById('profile-doc').innerHTML = buildProfile() + axesHTML;
@@ -1386,15 +1391,15 @@ function copyShareURL() {
 }
 
 function genCode() {
-  // Shared profile code — reused across all tests so a combined profile can be assembled
+  // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
-    var existing = localStorage.getItem('tdh_profile_code');
+    var existing = localStorage.getItem('tdh_code_t2');
     if (existing && existing.length === 6) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
   for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  try { localStorage.setItem('tdh_code_t2', code); } catch(e) {}
   return code;
 }
 
@@ -1508,31 +1513,13 @@ document.getElementById('btn-start').addEventListener('click', () => {
       var returnURL = window.location.href.split('?')[0] + '?code=' + window.savedCode;
       var shareURL = (typeof makeShareURL === 'function') ? makeShareURL() : returnURL;
 
-      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
-        + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + window.savedCode + '</p>'
-        + '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Open your full profile (any device):</p>'
-        + '<p style="word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>';
-
-      // Written profile (read the actual rendered profile, not a non-existent results view)
-      var pEl = document.getElementById('profile-doc');
-      var pTxt = pEl ? pEl.innerText.replace(/[<>]/g,'') : '';
-      var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + pTxt.substring(0, 4000) + '</p>';
-
-      // Axis placements as a labelled bar table
-      var placements = '';
-      try {
-        var vv = window.__axisVals || {};
-        placements = '<p style="font-family:monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#d4a93e;margin:20px 0 10px">Where you placed yourself</p>';
-        AXES.forEach(function(a){
-          var val = Math.round(vv[a.k] != null ? vv[a.k] : 50);
-          placements += '<table role="presentation" width="100%" style="border-collapse:collapse;margin:0 0 8px"><tr>'
-            + '<td style="font-family:monospace;font-size:11px;color:#c8c3bb;width:34%">' + a.l + '</td>'
-            + '<td style="width:32%"><div style="height:4px;background:rgba(212,169,62,.18);position:relative"><div style="position:absolute;left:' + val + '%;top:-4px;width:10px;height:10px;border-radius:50%;background:#d4a93e;transform:translateX(-50%)"></div></div></td>'
-            + '<td style="font-family:monospace;font-size:11px;color:#c8c3bb;width:34%;text-align:right">' + a.r + '</td>'
-            + '</tr></table>';
-        });
-      } catch(e) {}
-
+      var _emailCode = window.savedCode || '';
+      var shareURL = (typeof makeShareURL==='function') ? makeShareURL() : (window.location.href.split('?')[0] + '?code=' + _emailCode);
+      var codePart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 6px">Your code for this test</p>'
+        + '<p style="font-family:monospace;font-size:28px;letter-spacing:8px;color:#f0d878;background:#0e0e0b;border:1px solid rgba(212,169,62,.35);padding:14px 18px;margin:0 0 8px;text-align:center">' + _emailCode + '</p>'
+        + '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:0 0 14px">Keep this code. Enter it on the profile page to revisit this result, or alongside your other codes to build a combined profile or compare with a partner.</p>'
+        + '<p style="font-family:monospace;color:#c8c3bb;font-size:12px;margin:0 0 4px">Direct link to this profile:</p>'
+        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:13px">' + shareURL + '</a></p>';
       var body = resultPart
         + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + placements
         + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;

@@ -177,24 +177,37 @@
     color: var(--gold); text-align: right; margin-top: 0.25rem;
   }
 
-  /* toward/away axis */
-  .axis-wrap { position: relative; margin-top: 0.3rem; }
-  .axis-track {
-    height: 1px; background: var(--rule); position: relative; margin: 0.7rem 0;
+  /* orientation gauge (bidirectional — fills outward from centre toward a pole) */
+  .axis-wrap { position: relative; margin-top: 0.4rem; }
+  .orient-ends {
+    display: flex; justify-content: space-between;
+    font-family: 'Inconsolata', monospace; font-size: 0.46rem;
+    color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 0.55rem; transition: color 0.5s ease;
+  }
+  .orient-ends span.lean { color: var(--gold); }
+  .orient-track {
+    position: relative; height: 10px; border-radius: 6px; overflow: visible;
+    background: linear-gradient(90deg, rgba(212,169,62,0.18), rgba(212,169,62,0.05) 50%, rgba(212,169,62,0.18));
+  }
+  .orient-center {
+    position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px;
+    background: rgba(212,169,62,0.55); transform: translateX(-50%);
+  }
+  .orient-fill {
+    position: absolute; top: 0; bottom: 0; width: 0; left: 50%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 6px; transition: left 0.9s ease, width 0.9s ease;
   }
   .axis-marker {
-    position: absolute; top: 50%; transform: translate(-50%, -50%);
-    width: 8px; height: 8px; background: var(--gold); border-radius: 50%;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 16px; height: 16px; background: var(--gold); border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(212,169,62,0.16), 0 0 12px rgba(212,169,62,0.5);
     transition: left 0.9s ease;
   }
-  .axis-ends {
-    display: flex; justify-content: space-between;
-    font-family: 'Inconsolata', monospace; font-size: 0.4rem;
-    color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
-  }
   .axis-value {
-    font-family: 'Inconsolata', monospace; font-size: 0.75rem;
-    color: var(--gold); text-align: right; margin-top: 0.2rem;
+    font-family: 'Inconsolata', monospace; font-size: 0.72rem;
+    color: var(--gold); text-align: right; margin-top: 0.45rem; letter-spacing: 0.08em;
   }
 
   /* reframe + distinction */
@@ -363,9 +376,9 @@
   </div>
 
   <div class="meta-row">
-    <div class="meta-item"><strong>Questions</strong>20</div>
+    <div class="meta-item"><strong>Items</strong>20 questions</div>
     <div class="meta-item"><strong>Time</strong>6–8 min</div>
-    <div class="meta-item"><strong>Scale</strong>1–7 Likert</div>
+    <div class="meta-item"><strong>Format</strong>1–7 Likert</div>
   </div>
 
   <hr class="rule">
@@ -467,8 +480,12 @@
     </div>
     <div class="dim-visual">
       <div class="axis-wrap">
-        <div class="axis-ends"><span>Away</span><span>Toward</span></div>
-        <div class="axis-track"><div class="axis-marker" id="axis-B" style="left:50%"></div></div>
+        <div class="orient-ends"><span id="orient-l">Away</span><span id="orient-r">Toward</span></div>
+        <div class="orient-track">
+          <div class="orient-center"></div>
+          <div class="orient-fill" id="orient-fill-B"></div>
+          <div class="axis-marker" id="axis-B"></div>
+        </div>
       </div>
       <div class="axis-value" id="val-B"></div>
     </div>
@@ -642,15 +659,15 @@ async function saveToProfile(code, tool, obj) {
 }
 
 function genCode() {
-  // Shared profile code — reused across all tests so a combined profile can be assembled
+  // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
-    var existing = localStorage.getItem('tdh_profile_code');
+    var existing = localStorage.getItem('tdh_code_t3');
     if (existing && existing.length === 6) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
   for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  try { localStorage.setItem('tdh_code_t3', code); } catch(e) {}
   return code;
 }
 
@@ -855,7 +872,17 @@ function showResults(sc) {
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.getElementById('bar-A').style.width = sc.A + '%';
     document.getElementById('pct-A').textContent  = sc.A + ' / 100';
-    document.getElementById('axis-B').style.left  = sc.B + '%';
+    (function(){
+      var b = sc.B;
+      var mk = document.getElementById('axis-B'); if (mk) mk.style.left = b + '%';
+      var fl = document.getElementById('orient-fill-B');
+      if (fl) {
+        if (b >= 50) { fl.style.left = '50%'; fl.style.width = (b - 50) + '%'; }
+        else { fl.style.left = b + '%'; fl.style.width = (50 - b) + '%'; }
+      }
+      var L = document.getElementById('orient-l'), R = document.getElementById('orient-r');
+      if (L && R) { L.classList.toggle('lean', b < 45); R.classList.toggle('lean', b > 55); }
+    })();
     document.getElementById('val-B').textContent  = directionShort(sc.B).toUpperCase();
     document.getElementById('bar-C').style.width  = sc.C + '%';
     document.getElementById('pct-C').textContent  = sc.C + ' / 100';
@@ -1184,11 +1211,12 @@ window.__demo = { gender: null, age: null };
 
       var resultPart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 2px">Your confirmation profile</p>' + barsTable;
 
-      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:0 0 6px">Return to your result:</p>'
-        + '<p style="margin:0 0 4px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">Open on this device</a>'
-        + (shareURL !== returnURL ? ' &nbsp;&middot;&nbsp; <a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">Open anywhere</a>' : '') + '</p>'
-        + '<p style="font-family:monospace;color:#6e6a64;font-size:11px;margin:10px 0 0">Result code: ' + window.savedCode + '</p>';
-
+      var _emailCode = window.savedCode || '';
+      var codePart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 6px">Your code for this test</p>'
+        + '<p style="font-family:monospace;font-size:28px;letter-spacing:8px;color:#f0d878;background:#0e0e0b;border:1px solid rgba(212,169,62,.35);padding:14px 18px;margin:0 0 8px;text-align:center">' + _emailCode + '</p>'
+        + '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:0 0 14px">Keep this code. Enter it on the profile page to revisit this result, or alongside your other codes to build a combined profile or compare with a partner.</p>'
+        + '<p style="font-family:monospace;color:#c8c3bb;font-size:12px;margin:0 0 4px">Direct link to this result:</p>'
+        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:13px">' + shareURL + '</a></p>';
       var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:22px 0">' + codePart;
 
       var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:34px 30px">'

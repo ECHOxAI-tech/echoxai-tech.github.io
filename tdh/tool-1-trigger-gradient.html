@@ -449,15 +449,15 @@
   </div>
 
   <div class="intro-body">
-    <p>Desire arrives as confirmation — the experience of feeling like the version of yourself you most want to be, in the presence of another person. That confirmation can arrive through four channels: <em>Visual</em> (appearance, form), <em>Emotional</em> (connection, relational atmosphere), <em>Tactile</em> (touch, physical presence), or <em>Intellectual</em> (framework, quality of mind). Most people have all four active — but in different proportions.</p>
+    <p>Desire arrives as confirmation — the experience of feeling like the version of yourself you most want to be, in the presence of another person. That confirmation can arrive through four channels: <em>Visual</em> (appearance, form), <em>Emotional</em> (connection, relational atmosphere), <em>Tactile</em> (touch, physical presence), or <em>Intellectual</em> (shared sexual understanding, being recognised). Most people have all four active — but in different proportions.</p>
     <p>This tool maps your personal gradient across the four channels and shows which ones carry most of the confirmatory weight for you. It also compares your distribution to the culturally produced average, which heavily overweights the visual channel at the expense of the rest.</p>
     <p>No reading of the book is required. Answer for yourself as you actually are.</p>
   </div>
 
   <div class="meta-row">
-    <div class="meta-item"><strong>Questions</strong>24</div>
-    <div class="meta-item"><strong>Time</strong>5 minutes</div>
-    <div class="meta-item"><strong>Login</strong>None required</div>
+    <div class="meta-item"><strong>Items</strong>24 questions</div>
+    <div class="meta-item"><strong>Time</strong>6–8 min</div>
+    <div class="meta-item"><strong>Format</strong>1–7 Likert</div>
   </div>
 
   <hr class="rule">
@@ -546,7 +546,7 @@
   <p class="section-lbl">Your desire gradient</p>
 
   <div style="display:flex;justify-content:center;margin:0.5rem 0 1.5rem">
-    <svg id="petal-svg" viewBox="-40 0 400 320" width="320" height="280" style="max-width:100%">
+    <svg id="petal-svg" viewBox="-72 0 452 320" width="320" height="280" style="max-width:100%">
       <!-- axes + rings drawn by JS -->
     </svg>
   </div>
@@ -634,7 +634,7 @@ const QUESTIONS = [
   { id:'E2', ch:'E', rev:false, text:'The quality of emotional connection between two people is what makes the room feel charged.' },
   { id:'E3', ch:'E', rev:true,  text:'Sex with someone I have no emotional connection to can be just as charged as sex with someone I love.' },
   { id:'E4', ch:'E', rev:false, text:'When the emotional tone of a relationship shifts, my desire shifts with it almost immediately.' },
-  { id:'E5', ch:'E', rev:false, text:'I am most aroused when I feel that the other person sees who I actually am.' },
+  { id:'E5', ch:'E', rev:false, text:'My desire is strongest when I feel emotionally close to someone — let in, trusted, held.' },
   { id:'E6', ch:'E', rev:false, text:'The desire I feel is inseparable from the relational atmosphere it lives in.' },
   { id:'T1', ch:'T', rev:false, text:'The specific way someone touches me matters more to my desire than how they look.' },
   { id:'T2', ch:'T', rev:false, text:'I can tell within seconds of physical contact whether the desire is real.' },
@@ -642,12 +642,12 @@ const QUESTIONS = [
   { id:'T4', ch:'T', rev:true,  text:'I rarely think about physical sensation when I think about what attracts me to someone.' },
   { id:'T5', ch:'T', rev:false, text:'A specific kind of touch can produce desire faster than any other channel does.' },
   { id:'T6', ch:'T', rev:false, text:'The body\'s response to being held a certain way is, for me, the most reliable signal of what I want.' },
-  { id:'I1', ch:'I', rev:false, text:'I need to understand someone — how they think, what they carry — before I can want them.' },
+  { id:'I1', ch:'I', rev:false, text:'I feel desire most fully when someone recognises the sexual self I most want to be — and treats me as already being it.' },
   { id:'I2', ch:'I', rev:false, text:'The framework or dynamic I share with someone is what generates the charge between us.' },
-  { id:'I3', ch:'I', rev:false, text:'What someone says, how they say it, the structure of their attention — these arouse me directly.' },
-  { id:'I4', ch:'I', rev:true,  text:'I can be powerfully attracted to someone I have not yet had a meaningful conversation with.' },
-  { id:'I5', ch:'I', rev:false, text:'The charge is strongest when I sense that the other person reads the same situation the same way I do.' },
-  { id:'I6', ch:'I', rev:false, text:'I am drawn to specific qualities of mind — precision, depth, the particular way someone thinks — as physically as others are drawn to bodies.' },
+  { id:'I3', ch:'I', rev:false, text:'What arouses me is a shared sexual understanding — that we read the dynamic between us the same way, without having to explain it.' },
+  { id:'I4', ch:'I', rev:true,  text:'I can feel the full charge with someone even when we share no particular understanding of what we are to each other sexually.' },
+  { id:'I5', ch:'I', rev:false, text:'The charge is strongest when the other person reads my desire the way I do, and the meaning of what we are doing is shared.' },
+  { id:'I6', ch:'I', rev:false, text:'Being recognised as a sexual being — having someone grasp what I am reaching for — arouses me as directly as touch arouses others.' },
 ];
 
 const CH_NAME  = { V:'Visual', E:'Emotional', T:'Tactile', I:'Intellectual' };
@@ -659,21 +659,21 @@ const PRIMARY_MAIN = {
   V: 'Visual confirmation carries the most weight for you — appearance, form, and how someone looks are the primary channel through which desire arrives. When someone activates the aspirational self visually, that is the confirmation. The visual channel is load-bearing for you, not decorative.',
   E: 'Emotional confirmation carries the most weight for you — the relational atmosphere is the primary channel through which desire arrives. The quality of what exists between two people is the ground on which the aspirational self becomes real. Without the right emotional register, the confirmation does not occur.',
   T: 'Tactile confirmation carries the most weight for you — touch is the primary channel through which the aspirational self is confirmed. Physical contact is not a consequence of desire already formed; it is the mechanism through which desire arrives. The body reads what the eye and mind have not yet processed.',
-  I: 'Intellectual confirmation carries the most weight for you — the quality of someone\'s mind, how they think, the framework they carry, is the primary channel through which the aspirational self is confirmed. Desire arrives through comprehension and recognition. The book describes this distribution from inside.'
+  I: 'Intellectual confirmation carries the most weight for you — not someone\'s intelligence, but a shared sexual understanding. Being recognised as the sexual self you aspire to be, and sharing a reading of the dynamic between you, is the primary channel through which desire is confirmed. It arrives through recognition. The book describes this distribution from inside.'
 };
 
 const SECONDARY_FRAG = {
   V: 'the visual element is present — how someone looks does matter — but it does not generate desire independently',
   E: 'emotional context amplifies what already exists; you are not indifferent to the relational atmosphere, but it does not have to be established before desire can arrive',
   T: 'physical presence and the quality of touch are real and meaningful, but they follow rather than lead in your gradient',
-  I: 'intellectual connection deepens whatever desire arrives through other channels, but you do not require it in order to want someone'
+  I: 'a shared sexual understanding deepens whatever desire arrives through other channels, but you do not require it in order to want someone'
 };
 
 const LOW_FRAG = {
   V: 'how someone looks carries less weight in your distribution — you can want someone whose appearance is unremarkable to you',
   E: 'the relational atmosphere is not required — you can want someone you do not have an established emotional connection with',
   T: 'the body\'s specific response to physical sensation is not the primary register in which desire speaks to you',
-  I: 'intellectual connection is not required for desire to arrive — the specific quality of how someone thinks does not need to be present first'
+  I: 'a shared sexual understanding is not required for desire to arrive — you do not need to be recognised at the level of the dynamic first'
 };
 
 const READING_RECS = {
@@ -740,15 +740,15 @@ async function saveToProfile(code, tool, obj) {
 }
 
 function genCode() {
-  // Shared profile code — reused across all tests so a combined profile can be assembled
+  // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
-    var existing = localStorage.getItem('tdh_profile_code');
+    var existing = localStorage.getItem('tdh_code_t1');
     if (existing && existing.length === 6) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
   for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  try { localStorage.setItem('tdh_code_t1', code); } catch(e) {}
   return code;
 }
 
@@ -1376,8 +1376,12 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       var resultPart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 2px">Your trigger gradient</p>'
         + barsTable;
 
-      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:0 0 6px">Your result link:</p>'
-        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>';
+      var _emailCode = window.savedCode || '';
+      var codePart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 6px">Your code for this test</p>'
+        + '<p style="font-family:monospace;font-size:28px;letter-spacing:8px;color:#f0d878;background:#0e0e0b;border:1px solid rgba(212,169,62,.35);padding:14px 18px;margin:0 0 8px;text-align:center">' + _emailCode + '</p>'
+        + '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:0 0 14px">Keep this code. Enter it on the profile page to revisit this result, or alongside your other codes to build a combined profile or compare with a partner.</p>'
+        + '<p style="font-family:monospace;color:#c8c3bb;font-size:12px;margin:0 0 4px">Direct link to this result:</p>'
+        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:13px">' + shareURL + '</a></p>';
 
       var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:22px 0">' + codePart;
 
