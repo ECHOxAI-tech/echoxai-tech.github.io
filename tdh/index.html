@@ -459,7 +459,7 @@
     <a href="./tool-2-aspirational-self.html" class="tool-item">
       <div class="tool-inner">
         <span class="tool-bullet">●</span>
-        <span class="tool-name">Aspirational Self Profile</span>
+        <span class="tool-name">Aspirational Sexual Self Profile</span>
         <span class="tool-arrow">→</span>
       </div>
       <div class="tool-desc">A structured space to describe the version of yourself you most want to inhabit. You already know it. <span class="tool-meta">15 prompts · 12 min</span></div>
@@ -537,17 +537,17 @@
   <span class="sep">·</span>
   <span>© 2026</span>
   <span class="sep">·</span>
-  <a href="#" class="result-code-link" id="open-code-modal">Return to a saved result →</a>
+  <a href="#" class="result-code-link" id="open-code-modal">See your combined profile →</a>
 </footer>
 
 <!-- Result code modal -->
 <div class="modal-overlay" id="code-modal" role="dialog" aria-modal="true" aria-label="Enter result code">
   <div class="modal">
-    <h2>Return to a saved result</h2>
-    <p>When you save a result in any of the tools, you receive a six-character code. Enter it here to retrieve your result on this device. No account required.</p>
+    <h2>Your combined profile</h2>
+    <p>Every test you complete on this device shares one six-character code, shown with your results. Enter it here to see all your completed tests gathered in a single overlapping profile. No account required.</p>
     <input type="text" id="result-code-input" placeholder="AB1C2D" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false">
     <div class="modal-actions">
-      <button class="modal-submit" id="code-submit">Retrieve result</button>
+      <button class="modal-submit" id="code-submit">See profile</button>
       <button class="modal-cancel" id="close-code-modal">Cancel</button>
     </div>
   </div>
@@ -592,7 +592,7 @@
   submit.addEventListener('click', () => {
     const code = input.value.trim();
     if (code.length === 6) {
-      window.location.href = `./result.html?code=${code}`;
+      window.location.href = `./profile.html?code=${code}`;
     } else {
       input.style.borderColor = 'rgba(184,150,62,0.6)';
       setTimeout(() => { input.style.borderColor = ''; }, 800);

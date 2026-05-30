@@ -102,17 +102,29 @@
 
 
   @media print {
-    body { background: white; color: #1a1a1a; max-width: none; padding: 2cm; }
-    .protocol-doc { color: #1a1a1a; }
-    .proto-section-title { color: #7a6128; }
-    .ritual-name { color: #1a1a1a; }
-    .ritual-meta-row strong { color: #7a6128; }
-    #view-intro, #view-survey, .protocol-actions, .retake-link, .result-disclaimer { display: none !important; }
+    body { background: white; color: #1a1a1a; max-width: none; padding: 1.6cm 2cm; font-family: Georgia, 'Times New Roman', serif; }
+    .protocol-doc { color: #1a1a1a; font-size: 12pt; line-height: 1.6; }
+    .proto-section-title { color: #8a6d2a; font-size: 10pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 16pt; }
+    .ritual-name { color: #1a1a1a; font-size: 14pt; }
+    .ritual-meta-row strong { color: #8a6d2a; }
+    .ritual-block { border-left: 2px solid #c9a84c; padding-left: 12pt; }
+    .rule, hr { border-top: 1px solid #ccc; }
+    .section-lbl { color: #8a6d2a; }
+    .page-header, #view-intro, #view-survey, .protocol-actions, .retake-link, .result-disclaimer, .code-box, .code-hint, .send-opts, .send-row, .send-feedback { display: none !important; }
     #view-protocol { display: block !important; }
-    .ritual-block { border-left: 1px solid #c9a84c; }
-    .section-lbl { color: #7a6128; }
+    #view-protocol .section-lbl { display: block !important; }
   }
   @media (max-width: 480px) { html { font-size: 22px; } body { padding: 2rem 1.25rem 3rem; } }
+
+  .btn-outline {
+    display: block; width: 100%;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); background: transparent;
+    border: 1px solid rgba(212,169,62,0.4); padding: 0.8rem 1rem;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .btn-outline:hover { border-color: var(--gold); background: rgba(212,169,62,0.06); }
 
 
 
@@ -191,6 +203,7 @@
     <p>A dynamic doesn't only exist in explicit encounters — it exists in the ordinary hours too, or it doesn't really exist at all. A specific way of being greeted at the door. A first message each morning that carries a particular register. A gesture in passing that only the two of you read. These small daily acts are what keep the framework real across time.</p>
     <p>This tool generates a personalised daily protocol package based on your living situation, privacy constraints, the posture you're designing from, and the level of explicitness that fits your life. It works for established dynamics, newly forming ones, distance relationships, and solo practitioners whose framework is internal.</p>
     <p>The output is a starting draft. Take what fits. Leave what doesn't.</p>
+    <p style="font-size:0.82rem;color:var(--muted);">This is not only the book's claim. Relationship research finds that couples with deliberate, mutually meaningful rituals report higher satisfaction and commitment than those without — and that the effect depends on both partners holding the ritual as meaningful rather than merely performing it. The same studies find structured power-exchange practitioners are no more likely to have psychological difficulties, and often report higher relationship satisfaction. The condition, in every account, is the same: explicit agreement, real consent, and care.</p>
   </div>
   <div class="meta-row">
     <div class="meta-item"><strong>Questions</strong>10</div>
@@ -356,6 +369,198 @@ const DAILY_LIBRARY = [
     confirms:'That the framework exists as internal architecture, independent of the other person\'s presence.',
     living:'any', privacy:3, explMin:4, explMax:4, posture:'any', channel:['I'],
   },
+  {
+    id:'three_reports', name:'The Three Reports',
+    desc:'A daily rhythm of three contacts — a morning greeting that names the day\'s plan, a midday status update against that plan, and a goodnight, often with a photograph from bed. The function is not surveillance for its own sake. To be in a position to direct, interfere, or simply hold, the dominant must first know what is happening. The reports are the low-maintenance upkeep of a framework across distance — where it is, if anything, needed more than when you share a room.',
+    when:'Three fixed points: morning, midday, before sleep.',
+    form:'Morning: a greeting and the shape of the day. Midday: where things stand against it. Night: a goodnight, often a photo from where the submissive will sleep — so the dominant knows where, and in what state, they rest.',
+    confirms:'That the framework is continuously informed, and therefore continuously able to act, whether or not it chooses to.',
+    living:'dist', privacy:2, explMin:2, explMax:3, posture:'sub', channel:['I','E'],
+  },
+  {
+    id:'the_unshoeing', name:'The Unshoeing',
+    desc:'On the dominant\'s arrival home, the submissive removes their shoes. A small, domestic, entirely deniable act — and precisely because it is ordinary, it carries the dynamic into the texture of shared life rather than quarantining it to the bedroom.',
+    when:'At the dominant\'s arrival home.',
+    form:'Kneel or crouch; remove the shoes; set them in their place. No ceremony beyond the act itself.',
+    confirms:'That service lives in the ordinary, and that the threshold home is also a threshold into the framework.',
+    living:'coloc', privacy:1, explMin:1, explMax:2, posture:'sub', channel:['T','E'],
+  },
+  {
+    id:'the_carrying', name:'The Carrying',
+    desc:'In public, the dominant carries the heavy load — the grocery bags, the cases, the weight. To an onlooker it reads as ordinary courtesy. Within the frame it is the dominant\'s role made physical: the one who takes the weight is the one who holds the position.',
+    when:'Whenever there is something heavy to carry, in public or shared space.',
+    form:'The dominant takes the load without discussion. The submissive lets them.',
+    confirms:'That the dynamic is legible to the two of you even in the most public, most ordinary moments.',
+    living:'coloc', privacy:2, explMin:2, explMax:4, posture:'dom', channel:['T','E'],
+  },
+  {
+    id:'the_secret_sign', name:'The Secret Sign',
+    desc:'An agreed, invisible signal — a gesture, a touch, a word folded into ordinary speech — that communicates arousal or the wish to confirm the dynamic, in public, without anyone else perceiving it. The charge is in the secrecy: a private channel running underneath the social surface.',
+    when:'In public, at any moment either of you wishes to signal.',
+    form:'A specific, pre-agreed sign. Small enough to pass unnoticed; precise enough to be unmistakable between you.',
+    confirms:'That the framework runs continuously beneath ordinary life, and that the two of you share a channel no one else can read.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'any', channel:['T','E'],
+  },
+  {
+    id:'the_clubbing', name:'Going Out Together',
+    desc:'An evening out with friends — clubbing, dinner, a party — held consciously inside the framework without a single overt act. The dynamic is confirmed non-sexually: in how attention is paid, in who defers and who leads in small invisible ways, in the secret sign passed across a crowded room. Proof that the aspirational self is carried into social life, not left at home.',
+    when:'Social evenings out, as they arise.',
+    form:'Before going: a brief agreement on how the frame will be held tonight. During: the small, deniable confirmations — a touch, a deferral, the sign. The framework is present and no observer would name it.',
+    confirms:'That the dynamic survives and is confirmed in full social daylight, without performance.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'any', channel:['E','V'],
+  },
+  {
+    id:'the_training', name:'The Training',
+    desc:'A named skill or capacity the two of you decide should be trained — and the scheduled lectures, practice, and follow-up that pursue it. The follow-up may take the form of a test. The point is almost never the goal. To be in training toward a sexual or relational end is usually more confirming of the aspirational self than arriving at it: the process is the heat. Working together toward something is the something.',
+    when:'Scheduled sessions, with follow-up at agreed intervals.',
+    form:'Decide what is to be trained. Schedule the work. Follow up — a review, a test, a demonstration. Keep the emphasis on staying in process, not on completion.',
+    confirms:'That the dynamic is generative — that you are building something together, and the building is itself the confirmation.',
+    living:'any', privacy:2, explMin:2, explMax:3, posture:'any', channel:['I','E'],
+  },
+  {
+    id:'the_canon', name:'The Shared Reading',
+    desc:'A reading load drawn from the canon — assigned by the dominant, or read in parallel — followed by discussion. The text becomes shared ground; the conversation about it is where the dynamic thinks out loud. Reading the same pages and talking about them is its own quiet protocol.',
+    when:'A standing reading rhythm — weekly, or per chapter — with discussion to follow.',
+    form:'A shared or assigned text. Read on schedule. Then talk — not a book report, but a conversation in which the framework metabolises what was read.',
+    confirms:'That the framework has an intellectual life, and that the two of you are forming each other\'s minds, not only each other\'s bodies.',
+    living:'any', privacy:2, explMin:3, explMax:4, posture:'any', channel:['I'],
+  },
+  {
+    id:'the_shared_tests', name:'The Shared Tests',
+    desc:'Completing these very instruments — the gradient, the aspirational self, the attachment profile — and sharing the results with each other. The results become material: a map each of you can read, a thing to discuss, a way of seeing the other\'s architecture and your own.',
+    when:'Periodically — when you want fresh material to read each other by.',
+    form:'Each completes a test. Share the results. Discuss what they show, where they surprise, where they confirm what you already knew.',
+    confirms:'That the two of you are studying the dynamic together, with shared instruments and a shared language.',
+    living:'any', privacy:2, explMin:2, explMax:3, posture:'any', channel:['I','E'],
+  },
+  {
+    id:'the_themed_night', name:'The Themed Night',
+    desc:'A recurring night given a specific theme, with the two of you taking turns to prepare it — the playlist, the material, the shape of the evening. The preparation is part of the protocol: choosing for the other, anticipating their response, building the night as an offering.',
+    when:'A recurring slot — weekly or monthly — with alternating preparation.',
+    form:'Agree a theme. One of you prepares: the playlist, the viewing, the arrangement. Next time, the other prepares. The turn-taking is the structure.',
+    confirms:'That desire is curated and offered, and that preparing for the other is itself an act inside the framework.',
+    living:'any', privacy:1, explMin:1, explMax:2, posture:'any', channel:['V','E'],
+  },
+  {
+    id:'the_authored_encounter', name:'The Authored Encounter',
+    desc:'When a submissive carries a desire that points outside the dyad — a wish to be with a body other than the dominant\'s — the framework does not require that the desire be refused, nor that it be granted in a way that displaces the dominant. There is a third path: the dominant authors the encounter. The desire is fulfilled entirely by the dominant\'s design — invited, arranged, framed, and overseen by them. The third party is present on the dominant\'s invitation and under their direction; the submissive receives what they wanted as a gift the dominant chose to give. Handled this way, an experience that could have threatened the frame instead deepens it: the submissive is more fulfilled, and the dominant is confirmed more completely than refusal could ever have managed — because they remained the architect of the other\'s pleasure. Control is exercised through orchestration, not prohibition.',
+    when:'Only when the desire is genuine, mutually wanted, and the frame is secure enough to hold it. Never improvised.',
+    form:'The dominant takes the wish and makes it their own project. They decide whether, who, when, and how. The third party is briefed that they are present at the dominant\'s invitation and act under their direction. The dominant arranges the scene so that they remain its author throughout — present, orchestrating, able to pause or step the submissive aside at will. The submissive receives the encounter as something designed and given, not negotiated away.',
+    confirms:'That the dominant\'s authority is large enough to contain even a desire that points elsewhere — and that fulfilling the other, on the dominant\'s own terms, is the most complete confirmation of the orientation there is.',
+    living:'coloc', privacy:3, explMin:4, explMax:4, posture:'dom', channel:['V','E','T'],
+  },
+  {
+    id:'the_witnessed_task', name:'The Witnessed Task',
+    desc:'The submissive completes a chosen task — an exercise, a piece of work, a discipline — while the dominant simply watches, without intervening. The watching is the whole of it. To be observed performing well, by the one whose regard matters, confirms the aspirational self more than any correction could.',
+    when:'Whenever there is a task worth witnessing.',
+    form:'The submissive performs; the dominant attends, fully present, and says little. Completion is acknowledged with a look, a word, nothing more.',
+    confirms:'That attention itself is the reward, and that being seen doing well is its own confirmation.',
+    living:'any', privacy:2, explMin:1, explMax:3, posture:'any', channel:['V','E'],
+  },
+  {
+    id:'the_kept_object', name:'The Kept Object',
+    desc:'A single object — worn, carried, or kept close — that silently encodes the dynamic: a ring, a cord, a token with no public meaning. It says nothing to anyone else and everything to the two of you. The frame travels wherever the object goes.',
+    when:'Worn or carried continuously, or on agreed occasions.',
+    form:'Choose the object together, or let the dominant choose it. It is worn or kept without announcement. Its presence is a private, continuous confirmation.',
+    confirms:'That the framework has a material anchor, present even in total absence of the other.',
+    living:'any', privacy:1, explMin:1, explMax:2, posture:'any', channel:['T'],
+  },
+  {
+    id:'the_worn_symbol', name:'The Worn Symbol',
+    desc:'A visible marker of the dynamic that carries two forms — one for private or high-protocol settings, one discreet enough for ordinary life. Practitioners often keep a full symbol for home and an everyday variant for the world: a heavy collar at home becomes a fine chain at a family dinner; to everyone else it is jewellery, to the two of you it is the same vow in a lower register. The marker holds the frame across contexts without ever announcing it.',
+    when:'Worn continuously, switching form by context — high-protocol at home, discreet in public.',
+    form:'Agree two forms of one symbol: the explicit version for private or formal settings, and a quiet everyday version for vanilla spaces. The submissive moves between them as the context requires; the meaning does not change, only its legibility.',
+    confirms:'That the dynamic persists at full strength even where it cannot be shown — and that the same vow can be carried loud or quiet without weakening.',
+    living:'any', privacy:2, explMin:1, explMax:3, posture:'sub', channel:['T','V'],
+  },
+  {
+    id:'the_standing_order', name:'The Standing Order',
+    desc:'A single instruction that holds until revoked — not repeated, not renegotiated each day. The submissive carries it as a continuous condition of being, and the dominant need not restate it for it to bind. The power is in its permanence: it is simply true now, part of the architecture rather than the day.',
+    when:'Issued once; remains in force until the dominant lifts it.',
+    form:'The dominant sets one clear, sustainable condition — small enough to live with indefinitely. It is not mentioned again. It holds because it was said once, by the one entitled to say it.',
+    confirms:'That the dominant\'s word does not expire, and that the submissive lives continuously inside it.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'sub', channel:['I','E'],
+  },
+  {
+    id:'the_correction', name:'The Correction',
+    desc:'When the submissive falls short of an agreed standard, the dominant names it — precisely, without heat, and without letting it pass. The correction is not punishment; it is the proof that the standard is real and that the dominant is paying close enough attention to notice the gap. To be corrected well is to be taken seriously.',
+    when:'When a standard has genuinely been missed — not manufactured.',
+    form:'Name the specific shortfall plainly. State what was expected. Let the submissive feel the weight of the standard mattering. Then it is closed — no lingering, no withdrawal of regard.',
+    confirms:'That the standard is real, that attention is constant, and that being held to it is a form of being valued.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'any', channel:['E','I'],
+  },
+  {
+    id:'the_offering', name:'The Offering',
+    desc:'The submissive prepares something — a meal, a space, an act of care — entirely for the dominant, with attention to exactly what that person prefers rather than to convention. The value is in the precision: not "something nice," but the right thing, chosen because the submissive knows them.',
+    when:'On chosen occasions, or as a standing rhythm.',
+    form:'The submissive observes what the dominant actually wants — not the generic version — and provides exactly that. The dominant receives it as their due, and notices the precision.',
+    confirms:'That service is intelligent and specific, and that being known well enough to be served precisely is its own confirmation for both.',
+    living:'coloc', privacy:2, explMin:1, explMax:3, posture:'sub', channel:['T','E'],
+  },
+  {
+    id:'the_boots', name:'The Boots',
+    desc:'When the dominant comes home and the two are alone, the submissive comes to the door and helps remove their boots. That is all — nothing more. Anyone watching would see only a partner helping with shoes. Inside the gesture, the whole framework is present: someone moving toward the dominant rather than continuing with the ordinary, the day\'s flat-equality civilization shed at the threshold along with the boots. The boots come off; the dynamic comes on. Every time, without a scene.',
+    when:'At the dominant\'s arrival home, when the two are alone.',
+    form:'Move toward the door, not away. Kneel and remove the boots — a service the dominant could perform alone and does not need performed. No ceremony. Just the boots, and the one who moved toward the door.',
+    confirms:'That the hierarchy is confirmed without speech, written into the ordinary Tuesday rather than reserved for the scene.',
+    living:'coloc', privacy:1, explMin:1, explMax:2, posture:'sub', channel:['T','E'],
+  },
+  {
+    id:'the_request', name:'The Request Protocol',
+    desc:'A way for the submissive to ask — and to decline — without leaving the frame. A humble "please Sir" is enough; nothing elaborate, nothing staged. And inside the same protocol, a no is also possible: "Can we take a break, please Sir." The dominant who grants it feels their authority clarified, not diminished, because the request arrived inside the frame — the asking is itself the acknowledgment of who has authority to grant. The dynamic that cannot contain the submissive\'s actual life is only a performance of the dynamic.',
+    when:'Whenever the submissive needs to ask for something, or to ask for relief.',
+    form:'The request is made in the agreed form of address, in the posture of asking rather than demanding — "please Sir." A break can be requested the same way. The framework is present in the asking itself; the dominant receives it as the frame working, not breaking.',
+    confirms:'That the frame is large enough for the submissive to be a whole person inside it — needs intact, reality intact.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'sub', channel:['E','I'],
+  },
+  {
+    id:'the_distress_signal', name:'The Single Signal',
+    desc:'One agreed thing — a word, a gesture — that the submissive can always reach, even overwhelmed, that says: I am here but I cannot reach the framework right now. Stress narrows available behaviour; a protocol that demands precision at the exact moment precision is neurologically unavailable has not been built deep enough. This single accessible signal is not a collapse of the hierarchy. It is the hierarchy\'s provision for the human reality of the person carrying it.',
+    when:'Reserved for the hardest moments — overwhelm, rupture, the charge gone quiet.',
+    form:'Agree one signal simple enough to survive stress. When the dominant receives it, they read it as the protocol working at its designed depth — not as defection — and simplify accordingly.',
+    confirms:'That the dynamic was designed all the way down to the hardest moment, not only for the moments that ask nothing.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'sub', channel:['E'],
+  },
+  {
+    id:'the_shared_lens', name:'The Shared Reading of the World',
+    desc:'Two people in a café. A striking person walks in. The glance between the dominant and the submissive that acknowledges, without a word, what both of them see — a frequency, not a sentence. It confirms the lens is still shared, that the framework reads the world the same way through both of them, and that it is still alive between them. Among the most powerful of the small rituals precisely because nothing visible happens.',
+    when:'In public, whenever the world offers something you both register.',
+    form:'No words. A look, held a beat longer than ordinary, that says: I saw it too, and we see it the same way. A private signal inside a public day.',
+    confirms:'That the framework is a shared lens on the world, not only a private arrangement behind closed doors.',
+    living:'any', privacy:2, explMin:2, explMax:4, posture:'any', channel:['V','E'],
+  },
+  {
+    id:'the_inspection', name:'The Inspection',
+    desc:'The deliberate practice of being measured — looked at completely, evaluated against a standard, found wanting in some places and extraordinary in others, and met with the gaze that does not look away. This is not the soft seeing that decides in advance to find you beautiful; that is kindness, not intimacy. To be measured by someone who believes meeting the standard is possible — a standard in service of your own aspirational self — is almost entirely unavailable in ordinary life. To be measured is to matter.',
+    when:'On chosen occasions, within an established dynamic of trust.',
+    form:'The dominant attends to the body and the person as a text they have earned the right to read — precise, not cruel. The standard is named and is aimed at the same destination the submissive is aimed at. The seeing continues, steady, and remains.',
+    confirms:'That being accurately known — registered completely and not looked away from — is the deepest form of intimacy the framework offers.',
+    living:'any', privacy:3, explMin:3, explMax:4, posture:'any', channel:['V','I'],
+  },
+  {
+    id:'the_withholding', name:'The Withholding',
+    desc:'The deliberate, sparing withdrawal of attention — used as a consequence, never as an accident or a sulk. The absence has weight: not the neutral absence of someone simply elsewhere, but the weighted absence of someone choosing not to be present. When the dominant returns — and they will return — the reunion is its own reminder of what the presence actually is. The most precise instrument, and the one to use most rarely.',
+    when:'Rarely, and only as a clear consequence — never as punishment administered in anger.',
+    form:'The dominant withdraws confirmation deliberately and briefly, then returns. The return is part of the protocol; withholding without return is abandonment, not instruction.',
+    confirms:'That the presence is not assumed — that its deliberate absence reveals, by contrast, exactly what it is.',
+    living:'any', privacy:2, explMin:3, explMax:4, posture:'dom', channel:['E'],
+  },
+  {
+    id:'the_massage', name:'The Ritual of Massage',
+    desc:'The dominant begins at the shoulders, where the carrying accumulates — everything the day did not permit to be put down. The body\'s first response is often resistance, not to the dominant but to the release itself, because the holding has come to feel necessary. The dominant works the places that resist, slowly, without urgency, with the patience of someone who understands they are working not on a muscle but on a question the body has asked all day: can I put this down? Discipline and worship; the line between them is thinner than you thought.',
+    when:'After the day, after exertion, when the body needs to be brought down.',
+    form:'Begin at the shoulders. Work without asking what is needed — knowing. Find the places that resist and do not avoid them. Take as long as the answer takes.',
+    confirms:'That the body which is owned is also tended, and that release is permitted here in a way the day did not allow.',
+    living:'coloc', privacy:2, explMin:2, explMax:3, posture:'dom', channel:['T','E'],
+  },
+  {
+    id:'the_rest', name:'The Ritual of Rest',
+    desc:'Aftercare — the proof the dynamic is real. After discipline, after intensity, after the dark, the dominant brings them back: water, warmth, the weight of an arm across the one they have held. Not because the dark was wrong, but because the return is the completion of the dark. It demonstrates that what occurred was not theater — that the body which was disciplined is also the body that is tended, and that these are the same relationship. You are not a scene. You are a life.',
+    when:'After every intensity — discipline, exertion, the dark.',
+    form:'The dominant stays. Brings water. Provides warmth. Offers the weight of presence. The scene ends; the dynamic continues into the ordinary warmth of after.',
+    confirms:'That the dynamic holds both fire and warmth — and the one who cannot provide both is providing neither.',
+    living:'coloc', privacy:2, explMin:2, explMax:3, posture:'dom', channel:['T','E'],
+  },
 ];
 
 const WEEKLY_LIBRARY = [
@@ -422,7 +627,7 @@ const STEPS = [
   // A2 — use stored T2 profile?
   {
     id:'A2', phase:'A — Import',
-    prompt:'You have a saved Aspirational Self Profile. Use it as context for the protocol?',
+    prompt:'You have a saved Aspirational Sexual Self Profile. Use it as context for the protocol?',
     hint:null,
     options:[
       { value:'yes', label:'Yes, inform the protocol from my profile' },
@@ -761,6 +966,40 @@ function buildProtocolDoc() {
     html += `<p class="opening-note">This protocol is designed for solo practice \u2014 for maintaining the framework as internal architecture. The rituals below are addressed to the relationship with yourself. They hold the aspirational self in readiness, independent of a partner's presence.</p>`;
   }
 
+  // Foundations — the safety and consent floor (partnered dynamics only)
+  if (!isSolo) {
+    html += `<p class="proto-section-title">Foundations</p>`;
+    html += `<p class="ritual-desc" style="margin-bottom:1em;font-style:italic;color:var(--muted);">Before the daily rituals, the floor they stand on. None of what follows is optional in a real dynamic; the protocols only hold because these do.</p>`;
+    html += ritualHTML({
+      name: 'The Agreement',
+      desc: 'A dynamic that cannot name its own limits has not yet been built. Before the framework deepens, and at intervals afterward, the two of you say plainly what it includes and what it does not — desires, hard limits (never), soft limits (with care, by consent). The community names this negotiation; the book names it honesty. Either way it is the precondition, not a constraint on the romance of it.',
+      when: 'Before deepening the dynamic, and revisited at intervals — limits and desires both change.',
+      form: 'An explicit, unhurried conversation. What each of you wants. What is never permitted (hard limits). What is approached only with care and ongoing consent (soft limits). Write it down if the dynamic is ongoing; spoken agreements drift.',
+      confirms: 'That the frame is large enough to hold both people\'s actual reality, and that what happens inside it was genuinely chosen.'
+    });
+    html += ritualHTML({
+      name: 'The Signal',
+      desc: 'One word that stops everything, and one that means slow down and check. The widely used set is simple: red halts immediately, no questions, no penalty; yellow means approach the edge more slowly or check in; green means continue. The dominant who honours red instantly — every time, without it costing the submissive anything — is the one whose authority can actually be trusted with more. A signal dismissed as "just a word" is the clearest red flag there is.',
+      when: 'Always available — in every encounter, without exception.',
+      form: 'Agree the words in advance. Red stops; yellow slows or checks; green continues. If speech may be impossible, agree a gesture — a held object dropped, a hand squeezed three times. Receiving the signal is the protocol working, never its failure.',
+      confirms: 'That control is real because it can always be returned — and that the submissive\'s reality is never overridden "for the dynamic."'
+    });
+    html += ritualHTML({
+      name: 'Aftercare',
+      desc: 'The proof the dynamic is real. After intensity — emotional or physical — the body and the nervous system need bringing back; the community calls the dip that can follow it sub-drop or top-drop, and it can arrive hours or days later. The dominant who stays, who tends, demonstrates that what occurred was not theatre: the one who was held is also the one who is cared for. These are the same relationship.',
+      when: 'After every intensity, and again in the days that follow — extended aftercare matters as much as the immediate.',
+      form: 'Decided in advance: what each of you needs. Water, warmth, the weight of presence, words, or quiet. Then a check-in over the following days. Needs change; revisit them.',
+      confirms: 'That the dynamic holds both fire and warmth — and the one who cannot provide both is providing neither.'
+    });
+    html += ritualHTML({
+      name: 'The Shared Holding',
+      desc: 'A protocol only works if both of you genuinely hold it as meaningful. Research on relationship rituals finds the benefit depends precisely on mutual agreement: the same act is a living ritual for the couple who share its meaning and a hollow routine for the one who does not. A protocol one person merely tolerates is not yet a protocol. The point is never flawless execution — it is the shared meaning the execution carries.',
+      when: 'An orientation that runs underneath everything below, not a scheduled act.',
+      form: 'Choose protocols together, or let the dominant choose and the submissive genuinely consent to. Drop any that has become mere performance for either of you. Revisit the set as the dynamic changes.',
+      confirms: 'That the framework is alive in both of you — which is the only place it can actually live.'
+    });
+  }
+
   // Daily
   html += `<p class="proto-section-title">Daily</p>`;
   if (daily.length === 0) {
@@ -788,6 +1027,7 @@ function buildProtocolDoc() {
   html += `<div class="proto-fixed">
     <p>A protocol is not a guarantee of intimacy. It is a structure within which intimacy is more reliably available. The dynamic is not the protocol; the protocol is the daily proof that the dynamic exists.</p>
     <p>If the protocol begins to feel like performance \u2014 if you are executing it without inhabiting it \u2014 that is information. The protocol is meant to be edited as the dynamic edits itself.</p>
+    <p>Any protocol here can be run at a lower or higher intensity depending on the setting. Practitioners often speak of <em>low</em>, <em>medium</em>, and <em>high</em> protocol: low for vanilla spaces and around people who do not share your dynamic, where the framework runs as a quiet undercurrent; medium for ordinary private life; high for the times you set aside for it deliberately. The same protocol can live in all three registers. Match the register to the room.</p>
     <p>This document is a starting draft. Take what is useful. Leave what is not. Replace what does not fit with what does.</p>
   </div>`;
 

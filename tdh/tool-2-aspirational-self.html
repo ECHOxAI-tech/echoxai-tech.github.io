@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aspirational Self Profile — The Dark Hierarchy</title>
+<title>Aspirational Sexual Self Profile — The Dark Hierarchy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
@@ -270,13 +270,36 @@
 
   /* print */
   @media print {
-    body { background: white; color: #1a1a1a; max-width: none; padding: 2cm; }
-    .profile-doc { color: #1a1a1a; font-size: 11pt; }
-    .profile-section-title { color: #7a6128; }
-    .profile-footer { color: #555; }
-    #view-intro, #view-survey, .profile-actions, .retake-link, .result-disclaimer { display: none !important; }
+    body { background: white; color: #1a1a1a; max-width: none; padding: 1.6cm 2cm; font-family: Georgia, 'Times New Roman', serif; }
+    .profile-doc { color: #1a1a1a; font-size: 12pt; line-height: 1.6; }
+    .profile-title { font-size: 20pt; color: #1a1a1a; }
+    .profile-section-title { color: #8a6d2a; font-size: 10pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 18pt; }
+    .profile-para { color: #1a1a1a; font-size: 12pt; margin-bottom: 8pt; }
+    .profile-date, .profile-footer { color: #666; }
+    .profile-doc hr, .rule { border-top: 1px solid #ccc; }
+    .pax-ends { color: #888 !important; }
+    .pax-track { background: #e8e2d4 !important; }
+    .pax-mark { background: #8a6d2a !important; }
+    .axis-caption { color: #555 !important; }
+    svg text { fill: #555 !important; }
+    svg line, svg rect { stroke: #ccc !important; }
+    svg circle { stroke: #8a6d2a !important; }
+    .page-header, #view-intro, #view-survey, #view-axes, #view-gate, .profile-actions, .retake-link, .result-disclaimer, .code-box, .code-hint, .send-opts, .send-row, .send-feedback, .section-lbl { display: none !important; }
     #view-profile { display: block !important; }
+    /* but keep the mapped-self section visible */
+    #view-profile .section-lbl { display: block !important; color: #8a6d2a !important; }
   }
+
+  /* Action buttons */
+  .btn-outline {
+    display: block; width: 100%;
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold); background: transparent;
+    border: 1px solid rgba(212,169,62,0.4); padding: 0.8rem 1rem;
+    cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .btn-outline:hover { border-color: var(--gold); background: rgba(212,169,62,0.06); }
 
   @media (max-width: 480px) {
     html { font-size: 22px; }
@@ -360,8 +383,8 @@
   </div>
 
   <div class="intro-body">
-    <p>The book argues that desire is the confirmation of a specific self — the version of yourself you most want to feel like, sexually. This self is usually formed before it is named. Most people have carried it for years without adequate language for it.</p>
-    <p>This tool gives you the architecture to describe it. Not what acts you want — who you want to be. Claimed or claiming. Seen precisely or anonymously. Ferocious or tender. Contained or dissolved. Fourteen prompts, mostly open text. You write; the tool assembles your answers into a single profile you can keep.</p>
+    <p>The book argues that desire is the confirmation of a specific self — the sexual persona you most fully want to inhabit. It may precede language, or be discovered over time, or be consciously chosen and refined. What matters is not its origin but its function: it is the self the right person lets you feel, completely, without translation.</p>
+    <p>This tool gives you the architecture to describe it. Not what acts you want — who you want to be. Some are oriented toward holding, some toward yielding; the orientation is not gendered, and neither pole is higher than the other. Fourteen prompts, mostly open text. You write; the tool assembles your answers into a single profile you can keep.</p>
     <p>Nothing you write here is sent anywhere. It lives on your device unless you choose to save it.</p>
   </div>
 
@@ -469,7 +492,7 @@
 
   <div class="page-header">
     <span class="tool-label">Your profile</span>
-    <h1>Aspirational Self Profile</h1>
+    <h1>Aspirational Sexual Self Profile</h1>
     <span class="ornament">✦</span>
   </div>
 
@@ -532,19 +555,21 @@ const STEPS = [
     },
     type: 'textarea',
     prompt: 'When I feel most fully myself sexually, I am\u2026',
-    hint: 'Adjectives, images, sentence fragments \u2014 all valid.',
-    cloud: true, maxWords: 40, required: true,
+    example: 'Continue the sentence — a word, a fragment, or a scene — e.g. “unhurried”, or “like the last one awake in a quiet house”.',
+    cloud: false, maxWords: 40, required: true,
   },
   {
     id: 'Q2',
     type: 'textarea',
     prompt: 'The version of myself I most want to feel like in a sexual encounter is\u2026',
+    example: 'Continue the sentence — a sentence or two, however plain — e.g. “the kind of person who doesn’t check the clock”.',
     maxWords: 80, required: true,
   },
   {
     id: 'Q3',
     type: 'textarea',
     prompt: 'What I most want to feel about myself in the moment of being desired is\u2026',
+    example: 'Continue the sentence — a feeling-word or short phrase — e.g. “unmistakable”, or “like I take up the right amount of room”.',
     maxWords: 40, required: true,
   },
   {
@@ -560,6 +585,7 @@ const STEPS = [
     id: 'Q5',
     type: 'textarea',
     prompt: 'When I claim, what I am most reaching toward is\u2026',
+    example: 'Continue the sentence — a short phrase naming what you reach for — e.g. “the sense the room reorganises around me”.',
     maxWords: 60, required: true,
     skip: () => { const v = answers.Q4; return v === 'yields' || v === 'neither'; },
   },
@@ -567,6 +593,7 @@ const STEPS = [
     id: 'Q6',
     type: 'textarea',
     prompt: 'When I yield, what I am most reaching toward is\u2026',
+    example: 'Continue the sentence — a short phrase — e.g. “the relief of not deciding”.',
     maxWords: 60, required: true,
     skip: () => { const v = answers.Q4; return v === 'claims' || v === 'neither'; },
   },
@@ -574,28 +601,32 @@ const STEPS = [
     id: 'Q7',
     type: 'textarea',
     prompt: 'The specific posture of my body that feels most like home in desire is\u2026',
+    example: 'Continue the sentence — name a posture or stance — e.g. “still, with my hands open”.',
     hint: 'e.g. \u201ckneeling at the foot of the bed; standing while she is seated; held against a wall\u201d',
     maxWords: 40, required: true,
   },
   {
     id: 'Q8',
     movement: { num: 3, title: 'Confirmation',
-      intro: 'Desire works as confirmation: the moment someone makes the version of you you want to feel like, real. These questions ask what kind of confirmation you specifically need.'
+      intro: 'Desire works as confirmation: the moment another person makes real the self you most want to feel like. These questions ask what kind of confirmation you specifically need.'
     },
     type: 'textarea',
     prompt: 'I feel most confirmed in my sexual self when the other person\u2026',
+    example: 'Continue the sentence — complete the thought plainly — e.g. “notices the thing I didn’t say out loud”.',
     maxWords: 60, required: true,
   },
   {
     id: 'Q9',
     type: 'textarea',
     prompt: 'The aspect of myself I most need to have recognized \u2014 and most often is not \u2014 is\u2026',
+    example: 'Continue the sentence — a quality or trait — e.g. “that I’m paying close attention even when quiet”.',
     maxWords: 60, required: true,
   },
   {
     id: 'Q10',
     type: 'textarea',
     prompt: 'The specific quality of attention from the other person that turns the framework on, for me, is\u2026',
+    example: 'Continue the sentence — describe a kind of attention — e.g. “the slow kind, that doesn’t rush to the next thing”.',
     maxWords: 40, required: true,
   },
   {
@@ -605,12 +636,14 @@ const STEPS = [
     },
     type: 'textarea',
     prompt: 'The version of me I have been told to perform but does not feel like me is\u2026',
+    example: 'Continue the sentence — name the performed version — e.g. “the easy-going one who needs nothing”.',
     maxWords: 60, required: true,
   },
   {
     id: 'Q12',
     type: 'textarea',
     prompt: 'What I have learned to suppress in order to be acceptable to the person I want is\u2026',
+    example: 'Continue the sentence — name what you suppress — e.g. “how much I actually want to be asked”.',
     maxWords: 60, required: true,
   },
   {
@@ -620,12 +653,14 @@ const STEPS = [
     },
     type: 'textarea',
     prompt: 'If I could ask the next person who matters to me one thing \u2014 about how to be with me \u2014 it would be\u2026',
+    example: 'Continue the sentence — phrase it as a request — e.g. “ask me before you assume”.',
     maxWords: 80, required: true,
   },
   {
     id: 'Q14',
     type: 'textarea',
     prompt: 'The thing I most want to be told, that I have never been told and have stopped expecting to hear, is\u2026',
+    example: 'Continue the sentence — the sentence you want to hear — e.g. “you don’t have to earn this”.',
     maxWords: 60, required: false, optional: true,
   },
 ];
@@ -687,7 +722,9 @@ function render(idx) {
   // Prompt + hint
   document.getElementById('q-prompt').textContent = step.prompt;
   const hintEl = document.getElementById('q-hint');
-  if (step.hint) { hintEl.textContent = step.hint; hintEl.style.display = ''; }
+  var hintText = step.hint || '';
+  if (step.example) hintText = (hintText ? hintText + ' \u00b7 ' : '') + step.example;
+  if (hintText) { hintEl.textContent = hintText; hintEl.style.display = ''; }
   else { hintEl.style.display = 'none'; }
 
   // Adjective cloud
@@ -940,9 +977,25 @@ function nowDate() {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
+function washAnswer(val) {
+  if (!val) return '';
+  var s = val.trim();
+  if (!s) return '';
+  // Strip trailing period (the sentence continues)
+  s = s.replace(/[.\u2026]+$/, '');
+  // Strip leading filler that duplicates the sentence stem
+  s = s.replace(/^(i\s+am|i\s+feel|i\s+want\s+to\s+be|i\s+want\s+to\s+feel|i'm|to\s+be|to\s+feel|being|that\s+i\s+am|when\s+i\s+am)\s+/i, '');
+  // Lowercase the first letter for mid-sentence flow, unless it's a proper noun-ish all-caps or "I"
+  if (s.length && !/^I\b/.test(s) && !/^[A-Z]{2,}/.test(s)) {
+    s = s.charAt(0).toLowerCase() + s.slice(1);
+  }
+  return s;
+}
+
 function line(label, val) {
-  if (!val || !val.trim()) return '';
-  return `<p class="profile-para">${label} ${escHtml(val.trim())}</p>`;
+  var w = washAnswer(val);
+  if (!w) return '';
+  return `<p class="profile-para">${label} ${escHtml(w)}.</p>`;
 }
 
 function escHtml(s) {
@@ -1011,17 +1064,57 @@ function buildProfile() {
 // SHOW PROFILE
 // ══════════════════════════════════════════════
 
+function buildAxisMap(v) {
+  // Composite dimensions from the 8 axes (each 0-100)
+  // X: Authority — dominant/commanding (right) vs submissive/surrendered (left)
+  //    dom (high=dominant), pow (high=powerful), pur (high=pursuing→agentic)
+  var x = (v.dom + v.pow + v.pur) / 3;
+  // Y: Visibility — seen/witnessed (top) vs hidden/concealed (bottom)
+  //    see (high=seen), wor (high=worshipped→wants witnessing)
+  var y = (v.see + v.wor) / 2;
+  // Size: Stakes — how transformative/singular the aspiration is
+  //    tra (high=confirmed→low stakes; invert), sin (high=singular→high stakes)
+  var stakes = ((100 - v.tra) + v.sin) / 2;  // 0..100
+  var W = 360, H = 360, pad = 50;
+  var plotW = W - pad*2, plotH = H - pad*2;
+  var px = pad + (x/100) * plotW;
+  var py = pad + (1 - y/100) * plotH;  // invert: high y = top
+  var r = 8 + (stakes/100) * 20;  // 8..28 px
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="360" height="360" style="max-width:100%">';
+  // Quadrant grid
+  svg += '<line x1="' + pad + '" y1="' + (H/2) + '" x2="' + (W-pad) + '" y2="' + (H/2) + '" stroke="rgba(212,169,62,0.15)" stroke-width="1"/>';
+  svg += '<line x1="' + (W/2) + '" y1="' + pad + '" x2="' + (W/2) + '" y2="' + (H-pad) + '" stroke="rgba(212,169,62,0.15)" stroke-width="1"/>';
+  svg += '<rect x="' + pad + '" y="' + pad + '" width="' + plotW + '" height="' + plotH + '" fill="none" stroke="rgba(212,169,62,0.12)" stroke-width="1"/>';
+  // Axis labels
+  var lblStyle = 'font-family:Inconsolata,monospace;font-size:11px;letter-spacing:1px;fill:#c8c3bb;';
+  svg += '<text x="' + (W/2) + '" y="22" text-anchor="middle" style="' + lblStyle + '">WITNESSED</text>';
+  svg += '<text x="' + (W/2) + '" y="' + (H-8) + '" text-anchor="middle" style="' + lblStyle + '">CONCEALED</text>';
+  svg += '<text x="14" y="' + (H/2) + '" text-anchor="start" style="' + lblStyle + '" transform="rotate(-90 14 ' + (H/2) + ')">SURRENDERED</text>';
+  svg += '<text x="' + (W-14) + '" y="' + (H/2) + '" text-anchor="end" style="' + lblStyle + '" transform="rotate(-90 ' + (W-14) + ' ' + (H/2) + ')">COMMANDING</text>';
+  // Marker
+  svg += '<circle cx="' + px + '" cy="' + py + '" r="' + r + '" fill="rgba(212,169,62,0.25)" stroke="#d4a93e" stroke-width="2"/>';
+  svg += '<circle cx="' + px + '" cy="' + py + '" r="3" fill="#d4a93e"/>';
+  svg += '</svg>';
+  // Stakes legend
+  var stakesWord = stakes > 66 ? 'high' : stakes > 33 ? 'moderate' : 'quiet';
+  return svg + '<p class="axis-caption" style="margin-top:0.8rem">Marker size reflects how transformative the aspiration is — yours reads as <em>' + stakesWord + '</em>. Position maps authority (left–right) against visibility (bottom–top).</p>';
+}
+
 function showProfile() {
   window.__lastResult = window.__axisVals || {};
   setTimeout(_saveAndShow, 80);
   document.getElementById('view-survey').style.display = 'none';
   var axesHTML = '';
   if (window.__axisVals && Object.keys(window.__axisVals).length) {
-    axesHTML = '<hr class="rule"><p class="section-lbl">Where you placed yourself</p>'
+    var v = window.__axisVals;
+    axesHTML = '<hr class="rule"><p class="section-lbl">Your aspirational self, mapped</p>'
+      + '<div style="display:flex;justify-content:center;margin:0.5rem 0 1rem">' + buildAxisMap(v) + '</div>'
+      + '<hr class="rule"><p class="section-lbl">Where you placed yourself</p>'
       + AXES.map(function(a) {
-          var v = window.__axisVals[a.k];
+          var val = v[a.k];
           return '<div class="pax-row"><div class="pax-ends"><span>' + a.l + '</span><span>' + a.r + '</span></div>'
-            + '<div class="pax-track"><div class="pax-mark" style="left:' + v + '%"></div></div></div>';
+            + '<div class="pax-track"><div class="pax-mark" style="left:' + val + '%"></div></div></div>';
         }).join('');
   }
   document.getElementById('profile-doc').innerHTML = buildProfile() + axesHTML;
@@ -1042,31 +1135,21 @@ document.getElementById('btn-print').addEventListener('click', () => {
 // ══════════════════════════════════════════════
 
 function genCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let c = '';
-  for (let i = 0; i < 6; i++) c += chars[Math.floor(Math.random() * chars.length)];
-  return c;
+  // Shared profile code — reused across all tests so a combined profile can be assembled
+  try {
+    var existing = localStorage.getItem('tdh_profile_code');
+    if (existing && existing.length === 6) return existing;
+  } catch(e) {}
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  return code;
 }
 
 
 
 
-function sendCodeByEmail() {
-  const emailEl = document.getElementById('code-email-input');
-  const email   = emailEl ? emailEl.value.trim() : '';
-  if (!email || !email.includes('@')) {
-    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
-    return;
-  }
-  const toolName = document.title.split(' —')[0].trim();
-  const subject  = encodeURIComponent('My result code — ' + toolName);
-  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
-  const body     = encodeURIComponent(
-    'Result code: ' + savedCode +
-    '\n\nReturn to result: ' + base + savedCode +
-    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
-  );
-}
 
 // ══════════════════════════════════════════════
 // INIT
@@ -1178,7 +1261,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
       try {
         var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
           method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ to: emailVal, subject: 'Aspirational Self Profile \u2014 The Dark Hierarchy', htmlContent: html })
+          body: JSON.stringify({ to: emailVal, subject: 'Aspirational Sexual Self Profile \u2014 The Dark Hierarchy', htmlContent: html })
         });
         if (res.ok) {
           btn.textContent = '\u2713 Sent'; btn.style.background = '#6ab07a';

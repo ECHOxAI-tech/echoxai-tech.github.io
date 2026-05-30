@@ -338,9 +338,9 @@
   <div class="body-text">
     <p>The book distinguishes two conditions that can look alike from the inside:</p>
     <p><em>A dark night of the Master</em> — the framework is still real, the carrier is exhausted, the crossing is survivable. The aspiration has not failed; the carrier is living through a phase it requires.</p>
-    <p><em>A system failure</em> — the dynamic is meeting conditions under which it cannot succeed. The book names nine specific failure conditions: asymmetrical recognition, dependency without confirmation, incompatible aspirational selves, authority without calibration, framework misuse, trauma distortion, false recognition, performed charge, and structural drift.</p>
+    <p><em>A system failure</em> — the dynamic is meeting conditions under which it cannot succeed. The book names five core failure conditions — misaligned aspirational selves, asymmetrical recognition, dependency without confirmation, authority without calibration, and the framework treated as a terminal destination — and describes further modes across its movements: misuse, trauma re-enactment, performed charge, and drift.</p>
     <p>These two conditions require different responses. The tool helps you read which one, or which combination, you are inside.</p>
-    <p>It proceeds in three phases — the current state, the failure conditions, and the dark night — and produces a provisional diagnosis with specific book references for each flagged condition.</p>
+    <p>It proceeds in three phases — the erosion, the failure conditions, and what remains — and produces a provisional reading with specific book references for each flagged condition.</p>
     <p>The tool does not tell you what to do. It gives you better language for what you are already trying to think through.</p>
   </div>
 
@@ -462,7 +462,7 @@
   </div>
   <p class="send-feedback" id="send-feedback"></p>
 
-  <p class="result-disclaimer">This tool is an instrument for reflective thinking within a specific philosophical framework. It does not constitute psychological, therapeutic, or clinical advice, does not produce a clinical diagnosis, and no professional relationship is formed by using it. The provisional diagnosis it generates is a reading of the book's categories — not a professional assessment of your relationship or mental health. If you are in distress, experiencing harm, or concerned about your safety or a partner's safety, please seek support from a qualified professional immediately.</p>
+  <p class="result-disclaimer">This tool is an instrument for reflective thinking within a specific philosophical framework. Research consistently finds that people in consensual power-exchange dynamics are no more likely to have psychological difficulties than anyone else, and often report higher relationship satisfaction; difficulty inside a dynamic is not evidence that the orientation is disordered. This tool does not constitute psychological, therapeutic, or clinical advice, does not produce a clinical diagnosis, and no professional relationship is formed by using it. The provisional reading it generates is a reading of the book's categories — not a professional assessment of your relationship or mental health. If you are in distress, experiencing harm, or concerned about your safety or a partner's safety, please seek support from a qualified professional immediately.</p>
 
   <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
 </div>
@@ -476,14 +476,14 @@ const PHASES = [
   {
     num: 1, id: 'P',
     label: 'Phase I of III',
-    title: 'The Current State',
-    desc:  'Six statements about what the dynamic feels like from the inside right now.',
+    title: 'The Erosion',
+    desc:  'Six statements about what the dynamic feels like from the inside right now. Answer for yourself as you actually are.',
   },
   {
     num: 2, id: 'F',
     label: 'Phase II of III',
     title: 'The Failure Modes',
-    desc:  'Nine statements, each corresponding to a specific condition the book names as a potential system failure. Answer for your dynamic as it actually is.',
+    desc:  'Nine statements, each corresponding to a way the book describes the dynamic failing — the named conditions and the slower forms. Answer for your dynamic as it actually is.',
   },
   {
     num: 3, id: 'D',
@@ -494,13 +494,13 @@ const PHASES = [
 ];
 
 const QUESTIONS = [
-  // Phase 1 — Current state
-  { id:'P1', phase:'P', text:'The charge between us is weaker than it was, but the framework still feels real.' },
-  { id:'P2', phase:'P', text:'The framework still feels real to me, but I am not sure it still feels real to my partner.' },
-  { id:'P3', phase:'P', text:'The framework no longer feels real to me, but I am continuing to enact it.' },
-  { id:'P4', phase:'P', text:'My partner and I have stopped talking about the dynamic, even though it continues.' },
-  { id:'P5', phase:'P', text:'Something in the dynamic has been making me smaller for some time.' },
-  { id:'P6', phase:'P', text:'I am the one carrying authority, and I have stopped trusting my own reading of the situation.' },
+  // Phase 1 — The Erosion (the lived phenomenology of the dark night)
+  { id:'P1', phase:'P', text:'What used to feel effortless in the dynamic now takes effort to sustain.' },
+  { id:'P2', phase:'P', text:'The sense of rightness that used to be the background condition of my days is now something I have to produce.' },
+  { id:'P3', phase:'P', text:'I have begun, almost imperceptibly, to manage myself for this relationship — to keep the part of me the dynamic was built on more contained.' },
+  { id:'P4', phase:'P', text:'I have started apologising for the things about myself this relationship finds inconvenient.' },
+  { id:'P5', phase:'P', text:'I have stopped initiating, and started explaining myself.' },
+  { id:'P6', phase:'P', text:'I have begun to wonder whether what I carry is a real orientation, or something I am supposed to outgrow.' },
 
   // Phase 2 — Failure modes
   { id:'F1', phase:'F', mode:'Asymmetrical recognition',
@@ -531,9 +531,9 @@ const QUESTIONS = [
     ref:'Book IV, Coda I — Condition 9',
     text:'The dynamic we live now is not the dynamic we started with, and we never explicitly chose the change.' },
 
-  // Phase 3 — Dark night
-  { id:'D1', phase:'D', text:'Even now, in the difficulty, I can sometimes still feel the aspirational self the framework was carrying for me.' },
-  { id:'D2', phase:'D', text:'My doubt about the framework is mostly about whether I am still equal to carrying it, not whether it is real.' },
+  // Phase 3 — What remains (whether the framework is still real to you)
+  { id:'D1', phase:'D', text:'Even now, in the difficulty, I can sometimes still feel the aspirational sexual self the framework was carrying for me.' },
+  { id:'D2', phase:'D', text:'My doubt is about whether I am still equal to carrying the framework \u2014 not about whether the framework itself is real.' },
   { id:'D3', phase:'D', text:'If I had to name what is happening to me as a phase rather than a verdict, the word that fits is more \u201ccrossing\u201d than \u201cfailure.\u201d' },
 ];
 
@@ -576,7 +576,6 @@ function startSurvey() {
 // SURVEY RENDER
 // ══════════════════════════════════════════════
 
-function phaseOf(idx) { return ORDERED[idx].phase; }
 
 function renderQuestion(idx) {
   inPhaseBreak = false;
@@ -713,30 +712,40 @@ window.__demo = { gender: null, age: null };
 // ══════════════════════════════════════════════
 
 function computeDiagnosis(resp) {
+  const pItems = QUESTIONS.filter(q => q.phase === 'P');
   const fItems = QUESTIONS.filter(q => q.phase === 'F');
   const dItems = QUESTIONS.filter(q => q.phase === 'D');
 
-  const flaggedModes  = fItems.filter(q => (resp[q.id] || 1) >= 5);
-  const failureScore  = flaggedModes.length;
-  const darkNightScore = dItems.filter(q => (resp[q.id] || 1) >= 5).length;
+  // The erosion — the lived phenomenology of the dark night (Movement XX)
+  const erosionScore = pItems.filter(q => (resp[q.id] || 1) >= 5).length;   // 0–6
+  // The structural failure conditions
+  const flaggedModes = fItems.filter(q => (resp[q.id] || 1) >= 5);
+  const failureScore = flaggedModes.length;                                 // 0–9
+  // What remains — whether the framework is still real to you
+  const faithScore   = dItems.filter(q => (resp[q.id] || 1) >= 5).length;   // 0–3
 
+  // The book's distinction: the dark night is erosion survived because the framework
+  // is still real ("the error was not the god — the error was the arrangement").
+  // A system failure is structural conditions present and/or the framework gone dead.
   let primary;
-  if (failureScore >= 4) {
-    primary = 'system_failure';
-  } else if (failureScore >= 2 && darkNightScore < 2) {
-    primary = 'system_failure_early';
-  } else if (darkNightScore >= 2 && failureScore < 2) {
-    primary = 'dark_night';
-  } else if (darkNightScore >= 2 && failureScore >= 2) {
-    primary = 'both';
+  if (failureScore >= 4 && faithScore < 2) {
+    primary = 'system_failure';            // many conditions, framework no longer real
+  } else if (failureScore >= 4 && faithScore >= 2) {
+    primary = 'both';                      // conditions present, but the framework still holds
+  } else if (erosionScore >= 3 && faithScore >= 2) {
+    primary = 'dark_night';                // eroded, yet the framework is still real — survivable
+  } else if (erosionScore >= 3 && faithScore < 2 && failureScore >= 2) {
+    primary = 'system_failure';            // eroded, faith gone, conditions present
+  } else if (erosionScore >= 2 || failureScore >= 2) {
+    primary = 'system_failure_early';      // early signs on either axis
   } else {
     primary = 'unclear';
   }
 
-  // Edge: many flags + high distress — surface care frame prominently
-  const severeDistress = failureScore >= 7;
+  // Deep erosion or many conditions — surface the care frame prominently
+  const severeDistress = erosionScore >= 5 || failureScore >= 7;
 
-  return { primary, flaggedModes, failureScore, darkNightScore, severeDistress };
+  return { primary, flaggedModes, failureScore, erosionScore, faithScore, severeDistress };
 }
 
 // ══════════════════════════════════════════════
@@ -804,28 +813,19 @@ function showResults(diag) {
 // SAVE / RETRIEVE
 // ══════════════════════════════════════════════
 
-function saveResult(diag) {
-  if (savedCode) return;
-  const code = genCode();
-  savedCode  = code;
-  try { localStorage.setItem('tdh_t4_' + code, JSON.stringify({ diag, ts: Date.now() })); } catch(e) {}
-  try {
-    const url = new URL(window.location.href);
-    url.searchParams.set('code', code);
-    history.replaceState(null, '', url.toString());
-  } catch(e) {}
-  document.getElementById('code-box').textContent = code;
-  document.getElementById('code-box').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-
-}
 
 
 function genCode() {
-  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s = '';
-  for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
+  // Shared profile code — reused across all tests so a combined profile can be assembled
+  try {
+    var existing = localStorage.getItem('tdh_profile_code');
+    if (existing && existing.length === 6) return existing;
+  } catch(e) {}
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  return code;
 }
 
 // URL code retrieval
@@ -836,15 +836,18 @@ function genCode() {
       const stored = localStorage.getItem('tdh_t4_' + code.toUpperCase());
       if (stored) {
         const data = JSON.parse(stored);
-        savedCode  = code.toUpperCase();
-        document.getElementById('view-gate').style.display = 'none';
-        showResults(data.diag);
-        requestAnimationFrame(() => {
-          document.getElementById('code-box').textContent = savedCode;
-          document.getElementById('code-box').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-        });
-        return;
+        const diag = data.diag || data.result;
+        if (diag && (diag.primary !== undefined || diag.failureScore !== undefined)) {
+          savedCode  = code.toUpperCase();
+          window.savedCode = savedCode;
+          document.getElementById('view-gate').style.display = 'none';
+          showResults(diag);
+          requestAnimationFrame(() => {
+            var box = document.getElementById('code-box');
+            if (box) { box.textContent = savedCode; box.classList.add('show'); }
+          });
+          return;
+        }
       }
     }
   } catch(e) {}
@@ -857,7 +860,7 @@ function genCode() {
     var code = genCode();
     window.savedCode = code;
     var result = window.__lastResult || {};
-    try { localStorage.setItem('tdh_t4_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
+    try { localStorage.setItem('tdh_t4_' + code, JSON.stringify({ ts: Date.now(), diag: result, result: result })); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
     try {
@@ -872,7 +875,7 @@ function genCode() {
         var catMap = { system_failure:4, system_failure_early:3, both:2, dark_night:1, unclear:0 };
         fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ tool: 't4', data: { failure: result.failureScore, darkNight: result.darkNightScore, category: (catMap[result.primary] !== undefined ? catMap[result.primary] : 0) }, gender: demo.gender, age: demo.age })
+          body: JSON.stringify({ tool: 't4', data: { failure: result.failureScore, erosion: result.erosionScore, faith: result.faithScore, category: (catMap[result.primary] !== undefined ? catMap[result.primary] : 0) }, gender: demo.gender, age: demo.age })
         }).catch(function(){});
       }
     } catch(e) {}

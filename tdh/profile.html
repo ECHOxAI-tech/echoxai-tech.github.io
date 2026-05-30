@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Combined Profile — The Dark Hierarchy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#e8e4dc;
+    --gold:#d4a93e; --gold-dim:#b8963e; --text:#f0ece3; --muted:#c8c3bb;
+    --rule:rgba(184,150,62,0.2);
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { font-size:24px; background:var(--black); color:var(--text); }
+  @media (max-width:600px){ html { font-size:22px; } }
+  body { font-family:'Cormorant Garamond',Georgia,serif; font-weight:300;
+    line-height:1.7; min-height:100vh; padding:3rem 1.5rem 5rem; }
+  .wrap { max-width:40rem; margin:0 auto; }
+  .page-header { text-align:center; margin-bottom:0.5rem; }
+  .tool-label { font-family:'Inconsolata',monospace; font-size:0.52rem;
+    letter-spacing:0.32em; text-transform:uppercase; color:var(--gold);
+    display:block; margin-bottom:0.55rem; border-bottom:1px solid var(--rule);
+    padding-bottom:0.5rem; }
+  h1 { font-family:'IM Fell English',Georgia,serif; font-weight:400;
+    font-size:1.8rem; color:var(--off-white); line-height:1.2; margin-bottom:0.4rem; }
+  .ornament { color:var(--gold); font-size:1rem; }
+  .code-pill { font-family:'Inconsolata',monospace; font-size:0.8rem;
+    letter-spacing:0.3em; color:var(--gold); text-align:center;
+    border:1px solid var(--rule); padding:0.6rem; margin:1.2rem auto 2rem;
+    max-width:14rem; }
+  .rule { border:none; border-top:1px solid var(--rule); margin:2rem 0; }
+  .section-lbl { font-family:'Inconsolata',monospace; font-size:0.62rem;
+    letter-spacing:0.18em; text-transform:uppercase; color:var(--gold);
+    margin-bottom:1rem; }
+  .test-block { margin-bottom:2.5rem; }
+  .test-title { font-family:'IM Fell English',Georgia,serif; font-size:1.2rem;
+    color:var(--off-white); margin-bottom:0.2rem; }
+  .test-date { font-family:'Inconsolata',monospace; font-size:0.5rem;
+    letter-spacing:0.1em; color:var(--muted); margin-bottom:1rem; }
+  /* bars */
+  .bar-row { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.7rem; }
+  .bar-lbl { font-family:'Inconsolata',monospace; font-size:0.6rem;
+    letter-spacing:0.06em; text-transform:uppercase; color:var(--bone);
+    width:6.5rem; flex-shrink:0; text-align:right; }
+  .bar-track { flex:1; height:6px; background:rgba(212,169,62,0.12); }
+  .bar-fill { height:100%; background:var(--gold); }
+  .bar-pct { font-family:'Inconsolata',monospace; font-size:0.6rem;
+    color:var(--gold); width:2.5rem; text-align:right; }
+  /* axis position markers (tool 2) */
+  .pax-row { margin-bottom:1rem; }
+  .pax-ends { display:flex; justify-content:space-between;
+    font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
+  .pax-track { position:relative; height:3px; background:rgba(212,169,62,0.2); }
+  .pax-mark { position:absolute; top:50%; width:11px; height:11px; border-radius:50%;
+    background:var(--gold); transform:translate(-50%,-50%); }
+  .cat-line { font-size:0.95rem; color:var(--text); line-height:1.7; }
+  .cat-line strong { color:var(--bone); }
+  .empty { text-align:center; color:var(--muted); font-size:0.95rem;
+    line-height:1.8; padding:2rem 0; }
+  .empty a { color:var(--gold); text-decoration:none; }
+  .tlink { display:inline-block; font-family:'Inconsolata',monospace;
+    font-size:0.5rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold-dim); text-decoration:none; margin-top:0.6rem; }
+  .tlink:hover { color:var(--gold); }
+  .back { display:inline-block; margin-top:2.5rem; font-family:'Inconsolata',monospace;
+    font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase;
+    color:var(--gold-dim); text-decoration:none; }
+  .back:hover { color:var(--gold); }
+  svg { max-width:100%; display:block; margin:0 auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-header">
+    <span class="tool-label">The Dark Hierarchy</span>
+    <h1>Your Combined Profile</h1>
+    <span class="ornament">✦</span>
+  </div>
+  <div class="code-pill" id="code-pill">——</div>
+  <div id="content"></div>
+  <div style="text-align:center"><a href="./index.html" class="back">← Return to the tool suite</a></div>
+</div>
+
+<script>
+const CODE = (new URLSearchParams(location.search).get('code') || '').toUpperCase().trim();
+
+const TESTS = [
+  { key:'tdh_t1_', title:'Trigger Gradient',           path:'./tool-1-trigger-gradient.html',      render:renderT1 },
+  { key:'tdh_t2_', title:'Aspirational Sexual Self',           path:'./tool-2-aspirational-self.html',     render:renderT2 },
+  { key:'tdh_t3_', title:'Attachment Confirmation',     path:'./tool-3-attachment-confirmation.html', render:renderT3 },
+  { key:'tdh_t4_', title:'Dark Night Diagnostic',       path:'./tool-4-dark-night.html',            render:renderT4 },
+  { key:'tdh_t6_', title:'Threshold',                   path:'./tool-6-threshold.html',             render:renderT6 },
+];
+
+function fmtDate(ts) {
+  if (!ts) return '';
+  try { return new Date(ts).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}); }
+  catch(e){ return ''; }
+}
+
+function bar(label, val) {
+  var w = Math.max(0, Math.min(100, Math.round(val)));
+  return '<div class="bar-row"><span class="bar-lbl">' + label + '</span>'
+    + '<div class="bar-track"><div class="bar-fill" style="width:' + w + '%"></div></div>'
+    + '<span class="bar-pct">' + w + '%</span></div>';
+}
+
+function renderT1(d) {
+  var r = d.result || d;
+  if (r.V === undefined) return '';
+  return bar('Visual', r.V) + bar('Emotional', r.E) + bar('Tactile', r.T) + bar('Intellectual', r.I);
+}
+
+function renderT3(d) {
+  var r = d.result || d;
+  if (r.A === undefined) return '';
+  var dir = r.B > 60 ? 'Toward' : r.B < 40 ? 'Away' : 'Variable';
+  return bar('Sensitivity', r.A) + bar('History', r.C) + bar('Specificity', r.D)
+    + '<p class="cat-line" style="margin-top:0.6rem">Direction: <strong>' + dir + '</strong></p>';
+}
+
+const T2_AXES = [
+  ['Dominant','Submissive','dom'],['Seen','Hidden','see'],['Pursued','Pursuing','pur'],
+  ['Refined','Primal','ref'],['Worshipped','Useful','wor'],['Powerful','Surrendered','pow'],
+  ['Singular','Interchangeable','sin'],['Transformed','Confirmed','tra']
+];
+function renderT2(d) {
+  var r = d.result || d;
+  if (r.dom === undefined) return '';
+  return T2_AXES.map(function(a){
+    var v = r[a[2]];
+    if (v === undefined) return '';
+    return '<div class="pax-row"><div class="pax-ends"><span>' + a[0] + '</span><span>' + a[1] + '</span></div>'
+      + '<div class="pax-track"><div class="pax-mark" style="left:' + v + '%"></div></div></div>';
+  }).join('');
+}
+
+function renderT4(d) {
+  var diag = d.diag || d.result || d;
+  if (diag.primary === undefined && diag.failureScore === undefined) return '';
+  var labels = {
+    system_failure:'System failure', system_failure_early:'Early system failure',
+    dark_night:'Dark night of the Master', both:'Both — dark night and emerging failure',
+    unclear:'Not yet legible'
+  };
+  var l = labels[diag.primary] || 'Result recorded';
+  var detail = '';
+  if (diag.erosionScore !== undefined) {
+    detail = 'Erosion: ' + diag.erosionScore + ' · Failure conditions: ' + diag.failureScore;
+  } else if (diag.failureScore !== undefined) {
+    detail = 'Failure conditions: ' + diag.failureScore;
+  }
+  return '<p class="cat-line"><strong>' + l + '</strong></p>'
+    + (detail ? '<p class="cat-line" style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem">' + detail + '</p>' : '');
+}
+
+function renderT6(d) {
+  var thr = d.thr || {}, arch = d.arch, cost = d.cost;
+  var threshLabels = { T1:'The first threshold', T2:'The second threshold', T3:'The third threshold', T4:'The fourth threshold' };
+  var archLabels = { 'not-yet':'Not yet built', 'excavation':'Excavation', 'deliberate':'Deliberate construction', 'multiple':'Multiple architectures' };
+  if (!thr.primary && !arch) return '';
+  var out = '';
+  if (thr.primary) out += '<p class="cat-line"><strong>' + (threshLabels[thr.primary] || thr.primary) + '</strong></p>';
+  if (arch) out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.4rem">Architecture: ' + (archLabels[arch] || arch) + '</p>';
+  return out;
+}
+
+(function() {
+  var pill = document.getElementById('code-pill');
+  var content = document.getElementById('content');
+  pill.textContent = CODE || '——';
+
+  if (!CODE || CODE.length !== 6) {
+    content.innerHTML = '<p class="empty">No code provided.<br>Enter your six-character code on the <a href="./index.html">landing page</a> to see your combined profile.</p>';
+    return;
+  }
+
+  var found = [];
+  TESTS.forEach(function(t) {
+    var raw;
+    try { raw = localStorage.getItem(t.key + CODE); } catch(e) { return; }
+    if (!raw) return;
+    var data; try { data = JSON.parse(raw); } catch(e) { return; }
+    var html = t.render(data);
+    if (html) found.push({ title: t.title, path: t.path, date: fmtDate(data.ts), html: html });
+  });
+
+  if (!found.length) {
+    content.innerHTML = '<p class="empty">No results found for this code on this device.<br><br>'
+      + 'Results are stored locally in your browser — they can only be seen on the device that created them. '
+      + 'Complete a test, and it will appear here.<br><br>'
+      + '<a href="./index.html">← Return to the tool suite</a></p>';
+    return;
+  }
+
+  content.innerHTML = '<p class="section-lbl">' + found.length + ' completed test' + (found.length>1?'s':'') + '</p>'
+    + found.map(function(f) {
+        return '<div class="test-block"><p class="test-title">' + f.title + '</p>'
+          + (f.date ? '<p class="test-date">' + f.date + '</p>' : '')
+          + f.html
+          + '<a class="tlink" href="' + f.path + '?code=' + CODE + '">Open full result →</a></div>';
+      }).join('<hr class="rule">');
+})();
+</script>
+</body>
+</html>

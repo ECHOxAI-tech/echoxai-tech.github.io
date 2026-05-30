@@ -354,7 +354,7 @@
   </div>
 
   <div class="intro-body">
-    <p>Attachment theory describes the symptom — anxious, avoidant, secure. The book describes the mechanism: what we call anxious attachment is usually a precise instrument pointed at people who won't deliver confirmation of the specific self it is seeking. The sensitivity is not the problem. The mismatch is.</p>
+    <p>Attachment theory describes the symptom — anxious, avoidant, secure. The book describes the mechanism. The anxious person is not deficient; their aspirational sexual self requires continuous confirmation, and they have learned from evidence that the confirmation cannot be trusted to persist. What looks like neediness is actually precision. The avoidant person is not unable to love; closeness has consistently failed to confirm the self they need to feel themselves as. The sensitivity is not the problem. The mismatch is.</p>
     <p>This tool maps how acutely you read confirmation signals from a partner, which direction you move when they go quiet, how reliably your history has matched what you needed, and how specifically you need to be seen. It produces a description of your confirmation-seeking architecture — not a category, not a diagnosis, not a thing to fix.</p>
   </div>
 
@@ -510,31 +510,25 @@
   <p class="section-lbl">Two things this profile separates</p>
   <div class="distinction" id="distinction-text"></div>
 
-  <!-- Share -->
-  <p class="section-lbl">Share your profile</p>
-  <div class="share-section">
-    <span class="share-label">Shareable link</span>
-    <div class="share-url-box">
-      <span class="share-url-text" id="share-url-text">&nbsp;</span>
-      <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
-    </div>
-    <div class="share-actions">
-      <button class="btn-copy" onclick="copyResultText()">Copy as text</button>
-      <button class="btn-copy" onclick="generateShareCard(currentScores)">Download diagram card</button>
-    </div>
-    <p class="share-note">Anyone with the link sees your result. The diagram card is 1080×1080.</p>
-  </div>
-
   <hr class="rule">
   <p class="section-lbl">Email my result</p>
-  <p class="code-hint">Enter your email to receive your full result and a link back to this page.</p>
+  <p class="code-hint">Enter your email to receive your full profile and a link back to this page.</p>
   <div class="send-row">
     <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
     <button class="btn-send-email" id="btn-email-send">Send</button>
   </div>
   <p class="send-feedback" id="send-feedback"></p>
 
-  <p class="result-disclaimer">This profile describes patterns in your confirmation-seeking as information, not as pathology or clinical diagnosis. It does not constitute psychological or therapeutic advice, and no professional relationship is formed by using this tool. It deliberately avoids clinical attachment categories. If this material surfaces significant distress, please seek support from a qualified professional.</p>
+  <hr class="rule">
+  <p class="section-lbl">Share your result</p>
+  <p class="code-hint">This link opens your exact result on any device — share it anywhere.</p>
+  <div class="share-url-box">
+    <span class="share-url-text" id="share-url-text">&nbsp;</span>
+    <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
+  </div>
+  <button class="btn-copy" style="width:100%;margin-top:0.6rem" onclick="downloadCard()">Download result image (for social media)</button>
+
+  <p class="result-disclaimer">This profile describes patterns in your confirmation-seeking as information, not as pathology or clinical diagnosis. Research consistently finds that people drawn to structured power-exchange dynamics are no more likely to have psychological difficulties than anyone else, and often report higher relationship satisfaction; sensitivity to confirmation is not a disorder. This tool does not constitute psychological or therapeutic advice, and no professional relationship is formed by using it. It deliberately avoids clinical attachment categories. If this material surfaces significant distress, please seek support from a qualified professional.</p>
 
   <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
 </div>
@@ -625,10 +619,16 @@ function shuffle(arr) {
 }
 
 function genCode() {
-  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s = '';
-  for (let i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
+  // Shared profile code — reused across all tests so a combined profile can be assembled
+  try {
+    var existing = localStorage.getItem('tdh_profile_code');
+    if (existing && existing.length === 6) return existing;
+  } catch(e) {}
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  return code;
 }
 
 // ══════════════════════════════════════════════
@@ -844,6 +844,18 @@ function showResults(sc) {
   document.getElementById('distinction-text').innerHTML = buildDistinction();
 
   window.scrollTo({ top: 0 });
+}
+
+async function generateShareCard(sc) {
+  if (!sc) return;
+  try { await document.fonts.ready; } catch(e) {}
+  const canvas = document.getElementById('share-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  // Background
+  ctx.fillStyle = '#080806';
+  ctx.fillRect(0, 0, W, H);
   // Border
   ctx.strokeStyle = 'rgba(184,150,62,0.18)';
   ctx.lineWidth = 1;
@@ -962,21 +974,10 @@ function copyShareURL() {
   });
 }
 
-function copyResultText() {
+function downloadCard() {
+  if (!currentScores) { _saveAndShow(); }
   if (!currentScores) return;
-  const sc = currentScores;
-  const dLabel = sc.B > 60 ? 'Toward' : sc.B < 40 ? 'Away' : 'Variable';
-  const text = `My Attachment Confirmation Profile — The Dark Hierarchy
-Sensitivity: ${sc.A} / 100
-Direction: ${dLabel}
-History of accurate seeing: ${sc.C} / 100
-Specificity of confirmation needed: ${sc.D} / 100
-
-Take the assessment: echoxstudios.art/tdh/`;
-  navigator.clipboard.writeText(text).then(() => {
-    const btns = document.querySelectorAll('.btn-copy');
-    btns.forEach(b => { if (b.textContent.includes('text')) { b.textContent = 'Copied ✓'; b.classList.add('copied'); setTimeout(() => { b.textContent = 'Copy as text'; b.classList.remove('copied'); }, 2000); }});
-  });
+  generateShareCard(currentScores);
 }
 
 function loadFromURLParams() {
@@ -992,22 +993,6 @@ function loadFromURLParams() {
 }
 
 
-function sendCodeByEmail() {
-  const emailEl = document.getElementById('code-email-input');
-  const email   = emailEl ? emailEl.value.trim() : '';
-  if (!email || !email.includes('@')) {
-    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
-    return;
-  }
-  const toolName = document.title.split(' —')[0].trim();
-  const subject  = encodeURIComponent('My result code — ' + toolName);
-  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
-  const body     = encodeURIComponent(
-    'Result code: ' + savedCode +
-    '\n\nReturn to result: ' + base + savedCode +
-    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
-  );
-}
 
 // ══════════════════════════════════════════════
 // INIT
@@ -1067,23 +1052,34 @@ window.__demo = { gender: null, age: null };
   });
 })();
 
-// URL code retrieval on load
+// URL retrieval on load — supports ?a=&b=&c=&d= share links and ?code= stored results
 (function() {
   try {
+    // 1. Direct share link (?a=&b=&c=&d=) — rehydrate scores straight from URL
+    const direct = loadFromURLParams();
+    if (direct) {
+      document.getElementById('view-intro').style.display = 'none';
+      showResults(direct);
+      return;
+    }
+    // 2. Stored result by code (?code=)
     const code = (new URLSearchParams(window.location.search)).get('code');
     if (code && code.length === 6) {
       const stored = localStorage.getItem('tdh_t3_' + code.toUpperCase());
       if (stored) {
         const data = JSON.parse(stored);
-        savedCode  = code.toUpperCase();
-        document.getElementById('view-intro').style.display = 'none';
-        showResults(data.sc);
-        requestAnimationFrame(() => {
-          document.getElementById('code-box').textContent = savedCode;
-          document.getElementById('code-box').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-        });
-        return;
+        const sc = data.result || data.sc;
+        if (sc && sc.A !== undefined) {
+          savedCode = code.toUpperCase();
+          window.savedCode = savedCode;
+          document.getElementById('view-intro').style.display = 'none';
+          showResults(sc);
+          requestAnimationFrame(() => {
+            var box = document.getElementById('code-box');
+            if (box) { box.textContent = savedCode; box.classList.add('show'); }
+          });
+          return;
+        }
       }
     }
   } catch(e) {}

@@ -546,7 +546,7 @@
   <p class="section-lbl">Your desire gradient</p>
 
   <div style="display:flex;justify-content:center;margin:0.5rem 0 1.5rem">
-    <svg id="petal-svg" viewBox="0 0 320 320" width="280" height="280" style="max-width:100%">
+    <svg id="petal-svg" viewBox="-40 0 400 320" width="320" height="280" style="max-width:100%">
       <!-- axes + rings drawn by JS -->
     </svg>
   </div>
@@ -609,7 +609,7 @@
 
 </div>
 
-<canvas id="share-canvas" width="1080" height="1080"></canvas>
+<canvas id="share-canvas" width="1080" height="1200"></canvas>
 
 
 <div class="card-modal-overlay" id="card-modal">
@@ -717,9 +717,15 @@ function shuffle(arr) {
 }
 
 function genCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  // Shared profile code — reused across all tests so a combined profile can be assembled
+  try {
+    var existing = localStorage.getItem('tdh_profile_code');
+    if (existing && existing.length === 6) return existing;
+  } catch(e) {}
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
   return code;
 }
 
@@ -889,7 +895,7 @@ function drawPetal(pct) {
     line.setAttribute('stroke', 'rgba(212,169,62,0.2)');
     line.setAttribute('stroke-width', '1');
     svg.appendChild(line);
-    var lp = pt(ax.ang, R + 18);
+    var lp = pt(ax.ang, R + (ax.ang === 0 || ax.ang === 180 ? 14 : 18));
     var t = document.createElementNS(svgNS, 'text');
     t.setAttribute('x', lp[0]); t.setAttribute('y', lp[1]);
     t.setAttribute('fill', '#c8c3bb');
@@ -995,7 +1001,7 @@ async function generateShareCard(pct) {
 
   const canvas = document.getElementById('share-canvas');
   const ctx    = canvas.getContext('2d');
-  const W = 1080, H = 1080;
+  const W = 1080, H = 1200;
   ctx.clearRect(0, 0, W, H);
 
   // Background
@@ -1032,11 +1038,54 @@ async function generateShareCard(pct) {
   ctx.moveTo(120, 310); ctx.lineTo(W - 120, 310);
   ctx.stroke();
 
+  // ── PETAL RADIAL ──
+  (function() {
+    var cx = W/2, cy = 540, R = 175;
+    var axes = [
+      { k:'V', label:'VISUAL',       ang:-90 },
+      { k:'E', label:'EMOTIONAL',    ang:0 },
+      { k:'T', label:'TACTILE',      ang:90 },
+      { k:'I', label:'INTELLECTUAL', ang:180 }
+    ];
+    function pt(ang, r) { var a = ang*Math.PI/180; return [cx+Math.cos(a)*r, cy+Math.sin(a)*r]; }
+    // Rings
+    [0.25,0.5,0.75,1].forEach(function(f) {
+      ctx.strokeStyle = 'rgba(212,169,62,0.15)'; ctx.lineWidth = 1;
+      ctx.beginPath();
+      axes.forEach(function(ax, i) { var p = pt(ax.ang, R*f); if(i===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); });
+      ctx.closePath(); ctx.stroke();
+    });
+    // Axis lines + labels
+    axes.forEach(function(ax) {
+      var p = pt(ax.ang, R);
+      ctx.strokeStyle = 'rgba(212,169,62,0.2)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(p[0],p[1]); ctx.stroke();
+      var lp = pt(ax.ang, R+34);
+      ctx.fillStyle = '#c8c3bb'; ctx.font = '300 20px "Inconsolata", monospace';
+      ctx.textAlign = ax.ang===0 ? 'left' : ax.ang===180 ? 'right' : 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ax.label, lp[0], lp[1]);
+    });
+    ctx.textBaseline = 'alphabetic';
+    // Data polygon
+    var maxV = Math.max(pct.V,pct.E,pct.T,pct.I,1);
+    var scale = R / Math.max(maxV, 50);
+    ctx.fillStyle = 'rgba(212,169,62,0.25)'; ctx.strokeStyle = '#d4a93e'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    axes.forEach(function(ax, i) { var p = pt(ax.ang, pct[ax.k]*scale); if(i===0) ctx.moveTo(p[0],p[1]); else ctx.lineTo(p[0],p[1]); });
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Vertex dots
+    axes.forEach(function(ax) {
+      var p = pt(ax.ang, pct[ax.k]*scale);
+      ctx.fillStyle = '#d4a93e'; ctx.beginPath(); ctx.arc(p[0],p[1],6,0,Math.PI*2); ctx.fill();
+    });
+  })();
+
   // Bars
   const channels = ['V','E','T','I'];
   const chNames  = { V:'VISUAL', E:'EMOTIONAL', T:'TACTILE', I:'INTELLECTUAL' };
-  const barX     = 200, barW = 620, barH = 10;
-  const startY   = 390, gap  = 100;
+  const barX     = 200, barW = 560, barH = 10;
+  const startY   = 800, gap  = 58;
 
   channels.forEach((ch, i) => {
     const y = startY + i * gap;
@@ -1044,49 +1093,59 @@ async function generateShareCard(pct) {
 
     // Label
     ctx.fillStyle = '#a09890';
-    ctx.font = '300 22px "Inconsolata", monospace';
+    ctx.font = '300 20px "Inconsolata", monospace';
     ctx.textAlign = 'left';
     ctx.fillText(chNames[ch], barX, y + 7);
 
     // Track
     ctx.fillStyle = 'rgba(184,150,62,0.1)';
-    ctx.fillRect(barX, y + 18, barW, barH);
+    ctx.fillRect(barX, y + 16, barW, barH);
 
     // Fill
     ctx.fillStyle = '#d4a93e';
-    ctx.fillRect(barX, y + 18, Math.round(barW * p / 100), barH);
+    ctx.fillRect(barX, y + 16, Math.round(barW * p / 100), barH);
 
     // Pct
     ctx.fillStyle = '#d4a93e';
-    ctx.font = '400 26px "Inconsolata", monospace';
+    ctx.font = '400 22px "Inconsolata", monospace';
     ctx.textAlign = 'right';
-    ctx.fillText(p + '%', barX + barW + 60, y + 30);
+    ctx.fillText(p + '%', barX + barW + 60, y + 26);
   });
 
-  // Rule
+  // (legacy bar block disabled — petal + new bars drawn above)
+
+  // Rule above summary
   ctx.strokeStyle = 'rgba(184,150,62,0.2)';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(120, 800); ctx.lineTo(W - 120, 800);
+  ctx.moveTo(120, 1010); ctx.lineTo(W - 120, 1010);
   ctx.stroke();
 
   // Summary line
   const summary = `V${pct.V} · E${pct.E} · T${pct.T} · I${pct.I}`;
   ctx.fillStyle = '#d4a93e';
-  ctx.font = '400 32px "Inconsolata", monospace';
+  ctx.font = '400 30px "Inconsolata", monospace';
   ctx.textAlign = 'center';
-  ctx.fillText(summary, W / 2, 860);
+  ctx.fillText(summary, W / 2, 1058);
 
   // Footer
   ctx.fillStyle = '#a09890';
-  ctx.font = '300 20px "Inconsolata", monospace';
-  ctx.fillText('echoxstudios.art', W / 2, 980);
+  ctx.font = '300 18px "Inconsolata", monospace';
+  ctx.fillText('echoxstudios.art', W / 2, 1112);
 
-  // Trigger download
-  const link = document.createElement('a');
-  link.download = `tdh-gradient-${summary.replace(/ /g,'')}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  // Show inline (works everywhere incl. mobile) + download on desktop
+  const dataURL = canvas.toDataURL('image/png');
+  const preview = document.getElementById('card-preview');
+  if (preview) { preview.src = dataURL; document.getElementById('card-modal').classList.add('open'); }
+  try {
+    const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      const link = document.createElement('a');
+      link.download = `tdh-gradient-${summary.replace(/ /g,'')}.png`;
+      link.href = dataURL;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+  } catch(e) {}
 }
 
 
@@ -1123,16 +1182,6 @@ function copyShareURL() {
   });
 }
 
-function copyResultText() {
-  if (!currentGradient) return;
-  const p = currentGradient;
-  const text = `My desire gradient — The Dark Hierarchy\nVisual: ${p.V}%\nEmotional: ${p.E}%\nTactile: ${p.T}%\nIntellectual: ${p.I}%\n\nTake the test: echoxstudios.art/tdh/`;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('btn-copy-text');
-    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy as text'; btn.classList.remove('copied'); }, 2000);
-  });
-}
 
 function loadFromURLParams() {
   try {
@@ -1147,22 +1196,6 @@ function loadFromURLParams() {
 }
 
 
-function sendCodeByEmail() {
-  const emailEl = document.getElementById('code-email-input');
-  const email   = emailEl ? emailEl.value.trim() : '';
-  if (!email || !email.includes('@')) {
-    if (emailEl) { emailEl.style.borderColor = 'rgba(184,150,62,0.6)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 800); }
-    return;
-  }
-  const toolName = document.title.split(' —')[0].trim();
-  const subject  = encodeURIComponent('My result code — ' + toolName);
-  const base     = 'https://echoxstudios.art/tdh/result.html?code=';
-  const body     = encodeURIComponent(
-    'Result code: ' + savedCode +
-    '\n\nReturn to result: ' + base + savedCode +
-    '\n\n' + toolName + ' — echoxstudios.art/tdh/'
-  );
-}
 
 // ══════════════════════════════════════════════
 // INIT
@@ -1318,10 +1351,8 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       var resultPart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 2px">Your trigger gradient</p>'
         + barsTable;
 
-      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:0 0 6px">Return to your result:</p>'
-        + '<p style="margin:0 0 4px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">Open on this device</a>'
-        + (shareURL !== returnURL ? ' &nbsp;&middot;&nbsp; <a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">Open anywhere</a>' : '') + '</p>'
-        + '<p style="font-family:monospace;color:#6e6a64;font-size:11px;margin:10px 0 0">Result code: ' + window.savedCode + '</p>';
+      var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:0 0 6px">Your result link:</p>'
+        + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>';
 
       var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:22px 0">' + codePart;
 

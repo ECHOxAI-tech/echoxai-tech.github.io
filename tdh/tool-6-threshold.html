@@ -555,7 +555,7 @@ const T_NAMES = {
 
 const ARCH_TEXT = {
   'not-yet': `What you are inside is patience, not refusal. The crossing is real to you. The readiness has not yet arrived. There is no work to do here other than to keep returning until the readiness is also real. The framework does not require speed.`,
-  'excavation': `What you are inside is articulation. The crossing is not yet refused or accepted because what you would be crossing into has not yet been drawn precisely enough. The work, before the crossing, is description. <em>The Aspirational Self Profile</em> — Tool II of this suite — exists for this purpose, if you have not yet taken it.`,
+  'excavation': `What you are inside is articulation. The crossing is not yet refused or accepted because what you would be crossing into has not yet been drawn precisely enough. The work, before the crossing, is description. <em>The Aspirational Sexual Self Profile</em> — Tool II of this suite — exists for this purpose, if you have not yet taken it.`,
   'deliberate': `What you are inside is a position. You have seen the threshold and chosen, knowingly, not to cross it. This is also a legitimate inhabitation. The book does not require crossing of every reader. What it requires is the honesty of naming what one is doing. You appear to be doing that.`,
   'multiple': `What you are inside is layered. More than one kind of non-crossing is active at once. This is common at thresholds that are real. The work, if there is work to do, is to separate the layers — to ask which part is patience, which part is incomplete articulation, and which part is a position you have actually chosen.`,
 };
@@ -613,6 +613,8 @@ function generate() {
     cost: costMap[cost] || 0,
     maxVal: thr.maxVal
   };
+  // Keep human-readable originals for the combined profile
+  window.__t6raw = { thr: thr, arch: arch, cost: cost };
 
   // Crisis detection on open text
   if(openText && detectCrisis(openText)) {
@@ -637,24 +639,17 @@ function generate() {
 // SAVE
 // ════════════════════════════════════════════
 
-function genCode(){
-  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';
-  for(let i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s;
-}
-
-function saveResult(thr,arch,cost){
-  if(savedCode)return;
-  const code=genCode(); savedCode=code;
-  try{localStorage.setItem('tdh_t6_'+code,JSON.stringify({resp,openText,thr,arch,cost,ts:Date.now()}));}catch(e){}
-  try{const u=new URL(window.location.href);u.searchParams.set('code',code);history.replaceState(null,'',u.toString());}catch(e){}
-  document.getElementById('code-box').textContent=code;
-  document.getElementById('code-box').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
-}
-
-function resetSaveUI(){
-  document.getElementById('code-box').textContent='';
-  document.getElementById('code-box').classList.remove('show');
+function genCode() {
+  // Shared profile code — reused across all tests so a combined profile can be assembled
+  try {
+    var existing = localStorage.getItem('tdh_profile_code');
+    if (existing && existing.length === 6) return existing;
+  } catch(e) {}
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  try { localStorage.setItem('tdh_profile_code', code); } catch(e) {}
+  return code;
 }
 
 // URL retrieval
@@ -686,7 +681,17 @@ function resetSaveUI(){
     var code = genCode();
     window.savedCode = code;
     var result = window.__lastResult || {};
-    try { localStorage.setItem('tdh_t6_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
+    // Store both the rehydration data (resp/openText, to rebuild via generate()) and the result vector
+    try {
+      var raw = window.__t6raw || {};
+      localStorage.setItem('tdh_t6_' + code, JSON.stringify({
+        ts: Date.now(),
+        resp: (typeof resp !== 'undefined' ? resp : {}),
+        openText: (typeof openText !== 'undefined' ? openText : ''),
+        result: result,
+        thr: raw.thr, arch: raw.arch, cost: raw.cost
+      }));
+    } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
     try {
