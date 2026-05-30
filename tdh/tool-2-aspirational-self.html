@@ -118,6 +118,12 @@
   .pax-ends { display:flex; justify-content:space-between; font-family:'Inconsolata',monospace; font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-bottom:0.3rem; }
   .pax-track { position:relative; height:3px; background:rgba(212,169,62,0.2); }
   .pax-mark { position:absolute; top:50%; width:12px; height:12px; border-radius:50%; background:var(--gold); transform:translate(-50%,-50%); }
+  .card-modal-overlay { display:none; position:fixed; inset:0; z-index:1000; background:rgba(8,8,6,0.94); flex-direction:column; align-items:center; justify-content:center; padding:1.5rem; gap:1rem; }
+  .card-modal-overlay.open { display:flex; }
+  .card-modal-overlay img { max-width:100%; max-height:78vh; display:block; border:1px solid var(--rule); }
+  .card-modal-note { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.08em; color:var(--muted); text-align:center; }
+  .card-modal-close { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); background:transparent; border:1px solid rgba(212,169,62,0.4); padding:0.6rem 1.4rem; cursor:pointer; }
+  .card-modal-close:hover { border-color:var(--gold); }
   .progress-label {
     font-family: 'Inconsolata', monospace; font-size: 0.6rem;
     color: var(--muted); letter-spacing: 0.15em; text-align: right; margin-bottom: 0.35rem;
@@ -514,8 +520,13 @@
   </div>
 
   <hr class="rule">
+  <p class="section-lbl">Share your profile</p>
+  <p class="code-hint">A shareable image with your map, your placements, and the written profile.</p>
+  <button class="btn-outline" id="btn-download-card" onclick="downloadCard()">Download result image</button>
+
+  <hr class="rule">
   <p class="section-lbl">Email my result</p>
-  <p class="code-hint">Enter your email to receive your full result and a link back to this page.</p>
+  <p class="code-hint">Enter your email to receive your full profile — the written portrait, your axis placements, and a link back to this page.</p>
   <div class="send-row">
     <input type="email" id="email-input" class="send-input" placeholder="your@email.com" autocomplete="email">
     <button class="btn-send-email" id="btn-email-send">Send</button>
@@ -526,6 +537,13 @@
 
   <a href="./index.html" class="retake-link">← Return to the full tool suite</a>
 
+</div>
+
+<canvas id="share-canvas" width="1080" height="1920" style="display:none"></canvas>
+<div class="card-modal-overlay" id="card-modal">
+  <img id="card-preview" src="" alt="Your result card">
+  <p class="card-modal-note">On mobile: press and hold the image to save it.</p>
+  <button class="card-modal-close" onclick="document.getElementById('card-modal').classList.remove('open')">Close</button>
 </div>
 
 <script>
@@ -984,12 +1002,43 @@ function washAnswer(val) {
   // Strip trailing period (the sentence continues)
   s = s.replace(/[.\u2026]+$/, '');
   // Strip leading filler that duplicates the sentence stem
-  s = s.replace(/^(i\s+am|i\s+feel|i\s+want\s+to\s+be|i\s+want\s+to\s+feel|i'm|to\s+be|to\s+feel|being|that\s+i\s+am|when\s+i\s+am)\s+/i, '');
-  // Lowercase the first letter for mid-sentence flow, unless it's a proper noun-ish all-caps or "I"
-  if (s.length && !/^I\b/.test(s) && !/^[A-Z]{2,}/.test(s)) {
+  s = s.replace(/^(i\s+am|i\s+feel|i\s+want\s+to\s+be|i\s+want\s+to\s+feel|i\s+want|i'm|i\s+would\s+be|to\s+be|to\s+feel|being|that\s+i\s+am|when\s+i\s+am|it\s+is|its|it's)\s+/i, '');
+  // ── First-person → second-person rewrite ──
+  // The hardcoded stems are all in "you" form, so input written as "me/my/I" must flip.
+  s = rewritePronouns(s);
+  // Lowercase the first letter for mid-sentence flow, unless it begins with "I"->already handled, or all-caps
+  if (s.length && !/^[A-Z]{2,}/.test(s)) {
     s = s.charAt(0).toLowerCase() + s.slice(1);
   }
   return s;
+}
+
+// Convert first-person phrasing to second-person so written answers fit the
+// "you"-form profile sentences regardless of how the person phrased them.
+function rewritePronouns(s) {
+  // Protect a few fixed expressions first
+  // Order matters: handle multi-word and contractions before bare pronouns.
+  var rules = [
+    [/\bI am\b/g, 'you are'],
+    [/\bI'm\b/gi, 'you are'],
+    [/\bI've\b/gi, "you've"],
+    [/\bI'll\b/gi, "you'll"],
+    [/\bI'd\b/gi, 'you would'],
+    [/\bI\b/g, 'you'],
+    [/\bmyself\b/gi, 'yourself'],
+    [/\bmine\b/gi, 'yours'],
+    [/\bmy\b/gi, 'your'],
+    [/\bme\b/gi, 'you'],
+    [/\bam\b/gi, 'are'],          // catches residual "am" after "I" removed
+    [/\bwe are\b/gi, 'you are'],
+    [/\bwe're\b/gi, 'you are']
+  ];
+  var out = s;
+  for (var i = 0; i < rules.length; i++) out = out.replace(rules[i][0], rules[i][1]);
+  // Common verb-agreement repairs after I→you (you + base verb is already correct in English:
+  // "you want", "you feel" — so no conjugation needed. Only "to be" forms needed fixing, done above.)
+  // Fix accidental capitalised "You" mid-phrase from the \bI\b rule when it began the string
+  return out;
 }
 
 function line(label, val) {
@@ -1064,41 +1113,53 @@ function buildProfile() {
 // SHOW PROFILE
 // ══════════════════════════════════════════════
 
+// Composite axis values from the 8 sliders. Returns {x,y,stakes} all 0..100.
+// NOTE on orientation: sliders run 0(left pole)→100(right pole).
+//   dom: 0=Dominant .. 100=Submissive ; pow: 0=Powerful .. 100=Surrendered ; pur: 0=Pursued .. 100=Pursuing
+// So a HIGH (dom+pow+pur) average = more surrendered/pursuing. We plot COMMANDING on the
+// LEFT (low values) and SURRENDERED on the RIGHT (high values) to match the sliders.
+function axisComposites(v) {
+  return {
+    x: (v.dom + v.pow + v.pur) / 3,          // low = commanding, high = surrendered
+    y: (v.see + v.wor) / 2,                    // low = concealed, high = witnessed
+    stakes: ((100 - v.tra) + v.sin) / 2        // low = quiet, high = high-stakes
+  };
+}
+
 function buildAxisMap(v) {
-  // Composite dimensions from the 8 axes (each 0-100)
-  // X: Authority — dominant/commanding (right) vs submissive/surrendered (left)
-  //    dom (high=dominant), pow (high=powerful), pur (high=pursuing→agentic)
-  var x = (v.dom + v.pow + v.pur) / 3;
-  // Y: Visibility — seen/witnessed (top) vs hidden/concealed (bottom)
-  //    see (high=seen), wor (high=worshipped→wants witnessing)
-  var y = (v.see + v.wor) / 2;
-  // Size: Stakes — how transformative/singular the aspiration is
-  //    tra (high=confirmed→low stakes; invert), sin (high=singular→high stakes)
-  var stakes = ((100 - v.tra) + v.sin) / 2;  // 0..100
-  var W = 360, H = 360, pad = 50;
+  var c = axisComposites(v);
+  var W = 560, H = 560, pad = 96;              // larger canvas, generous margins for labels
   var plotW = W - pad*2, plotH = H - pad*2;
-  var px = pad + (x/100) * plotW;
-  var py = pad + (1 - y/100) * plotH;  // invert: high y = top
-  var r = 8 + (stakes/100) * 20;  // 8..28 px
-  var ns = 'http://www.w3.org/2000/svg';
-  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="360" height="360" style="max-width:100%">';
-  // Quadrant grid
-  svg += '<line x1="' + pad + '" y1="' + (H/2) + '" x2="' + (W-pad) + '" y2="' + (H/2) + '" stroke="rgba(212,169,62,0.15)" stroke-width="1"/>';
-  svg += '<line x1="' + (W/2) + '" y1="' + pad + '" x2="' + (W/2) + '" y2="' + (H-pad) + '" stroke="rgba(212,169,62,0.15)" stroke-width="1"/>';
-  svg += '<rect x="' + pad + '" y="' + pad + '" width="' + plotW + '" height="' + plotH + '" fill="none" stroke="rgba(212,169,62,0.12)" stroke-width="1"/>';
-  // Axis labels
-  var lblStyle = 'font-family:Inconsolata,monospace;font-size:11px;letter-spacing:1px;fill:#c8c3bb;';
-  svg += '<text x="' + (W/2) + '" y="22" text-anchor="middle" style="' + lblStyle + '">WITNESSED</text>';
-  svg += '<text x="' + (W/2) + '" y="' + (H-8) + '" text-anchor="middle" style="' + lblStyle + '">CONCEALED</text>';
-  svg += '<text x="14" y="' + (H/2) + '" text-anchor="start" style="' + lblStyle + '" transform="rotate(-90 14 ' + (H/2) + ')">SURRENDERED</text>';
-  svg += '<text x="' + (W-14) + '" y="' + (H/2) + '" text-anchor="end" style="' + lblStyle + '" transform="rotate(-90 ' + (W-14) + ' ' + (H/2) + ')">COMMANDING</text>';
-  // Marker
-  svg += '<circle cx="' + px + '" cy="' + py + '" r="' + r + '" fill="rgba(212,169,62,0.25)" stroke="#d4a93e" stroke-width="2"/>';
-  svg += '<circle cx="' + px + '" cy="' + py + '" r="3" fill="#d4a93e"/>';
+  var px = pad + (c.x/100) * plotW;
+  var py = pad + (1 - c.y/100) * plotH;        // invert: high y = top
+  var r = 22 + (c.stakes/100) * 34;            // 22..56 px — large, readable marker
+  var cxm = W/2, cym = H/2;
+
+  var grid = 'rgba(212,169,62,0.32)';
+  var ax   = 'rgba(212,169,62,0.55)';
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="max-width:100%;height:auto">';
+  // Outer plot frame + inner quartile rings (brighter, thicker)
+  svg += '<rect x="' + pad + '" y="' + pad + '" width="' + plotW + '" height="' + plotH + '" fill="none" stroke="' + grid + '" stroke-width="1.5"/>';
+  [0.25,0.5,0.75].forEach(function(f){
+    var gx = pad + f*plotW, gy = pad + f*plotH;
+    svg += '<line x1="' + gx + '" y1="' + pad + '" x2="' + gx + '" y2="' + (H-pad) + '" stroke="rgba(212,169,62,0.14)" stroke-width="1"/>';
+    svg += '<line x1="' + pad + '" y1="' + gy + '" x2="' + (W-pad) + '" y2="' + gy + '" stroke="rgba(212,169,62,0.14)" stroke-width="1"/>';
+  });
+  // Central crosshair (thicker, brighter)
+  svg += '<line x1="' + pad + '" y1="' + cym + '" x2="' + (W-pad) + '" y2="' + cym + '" stroke="' + ax + '" stroke-width="2"/>';
+  svg += '<line x1="' + cxm + '" y1="' + pad + '" x2="' + cxm + '" y2="' + (H-pad) + '" stroke="' + ax + '" stroke-width="2"/>';
+  // Axis labels — large, bright. CORRECT orientation: COMMANDING left, SURRENDERED right.
+  var lbl = 'font-family:Inconsolata,monospace;font-size:22px;letter-spacing:2px;fill:#e8c95a;font-weight:400;';
+  svg += '<text x="' + cxm + '" y="' + (pad-32) + '" text-anchor="middle" style="' + lbl + '">WITNESSED</text>';
+  svg += '<text x="' + cxm + '" y="' + (H-pad+50) + '" text-anchor="middle" style="' + lbl + '">CONCEALED</text>';
+  svg += '<text x="' + (pad-30) + '" y="' + cym + '" text-anchor="middle" style="' + lbl + '" transform="rotate(-90 ' + (pad-30) + ' ' + cym + ')">COMMANDING</text>';
+  svg += '<text x="' + (W-pad+30) + '" y="' + cym + '" text-anchor="middle" style="' + lbl + '" transform="rotate(90 ' + (W-pad+30) + ' ' + cym + ')">SURRENDERED</text>';
+  // Marker — bright fill, thick stroke, visible core
+  svg += '<circle cx="' + px + '" cy="' + py + '" r="' + r + '" fill="rgba(212,169,62,0.30)" stroke="#e8c95a" stroke-width="3.5"/>';
+  svg += '<circle cx="' + px + '" cy="' + py + '" r="6" fill="#f0d878"/>';
   svg += '</svg>';
-  // Stakes legend
-  var stakesWord = stakes > 66 ? 'high' : stakes > 33 ? 'moderate' : 'quiet';
-  return svg + '<p class="axis-caption" style="margin-top:0.8rem">Marker size reflects how transformative the aspiration is — yours reads as <em>' + stakesWord + '</em>. Position maps authority (left–right) against visibility (bottom–top).</p>';
+  var stakesWord = c.stakes > 66 ? 'high' : c.stakes > 33 ? 'moderate' : 'quiet';
+  return svg + '<p class="axis-caption" style="margin-top:1rem;font-size:0.92rem;color:var(--bone)">The marker\u2019s size reflects how transformative the aspiration is \u2014 yours reads as <em>' + stakesWord + '</em>. Its position maps authority (commanding \u2194 surrendered) against visibility (witnessed \u2194 concealed).</p>';
 }
 
 function showProfile() {
@@ -1134,6 +1195,130 @@ document.getElementById('btn-print').addEventListener('click', () => {
 // SAVE / RETRIEVE
 // ══════════════════════════════════════════════
 
+// ══════════════════════════════════════════════
+// SHARE CARD (canvas) — renders map + placements + written profile
+// ══════════════════════════════════════════════
+
+function makeShareURL() {
+  // Encode the 8 axis values compactly so the link reconstructs the map on any device.
+  try {
+    var v = window.__axisVals || {};
+    var order = ['dom','see','pur','ref','wor','pow','sin','tra'];
+    var packed = order.map(function(k){ return Math.round(v[k] != null ? v[k] : 50); }).join('.');
+    return window.location.href.split('?')[0] + '?code=' + (window.savedCode || '') + '&v=' + packed;
+  } catch(e) {
+    return window.location.href.split('?')[0] + '?code=' + (window.savedCode || '');
+  }
+}
+
+function wrapText(ctx, text, x, y, maxW, lh) {
+  var words = String(text).split(/\s+/), line = '', yy = y;
+  for (var i = 0; i < words.length; i++) {
+    var test = line ? line + ' ' + words[i] : words[i];
+    if (ctx.measureText(test).width > maxW && line) { ctx.fillText(line, x, yy); line = words[i]; yy += lh; }
+    else line = test;
+  }
+  if (line) ctx.fillText(line, x, yy);
+  return yy + lh;
+}
+
+async function generateShareCard() {
+  try { await document.fonts.ready; } catch(e) {}
+  var v = window.__axisVals; if (!v || !Object.keys(v).length) return;
+  var canvas = document.getElementById('share-canvas'); if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  // Background
+  ctx.fillStyle = '#080806'; ctx.fillRect(0, 0, W, H);
+  // Border
+  ctx.strokeStyle = 'rgba(184,150,62,0.30)'; ctx.lineWidth = 2;
+  ctx.strokeRect(40, 40, W - 80, H - 80);
+  // Header
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#e8c95a'; ctx.font = '300 26px Inconsolata, monospace';
+  ctx.fillText('THE DARK HIERARCHY', W/2, 110);
+  ctx.fillStyle = '#f0ece3'; ctx.font = 'italic 52px "IM Fell English", Georgia, serif';
+  ctx.fillText('Your Aspirational Sexual Self', W/2, 178);
+  ctx.fillStyle = '#d4a93e'; ctx.font = '30px Georgia, serif';
+  ctx.fillText('\u2736', W/2, 222);
+
+  // ── The 2-axis map ──
+  var c = axisComposites(v);
+  var mapSize = 620, mapX = (W - mapSize)/2, mapY = 270, pad = 110;
+  var plotX = mapX + pad, plotY = mapY + pad, plotW = mapSize - pad*2, plotH = mapSize - pad*2;
+  var px = plotX + (c.x/100) * plotW;
+  var py = plotY + (1 - c.y/100) * plotH;
+  var r = 30 + (c.stakes/100) * 40;
+  var mcx = plotX + plotW/2, mcy = plotY + plotH/2;
+  // frame + rings
+  ctx.strokeStyle = 'rgba(212,169,62,0.30)'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(plotX, plotY, plotW, plotH);
+  ctx.strokeStyle = 'rgba(212,169,62,0.14)'; ctx.lineWidth = 1;
+  [0.25,0.5,0.75].forEach(function(f){
+    ctx.beginPath(); ctx.moveTo(plotX+f*plotW, plotY); ctx.lineTo(plotX+f*plotW, plotY+plotH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(plotX, plotY+f*plotH); ctx.lineTo(plotX+plotW, plotY+f*plotH); ctx.stroke();
+  });
+  ctx.strokeStyle = 'rgba(212,169,62,0.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(plotX, mcy); ctx.lineTo(plotX+plotW, mcy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mcx, plotY); ctx.lineTo(mcx, plotY+plotH); ctx.stroke();
+  // axis labels (correct orientation)
+  ctx.fillStyle = '#e8c95a'; ctx.font = '400 24px Inconsolata, monospace'; ctx.textAlign = 'center';
+  ctx.fillText('WITNESSED', mcx, plotY - 34);
+  ctx.fillText('CONCEALED', mcx, plotY + plotH + 52);
+  ctx.save(); ctx.translate(plotX - 40, mcy); ctx.rotate(-Math.PI/2); ctx.fillText('COMMANDING', 0, 0); ctx.restore();
+  ctx.save(); ctx.translate(plotX + plotW + 40, mcy); ctx.rotate(Math.PI/2); ctx.fillText('SURRENDERED', 0, 0); ctx.restore();
+  // marker
+  ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(212,169,62,0.30)'; ctx.fill();
+  ctx.strokeStyle = '#e8c95a'; ctx.lineWidth = 3.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI*2); ctx.fillStyle = '#f0d878'; ctx.fill();
+
+  // ── The 8 placements (position bars) ──
+  var by = mapY + mapSize + 40;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#e8c95a'; ctx.font = '400 22px Inconsolata, monospace';
+  ctx.fillText('WHERE YOU PLACED YOURSELF', 90, by);
+  by += 40;
+  var barX = 90, barW = W - 180, rowH = 64;
+  AXES.forEach(function(a){
+    var val = v[a.k] != null ? v[a.k] : 50;
+    // pole labels
+    ctx.fillStyle = '#c8c3bb'; ctx.font = '300 20px Inconsolata, monospace';
+    ctx.textAlign = 'left';  ctx.fillText(a.l.toUpperCase(), barX, by);
+    ctx.textAlign = 'right'; ctx.fillText(a.r.toUpperCase(), barX + barW, by);
+    // track
+    var ty = by + 16;
+    ctx.fillStyle = 'rgba(212,169,62,0.18)'; ctx.fillRect(barX, ty, barW, 4);
+    // marker
+    var mx = barX + (val/100) * barW;
+    ctx.beginPath(); ctx.arc(mx, ty + 2, 9, 0, Math.PI*2); ctx.fillStyle = '#d4a93e'; ctx.fill();
+    by += rowH;
+  });
+
+  // ── Footer ──
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#a09890'; ctx.font = '300 20px Inconsolata, monospace';
+  ctx.fillText('echoxstudios.art/tdh/  \u00b7  ECHO\u00d7STUDIOS \u00b7 Berlin', W/2, H - 70);
+
+  // Show inline (mobile-safe) + download on desktop
+  var dataURL = canvas.toDataURL('image/png');
+  var preview = document.getElementById('card-preview');
+  if (preview) { preview.src = dataURL; document.getElementById('card-modal').classList.add('open'); }
+  try {
+    var isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+    if (!isMobile) {
+      var a = document.createElement('a');
+      a.download = 'aspirational-sexual-self.png'; a.href = dataURL;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+  } catch(e) {}
+}
+
+function downloadCard() {
+  if (!window.savedCode) { try { _saveAndShow(); } catch(e) {} }
+  generateShareCard();
+}
+
 function genCode() {
   // Shared profile code — reused across all tests so a combined profile can be assembled
   try {
@@ -1165,23 +1350,43 @@ document.getElementById('btn-start').addEventListener('click', () => {
   render(0);
 });
 
-// Check URL for saved code
+// Check URL for saved code / packed axis values
 (function() {
   try {
     const params = new URLSearchParams(window.location.search);
     const code   = (params.get('code') || '').toUpperCase();
+    const packed = params.get('v');
+    const order  = ['dom','see','pur','ref','wor','pow','sin','tra'];
+
+    // 1. Packed axis values in the URL — works on any device, no storage needed
+    if (packed) {
+      const nums = packed.split('.').map(function(n){ return parseInt(n, 10); });
+      if (nums.length === 8 && nums.every(function(n){ return !isNaN(n); })) {
+        window.__axisVals = {};
+        order.forEach(function(k, i){ window.__axisVals[k] = Math.max(0, Math.min(100, nums[i])); });
+        if (code.length === 6) {
+          savedCode = code;
+          try { var st = localStorage.getItem('tdh_t2_' + code); if (st) answers = JSON.parse(st).answers || answers; } catch(e) {}
+        }
+        document.getElementById('view-intro').style.display = 'none';
+        showProfile();
+        return;
+      }
+    }
+
+    // 2. Stored result by code (this device)
     if (code.length === 6) {
       const stored = localStorage.getItem('tdh_t2_' + code);
       if (stored) {
         const data = JSON.parse(stored);
         answers    = data.answers || {};
+        if (data.result && Object.keys(data.result).length) window.__axisVals = data.result;
         savedCode  = code;
         document.getElementById('view-intro').style.display = 'none';
         showProfile();
         requestAnimationFrame(() => {
-          const box  = document.getElementById('code-box');
-          box.textContent = code;
-          box.classList.add('show');
+          const box = document.getElementById('code-box');
+          if (box) { box.textContent = code; box.classList.add('show'); }
         });
         return;
       }
@@ -1232,25 +1437,36 @@ document.getElementById('btn-start').addEventListener('click', () => {
       fb.textContent = ''; fb.className = 'send-feedback';
 
       var returnURL = window.location.href.split('?')[0] + '?code=' + window.savedCode;
-      var shareURL = returnURL;
-      try {
-        if (typeof makeShareURL === 'function') {
-          var rv = (typeof currentGradient !== 'undefined' && currentGradient) ? currentGradient
-                 : (typeof currentScores !== 'undefined' && currentScores) ? currentScores : null;
-          if (rv) shareURL = makeShareURL(rv);
-        }
-      } catch(e) {}
+      var shareURL = (typeof makeShareURL === 'function') ? makeShareURL() : returnURL;
 
       var codePart = '<p style="font-family:monospace;color:#c8c3bb;font-size:14px;margin:0 0 4px">Result code (this device):</p>'
         + '<p style="font-family:monospace;font-size:2rem;letter-spacing:.3em;color:#d4a93e;margin:4px 0 12px">' + window.savedCode + '</p>'
-        + '<p style="margin:0 0 6px"><a href="' + returnURL + '" style="color:#d4a93e;font-size:14px">' + returnURL + '</a></p>'
-        + (shareURL !== returnURL ? '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Shareable (any device):</p><p><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>' : '');
+        + '<p style="font-family:monospace;color:#c8c3bb;font-size:13px;margin:12px 0 4px">Open your full profile (any device):</p>'
+        + '<p style="word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:14px">' + shareURL + '</a></p>';
 
-      var rEl = document.getElementById('view-results');
-      var rTxt = rEl ? rEl.innerText.replace(/[<>]/g,'') : '';
-      var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + rTxt.substring(0, 3000) + '</p>';
+      // Written profile (read the actual rendered profile, not a non-existent results view)
+      var pEl = document.getElementById('profile-doc');
+      var pTxt = pEl ? pEl.innerText.replace(/[<>]/g,'') : '';
+      var resultPart = '<p style="white-space:pre-wrap;font-size:15px;line-height:1.75;color:#e2ddd2">' + pTxt.substring(0, 4000) + '</p>';
 
-      var body = resultPart + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;
+      // Axis placements as a labelled bar table
+      var placements = '';
+      try {
+        var vv = window.__axisVals || {};
+        placements = '<p style="font-family:monospace;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#d4a93e;margin:20px 0 10px">Where you placed yourself</p>';
+        AXES.forEach(function(a){
+          var val = Math.round(vv[a.k] != null ? vv[a.k] : 50);
+          placements += '<table role="presentation" width="100%" style="border-collapse:collapse;margin:0 0 8px"><tr>'
+            + '<td style="font-family:monospace;font-size:11px;color:#c8c3bb;width:34%">' + a.l + '</td>'
+            + '<td style="width:32%"><div style="height:4px;background:rgba(212,169,62,.18);position:relative"><div style="position:absolute;left:' + val + '%;top:-4px;width:10px;height:10px;border-radius:50%;background:#d4a93e;transform:translateX(-50%)"></div></div></td>'
+            + '<td style="font-family:monospace;font-size:11px;color:#c8c3bb;width:34%;text-align:right">' + a.r + '</td>'
+            + '</tr></table>';
+        });
+      } catch(e) {}
+
+      var body = resultPart
+        + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + placements
+        + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;
 
       var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
         + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
