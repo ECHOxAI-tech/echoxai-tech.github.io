@@ -597,6 +597,7 @@
   <hr class="rule">
   <p class="section-lbl">Share your result</p>
   <p class="code-hint">This link opens your exact result on any device — share it anywhere.</p>
+  <p class="code-hint" style="color:var(--muted);font-size:0.55rem;margin-top:0.4rem">Anyone with this link or code can view this result. There is no password. Share it only where you are comfortable.</p>
   <div class="share-url-box">
     <span class="share-url-text" id="share-url-text">&nbsp;</span>
     <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
@@ -714,6 +715,28 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// Persist this result to the shared profile store (D1) so any device can assemble
+// a combined or comparison profile from the code. Fire-and-forget; never blocks UI.
+async function saveToProfile(code, tool, obj) {
+  // Canonical store: write the result to D1 by code so it is retrievable from any
+  // device. Awaited with one retry so the code is guaranteed live before the result
+  // screen shows it. localStorage remains only as silent offline/lag insurance.
+  if (!code || !tool || !obj) return false;
+  var payload = JSON.stringify({ code: code, tool: tool, data: obj });
+  for (var attempt = 0; attempt < 2; attempt++) {
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      if (res && res.ok) return true;
+    } catch(e) {}
+    await new Promise(function(r){ setTimeout(r, 600); });
+  }
+  return false;  // saved locally regardless; profile page falls back to localStorage
 }
 
 function genCode() {
@@ -1283,12 +1306,14 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
 })();
 
   // ── SAVE + SEND (canonical) ──
-  function _saveAndShow() {
+  async function _saveAndShow() {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
     var result = window.__lastResult || {};
-    try { localStorage.setItem('tdh_t1_' + code, JSON.stringify({ ts: Date.now(), result: result })); } catch(e) {}
+    var _t1obj = { ts: Date.now(), result: result };
+    try { localStorage.setItem('tdh_t1_' + code, JSON.stringify(_t1obj)); } catch(e) {}
+    try { await saveToProfile(code, 't1', _t1obj); } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
     try {

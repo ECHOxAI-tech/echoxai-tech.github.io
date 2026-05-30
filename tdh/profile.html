@@ -69,7 +69,37 @@
     color:var(--gold-dim); text-decoration:none; }
   .back:hover { color:var(--gold); }
   svg { max-width:100%; display:block; margin:0 auto; }
-</style>
+  /* matrix */
+  .intro-lead { font-size:0.92rem; color:var(--muted); line-height:1.75; margin:0 auto 2rem; max-width:34rem; text-align:center; }
+  .matrix-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:1.2rem; }
+  table.matrix { border-collapse:collapse; width:100%; min-width:30rem; }
+  table.matrix th, table.matrix td { padding:0.5rem 0.45rem; text-align:center; vertical-align:middle; }
+  table.matrix thead th { font-family:'Inconsolata',monospace; font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); border-bottom:1px solid var(--rule); padding-bottom:0.7rem; }
+  table.matrix .rowlbl { font-family:'Inconsolata',monospace; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--bone); text-align:left; white-space:nowrap; padding-right:0.8rem; }
+  table.matrix tbody tr { border-bottom:1px solid rgba(184,150,62,0.08); }
+  .pname-input { width:100%; max-width:7rem; font-family:'IM Fell English',Georgia,serif; font-size:0.8rem; color:var(--off-white); background:transparent; border:none; border-bottom:1px solid var(--rule); text-align:center; padding:0.2rem; margin-top:0.4rem; }
+  .pname-input:focus { outline:none; border-bottom-color:var(--gold); }
+  .code-cell { width:6.5rem; font-family:'Inconsolata',monospace; font-size:0.72rem; letter-spacing:0.18em; text-align:center; text-transform:uppercase; color:var(--gold); background:var(--near); border:1px solid var(--rule); padding:0.5rem 0.3rem; }
+  .code-cell:focus { outline:none; border-color:var(--gold); }
+  .code-cell.ok { border-color:#6ab07a; }
+  .code-cell.bad { border-color:#c0564e; }
+  .colfill { font-family:'Inconsolata',monospace; font-size:0.46rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-dim); background:transparent; border:none; cursor:pointer; display:block; margin:0.35rem auto 0; }
+  .colfill:hover { color:var(--gold); }
+  .matrix-actions { display:flex; gap:0.8rem; justify-content:center; margin:0.5rem 0 0.5rem; }
+  .btn-primary { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--black); background:var(--gold); border:none; padding:0.75rem 2rem; cursor:pointer; }
+  .btn-primary:hover { background:#e3bd55; }
+  .btn-ghost { font-family:'Inconsolata',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); background:transparent; border:1px solid var(--rule); padding:0.75rem 1.4rem; cursor:pointer; }
+  .btn-ghost:hover { border-color:var(--gold); }
+  .matrix-note { text-align:center; font-family:'Inconsolata',monospace; font-size:0.55rem; letter-spacing:0.06em; color:var(--muted); min-height:1rem; margin-bottom:1rem; }
+  .matrix-note.err { color:#d98a82; }
+  /* comparison output */
+  .cmp-test { margin:2.5rem 0; }
+  .cmp-test-title { font-family:'IM Fell English',Georgia,serif; font-size:1.25rem; color:var(--off-white); margin-bottom:1.2rem; border-bottom:1px solid var(--rule); padding-bottom:0.5rem; }
+  .cmp-cols { display:grid; gap:1.5rem; }
+  .cmp-col { min-width:0; }
+  .cmp-col-name { font-family:'Inconsolata',monospace; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:0.8rem; }
+  .cmp-col-empty { font-size:0.85rem; color:var(--muted); font-style:italic; }
+  .person-summary { font-family:'IM Fell English',Georgia,serif; font-size:1.4rem; color:var(--off-white); margin:0 0 1.5rem; text-align:center; }</style>
 </head>
 <body>
 <div class="wrap">
@@ -78,13 +108,23 @@
     <h1>Your Combined Profile</h1>
     <span class="ornament">✦</span>
   </div>
-  <div class="code-pill" id="code-pill">——</div>
+  <p class="intro-lead" id="intro-lead">Every test gives a six-character code, shown with your result. Enter codes into the grid below — one column per person (up to four), one row per test. Fill a single column to assemble that person's overlapping profile; fill the same row across columns to compare people on that test. Use only the tests you want. No account required.</p>
+
+  <div id="matrix-wrap"></div>
+  <div class="matrix-actions">
+    <button class="btn-primary" id="btn-analyse">Analyse</button>
+    <button class="btn-ghost" id="btn-clear">Clear</button>
+  </div>
+  <p class="matrix-note" id="matrix-note"></p>
+
   <div id="content"></div>
   <div style="text-align:center"><a href="./index.html" class="back">← Return to the tool suite</a></div>
 </div>
 
 <script>
 const CODE = (new URLSearchParams(location.search).get('code') || '').toUpperCase().trim();
+const WORKER = 'https://tdh-email.inbox-fde.workers.dev';
+const MAX_PERSONS = 4;
 
 const TESTS = [
   { key:'tdh_t1_', title:'Trigger Gradient',           path:'./tool-1-trigger-gradient.html',      render:renderT1 },
@@ -167,42 +207,217 @@ function renderT6(d) {
   return out;
 }
 
-(function() {
-  var pill = document.getElementById('code-pill');
-  var content = document.getElementById('content');
-  pill.textContent = CODE || '——';
+// ══════════════════════════════════════════════
+// MATRIX ENGINE
+// ══════════════════════════════════════════════
 
-  if (!CODE || CODE.length !== 6) {
-    content.innerHTML = '<p class="empty">No code provided.<br>Enter your six-character code on the <a href="./index.html">landing page</a> to see your combined profile.</p>';
-    return;
+var content = document.getElementById('content');
+
+// Fetch one result by (code, tool): D1 first, localStorage fallback.
+async function fetchResult(code, toolKey) {
+  var tool = toolKey.replace('tdh_', '').replace('_', ''); // 'tdh_t1_' → 't1'
+  // Try the shared store
+  try {
+    var res = await fetch(WORKER + '/profile?code=' + encodeURIComponent(code) + '&tool=' + tool, { method:'GET' });
+    if (res.ok) {
+      var j = await res.json();
+      if (j && j.found && j.data) return j.data;
+    }
+  } catch(e) {}
+  // Fallback: this device's localStorage
+  try {
+    var raw = localStorage.getItem(toolKey + code);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+// Build the input grid
+function buildMatrix() {
+  var persons = [];
+  for (var i = 0; i < MAX_PERSONS; i++) persons.push(i);
+
+  var html = '<div class="matrix-scroll"><table class="matrix"><thead><tr><th></th>';
+  persons.forEach(function(p) {
+    html += '<th>Person ' + (p+1)
+      + '<input class="pname-input" id="pname-' + p + '" placeholder="name (optional)" maxlength="18">'
+      + '<button class="colfill" data-col="' + p + '">↧ fill column</button></th>';
+  });
+  html += '</tr></thead><tbody>';
+  TESTS.forEach(function(t, ri) {
+    html += '<tr><td class="rowlbl">' + t.title + '</td>';
+    persons.forEach(function(p) {
+      html += '<td><input class="code-cell" id="cell-' + ri + '-' + p + '" maxlength="6" placeholder="——————" autocomplete="off" spellcheck="false"></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('matrix-wrap').innerHTML = html;
+
+  // Uppercase + auto-advance behaviour
+  document.querySelectorAll('.code-cell').forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      this.classList.remove('ok','bad');
+    });
+  });
+  // "Fill column": copy the first non-empty code in a column down the whole column
+  document.querySelectorAll('.colfill').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var col = this.getAttribute('data-col');
+      var firstVal = '';
+      for (var r = 0; r < TESTS.length; r++) {
+        var c = document.getElementById('cell-' + r + '-' + col);
+        if (c && c.value.trim()) { firstVal = c.value.trim(); break; }
+      }
+      if (!firstVal) { setNote('Type a code in any row of that column first, then fill.', true); return; }
+      for (var r2 = 0; r2 < TESTS.length; r2++) {
+        var c2 = document.getElementById('cell-' + r2 + '-' + col);
+        if (c2 && !c2.value.trim()) c2.value = firstVal;
+      }
+    });
+  });
+}
+
+function setNote(msg, isErr) {
+  var n = document.getElementById('matrix-note');
+  n.textContent = msg || '';
+  n.className = 'matrix-note' + (isErr ? ' err' : '');
+}
+
+function personName(p) {
+  var el = document.getElementById('pname-' + p);
+  var v = el && el.value.trim();
+  return v || ('Person ' + (p+1));
+}
+
+// Read the grid into a structure: { filledPersons:[...], byRow:{ri:{p:code}}, anyCode:bool }
+function readMatrix() {
+  var byRow = {}, personsUsed = {}, count = 0;
+  TESTS.forEach(function(t, ri) {
+    for (var p = 0; p < MAX_PERSONS; p++) {
+      var c = document.getElementById('cell-' + ri + '-' + p);
+      var code = c ? c.value.trim().toUpperCase() : '';
+      if (code.length === 6) {
+        if (!byRow[ri]) byRow[ri] = {};
+        byRow[ri][p] = code;
+        personsUsed[p] = true;
+        count++;
+      } else if (code.length > 0 && c) {
+        c.classList.add('bad');
+      }
+    }
+  });
+  return { byRow: byRow, persons: Object.keys(personsUsed).map(Number).sort(), count: count };
+}
+
+async function analyse() {
+  var m = readMatrix();
+  if (m.count === 0) { setNote('Enter at least one six-character code.', true); return; }
+  setNote('Gathering results…');
+  document.getElementById('btn-analyse').disabled = true;
+
+  // Resolve every filled cell
+  var resolved = {}; // resolved[ri][p] = data | null
+  for (var riStr in m.byRow) {
+    var ri = Number(riStr);
+    resolved[ri] = {};
+    for (var pStr in m.byRow[ri]) {
+      var p = Number(pStr);
+      var data = await fetchResult(m.byRow[ri][p], TESTS[ri].key);
+      resolved[ri][p] = data;
+      var cell = document.getElementById('cell-' + ri + '-' + p);
+      if (cell) cell.classList.add(data ? 'ok' : 'bad');
+    }
   }
 
-  var found = [];
-  TESTS.forEach(function(t) {
-    var raw;
-    try { raw = localStorage.getItem(t.key + CODE); } catch(e) { return; }
-    if (!raw) return;
-    var data; try { data = JSON.parse(raw); } catch(e) { return; }
+  var multiPerson = m.persons.length > 1;
+  setNote('');
+  document.getElementById('btn-analyse').disabled = false;
+  document.getElementById('intro-lead').style.display = 'none';
+
+  if (multiPerson) renderComparison(resolved, m.persons);
+  else renderSinglePerson(resolved, m.persons[0]);
+  content.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// One person, many tests → vertical overlapping profile
+function renderSinglePerson(resolved, p) {
+  var name = personName(p);
+  var out = '<p class="person-summary">' + escapeHTML(name) + '</p>';
+  var any = false;
+  TESTS.forEach(function(t, ri) {
+    if (!resolved[ri] || resolved[ri][p] === undefined) return;
+    var data = resolved[ri][p];
+    if (!data) {
+      out += '<div class="test-block"><p class="test-title">' + t.title + '</p>'
+        + '<p class="cmp-col-empty">No result found for that code.</p></div>';
+      return;
+    }
     var html = t.render(data);
-    if (html) found.push({ title: t.title, path: t.path, date: fmtDate(data.ts), html: html });
+    if (!html) return;
+    any = true;
+    out += '<div class="test-block"><p class="test-title">' + t.title + '</p>'
+      + (data.ts ? '<p class="test-date">' + fmtDate(data.ts) + '</p>' : '')
+      + html + '</div>';
+  });
+  if (!any) out += '<p class="empty">None of those codes resolved to a stored result.</p>';
+  content.innerHTML = out;
+}
+
+// Multiple persons → per-test comparison, columns side by side
+function renderComparison(resolved, persons) {
+  var gridCols = 'repeat(' + persons.length + ', minmax(0, 1fr))';
+  var out = '<p class="section-lbl">Comparison — ' + persons.length + ' people</p>';
+  var anyTest = false;
+
+  TESTS.forEach(function(t, ri) {
+    if (!resolved[ri]) return;            // this test not filled for anyone
+    anyTest = true;
+    out += '<div class="cmp-test"><p class="cmp-test-title">' + t.title + '</p>'
+      + '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
+    persons.forEach(function(p) {
+      out += '<div class="cmp-col"><p class="cmp-col-name">' + escapeHTML(personName(p)) + '</p>';
+      if (resolved[ri][p] === undefined) {
+        out += '<p class="cmp-col-empty">— no code —</p>';
+      } else if (!resolved[ri][p]) {
+        out += '<p class="cmp-col-empty">not found</p>';
+      } else {
+        var html = t.render(resolved[ri][p]);
+        out += html || '<p class="cmp-col-empty">unreadable</p>';
+      }
+      out += '</div>';
+    });
+    out += '</div></div>';
   });
 
-  if (!found.length) {
-    content.innerHTML = '<p class="empty">No results found for this code on this device.<br><br>'
-      + 'Results are stored locally in your browser — they can only be seen on the device that created them. '
-      + 'Complete a test, and it will appear here.<br><br>'
-      + '<a href="./index.html">← Return to the tool suite</a></p>';
-    return;
-  }
+  if (!anyTest) { content.innerHTML = '<p class="empty">No shared tests to compare.</p>'; return; }
+  content.innerHTML = out;
+}
 
-  content.innerHTML = '<p class="section-lbl">' + found.length + ' completed test' + (found.length>1?'s':'') + '</p>'
-    + found.map(function(f) {
-        return '<div class="test-block"><p class="test-title">' + f.title + '</p>'
-          + (f.date ? '<p class="test-date">' + f.date + '</p>' : '')
-          + f.html
-          + '<a class="tlink" href="' + f.path + '?code=' + CODE + '">Open full result →</a></div>';
-      }).join('<hr class="rule">');
-})();
+function escapeHTML(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Init ──
+buildMatrix();
+document.getElementById('btn-analyse').addEventListener('click', analyse);
+document.getElementById('btn-clear').addEventListener('click', function() {
+  document.querySelectorAll('.code-cell').forEach(function(c){ c.value=''; c.classList.remove('ok','bad'); });
+  document.querySelectorAll('.pname-input').forEach(function(c){ c.value=''; });
+  content.innerHTML = '';
+  document.getElementById('intro-lead').style.display = '';
+  setNote('');
+});
+
+// Prefill: if arrived with ?code=XYZ, drop it into Person 1's column (fills all rows)
+if (CODE && CODE.length === 6) {
+  for (var _r = 0; _r < TESTS.length; _r++) {
+    var _c = document.getElementById('cell-' + _r + '-0');
+    if (_c) _c.value = CODE;
+  }
+  setNote('Code ' + CODE + ' loaded into Person 1. Press Analyse.');
+}
 </script>
 </body>
 </html>

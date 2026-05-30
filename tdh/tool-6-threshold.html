@@ -170,6 +170,27 @@
   }
   .retake-link:hover { color:var(--gold); }
 
+  .share-url-box {
+    display: flex; gap: 0.5rem; align-items: center;
+    margin-bottom: 0.6rem;
+  }
+  .share-url-text {
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    color: var(--muted); letter-spacing: 0.04em;
+    background: var(--black); border: 1px solid var(--rule);
+    padding: 0.45rem 0.65rem; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .btn-copy {
+    font-family: 'Inconsolata', monospace; font-size: 0.6rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold-dim); background: none;
+    border: 1px solid var(--gold-dim);
+    padding: 0.45rem 0.75rem; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-copy:hover { background: var(--gold-dim); color: var(--black); }
+  .btn-copy.copied { border-color: var(--gold); color: var(--gold); }
 </style>
 </head>
 <body>
@@ -284,6 +305,11 @@
     <p>This tool does not tell you whether to cross. It cannot. The crossing is the work the framework asks of the practitioner who chooses it; the non-crossing is the work of the practitioner who chooses otherwise. Both are work. Neither is failure.</p>
     <p>If you return to this tool a month from now, six months from now, a year from now — your answers may be different. The threshold moves with you.</p>
   </div>
+  <hr class="rule">
+  <p class="section-lbl">Share your result</p>
+  <p class="code-hint">This link opens your exact result on any device — share it anywhere.</p>
+  <div class="share-url-box"><span class="share-url-text" id="share-url-text">&nbsp;</span><button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button></div>
+  <p class="code-hint" style="color:var(--muted);font-size:0.55rem;margin-top:0.4rem">Anyone with this link or code can view this result. There is no password. Share it only where you are comfortable.</p>
   <hr class="rule">
   <p class="section-lbl">Email my result</p>
   <p class="code-hint">Enter your email to receive your full result and a link back to this page.</p>
@@ -639,6 +665,48 @@ function generate() {
 // SAVE
 // ════════════════════════════════════════════
 
+// Persist this result to the shared profile store (D1) so any device can assemble
+// a combined or comparison profile from the code. Fire-and-forget; never blocks UI.
+async function saveToProfile(code, tool, obj) {
+  // Canonical store: write the result to D1 by code so it is retrievable from any
+  // device. Awaited with one retry so the code is guaranteed live before the result
+  // screen shows it. localStorage remains only as silent offline/lag insurance.
+  if (!code || !tool || !obj) return false;
+  var payload = JSON.stringify({ code: code, tool: tool, data: obj });
+  for (var attempt = 0; attempt < 2; attempt++) {
+    try {
+      var res = await fetch('https://tdh-email.inbox-fde.workers.dev/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+      if (res && res.ok) return true;
+    } catch(e) {}
+    await new Promise(function(r){ setTimeout(r, 600); });
+  }
+  return false;  // saved locally regardless; profile page falls back to localStorage
+}
+
+function copyShareURL() {
+  const url = document.getElementById('share-url-text').textContent.trim();
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('btn-copy-url');
+    btn.textContent = 'Copied ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('btn-copy-url');
+    btn.textContent = 'Copied ✓'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
 function genCode() {
   // Shared profile code — reused across all tests so a combined profile can be assembled
   try {
@@ -676,7 +744,7 @@ function genCode() {
 })();
 
   // ── SAVE + SEND (canonical) ──
-  function _saveAndShow() {
+  async function _saveAndShow() {
     if (window.savedCode) return;
     var code = genCode();
     window.savedCode = code;
@@ -684,16 +752,19 @@ function genCode() {
     // Store both the rehydration data (resp/openText, to rebuild via generate()) and the result vector
     try {
       var raw = window.__t6raw || {};
-      localStorage.setItem('tdh_t6_' + code, JSON.stringify({
+      var _t6obj = {
         ts: Date.now(),
         resp: (typeof resp !== 'undefined' ? resp : {}),
         openText: (typeof openText !== 'undefined' ? openText : ''),
         result: result,
         thr: raw.thr, arch: raw.arch, cost: raw.cost
-      }));
+      };
+      localStorage.setItem('tdh_t6_' + code, JSON.stringify(_t6obj));
+      try { await saveToProfile(code, 't6', _t6obj); } catch(e) {}
     } catch(e) {}
     var box = document.getElementById('code-box');
     if (box) { box.textContent = code; box.classList.add('show'); }
+    try { var _su=document.getElementById('share-url-text'); if(_su) _su.textContent = window.location.href.split('?')[0]+'?code='+code; } catch(e) {}
     try {
       var u = new URL(window.location.href);
       u.searchParams.set('code', code);
