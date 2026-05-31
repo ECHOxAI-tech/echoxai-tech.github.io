@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SEALBERT – Tail of the Seal Whisperer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04040f;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:'Press Start 2P',monospace;color:#fff;overflow:hidden;user-select:none}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;max-width:100vw}
+#hud{display:none;justify-content:space-between;align-items:center;width:640px;max-width:100vw;padding:5px 10px;background:#000814;border-bottom:2px solid #1060a0;font-size:9px;gap:6px;flex-wrap:wrap}
+#hud span{color:#ffe040}
+#spin-bar{width:55px;height:7px;background:#0a1828;border:1px solid #1080c0;overflow:hidden;border-radius:2px;display:inline-block;vertical-align:middle}
+#spin-fill{height:100%;background:linear-gradient(90deg,#ff6000,#ffe040);width:0%}
+.overlay{position:absolute;top:0;left:0;width:640px;height:400px;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30;text-align:center;gap:10px;background:rgba(2,8,22,.93)}
+.overlay h2{font-size:16px;line-height:1.8}
+.msg{font-size:9px;color:#90a0b8;line-height:2.4;max-width:420px;white-space:pre-line}
+.ybtn{font-family:'Press Start 2P',monospace;font-size:12px;color:#ffe040;background:none;border:2px solid #ffe040;padding:8px 14px;cursor:pointer;animation:blink .9s step-end infinite;display:inline-block}
+.gbtn{font-family:'Press Start 2P',monospace;font-size:12px;color:#40ff70;background:none;border:2px solid #40ff70;padding:8px 14px;cursor:pointer;animation:blink .9s step-end infinite;display:inline-block}
+#boss-hp-wrap{display:none;position:absolute;bottom:6px;left:50%;transform:translateX(-50%);text-align:center;z-index:5}
+#boss-hp-label{font-size:6px;color:#ff8000;margin-bottom:2px}
+#boss-hp-bar{width:200px;height:10px;background:#1a0000;border:2px solid #ff6000;overflow:hidden;border-radius:2px}
+#boss-hp-fill{height:100%;background:linear-gradient(90deg,#c00,#f80,#fd0);transition:width .15s}
+#tofu-notif{display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,15,35,.92);border:2px solid #60d8ff;padding:5px 12px;font-size:7px;color:#60ffff;z-index:50;pointer-events:none;border-radius:3px;white-space:nowrap}
+#cutscene-canvas{display:none;max-width:100vw}
+#game-wrapper{position:relative;display:none}
+#touch-controls{display:none;justify-content:space-between;width:640px;max-width:100vw;padding:6px}
+@keyframes blink{50%{opacity:0}}
+</style>
+</head>
+<body>
+<script>
+window.onerror = function(msg,src,line,col){
+  var d=document.getElementById('err-bar');
+  if(!d){d=document.createElement('div');d.id='err-bar';d.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#900;color:#fff;font-size:10px;padding:6px;z-index:9999;font-family:monospace;word-break:break-all';document.body.appendChild(d);}
+  d.textContent='ERR: '+msg+' | '+src+' '+line+':'+col;
+};
+</script>
+
+<!-- TITLE -->
+<div id="title-screen" style="text-align:center;padding:16px;max-width:640px;width:100%">
+  <div style="font-size:42px;color:#60d8ff;text-shadow:0 0 16px #40b0ff,4px 4px 0 #003880,-3px -3px 0 #8040ff;margin-bottom:6px;font-family:'Press Start 2P',monospace">SEALBERT</div>
+  <div style="font-size:11px;color:#90e0ff;letter-spacing:2px;margin-bottom:8px;font-family:'Press Start 2P',monospace">★ TAIL OF THE SEAL WHISPERER ★</div>
+  <div style="font-size:9px;color:#3a6080;line-height:2.4;margin-bottom:22px;font-family:'Press Start 2P',monospace">Love · Tofu · Transformation · Betrayal · Ice Bears</div>
+
+  <div id="diff-select" style="margin-bottom:16px">
+    <div style="font-size:10px;color:#607080;margin-bottom:10px">SELECT DIFFICULTY</div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:center" id="diff-btns"></div>
+  </div>
+
+  <button class="ybtn" onclick="startIntro()" id="begin-btn" style="display:none">▶ BEGIN</button>
+  <div style="margin-top:14px;font-size:8px;color:#1e3040;font-family:'Press Start 2P',monospace;line-height:2.8">← → MOVE | Z JUMP | X SLIDE | C TAIL-SPIN ★ | S SAVE</div>
+  <div id="save-ui" style="margin-top:10px"></div>
+</div>
+
+<canvas id="cutscene-canvas" width="640" height="400"></canvas>
+
+<div id="hud">
+  <div id="stage-label" style="font-size:8px;color:#60b0ff;max-width:200px"></div>
+  <div>🐟<span id="tofu-val">0</span></div>
+  <div>❤<span id="lives-val">3</span></div>
+  <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#90d0ff">SPIN<div id="spin-bar"><div id="spin-fill"></div></div></div>
+  <div style="font-size:9px"><span id="score-val">0</span>pts</div>
+  <div id="diff-badge" style="font-size:8px;color:#806020"></div>
+  <div id="stars-row" style="font-size:8px"></div>
+  <button id="mute-btn" onclick="toggleMute()" style="font-family:monospace;font-size:11px;background:none;border:1px solid #2a4050;color:#60b0ff;cursor:pointer;border-radius:3px;padding:1px 5px">🔊</button>
+</div>
+
+<div id="game-wrapper">
+  <canvas id="canvas" width="640" height="400"></canvas>
+  <div id="boss-hp-wrap"><div id="boss-hp-label">✦ MAGNUS THE MERCILESS ✦</div><div id="boss-hp-bar"><div id="boss-hp-fill"></div></div></div>
+  <div id="tofu-notif"></div>
+  <div id="goal-banner" style="display:none;position:absolute;top:0;left:0;width:640px;height:400px;flex-direction:column;align-items:center;justify-content:center;z-index:25;background:rgba(2,8,22,0.72);text-align:center;gap:14px;pointer-events:none"><div id="gb-name" style="font-size:13px;color:#ffe040;text-shadow:2px 2px #603000"></div><div id="gb-desc" style="font-size:7px;color:#a8d0f0;line-height:2.2;max-width:440px;white-space:pre-line;padding:0 20px"></div><div style="font-size:6px;color:#5070a0;margin-top:6px">— get ready —</div></div>
+
+  <div id="stage-complete" class="overlay">
+    <h2 id="sc-title" style="color:#ffe040"></h2>
+    <div class="msg" id="sc-msg"></div>
+    <div id="sc-stars" style="font-size:18px;margin:4px 0"></div>
+    <button class="ybtn" onclick="advanceStage()">CONTINUE ▶</button>
+  </div>
+  <div id="boss-intro" class="overlay">
+    <h2 style="color:#ff8000">✦ MAGNUS THE MERCILESS ✦</h2>
+    <div class="msg">Chief of the Seal-Clubbing Empire.\nEric's own blood.\nHe will not forgive.</div>
+    <button class="ybtn" onclick="dismissBossIntro()">⚔ FACE HIM</button>
+  </div>
+  <div id="game-over-screen" class="overlay">
+    <h2 style="color:#ff4040">CLUBBED!</h2>
+    <div class="msg" id="go-msg">The ice runs red...\nBut the ocean never forgets.</div>
+    <button class="gbtn" onclick="restartLevel()">TRY AGAIN</button>
+  </div>
+  <div id="win-screen" class="overlay">
+    <h2 style="color:#40ff90;font-size:11px" id="win-title">MAGNUS FALLS!</h2>
+    <div class="msg" id="win-msg"></div>
+    <button class="gbtn" onclick="showDiffUnlock()">CONTINUE</button>
+  </div>
+  <div id="diff-unlock" class="overlay">
+    <h2 id="du-title" style="color:#ffe040"></h2>
+    <div class="msg" id="du-msg"></div>
+    <button class="gbtn" onclick="location.reload()">MAIN MENU</button>
+  </div>
+</div>
+<div id="controls-hint" style="font-size:8px;color:#2a4050;margin-top:4px;text-align:center;display:none">← → MOVE | Z JUMP | X SLIDE | C TAIL-SPIN ★ | S SAVE</div>
+
+<div id="touch-controls">
+  <div style="display:flex;gap:6px">
+    <button id="btn-left" style="font-size:20px;padding:11px 15px;background:#050f1e;border:2px solid #2060a0;color:#fff;touch-action:none">◀</button>
+    <button id="btn-right" style="font-size:20px;padding:11px 15px;background:#050f1e;border:2px solid #2060a0;color:#fff;touch-action:none">▶</button>
+  </div>
+  <div style="display:flex;gap:5px">
+    <button id="btn-spin" style="font-family:'Press Start 2P';font-size:7px;padding:9px;background:#050f1e;border:2px solid #ffe040;color:#ffe040;touch-action:none">★SPIN</button>
+    <button id="btn-slide" style="font-family:'Press Start 2P';font-size:7px;padding:9px;background:#050f1e;border:2px solid #ff8000;color:#ff8000;touch-action:none">SLIDE</button>
+    <button id="btn-jump" style="font-family:'Press Start 2P';font-size:7px;padding:9px;background:#050f1e;border:2px solid #40ff60;color:#40ff60;touch-action:none">JUMP</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DIFFICULTY SYSTEM
+// ═══════════════════════════════════════════════════════
+var DIFFICULTIES = [
+  {
+    id: 'tofu',
+    name: 'Tofu Taster',
+    icon: '🐟',
+    desc: 'Gentle seas. Full fish. For those who believe in kindness.',
+    color: '#40c080',
+    lives: 3,
+    fishMult: 1.0,
+    enemySpeed: 0.85,
+    spinChargeRate: 0.5,
+    magnusHP: 8,
+    clubFreq: 1.0,
+    unlocked: true
+  },
+  {
+    id: 'seal',
+    name: 'Seal Sympathiser',
+    icon: '🦭',
+    desc: 'The real adventure. As intended.',
+    color: '#60a0ff',
+    lives: 3,
+    fishMult: 0.75,
+    enemySpeed: 1.0,
+    spinChargeRate: 0.4,
+    magnusHP: 12,
+    clubFreq: 1.0,
+    unlocked: false
+  },
+  {
+    id: 'arctic',
+    name: 'Arctic Wanderer',
+    icon: '❄',
+    desc: 'The blizzard never stops. Fewer fish. Faster enemies.',
+    color: '#80c0ff',
+    lives: 2,
+    fishMult: 0.5,
+    enemySpeed: 1.3,
+    spinChargeRate: 0.3,
+    magnusHP: 16,
+    clubFreq: 1.5,
+    unlocked: false
+  },
+  {
+    id: 'magnus',
+    name: 'Magnus Himself',
+    icon: '💀',
+    desc: 'One life. Brutal. Are you even vegan?',
+    color: '#ff6040',
+    lives: 1,
+    fishMult: 0.3,
+    enemySpeed: 1.6,
+    spinChargeRate: 0.2,
+    magnusHP: 20,
+    clubFreq: 2.0,
+    unlocked: false
+  }
+];
+
+var DIFF_ORDER = ['tofu','seal','arctic','magnus'];
+var selectedDiff = 'tofu';
+var currentDiff = null;
+
+// ── SAVE SYSTEM ──────────────────────────────────────
+var SAVE_KEY = 'sealbert_v3';
+function getSave(){
+  try{ return JSON.parse(localStorage.getItem(SAVE_KEY)||'{}'); }catch(e){ return {}; }
+}
+function putSave(data){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){}
+}
+function saveGame(){
+  if(!game) return;
+  var sv = getSave();
+  sv.current = {
+    stageKey: game.stageKey,
+    stageIdx: stageIdx,
+    score: game.score,
+    tofu: game.tofu,
+    lives: game.lives,
+    diffId: currentDiff.id,
+    ts: Date.now()
+  };
+  putSave(sv);
+  showNotif('💾 Saved!');
+}
+function saveUnlock(diffId){
+  var sv = getSave();
+  sv.unlocked = sv.unlocked || {};
+  sv.unlocked[diffId] = true;
+  // star records
+  putSave(sv);
+}
+function saveStars(stageKey, diffId, stars){
+  var sv = getSave();
+  sv.stars = sv.stars || {};
+  var k = diffId + '_' + stageKey;
+  sv.stars[k] = Math.max(sv.stars[k]||0, stars);
+  putSave(sv);
+}
+function getStars(stageKey, diffId){
+  var sv = getSave();
+  return (sv.stars && sv.stars[diffId+'_'+stageKey]) || 0;
+}
+function deleteCurrent(){
+  var sv = getSave();
+  delete sv.current;
+  putSave(sv);
+}
+function loadUnlocked(){
+  var sv = getSave();
+  var ul = sv.unlocked || {};
+  DIFFICULTIES.forEach(function(d){
+    if(ul[d.id]) d.unlocked = true;
+  });
+  DIFFICULTIES[0].unlocked = true; // always
+}
+
+// ── DIFFICULTY UI ────────────────────────────────────
+function buildDiffUI(){
+  loadUnlocked();
+  var c = document.getElementById('diff-btns');
+  c.innerHTML = '';
+  DIFFICULTIES.forEach(function(d){
+    var btn = document.createElement('button');
+    btn.style.cssText = 'font-family:"Press Start 2P",monospace;font-size:10px;padding:10px 18px;background:'+(d.unlocked?'rgba(0,20,40,.9)':'rgba(10,10,20,.5)')+';border:2px solid '+(d.unlocked?d.color:'#303040')+';color:'+(d.unlocked?d.color:'#404050')+';cursor:'+(d.unlocked?'pointer':'default')+';width:300px;text-align:left;border-radius:2px;margin:0 auto';
+    btn.innerHTML = '<span style="font-family:sans-serif;font-size:13px">'+d.icon+'</span> '+d.name+(d.unlocked?'':' <span style="font-family:sans-serif">🔒</span>');
+    if(d.unlocked){
+      btn.onclick = function(){
+        selectedDiff = d.id;
+        document.querySelectorAll('#diff-btns button').forEach(function(b){ b.style.boxShadow=''; });
+        btn.style.boxShadow = '0 0 10px '+d.color;
+        document.getElementById('begin-btn').style.display = 'inline-block';
+        document.getElementById('begin-btn').style.borderColor = d.color;
+        document.getElementById('begin-btn').style.color = d.color;
+        // show description
+        var desc = document.getElementById('diff-desc');
+        if(!desc){ desc=document.createElement('div'); desc.id='diff-desc'; desc.style.cssText='font-size:9px;color:#607080;margin-top:8px;font-family:"Press Start 2P",monospace'; document.getElementById('diff-select').appendChild(desc); }
+        desc.textContent = d.desc;
+      };
+    }
+    c.appendChild(btn);
+  });
+  // auto-select first unlocked
+  var first = c.querySelector('button');
+  if(first) first.click();
+
+  // save UI
+  updateSaveUI();
+}
+function updateSaveUI(){
+  var sv = getSave();
+  var el = document.getElementById('save-ui');
+  if(!el) return;
+  if(sv.current){
+    var d = new Date(sv.current.ts).toLocaleString('sv-SE',{dateStyle:'short',timeStyle:'short'});
+    el.innerHTML = '<div style="font-size:8px;color:#304858;border:1px solid #1a3040;padding:5px 10px;border-radius:2px;font-family:\'Press Start 2P\',monospace">💾 '+sv.current.diffId.toUpperCase()+' · Level '+sv.current.stageKey+' · '+sv.current.tofu+'🐟 · '+sv.current.score+'pts<br><span style="color:#1e2e3a">'+d+'</span><br><button onclick="continueGame()" style="font-family:\'Press Start 2P\',monospace;font-size:7px;color:#40ff70;background:none;border:1px solid #40ff70;padding:4px 8px;cursor:pointer;margin-top:4px">▶ CONTINUE</button> <button onclick="deleteCurrent();updateSaveUI()" style="font-family:\'Press Start 2P\',monospace;font-size:5px;color:#304050;background:none;border:none;cursor:pointer">✕ delete</button></div>';
+  } else {
+    el.innerHTML = '';
+  }
+}
+function continueGame(){
+  var sv = getSave();
+  if(!sv.current){ alert('No save found'); return; }
+  var diff = DIFFICULTIES.filter(function(d){ return d.id===sv.current.diffId; })[0];
+  if(!diff) return;
+  currentDiff = diff;
+  selectedDiff = diff.id;
+  stageIdx = sv.current.stageIdx||0;
+  if(animTick) cancelAnimationFrame(animTick);
+  initStage(sv.current.stageKey);
+  game.score = sv.current.score||0;
+  game.tofu  = sv.current.tofu||0;
+  game.lives = sv.current.lives||diff.lives;
+  document.getElementById('title-screen').style.display='none';
+  loop();
+}
+function showDiffUnlock(){
+  var next = DIFF_ORDER[DIFF_ORDER.indexOf(currentDiff.id)+1];
+  var el = document.getElementById('diff-unlock');
+  var nextD = next && DIFFICULTIES.filter(function(d){ return d.id===next; })[0];
+  if(nextD){
+    saveUnlock(next);
+    nextD.unlocked = true;
+    document.getElementById('du-title').textContent = 'UNLOCKED!';
+    document.getElementById('du-msg').textContent = nextD.icon+' '+nextD.name+'\n"'+nextD.desc+'"';
+  } else {
+    document.getElementById('du-title').textContent = 'ALL DIFFICULTIES COMPLETE!';
+    document.getElementById('du-msg').textContent = 'You have mastered the Way of the Seal.\nSealbert and Eric are proud.';
+  }
+  document.getElementById('win-screen').style.display='none';
+  el.style.display='flex';
+}
+
+// ── STAR RATING ──────────────────────────────────────
+function calcStars(tofu, maxTofu, deaths, time){
+  var score = 0;
+  if(tofu >= maxTofu) score++;         // collected all fish
+  else if(tofu >= maxTofu*0.6) score += 0.5;
+  if(deaths === 0) score++;             // no deaths
+  if(time < 90) score++;               // fast
+  else if(time < 180) score += 0.5;
+  return Math.min(3, Math.round(score));
+}
+function starsHTML(n){
+  var s=''; for(var i=0;i<3;i++) s+=(i<n?'★':'☆');
+  return s;
+}
+
+// ═══════════════════════════════════════════════════════
+// PALETTE
+// ═══════════════════════════════════════════════════════
+var PS=3;
+var SB={dk:'#1c2a48',sh:'#2c4a68',md:'#4a8ab8',lt:'#78c8f0',hl:'#b8f0ff',wh:'#f0f8ff',nos:'#e03868',blush:'#ff88a8',eye:'#0f2238',eyR:'#ffffff',eyS:'#58a8e8',tail:'#c04888',tl2:'#f080b8'};
+var EK={sk:'#f0d0a0',skS:'#d0a070',hr:'#f8e878',hrS:'#d0b050',fur:'#f0e8d0',furS:'#d0c8b0',coat:'#2060a8',coS:'#103878',coH:'#48a0f0',run:'#e87820',run2:'#ffe878',fth:'#50c060',ft2:'#a0e878',ft3:'#204820',gem:'#40f0ff',gm2:'#a0ffff',boot:'#403020',btS:'#201008',uw:'#e0d8f8',uwS:'#b0a0e0',uwStr:'#6040a0'};
+var MG={dk:'#200808',cape:'#500038',cp2:'#902070',cp3:'#c04090',coat:'#a01010',co2:'#d03030',co3:'#ff6060',fur:'#e8d8b0',furS:'#b8a880',sk:'#e0b070',hmS:'#707020',helm:'#a0a040',hmH:'#f0e070',hrn:'#c0c060',eye:'#ff3030',brd:'#604828',club:'#806030',clH:'#c0a050',med:'#f0c020'};
+var IB={fur:'#e8f0ff',furS:'#b0c8e8',furD:'#6078a0',nose:'#2030a0',eye:'#101848',crown:'#f8d040',crwS:'#c09010',gem:'#40ffff',ice:'#80c8ff',iceS:'#4080d0'};
+var ENV={skyA:'#001040',skyB:'#204090',skyC:'#4080d0',icA:'#b0e0f8',icB:'#70b8e8',icC:'#f0f8ff',cldA:'#d8eeff',watA:'#003080',watB:'#0060c0',watC:'#40a0ff',watD:'#80c8ff',gndA:'#284028',gndB:'#486030',gndC:'#70a040',gndD:'#90c060',snwA:'#e0f0ff',rokA:'#485060',rokB:'#687080',rokC:'#9098a8'};
+
+var ctx;
+function setCtx(c){ ctx=c; }
+function r(x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(x|0,y|0,w|0,h|0); }
+function pr(x,y,w,h,c){ if(c) ctx.fillStyle=c; ctx.fillRect(x*PS|0,y*PS|0,w*PS|0,h*PS|0); }
+function rectsOverlap(a,b){ return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y; }
+function spawnParts(x,y,color,n,spd){
+  spd=spd||4;
+  if(!game) return;
+  for(var i=0;i<n;i++) game.particles.push({
+    x:x, y:y,
+    vx:(Math.random()-0.5)*spd, vy:(Math.random()-1)*spd,
+    color:color, life:28+Math.random()*22|0,
+    size:2+Math.random()*5|0,
+    spin:Math.random()*Math.PI*2, vr:(Math.random()-0.5)*0.4,
+    star:Math.random()<0.3
+  });
+}
+// Safari-safe rounded rect
+function rrect(c,x,y,w,h,rad){
+  c.beginPath();
+  c.moveTo(x+rad,y);
+  c.lineTo(x+w-rad,y);
+  c.quadraticCurveTo(x+w,y,x+w,y+rad);
+  c.lineTo(x+w,y+h-rad);
+  c.quadraticCurveTo(x+w,y+h,x+w-rad,y+h);
+  c.lineTo(x+rad,y+h);
+  c.quadraticCurveTo(x,y+h,x,y+h-rad);
+  c.lineTo(x,y+rad);
+  c.quadraticCurveTo(x,y,x+rad,y);
+  c.closePath();
+}
+
+// ═══════════════════════════════════════════════════════
+// CHARACTER DRAWERS
+// ═══════════════════════════════════════════════════════
+function drawSealbert(cx,cy,facingRight,state,hurtTimer,spinTimer,frame){
+var tick=Date.now();
+var isHurt=hurtTimer>0&&(Math.floor(hurtTimer/4)%2===0);
+var blinking=Math.floor(tick/2400)%8===0&&!spinTimer;
+ctx.save(); ctx.translate(cx*PS,cy*PS);
+if(!facingRight){ ctx.translate(26*PS,0); ctx.scale(-1,1); }
+if(spinTimer>0){ drawSealSpin(tick); ctx.restore(); return; }
+if(state==='slide') drawSealSlide(isHurt);
+else drawSealStand(isHurt,blinking,state,frame);
+ctx.restore();
+}
+function drawSealStand(H, blinking, state, frame){
+var dk = H ? '#602020' : SB.dk; var md = H ? '#d05050' : SB.md; var lt = H ? '#e07070' : SB.lt;
+pr(19,13,9,9,SB.tail); pr(20,12,8,8,SB.tl2);
+pr(2,11,19,17,dk); pr(3,10,17,16,md); pr(4,9,15,15,lt); pr(5,8,13,14,SB.wh);
+pr(7,3,13,12,md); pr(8,2,11,11,lt); pr(9,1,9,10,SB.wh);
+ctx.globalAlpha=0.8; pr(6,11,4,4,SB.blush); pr(14,11,4,4,SB.blush); ctx.globalAlpha=1;
+pr(11,8,5,3,SB.nos);
+pr(9,5,5,7,SB.eyS); pr(14,5,5,7,SB.eyS);
+pr(10,6,3,5,SB.eye); pr(15,6,3,5,SB.eye);
+pr(11,7,2,3,SB.eyR); pr(16,7,2,3,SB.eyR);
+if(blinking){ pr(9,7,5,3,SB.lt); pr(14,7,5,3,SB.lt); }
+var fb=(state==='walk'&&frame%2===0)?1:0;
+pr(3,20+fb,7,5,dk); pr(14,20,7,5,dk); pr(4,21+fb,6,3,md); pr(15,21,6,3,md);
+}
+function drawSealSlide(H){
+pr(19,7,7,7,SB.tail); pr(20,6,5,6,SB.tl2);
+pr(0,9,24,10,H?'#c04040':SB.md); pr(1,8,22,9,H?'#d05050':SB.lt);
+pr(4,10,15,6,SB.wh);
+pr(1,7,9,8,H?'#c04040':SB.md); pr(2,6,7,8,H?'#d05050':SB.lt);
+pr(4,9,6,4,SB.wh); pr(6,7,5,5,SB.eyS); pr(7,7,4,4,SB.eye); pr(8,8,2,2,SB.eyR);
+pr(12,9,5,1,SB.hl); pr(14,11,6,1,SB.hl);
+pr(0,17,24,2,SB.dk);
+}
+function drawSealSpin(tick){
+var t = tick / 40;
+ctx.save(); ctx.translate(13*PS, 13*PS);
+for(var i = 0; i < 6; i++){
+ctx.save(); ctx.rotate(t + i * 1.1); ctx.globalAlpha = i === 0 ? 1 : 0.45;
+ctx.fillStyle = SB.lt; ctx.beginPath(); ctx.ellipse(0,0,14*PS,8.5*PS,0,0,Math.PI*2); ctx.fill();
+ctx.fillStyle = SB.wh; ctx.beginPath(); ctx.ellipse(2*PS,1*PS,7*PS,5*PS,0,0,Math.PI*2); ctx.fill();
+ctx.fillStyle = SB.tail; ctx.beginPath(); ctx.ellipse(16*PS,0,6.5*PS,4*PS,0,0,Math.PI*2); ctx.fill();
+ctx.restore();
+}
+ctx.globalAlpha = 1;
+for(var j = 0; j < 14; j++){
+var a = t*3.5 + j*Math.PI/7, rd = 21*PS;
+ctx.fillStyle = (j%2 === 0) ? '#ffe040' : '#fff';
+ctx.fillRect(Math.cos(a)*rd-3.5, Math.sin(a)*rd-3.5, 7, 7);
+}
+ctx.restore();
+}
+function drawEricPirate(cx,cy,frame){
+ctx.save(); ctx.translate(cx*PS,cy*PS);
+pr(2,16,16,28,'#3a1010'); pr(4,13,12,30,'#500808'); pr(5,13,10,28,'#601010');
+for(var i=0;i<8;i++) pr(3+i*2,13,2,2,i%2?'#806020':'#c09030');
+pr(3,38,6,8,'#181008'); pr(11,38,6,8,'#181008'); pr(4,37,5,8,'#302010'); pr(11,37,5,8,'#302010');
+pr(8,20,6,5,'#d0c0a0'); pr(9,19,4,6,'#d0c0a0'); pr(9,24,2,1,'#181008'); pr(12,24,1,1,'#181008');
+pr(8,26,2,1,'#d0c0a0'); pr(11,26,2,1,'#d0c0a0'); pr(10,25,2,3,'#d0c0a0');
+pr(1,15,4,14,'#3a1010'); pr(17,15,4,14,'#3a1010'); pr(1,27,5,4,EK.skS); pr(16,27,5,4,EK.skS);
+pr(20,4,3,28,'#705020'); pr(20,3,4,28,'#705020'); pr(18,0,8,6,'#604020'); pr(19,0,7,5,'#906040'); pr(19,0,5,3,'#b08060');
+pr(7,8,6,6,EK.skS); pr(7,7,7,8,EK.sk); pr(8,6,6,8,EK.sk);
+pr(4,0,14,6,EK.hrS); pr(5,0,12,5,EK.hr); pr(3,3,3,8,EK.hr); pr(17,3,3,8,EK.hr);
+pr(2,-8,18,10,'#1a1200'); pr(3,-9,16,10,'#2a2000'); pr(0,-4,22,4,'#1a1200');
+pr(9,-7,4,3,'#d0c080'); pr(8,-6,6,3,'#d0c080'); pr(10,-2,2,2,'#d0c080'); pr(12,-2,2,2,'#d0c080'); pr(11,-1,2,2,'#d0c080');
+pr(8,8,3,2,'#1a0800'); pr(8,8,2,2,'#704020'); pr(9,8,1,1,'#fff');
+pr(13,8,3,2,'#1a0800'); pr(13,8,2,2,'#704020'); pr(14,8,1,1,'#fff');
+pr(7,7,5,1,'#381000'); pr(13,7,4,1,'#381000'); pr(9,12,6,2,'#381000'); pr(8,11,2,2,'#381000'); pr(14,11,2,2,'#381000');
+pr(13,7,4,4,'#101010'); pr(12,8,5,3,'#282828');
+ctx.restore();
+}
+function drawEricUnderwear(cx,cy,frame,shiver){
+var sh=shiver?(frame%4<2?-2:2):0;
+ctx.save(); ctx.translate(cx*PS+sh,cy*PS);
+pr(5,26,5,16,EK.sk); pr(12,26,5,16,EK.sk); pr(5,38,6,6,EK.skS); pr(12,38,6,6,EK.skS);
+pr(1,14,4,16,EK.skS); pr(17,14,4,16,EK.skS); pr(2,14,3,14,EK.sk); pr(17,14,3,14,EK.sk);
+pr(3,22,16,8,EK.uwS); pr(4,22,14,8,EK.uw);
+for(var i=0;i<4;i++) pr(4+i*4,22,2,8,EK.uwStr);
+pr(3,22,16,2,'#4030a0');
+pr(4,10,14,14,EK.skS); pr(5,9,12,14,EK.sk); pr(6,9,10,12,EK.sk);
+pr(8,11,6,1,'#c09040'); pr(9,12,4,1,'#c09040');
+pr(6,2,10,10,EK.skS); pr(7,1,9,10,EK.sk); pr(7,1,8,8,EK.sk);
+pr(4,0,14,5,EK.hrS); pr(5,0,12,4,EK.hr); pr(3,2,3,7,EK.hr); pr(17,2,3,7,EK.hr); pr(4,-2,4,4,EK.hr); pr(14,-2,4,4,EK.hr);
+pr(8,4,3,2,'#301000'); pr(8,5,2,2,'#704020'); pr(9,5,1,1,'#fff');
+pr(13,4,3,2,'#301000'); pr(13,5,2,2,'#704020'); pr(14,5,1,1,'#fff');
+pr(9,9,4,2,'#381000');
+ctx.globalAlpha=0.7; pr(6,7,3,2,'#f08060'); pr(14,7,3,2,'#f08060'); ctx.globalAlpha=1;
+if(shiver){ ctx.fillStyle='#a0c8e8'; pr(13,6,1,1,'#cfe8ff'); pr(4,5,1,1,'#cfe8ff'); pr(15,9,1,1,'#cfe8ff'); }
+ctx.restore();
+}
+function drawEric(cx,cy,frame,wavingArm){
+  var tick=Date.now(), wv=wavingArm?(Math.floor(tick/280)%2===0?-3:0):0;
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  pr(2,18,16,28,EK.coS); pr(3,16,14,30,EK.coat); pr(4,15,12,30,EK.coat); pr(3,18,14,26,EK.coH); pr(6,16,2,28,EK.coH);
+  pr(5,22,2,4,EK.run); pr(9,26,4,1,EK.run); pr(9,28,1,2,EK.run); pr(12,28,1,2,EK.run); pr(11,27,2,1,EK.run); pr(10,21,1,4,EK.run2);
+  for(var i=0;i<8;i++) pr(3+i*2,42,2,2,i%2===0?EK.fur:EK.furS);
+  pr(3,40,6,6,EK.btS); pr(4,39,5,6,EK.boot); pr(11,40,6,6,EK.btS); pr(11,39,5,6,EK.boot);
+  pr(3,14,14,4,EK.furS); pr(4,13,12,4,EK.fur);
+  pr(1,15+wv,4,14,EK.coS); pr(2,14+wv,4,14,EK.coat); pr(1,14+wv,5,2,EK.fur); pr(1,26+wv,5,3,EK.sk);
+  pr(16,15,4,12,EK.coS); pr(15,14,4,12,EK.coat); pr(15,14,5,2,EK.fur); pr(15,24,5,3,EK.skS);
+  pr(19,6,2,28,'#302010'); pr(20,5,2,30,EK.boot); pr(20,5,1,24,'#a07040');
+  pr(18,2,6,6,EK.run); pr(19,1,4,7,EK.run2); pr(19,2,4,4,EK.gem); pr(20,2,2,2,EK.gm2);
+  ctx.globalAlpha=0.2+Math.sin(tick/400)*0.12;
+  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(21*PS,5*PS,8*PS,8*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+  pr(7,8,6,7,EK.skS); pr(7,7,7,8,EK.sk); pr(8,6,6,9,EK.sk);
+  pr(5,0,12,8,EK.hrS); pr(6,0,10,7,EK.hr); pr(4,4,3,10,EK.hr); pr(3,6,3,12,EK.hrS); pr(16,4,2,8,EK.hr);
+  pr(8,8,3,2,'#301000'); pr(8,8,2,2,'#60a0c0'); pr(9,8,1,1,'#fff');
+  pr(13,8,3,2,'#301000'); pr(13,8,2,2,'#60a0c0'); pr(14,8,1,1,'#fff');
+  pr(7,6,4,1,EK.hrS); pr(12,6,4,1,EK.hrS);
+  pr(9,12,6,1,'#804020'); pr(9,12,1,2,'#804020'); pr(14,12,1,2,'#804020'); pr(10,13,4,1,'#804020');
+  pr(5,2,12,3,EK.run); pr(6,1,10,3,EK.run2); pr(10,0,4,3,EK.gem); pr(11,0,2,2,EK.gm2);
+  pr(6,-8,2,10,EK.ft3); pr(7,-9,2,12,EK.fth); pr(7,-10,1,4,EK.ft2);
+  pr(11,-10,2,12,EK.ft3); pr(11,-11,1,14,EK.fth); pr(11,-12,1,4,EK.ft2);
+  pr(15,-7,2,9,EK.ft3); pr(15,-8,1,11,EK.fth);
+  pr(10,3,2,1,EK.run2); pr(10,5,2,1,EK.run2); pr(10,3,1,3,EK.run2);
+  pr(9,16,5,4,EK.coS); pr(10,15,3,5,EK.gem); pr(11,15,1,2,EK.gm2);
+  ctx.restore();
+}
+function drawIceBearKing(cx,cy,frame,facingRight){
+  var tick=Date.now(), breath=Math.sin(tick/800)*0.5|0;
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  if(!facingRight){ ctx.translate(28*PS,0); ctx.scale(-1,1); }
+  pr(2,12,26,30,IB.furD); pr(3,10,24,32,IB.furS); pr(4,9,22,32,IB.fur); pr(8,11,16,30,IB.fur);
+  pr(10,24,10,8+breath,IB.fur); pr(11,24,8,7+breath,'#e0ecff');
+  pr(3,38,8,8,IB.furS); pr(4,37,7,8,IB.fur); pr(16,38,8,8,IB.furS); pr(17,37,7,8,IB.fur);
+  pr(0,14,5,18,IB.furS); pr(1,13,5,18,IB.fur); pr(25,14,5,18,IB.furS); pr(24,13,5,18,IB.fur);
+  pr(4,0,22,14,IB.furD); pr(5,-1,20,15,IB.furS); pr(6,-1,18,14,IB.fur); pr(9,0,12,12,IB.fur);
+  pr(4,-4,6,5,IB.furD); pr(5,-5,5,5,IB.furS); pr(6,-4,3,3,IB.fur); pr(3,-2,2,2,'#f0d0e0');
+  pr(20,-4,6,5,IB.furD); pr(20,-5,5,5,IB.furS); pr(21,-4,3,3,IB.fur); pr(25,-2,2,2,'#f0d0e0');
+  pr(9,8,12,6,IB.furS); pr(10,8,10,5,IB.fur); pr(10,9,10,4,'#e8f0ff');
+  pr(11,8,8,3,IB.nose); pr(12,7,6,4,IB.nose); pr(13,8,4,2,'#4040e0');
+  pr(8,2,4,4,IB.eye); pr(9,2,3,4,'#2030a0'); pr(10,3,2,2,'#4060d0'); pr(11,2,1,1,'#ffffff');
+  pr(19,2,4,4,IB.eye); pr(19,2,3,4,'#2030a0'); pr(20,3,2,2,'#4060d0'); pr(22,2,1,1,'#ffffff');
+  pr(7,1,5,1,'#101840'); pr(18,1,5,1,'#101840');
+  pr(12,12,6,1,'#2040a0'); pr(11,13,2,1,'#2040a0'); pr(17,13,2,1,'#2040a0');
+  pr(6,-9,18,6,IB.crwS); pr(7,-10,16,7,IB.crown); pr(8,-10,14,6,'#f8e050');
+  pr(7,-14,4,5,IB.crown); pr(13,-16,4,7,IB.crown); pr(20,-14,4,5,IB.crown);
+  pr(8,-12,3,3,IB.gem); pr(9,-12,2,2,'#c0ffff'); pr(14,-14,3,3,'#ff80ff'); pr(21,-12,3,3,'#ff8040');
+  pr(28,0,3,46,'#a0c8e0'); pr(29,-1,2,46,IB.ice); pr(29,-1,1,44,'#e0f4ff');
+  pr(25,-6,9,6,IB.iceS); pr(26,-8,8,6,IB.ice); pr(28,-10,5,4,'#e8f8ff');
+  ctx.restore();
+}
+function drawClubber(cx,cy,facingRight,big,frame){
+var sc=big?1.25:1;
+ctx.save(); ctx.translate(cx*PS,cy*PS);
+if(!facingRight){ ctx.translate(13*PS*sc,0); ctx.scale(-1,1); }
+ctx.scale(sc,sc);
+var raise=(frame%6<3)?0:-3;
+var step=(frame%4<2)?0:1;
+// shadow
+ctx.globalAlpha=0.25; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(7*PS,30*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+// boots with snow
+pr(1,24+step,5,7,'#1a1008'); pr(8,24,5,7,'#1a1008'); pr(1,23+step,5,7,'#3a2818'); pr(8,23,5,7,'#3a2818');
+pr(1,30+step,5,2,ENV.snwA); pr(8,30,5,2,ENV.snwA);
+// fur-trimmed trousers
+pr(1,16,11,10,'#2a3818'); pr(2,15,9,11,'#3a4c20');
+// red coat with darker shading
+pr(0,7,13,11,'#700000'); pr(1,6,11,12,'#a01818'); pr(2,6,9,11,'#c83030');
+pr(1,16,11,2,'#601010');
+// fur collar (scruffy)
+pr(0,6,13,3,'#9a9078'); pr(1,5,11,3,'#c0b890');
+for(var i=0;i<6;i++) pr(1+i*2,5,1,2,'#8a8068');
+// head
+pr(2,0,9,8,'#a07840'); pr(3,-1,7,9,'#d0a050'); pr(3,-1,6,8,'#e0b860');
+// fur hat
+pr(0,-5,13,6,'#1a1c08'); pr(1,-6,11,6,'#2a2e10'); pr(-1,-2,15,3,'#1a1c08');
+pr(2,-6,9,2,'#3a3e18');
+// angry squint eyes + heavy brow
+pr(3,1,9,1,'#100800');
+pr(4,2,3,2,'#100000'); pr(8,2,3,2,'#100000');
+pr(4,2,1,1,'#502000'); pr(8,2,1,1,'#502000');
+// grimace + stubble
+pr(4,6,6,1,'#502810'); pr(3,5,1,1,'#604020'); pr(10,5,1,1,'#604020');
+// arm + club (raised, animated)
+pr(10,8+raise,3,10,'#902020'); pr(10,7+raise,4,4,'#c83030');
+pr(10,17+raise,4,3,'#d0a050');
+// the club itself  -  nailed, gleaming
+pr(11,3+raise,3,16,'#402000'); pr(11,2+raise,4,16,'#604020'); pr(11,2+raise,2,14,'#806030');
+pr(9,0+raise,8,5,'#503010'); pr(10,-1+raise,7,5,'#705020'); pr(10,-1+raise,6,3,'#90703a');
+pr(11,0+raise,1,1,'#e0e0e0'); pr(14,1+raise,1,1,'#e0e0e0'); pr(12,3+raise,1,1,'#c0c0c0');
+ctx.restore();
+}
+function drawMagnus(boss){
+  var bx=boss.x,by=boss.y,bw=boss.w,bh=boss.h;
+  var sx=(bx-game.camera.x)/PS|0, sy=by/PS|0;
+  var hurt=boss.hurtTimer>0&&(Math.floor(boss.hurtTimer/3)%2===0), tick=Date.now(), raise=(boss.frame%8<4)?0:-4;
+  ctx.save(); ctx.translate(sx*PS,sy*PS);
+  if(!boss.facingRight){ ctx.translate(22*PS,0); ctx.scale(-1,1); }
+  if(boss.phase===2){ ctx.globalAlpha=0.18+Math.sin(tick/200)*0.1; ctx.fillStyle='#c000c0'; ctx.beginPath(); ctx.ellipse(11*PS,20*PS,20*PS,28*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+  pr(0,10,4,34,MG.cape); pr(1,8,3,36,MG.cp2); pr(18,10,4,34,MG.cape); pr(19,8,3,36,MG.cp2);
+  pr(4,12,14,30,MG.dk); pr(4,10,14,32,MG.cape); pr(5,9,12,33,MG.cp2); pr(6,9,10,32,MG.cp3);
+  for(var i=0;i<11;i++) pr(4+i*2,9,2,2,i%2===0?MG.fur:MG.furS);
+  for(var i=0;i<11;i++) pr(4+i*2,40,2,2,i%2===0?MG.fur:MG.furS);
+  pr(4,38,6,8,MG.dk); pr(4,37,6,8,'#302018'); pr(12,38,6,8,MG.dk); pr(12,37,6,8,'#302018');
+  pr(5,30,12,12,'#300020'); pr(6,29,10,12,'#400028');
+  pr(3,12,16,22,hurt?'#ff2020':MG.coat); pr(4,11,14,22,hurt?'#ff4040':MG.co2); pr(5,11,12,20,hurt?'#ff6060':MG.co3);
+  pr(3,11,16,3,MG.furS); pr(4,10,14,3,MG.fur); pr(3,30,16,3,MG.furS); pr(4,29,14,3,MG.fur);
+  pr(3,11,3,22,MG.furS); pr(3,10,2,23,MG.fur); pr(17,11,3,22,MG.furS); pr(19,10,2,23,MG.fur);
+  pr(7,16,3,3,MG.med); pr(7,17,3,3,'#fff080'); pr(11,16,3,3,MG.med); pr(11,17,3,3,'#fff080'); pr(15,16,3,3,MG.med); pr(15,17,3,3,'#fff080');
+  pr(1,13,4,14,MG.dk); pr(2,12,4,14,MG.coat); pr(2,12,3,12,MG.co2); pr(1,24,5,4,MG.sk); pr(1,12,5,2,MG.furS); pr(2,11,4,2,MG.fur);
+  pr(17,10+raise,4,16,MG.dk); pr(17,9+raise,4,15,MG.coat); pr(17,11,4,2,MG.fur); pr(17,23+raise,5,4,MG.sk);
+  pr(19,4+raise,3,26,'#302010'); pr(20,3+raise,2,26,MG.club); pr(20,3+raise,1,24,MG.clH);
+  pr(16,0+raise,9,7,'#503010'); pr(17,0+raise,8,6,MG.club); pr(18,0+raise,6,5,MG.clH);
+  pr(16,1+raise,2,2,'#c0c0b0'); pr(23,1+raise,2,2,'#c0c0b0'); pr(17,2+raise,3,2,'#600000');
+  pr(4,2,14,10,MG.sk); pr(5,1,12,11,MG.sk); pr(6,1,10,10,MG.sk);
+  pr(3,-6,16,8,MG.hmS); pr(4,-7,14,8,MG.helm); pr(5,-7,12,7,MG.hmH); pr(2,-4,18,3,MG.hmS); pr(3,-3,16,3,MG.helm);
+  pr(-2,-10,5,10,MG.hmS); pr(-1,-11,4,10,MG.hrn); pr(-1,-12,3,4,MG.hmH);
+  pr(19,-10,5,10,MG.hmS); pr(19,-11,4,10,MG.hrn); pr(20,-12,3,4,MG.hmH);
+  pr(5,3,5,2,'#180000'); pr(12,3,5,2,'#180000');
+  pr(5,5,4,4,MG.eye); pr(6,5,3,4,'#ff4020'); pr(6,5,2,2,'#ff8060');
+  pr(13,5,4,4,MG.eye); pr(13,5,3,4,'#ff4020'); pr(13,5,2,2,'#ff8060');
+  ctx.globalAlpha=0.36+Math.sin(tick/300)*0.14;
+  ctx.fillStyle=MG.eye;
+  ctx.beginPath(); ctx.ellipse(7*PS,6*PS,3*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(15*PS,6*PS,3*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+  pr(5,4,2,6,'#c01000'); pr(15,4,2,6,'#c01000'); pr(9,3,1,5,'#a04000');
+  pr(4,8,14,5,MG.brd); pr(5,9,12,5,MG.brd); pr(6,10,10,4,'#806030');
+  for(var i=0;i<5;i++) pr(5+i*3,11,2,4,'#704828');
+  pr(7,10,8,1,'#401000'); pr(7,10,1,2,'#401000'); pr(14,10,1,2,'#401000');
+  ctx.restore();
+}
+function drawTofuFish(cx,cy,bob){
+var by=Math.sin(bob)*3, tick=Date.now();
+ctx.save(); ctx.translate(cx*PS,(cy+by)*PS);
+ctx.globalAlpha=0.22+Math.sin(tick/350+bob)*0.12;
+ctx.fillStyle='#80f8ff'; ctx.beginPath(); ctx.ellipse(7*PS,5*PS,11*PS,8*PS,0,0,Math.PI*2); ctx.fill();
+ctx.globalAlpha=1;
+// tail
+pr(12,1,4,3,'#80c8e8'); pr(13,0,3,5,'#a0e0f8'); pr(14,0,2,5,'#c0f0ff');
+// tofu-cube body (cream white)
+pr(1,2,11,7,'#d0ecf4'); pr(2,1,9,9,'#e8f8ff'); pr(2,2,10,7,'#f4ffff');
+pr(3,3,6,4,'#ffffff');
+// tofu grid lines
+pr(4,3,1,5,'#a0c8d4'); pr(7,3,1,5,'#a0c8d4'); pr(2,5,9,1,'#a0c8d4');
+// fins (golden)
+pr(6,0,4,3,'#80b8c8'); pr(5,7,3,2,'#80b8c8');
+// eye
+pr(2,3,2,2,'#102030'); pr(2,3,1,1,'#fff');
+// sparkles
+var sp=Math.floor(tick/200)%3;
+if(sp===0){ pr(-1,0,1,1,'#fff'); pr(0,-1,2,2,'#ffe080'); }
+if(sp===1){ pr(13,-2,2,2,'#fff'); }
+ctx.restore();
+}
+function drawOutfitPickup(cx,cy,type,bob){
+var by=Math.sin(bob)*3.5, tick=Date.now();
+ctx.save(); ctx.translate(cx*PS,(cy+by)*PS);
+var col=type==='gem'?EK.gem:type==='feathers'?EK.fth:type==='staff'?EK.run:EK.coat;
+ctx.globalAlpha=0.30+Math.sin(tick/280)*0.16;
+ctx.fillStyle=col; ctx.beginPath(); ctx.ellipse(6*PS,7*PS,12*PS,12*PS,0,0,Math.PI*2); ctx.fill();
+ctx.globalAlpha=1;
+// orbiting sparkles
+for(var i=0;i<5;i++){ var a=tick/300+i*1.25; ctx.fillStyle=i%2?'#fff':col; ctx.fillRect(6*PS+Math.cos(a)*13*PS-2,7*PS+Math.sin(a)*13*PS-2,4,4); }
+if(type==='coat'){ pr(0,0,12,16,EK.coat); pr(1,0,10,15,EK.coH); pr(0,0,12,3,EK.fur); for(var i=0;i<6;i++) pr(i*2,0,2,2,i%2?EK.fur:EK.furS); }
+else if(type==='feathers'){ pr(4,0,2,12,EK.ft3); pr(5,0,2,14,EK.fth); pr(5,0,1,5,EK.ft2); pr(8,2,2,10,EK.ft3); pr(9,1,1,12,EK.fth); pr(2,3,2,8,EK.ft3); }
+else if(type==='staff'){ pr(4,0,2,18,'#a07040'); pr(2,0,6,4,EK.run); pr(3,0,4,4,EK.run2); pr(3,0,4,3,EK.gem); pr(4,0,2,2,EK.gm2); }
+else if(type==='gem'){ pr(2,2,8,8,EK.gem); pr(3,1,6,10,EK.gem); pr(4,2,4,6,EK.gm2); pr(5,1,2,2,EK.gm2); }
+ctx.restore();
+}
+function drawBackground(scroll,tintColor,blizzard){
+r(0,0,640,400,ENV.skyA); r(0,55,640,115,ENV.skyB); r(0,170,640,90,ENV.skyC);
+if(tintColor){ ctx.globalAlpha=0.22; r(0,0,640,400,tintColor); ctx.globalAlpha=1; }
+// aurora ribbons
+var t2=Date.now()/1000; ctx.globalAlpha=0.12;
+var auroraCols=['#40ffb0','#60a0ff','#c060ff'];
+for(var k=0;k<3;k++){ ctx.fillStyle=auroraCols[k];
+  for(var i=0;i<6;i++){ var ax=((i*120+scroll*0.04+Math.sin(t2+i)*20)%820)-90; ctx.fillRect(ax,10+k*8,26,150); } }
+ctx.globalAlpha=1;
+// distant mountains
+ctx.globalAlpha=0.6;
+for(var i=0;i<5;i++){ var mx=((i*260-scroll*0.18)%1300)-130; ctx.fillStyle='#284868'; ctx.beginPath(); ctx.moveTo(mx,255); ctx.lineTo(mx+110,150); ctx.lineTo(mx+210,255); ctx.fill();
+  ctx.fillStyle='#e0f0ff'; ctx.beginPath(); ctx.moveTo(mx+88,172); ctx.lineTo(mx+110,148); ctx.lineTo(mx+132,172); ctx.fill(); }
+ctx.globalAlpha=1;
+// mid glaciers
+for(var i=0;i<6;i++){ var px=((i*210-scroll*0.42)%1600)-140;
+  ctx.fillStyle=ENV.icB; ctx.beginPath(); ctx.moveTo(px,255); ctx.lineTo(px+85,170); ctx.lineTo(px+170,255); ctx.fill();
+  ctx.fillStyle=ENV.icC; ctx.beginPath(); ctx.moveTo(px+68,190); ctx.lineTo(px+85,168); ctx.lineTo(px+102,190); ctx.fill();
+  r(px+55,200,5,50,ENV.icB); }
+// clouds
+ctx.fillStyle=ENV.cldA;
+for(var i=0;i<5;i++){ var cx2=((i*230-scroll*0.25+40)%1500)-80, cy2=30+i%3*22;
+  ctx.beginPath(); ctx.ellipse(cx2-28,cy2+6,30,13,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx2,cy2,40,18,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx2+28,cy2+6,30,13,0,0,Math.PI*2); ctx.fill(); }
+// ocean band
+r(0,235,640,25,ENV.watA); r(0,250,640,12,ENV.watB);
+for(var i=0;i<14;i++){ var wx=((i*62-scroll*0.5)%760)-40; r(wx,243,46,3,ENV.watC); r(wx+8,248,26,2,ENV.watD); }
+// blizzard
+if(blizzard){ ctx.fillStyle='rgba(230,245,255,0.8)'; for(var i=0;i<46;i++){ var bx=((i*35+scroll*0.3+Date.now()*0.05)%760), by=((i*29+Date.now()*0.045)%460); ctx.fillRect(bx,by,2,2); } }
+// foreground snow ground base
+r(0,290,640,110,ENV.gndA);
+}
+function drawPlatform(pl,scroll){
+var sx=pl.x-scroll, x=sx|0, y=pl.y|0, w=pl.w, h=pl.h;
+if(sx>680||sx+w<-20) return;
+if(pl.type==='ground'){
+  r(x,y,w,h,ENV.gndA); r(x,y+4,w,h-4,ENV.gndB); r(x,y,w,9,ENV.gndC); r(x,y,w,4,ENV.gndD);
+  for(var i=0;i<w/26|0;i++) r(x+i*26+5,y+1,14,5,ENV.snwA);
+  for(var i=0;i<w/22|0;i++){ r(x+i*22+7,y-3,2,5,'#60b030'); r(x+i*22+11,y-4,2,6,'#509020'); }
+  for(var i=0;i<w/40|0;i++) r(x+i*40+14,y+12,8,4,'#1a2e10');
+} else if(pl.type==='ice'){
+  r(x,y,w,h,'#3078b8'); r(x,y+3,w,h-3,'#50a0e0'); r(x,y,w,7,ENV.icA); r(x,y,w,3,ENV.icC);
+  r(x,y+4,w-8,2,'#c0f8ff');
+  var sh=(Date.now()/500|0)%3; r(x+sh*22+5,y+1,9,2,'#e0fcff');
+  r(x+8,y+12,w-20,2,'#a0d8ff'); r(x,y,3,h,'#a0d8ff');
+} else if(pl.type==='snow'){
+  r(x,y,w,h,'#80a0d0'); r(x,y+3,w,h-3,'#a0c0e8'); r(x,y,w,8,ENV.snwA); r(x,y,w,3,'#fff');
+  for(var i=0;i<w/30|0;i++) r(x+i*30+6,y+2,3,2,'#d0e4f8');
+} else if(pl.type==='rock'){
+  r(x,y,w,h,ENV.rokA); r(x,y+3,w,h-3,ENV.rokB); r(x,y,w,6,ENV.rokC); r(x+2,y,w-4,3,ENV.snwA);
+  for(var i=0;i<w/30|0;i++) r(x+i*30+10,y+5,2,h-5,'#384050');
+} else if(pl.type==='ship'){
+  r(x,y,w,h,'#4a2c10'); r(x,y,w,4,'#7a5430'); r(x,y+4,w,5,'#6a4c30');
+  for(var i=0;i<w/28|0;i++) r(x+i*28+6,y+6,4,h-12,'#2a1c08');
+  for(var i=0;i<w/14|0;i++) r(x+i*14+3,y+2,1,2,'#3a2818');
+} else if(pl.type==='water'){
+  r(x,y,w,h,'#003080'); r(x,y+4,w,h-8,'#0060c0'); r(x,y,w,3,'#60b0ff');
+  for(var i=0;i<w/32|0;i++){ var wx=x+(i*32+(Date.now()/80|0)%32); r(wx,y+10,18,4,'#40a0ff'); r(wx+4,y+15,10,3,'#80c8ff'); }
+} else {
+  r(x,y,w,h,'#506878');
+}
+}
+
+// ═══════════════════════════════════════════════════════
+// CUTSCENE ENGINE  -  uses function() syntax for Safari compat
+// ═══════════════════════════════════════════════════════
+var csCanvas=document.getElementById('cutscene-canvas');
+var csCtx=csCanvas.getContext('2d');
+var currentCS=null;
+
+function startCutscene(slides,onDone){
+  currentCS={slides:slides,idx:0,timer:0,onDone:onDone,animFrame:null};
+  document.getElementById('title-screen').style.display='none';
+  document.getElementById('hud').style.display='none';
+  document.getElementById('game-wrapper').style.display='none';
+  document.getElementById('controls-hint').style.display='none';
+  showCSSlide();
+}
+function showCSSlide(){
+  var cs=currentCS, slide=cs.slides[cs.idx];
+  csCanvas.style.display='block';
+  var btn=document.getElementById('cs-btn'); if(btn) btn.remove();
+  var btnEl=document.createElement('button');
+  btnEl.id='cs-btn'; btnEl.className='ybtn';
+  btnEl.textContent=cs.idx<cs.slides.length-1?'NEXT ▶':(slide.btn||'CONTINUE ▶');
+  btnEl.style.cssText='position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:60;font-size:8px';
+  btnEl.onclick=advanceCS; document.body.appendChild(btnEl);
+  if(cs.animFrame) cancelAnimationFrame(cs.animFrame);
+  cs.timer=0;
+  function anim(){
+    cs.timer++;
+    setCtx(csCtx); csCtx.clearRect(0,0,640,400);
+    slide.draw(cs.timer);
+    csCtx.fillStyle='rgba(0,0,20,0.88)'; csCtx.fillRect(0,340,640,60);
+    csCtx.font='6.5px monospace'; csCtx.fillStyle='#b0c8e8'; csCtx.textAlign='center';
+    var lines=(slide.text||'').split('\n');
+    for(var i=0;i<lines.length;i++) csCtx.fillText(lines[i],320,358+i*15);
+    csCtx.textAlign='left';
+    cs.animFrame=requestAnimationFrame(anim);
+  }
+  anim();
+}
+function advanceCS(){
+  var cs=currentCS; if(cs.animFrame) cancelAnimationFrame(cs.animFrame);
+  cs.idx++;
+  if(cs.idx>=cs.slides.length){
+    var btn=document.getElementById('cs-btn'); if(btn) btn.remove();
+    csCanvas.style.display='none'; cs.onDone();
+  } else showCSSlide();
+}
+
+// ── CUTSCENE SLIDES  -  all use draw:function(t) for Safari compat ──
+function csBackdrop(mode,t){
+  // mode: 'sea','ice','blizzard','aurora','dark'
+  var c=csCtx;
+  var grd=c.createLinearGradient(0,0,0,400);
+  if(mode==='aurora'){ grd.addColorStop(0,'#030828'); grd.addColorStop(0.5,'#0a1840'); grd.addColorStop(1,'#102850'); }
+  else if(mode==='dark'){ grd.addColorStop(0,'#02040f'); grd.addColorStop(1,'#0a0818'); }
+  else if(mode==='blizzard'){ grd.addColorStop(0,'#101830'); grd.addColorStop(1,'#283848'); }
+  else if(mode==='sea'){ grd.addColorStop(0,'#04183f'); grd.addColorStop(0.6,'#0a2f6a'); grd.addColorStop(1,'#06204a'); }
+  else { grd.addColorStop(0,'#062048'); grd.addColorStop(0.6,'#1850a0'); grd.addColorStop(1,'#3878c0'); }
+  c.fillStyle=grd; c.fillRect(0,0,640,400);
+  // aurora ribbons
+  if(mode==='aurora'||mode==='ice'){
+    var cols=['#40ffb0','#60a0ff','#c060ff']; c.globalAlpha=0.18;
+    for(var k=0;k<3;k++){ c.fillStyle=cols[k];
+      for(var i=0;i<5;i++){ var ax=(i*150+Math.sin(t/40+i+k)*30)%760-60; c.fillRect(ax,10+k*10,30,150); } }
+    c.globalAlpha=1;
+  }
+  // stars
+  c.fillStyle='#ffffff'; c.globalAlpha=0.5;
+  for(var i=0;i<24;i++){ var sx=(i*97)%640, sy=(i*53)%200; if((Math.floor(t/20)+i)%5!==0) c.fillRect(sx,sy,1,1); }
+  c.globalAlpha=1;
+  // parallax glaciers
+  for(var i=0;i<6;i++){ var px=((i*150-t*0.3)%900)-100;
+    c.fillStyle='#1a3050'; c.beginPath(); c.moveTo(px,260); c.lineTo(px+70,180); c.lineTo(px+140,260); c.fill();
+    c.fillStyle='#2a4868'; c.beginPath(); c.moveTo(px+50,205); c.lineTo(px+70,178); c.lineTo(px+90,205); c.fill(); }
+  // blizzard snow
+  if(mode==='blizzard'){ c.fillStyle='rgba(230,245,255,0.7)'; for(var i=0;i<40;i++){ var bx=((i*38+t*3)%680), by=((i*31+t*2)%400); c.fillRect(bx,by,2,2); } }
+}
+
+
+function csTitle(txt,col){
+  csCtx.fillStyle='rgba(0,4,16,0.82)'; csCtx.fillRect(0,0,640,42);
+  csCtx.fillStyle=col||'#90d0ff'; csCtx.font='9px "Press Start 2P",monospace'; csCtx.textAlign='center';
+  csCtx.fillText(txt,320,26); csCtx.textAlign='left';
+  csCtx.fillStyle=col||'#90d0ff'; csCtx.globalAlpha=0.4; csCtx.fillRect(0,42,640,1); csCtx.globalAlpha=1;
+}
+function csVignette(){
+  var g=csCtx.createRadialGradient(320,200,120,320,200,420);
+  g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,10,0.55)');
+  csCtx.fillStyle=g; csCtx.fillRect(0,0,640,400);
+}
+function csSpeech(x,y,w,lines,frame){
+  csCtx.fillStyle='rgba(248,252,255,0.95)'; rrect(csCtx,x,y,w,16+lines.length*14,5); csCtx.fill();
+  csCtx.fillStyle='rgba(248,252,255,0.95)'; csCtx.beginPath(); csCtx.moveTo(x+18,y+16+lines.length*14-1); csCtx.lineTo(x+10,y+16+lines.length*14+10); csCtx.lineTo(x+30,y+16+lines.length*14-1); csCtx.fill();
+  csCtx.fillStyle='#16243c'; csCtx.font='7px "Press Start 2P",monospace'; csCtx.textAlign='center';
+  for(var i=0;i<lines.length;i++) csCtx.fillText(lines[i],x+w/2,y+16+i*14);
+  csCtx.textAlign='left';
+}
+
+function makeIntroCutscene(){
+  return [
+    { text:"Long ago, the Arctic feared one name above all others.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('sea',t);
+        for(var i=0;i<8;i++){ var wx=((i*90+t*3)%820)-90; r(wx,250,80,9,'#0a2050'); r(wx+12,259,46,5,'#1a3a78'); r(wx+20,265,30,3,'#3a6ab0'); }
+        // pirate ship, detailed
+        r(70,255,300,85,'#1a0f06'); r(70,250,300,8,'#2e1a0a'); r(70,338,300,6,'#0e0804');
+        r(160,195,18,60,'#0e0804'); r(140,198,58,5,'#2e1a0a');
+        // torn black sail
+        r(150,200,40,45,'#181818'); r(150,200,40,3,'#282828');
+        r(168,205,24,16,'#000'); r(171,207,5,5,'#e8e8e8'); r(180,207,5,5,'#e8e8e8'); r(174,214,8,2,'#e8e8e8');
+        // lanterns glow
+        var fl=0.6+Math.sin(t/8)*0.3; csCtx.globalAlpha=fl; csCtx.fillStyle='#ffb030'; csCtx.fillRect(95,250,5,6); csCtx.fillRect(330,250,5,6); csCtx.globalAlpha=1;
+        drawEricPirate(40,62,Math.floor(t/20));
+        csVignette();
+        csTitle('THE ARCTIC SEAS  -  LONG AGO','#90c0ff');
+        if(t>30){ csCtx.globalAlpha=Math.min(1,(t-30)/30); csCtx.fillStyle='#e8c060'; csCtx.font='8px "Press Start 2P",monospace'; csCtx.textAlign='center'; csCtx.fillText('CAPTAIN ERIK MAGNUSSON',180,300); csCtx.font='6px "Press Start 2P",monospace'; csCtx.fillStyle='#b09040'; csCtx.fillText('Seal-Clubbing Tyrant',180,316); csCtx.textAlign='left'; csCtx.globalAlpha=1; }
+      }
+    },
+    { text:"But out on the drifting ice, a small seal danced alone  - \nasking nothing of the world, simply spinning for joy.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('ice',t);
+        // ice floe with reflection
+        r(240,300,200,30,'#a0d0ec'); r(240,300,200,4,'#e0f8ff'); r(248,330,184,8,'#5a8ab0');
+        drawSealbert(96,90,true,'idle',0,t>50?60:0,Math.floor(t/12));
+        // joyful sparkles
+        if(t>40){ for(var i=0;i<5;i++){ var a=t/14+i*1.25; csCtx.fillStyle=i%2?'#ffe040':'#fff'; csCtx.fillRect(330+Math.cos(a)*36,270+Math.sin(a)*24,3,3); } }
+        csVignette();
+        csTitle('SEALBERT  -  THE GRACEFUL ONE','#90e0ff');
+      }
+    },
+    { text:"Eric watched the tail-spin from his deck.\nThe grace. The freedom. Something in his chest cracked open.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('ice',t); r(0,310,640,90,'#90c0e0'); r(0,310,640,3,'#d8f4ff');
+        // ship edge on left
+        r(20,210,110,130,'#1a0f06'); r(16,205,118,9,'#2e1a0a');
+        for(var i=0;i<3;i++) r(34+i*30,188,8,22,'#160c04');
+        drawEricPirate(8,52,0);
+        drawSealbert(150,92,true,'idle',0,t>30?60:0,Math.floor(t/8));
+        // heart rising
+        if(t>70){ var hy=190-Math.sin((t-70)/12)*30; csCtx.globalAlpha=Math.min(1,(t-70)/40); csCtx.font='22px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',95,hy); csCtx.globalAlpha=1; }
+        csVignette();
+        csTitle('A FEELING HE HAD NEVER KNOWN','#ffb0d0');
+      }
+    },
+    { text:"He tore off his captain's coat and hurled his club into the sea.\n\"I RENOUNCE IT ALL!\" he roared. \"From this day  -  I am vegan!\"",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('ice',t); r(0,310,640,90,'#80c0e0'); r(0,310,640,3,'#d8f4ff');
+        if(t<55) drawEricPirate(118,68,0); else drawEricUnderwear(118,68,Math.floor(t/12),true);
+        // coat flying
+        if(t>35){ csCtx.save(); csCtx.translate(330+t*2.2,205-Math.sin(t*0.06)*30); csCtx.rotate(t*0.045); r(-18,-26,38,54,'#3a1010'); r(-15,-23,12,48,'#500808'); csCtx.restore(); }
+        // club spinning away
+        if(t>20){ csCtx.save(); csCtx.translate(300+t*2.6,160-t*0.4); csCtx.rotate(t*0.16); r(-4,-22,8,30,'#705020'); r(-7,-26,14,8,'#604020'); csCtx.restore(); }
+        // hat
+        if(t>10){ csCtx.save(); csCtx.translate(270+t*1.6,150-t*0.5); csCtx.rotate(t*0.05); r(-12,-5,24,12,'#1a1200'); csCtx.restore(); }
+        drawSealbert(176,90,false,'idle',0,0,Math.floor(t/20));
+        if(t>75) csSpeech(170,236,240,['I RENOUNCE IT ALL!','I AM VEGAN NOW!'],t);
+        csVignette();
+        csTitle('THE VOW','#ffd0a0');
+      }
+    },
+    { text:"Sealbert looked at the shivering human  -  not with fear, but recognition.\nHere stood someone who had chosen the harder, kinder path.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('blizzard',t); r(0,305,640,95,'#5a6e84'); r(0,305,640,3,'#b8d8f0');
+        drawEricUnderwear(146,72,Math.floor(t/8),true);
+        drawSealbert(196,86,false,'idle',0,0,Math.floor(t/18));
+        // warm bond glow
+        if(t>50){ csCtx.globalAlpha=0.16+Math.sin(t/16)*0.08; csCtx.fillStyle='#ffe6a0'; csCtx.beginPath(); csCtx.ellipse(345,300,90,54,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1; }
+        csVignette();
+        csTitle('TWO SOULS, ONE SHORE','#cfe0ff');
+      },
+      btn:'BEGIN STAGE 1'
+    }
+  ];
+}
+
+function makeIceBearCutscene(){
+  return [
+    { text:"Days passed. Eric wandered the frozen wastes in nothing but his shorts,\nuntil at last the cold claimed him and he sank into the snow.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('blizzard',t); r(0,300,640,100,'#4a5e74'); r(0,300,640,3,'#a8c8e0');
+        for(var i=0;i<40;i++){ csCtx.fillStyle='rgba(228,242,255,0.7)'; csCtx.fillRect(((i*40+t*3)%680),((i*58+t*2.2)%400),2,2); }
+        // Eric half-buried
+        csCtx.save(); csCtx.translate(230,308); r(-26,-8,52,18,'#dfe8f8'); drawEricUnderwear(-7,-22,0,false); r(-26,2,52,6,'#f0f6ff'); csCtx.restore();
+        // looming shadow
+        var sha=Math.min(0.7,t/90); csCtx.globalAlpha=sha; csCtx.fillStyle='rgba(16,24,52,0.8)'; csCtx.beginPath(); csCtx.ellipse(430,300,130,150,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1;
+        csVignette();
+        csTitle('LOST IN THE WHITE','#a8c8e8');
+      }
+    },
+    { text:"A great paw lifted him from the drift. Bjorn the Ancient,\nKing of the Ice Bears, had watched Eric renounce the club.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
+        // throne glow
+        csCtx.globalAlpha=0.2+Math.sin(t/22)*0.1; csCtx.fillStyle='#60d0ff'; csCtx.beginPath(); csCtx.ellipse(170,250,140,120,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1;
+        drawIceBearKing(64,22,Math.floor(t/12),true);
+        drawEricUnderwear(176,76,0,false);
+        csSpeech(376,236,238,['I am BJORN.','King of the Ice.','I have watched you long.'],t);
+        csVignette();
+        csTitle('BJORN THE ANCIENT','#80e0ff');
+      }
+    },
+    { text:'"Your love for the seals is true. But love alone is not enough.\nProve you understand their world  -  and I will grant you the old power."',
+      btn:'TAKE THE TRIAL',
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
+        drawIceBearKing(58,22,0,true);
+        drawEricUnderwear(180,76,0,false);
+        // power beam between them
+        if(t>40){ csCtx.globalAlpha=0.5+Math.sin(t/8)*0.25; var g=csCtx.createLinearGradient(160,300,300,120); g.addColorStop(0,'rgba(64,255,255,0.8)'); g.addColorStop(1,'rgba(160,120,255,0)'); csCtx.fillStyle=g; csCtx.save(); csCtx.translate(240,260); csCtx.rotate(-0.5); csCtx.fillRect(-16,-120,32,180); csCtx.restore(); csCtx.globalAlpha=1; }
+        csSpeech(366,230,250,['Answer my questions,','seal-friend. Prove','your heart is ready.'],t);
+        csVignette();
+        csTitle('THE TRIAL OF THE WHISPERER','#60ffff');
+      }
+    }
+  ];
+}
+
+function makeCapturedCutscene(){
+  return [
+    { text:"Reborn as the Seal Whisperer, Eric raised his staff  - \nand the ancient power split the ice from horizon to horizon.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('aurora',t);
+        var shake=(t>50&&t<95)?Math.sin(t*1.3)*5:0;
+        csCtx.save(); csCtx.translate(shake,shake*0.4);
+        r(0,290,640,110,'#2a4818'); r(0,290,640,3,'#70c020');
+        drawEric(140,46,Math.floor(t/8),false);
+        // power pillar
+        if(t>40){ csCtx.globalAlpha=0.6+Math.sin(t/7)*0.3; var g=csCtx.createLinearGradient(330,0,330,290); g.addColorStop(0,'rgba(120,255,255,0)'); g.addColorStop(1,'rgba(64,255,255,0.95)'); csCtx.fillStyle=g; csCtx.fillRect(312,0,52,290); csCtx.globalAlpha=1; }
+        // cracking ice
+        if(t>55){ csCtx.strokeStyle='rgba(220,244,255,'+Math.min(1,(t-55)/30)+')'; csCtx.lineWidth=2; for(var i=0;i<7;i++){ csCtx.beginPath(); csCtx.moveTo(120+i*70,290); csCtx.lineTo(100+i*64,400); csCtx.stroke(); } }
+        // Magnus ship distant
+        if(t>30){ var a=Math.min(1,(t-30)/60); r(450,180,180,90,'rgba(24,0,0,'+a+')'); r(478,142,12,40,'rgba(16,0,0,'+a+')'); }
+        csCtx.restore();
+        csVignette();
+        csTitle('THE WHISPERER AWAKENS','#80ffff');
+      }
+    },
+    { text:"From the fog came Magnus  -  Eric's own brother, heir to the empire.\nHis hunters cast their nets before the power could be turned on them.",
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('dark',t); r(0,288,640,112,'#283a12'); r(0,288,640,3,'#5aa018');
+        var netY=Math.min(150,t*2.3);
+        for(var nx=190;nx<430;nx+=18) r(nx,netY,3,400,'rgba(120,96,52,0.7)');
+        for(var ny=netY;ny<400;ny+=18) r(190,ny,240,3,'rgba(120,96,52,0.7)');
+        drawEric(138,58,0,false);
+        drawClubber((680-200)/PS|0,76,false,true,Math.floor(t/10));
+        drawClubber((680-150)/PS|0,76,true,false,Math.floor(t/10));
+        drawSealbert(8,82,false,'idle',0,0,Math.floor(t/20));
+        if(t>50){ csCtx.font='bold 22px "Press Start 2P",monospace'; csCtx.fillStyle='#ff4040'; csCtx.fillText('!',40,250); }
+        csVignette();
+        csTitle('BETRAYED BY BLOOD','#ff8060');
+      }
+    },
+    { text:"The ship melted into the fog, carrying Eric away in chains.\nSealbert stood alone on the cracking ice. He did not hesitate.",
+      btn:'BEGIN THE RESCUE',
+      draw:function(t){
+        setCtx(csCtx); csBackdrop('dark',t); r(0,300,640,100,'#0a1830'); r(0,300,640,3,'#2a4a70');
+        var shipX=Math.min(360,90+t*0.9);
+        r(shipX-300,210,330,120,'#160c04'); r(shipX-300,205,330,9,'#2a1808'); r(shipX-300,328,330,5,'#0c0602');
+        r(shipX-230,158,16,55,'#0e0804'); r(shipX-244,162,38,5,'#0e0804');
+        r(shipX-230,160,30,40,'#181818');
+        // cage with Eric
+        for(var i=0;i<5;i++) r(shipX-150+i*11,212,5,56,'#6a6a5a');
+        r(shipX-152,210,58,6,'#54483a'); r(shipX-152,262,58,6,'#54483a');
+        drawEric((shipX-144)/PS|0,74,0,false);
+        // Sealbert resolute
+        drawSealbert(168,86,false,'idle',0,0,Math.floor(t/20));
+        // determination spark
+        if(t>40){ csCtx.fillStyle='#ffe040'; csCtx.fillRect(206,254,2,2); csCtx.fillRect(212,250,2,2); }
+        csVignette();
+        csTitle('I WILL FIND YOU','#7090c0');
+      }
+    }
+  ];
+}
+
+// ═══════════════════════════════════════════════════════
+// BEAR KING QUIZ
+// ═══════════════════════════════════════════════════════
+var BEAR_QUIZ = [
+  { q:"What do seals primarily eat in the wild?", opts:["Tofu only","Fish, squid and crustaceans","Polar bear leftovers","Snowflakes"], correct:1, resp:'"Correct. Though Sealbert prefers the tofu variety."' },
+  { q:"How do seals primarily communicate?", opts:["They cannot  -  seals are silent","Clicks, grunts and wails","Only through dance","Telepathy"], correct:1, resp:'"Yes. Each seal has a unique voice. A Whisperer must listen."' },
+  { q:"What is the primary cause of Arctic ice loss?", opts:["Too many ice bears breathing","Human carbon emissions","Natural 200-year cycles","Sea witch curses"], correct:1, resp:'"The hardest truth. A Whisperer carries this knowledge."' },
+  { q:"A seal approaches you. A Whisperer does:", opts:["Raises the club","Runs away screaming","Is still. Lets it come. Listens.","Offers it a hat"], correct:2, resp:'"Stillness. Patience. The seal will tell you everything."' },
+  { q:"You are offered seal meat. You say:", opts:['"Thank you, delicious!"','"No. I am vegan now."','"Only if it is smoked."','"Can I see the menu?"'], correct:1, resp:'"Good. The vow is absolute. Welcome, Seal Whisperer."' },
+  { q:"Why did Sealbert trust Eric?", opts:["He had no choice","Eric had food","Eric chose the harder path freely","He was tricked"], correct:2, resp:'"Love is not blind. It sees clearly and chooses anyway."' },
+  { q:"What is the Seal Whisperer oath?", opts:["Never eat fish","Protect the seals with your life","Do the tail-spin daily","All of the above"], correct:1, resp:'"Protection. Always protection."' }
+];
+var quizState=null;
+function startBearQuiz(onPass){
+  var shuffled=BEAR_QUIZ.slice().sort(function(){ return Math.random()-0.5; }).slice(0,5);
+  quizState={questions:shuffled,idx:0,correct:0,onPass:onPass,answering:true};
+  renderQuiz();
+}
+function renderQuiz(){
+  var old=document.getElementById('quiz-overlay'); if(old) old.remove();
+  var qs=quizState, q=qs.questions[qs.idx];
+  var overlay=document.createElement('div');
+  overlay.id='quiz-overlay';
+  overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,5,20,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;font-family:"Press Start 2P",monospace;padding:16px;gap:10px';
+  var progPct=(qs.idx/qs.questions.length*100);
+  overlay.innerHTML='<div style="font-size:8px;color:#60ffff;letter-spacing:2px">✦ BJORN THE ICE BEAR KING ✦</div><div style="font-size:6px;color:#4080a0">"Answer my questions and earn the shamanic gift."</div><div style="font-size:5.5px;color:#70a0c0">QUESTION '+(qs.idx+1)+' / '+qs.questions.length+'</div><div style="width:250px;height:5px;background:#0a1828;border:1px solid #1060a0;border-radius:2px;overflow:hidden"><div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,#40a0ff,#80ffff)"></div></div><div id="quiz-q" style="font-size:7px;color:#d0e8ff;text-align:center;max-width:400px;line-height:2;margin-top:6px">'+q.q+'</div><div id="quiz-opts" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;margin-top:6px"></div><div id="quiz-fb" style="font-size:6px;color:#60ffff;min-height:20px;text-align:center;line-height:1.8"></div>';
+  document.body.appendChild(overlay);
+  var optDiv=overlay.querySelector('#quiz-opts');
+  q.opts.forEach(function(opt,i){
+    var btn=document.createElement('button');
+    btn.textContent=String.fromCharCode(65+i)+')  '+opt;
+    btn.style.cssText='font-family:"Press Start 2P",monospace;font-size:6.5px;color:#c0d8f0;background:rgba(0,20,50,0.8);border:2px solid #204060;padding:9px 12px;cursor:pointer;text-align:left;border-radius:3px';
+    btn.onmouseover=function(){ btn.style.borderColor='#60c0ff'; btn.style.background='rgba(0,40,80,0.9)'; };
+    btn.onmouseout=function(){ btn.style.borderColor='#204060'; btn.style.background='rgba(0,20,50,0.8)'; };
+    btn.onclick=function(){ answerQuiz(i,optDiv,q); };
+    optDiv.appendChild(btn);
+  });
+}
+function answerQuiz(chosen,optDiv,q){
+  if(!quizState.answering) return;
+  quizState.answering=false;
+  var isRight=chosen===q.correct;
+  if(isRight) quizState.correct++;
+  var btns=optDiv.querySelectorAll('button');
+  btns.forEach(function(btn,i){
+    btn.onclick=null; btn.style.cursor='default';
+    if(i===q.correct) btn.style.cssText+=';border-color:#40ff80!important;color:#40ff80!important;background:rgba(0,60,20,0.9)!important';
+    else if(i===chosen&&!isRight) btn.style.cssText+=';border-color:#ff4040!important;color:#ff4040!important';
+  });
+  var fb=document.getElementById('quiz-fb');
+  fb.style.color=isRight?'#40ff80':'#ff6060';
+  fb.textContent=(isRight?'✓ CORRECT!  ':'✗ Wrong...  ')+q.resp;
+  setTimeout(function(){
+    quizState.idx++;
+    quizState.answering=true;
+    if(quizState.idx>=quizState.questions.length) showQuizResult();
+    else renderQuiz();
+  },2200);
+}
+function showQuizResult(){
+  var qs=quizState, passed=qs.correct>=3;
+  var overlay=document.getElementById('quiz-overlay');
+  var nextLabel=passed?'★ RECEIVE THE GIFT ★':'↩ TRY AGAIN';
+  overlay.innerHTML='<div style="font-size:8px;color:'+(passed?'#40ffaa':'#ff6060')+';text-shadow:0 0 12px '+(passed?'#40ffaa':'#ff4040')+';margin-bottom:6px">'+(passed?'★ YOU HAVE PASSED ★':'✗ NOT YET')+' </div><div style="font-size:6.5px;color:#80b0d0;text-align:center;line-height:2.2;max-width:380px">'+qs.correct+' / '+qs.questions.length+' correct.<br><br>'+(passed?'"Your heart is true. The seal spirits accept you."':'"You need 3 correct. Come back when you are ready."')+'</div><button id="quiz-done-btn" style="font-family:\'Press Start 2P\',monospace;font-size:9px;color:'+(passed?'#ffe040':'#ff8040')+';background:none;border:2px solid '+(passed?'#ffe040':'#ff8040')+';padding:10px 18px;cursor:pointer;margin-top:14px;animation:blink .9s step-end infinite">'+nextLabel+'</button>';
+  document.getElementById('quiz-done-btn').onclick=function(){
+    overlay.remove();
+    if(passed){ quizState.onPass(); }
+    else{ startBearQuiz(quizState.onPass); }
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// LEVEL DATA
+// ═══════════════════════════════════════════════════════
+function buildFish(sx,y,n,sp,diffMult){
+  diffMult=diffMult||1;
+  var real=Math.round(n*diffMult);
+  var arr=[];
+  for(var i=0;i<real;i++) arr.push({x:sx+i*(sp/diffMult)|0,y:y-Math.random()*45|0,w:18,h:14,collected:false,bob:Math.random()*Math.PI*2});
+  return arr;
+}
+function buildEnemies(xs){
+  return xs.map(function(x,i){
+    return {x:x,y:318,w:36,h:42,vx:i%2?-0.9:0.9,alive:true,type:i%3===0?'big':'normal',frame:0,frameTick:0,patrolLeft:x-90,patrolRight:x+90,clubCooldown:60+i*7,facingRight:true};
+  });
+}
+var STAGE_DATA={
+  '1-1':{name:'1-1  FIRST DANCE ON THE ICE',desc:'GOAL: Gather tofu fish to charge your Tail-Spin, then perform it close to Captain Eric on his ship to win his heart.',
+    platforms:[{x:0,y:338,w:260,h:42,type:'ice'},{x:160,y:288,w:100,h:14,type:'ice'},{x:330,y:262,w:90,h:14,type:'ice'},{x:480,y:288,w:100,h:14,type:'ice'},{x:300,y:338,w:900,h:42,type:'ice'},{x:660,y:256,w:90,h:14,type:'ice'},{x:820,y:290,w:100,h:14,type:'ice'},{x:1000,y:262,w:90,h:14,type:'ice'},{x:1260,y:338,w:700,h:42,type:'ice'},{x:1340,y:288,w:100,h:14,type:'ice'},{x:1520,y:262,w:90,h:14,type:'ice'},{x:1700,y:290,w:100,h:14,type:'ice'},{x:2000,y:338,w:480,h:42,type:'ship'}],
+    enemies:buildEnemies([400,560,900,1380,1620]),fish:buildFish(80,278,28,55),outfits:[],erikPos:{x:2250,y:70,type:'pirate'},end:'spin',width:2520,bgTint:null,blizzard:false,maxFish:28},
+
+  '1-2':{name:'1-2  ACROSS THE FLOES',desc:'GOAL: Cross the breaking sea-ice, leaping the open water, and reach Eric\'s fleet to dazzle him once more with your spin.',
+    platforms:[{x:0,y:338,w:340,h:42,type:'ground'},{x:220,y:288,w:90,h:14,type:'ice'},{x:380,y:262,w:80,h:14,type:'ice'},{x:540,y:288,w:100,h:14,type:'ice'},{x:340,y:338,w:560,h:42,type:'ice'},{x:720,y:256,w:90,h:14,type:'ice'},{x:900,y:338,w:200,h:42,type:'water'},{x:980,y:296,w:70,h:14,type:'ice'},{x:1100,y:338,w:520,h:42,type:'ground'},{x:1200,y:286,w:90,h:14,type:'rock'},{x:1380,y:258,w:85,h:14,type:'ice'},{x:1560,y:288,w:90,h:14,type:'rock'},{x:1620,y:338,w:240,h:42,type:'water'},{x:1700,y:300,w:64,h:14,type:'ice'},{x:1860,y:338,w:620,h:42,type:'ground'},{x:1960,y:284,w:90,h:14,type:'rock'},{x:2140,y:256,w:90,h:14,type:'ice'},{x:2320,y:286,w:95,h:14,type:'rock'},{x:2540,y:338,w:240,h:42,type:'water'},{x:2620,y:298,w:64,h:14,type:'ice'},{x:2780,y:338,w:560,h:42,type:'ship'}],
+    enemies:buildEnemies([320,560,760,1240,1440,1640,2000,2200,2400]),fish:buildFish(100,262,34,52),outfits:[],erikPos:{x:3120,y:70,type:'pirate'},end:'spin',width:3400,bgTint:null,blizzard:false,maxFish:34},
+
+  '2-1':{name:'2-1  THE FROZEN TUNDRA',desc:'GOAL: Eric shivers in his underwear. Brave the blizzard, fight off the clubbers, and recover his lost SHAMAN COAT at the far end.',
+    platforms:[{x:0,y:358,w:420,h:42,type:'snow'},{x:200,y:296,w:90,h:14,type:'snow'},{x:360,y:266,w:80,h:14,type:'snow'},{x:540,y:292,w:100,h:14,type:'ice'},{x:420,y:358,w:560,h:42,type:'snow'},{x:720,y:258,w:90,h:14,type:'snow'},{x:900,y:288,w:100,h:14,type:'ice'},{x:980,y:358,w:200,h:42,type:'water'},{x:1070,y:300,w:68,h:14,type:'ice'},{x:1180,y:358,w:640,h:42,type:'snow'},{x:1300,y:288,w:90,h:14,type:'snow'},{x:1480,y:258,w:85,h:14,type:'ice'},{x:1660,y:288,w:90,h:14,type:'snow'},{x:1820,y:358,w:220,h:42,type:'water'},{x:1910,y:300,w:68,h:14,type:'snow'},{x:2040,y:358,w:680,h:42,type:'snow'},{x:2160,y:286,w:95,h:14,type:'ice'},{x:2360,y:256,w:88,h:14,type:'snow'},{x:2560,y:288,w:95,h:14,type:'ice'},{x:2720,y:358,w:240,h:42,type:'water'},{x:2810,y:300,w:64,h:14,type:'snow'},{x:2960,y:358,w:700,h:42,type:'snow'},{x:3080,y:284,w:90,h:14,type:'ice'},{x:3280,y:256,w:200,h:14,type:'snow'}],
+    enemies:buildEnemies([320,540,740,1240,1440,1660,2100,2320,2560,3020,3240]),fish:buildFish(120,264,38,55),outfits:[{x:3400,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:3700,bgTint:'#0a0020',blizzard:true,maxFish:38},
+
+  '2-2':{name:'2-2  THE ICE CAVES',desc:'GOAL: Descend into the glacier. Two sacred relics wait deep inside - the FEATHERS midway and the STAFF at the end. Collect both to proceed.',
+    platforms:[{x:0,y:358,w:360,h:42,type:'rock'},{x:180,y:292,w:85,h:14,type:'ice'},{x:340,y:262,w:80,h:14,type:'rock'},{x:500,y:290,w:95,h:14,type:'ice'},{x:360,y:358,w:520,h:42,type:'rock'},{x:680,y:254,w:85,h:14,type:'rock'},{x:860,y:284,w:100,h:14,type:'ice'},{x:980,y:358,w:180,h:42,type:'water'},{x:1070,y:298,w:66,h:14,type:'ice'},{x:1160,y:358,w:600,h:42,type:'rock'},{x:1280,y:278,w:90,h:14,type:'ice'},{x:1460,y:250,w:84,h:14,type:'rock'},{x:1640,y:282,w:90,h:14,type:'ice'},{x:1800,y:358,w:200,h:42,type:'water'},{x:1890,y:298,w:66,h:14,type:'ice'},{x:2000,y:358,w:680,h:42,type:'rock'},{x:2120,y:262,w:90,h:14,type:'ice'},{x:2320,y:242,w:84,h:14,type:'rock'},{x:2520,y:268,w:90,h:14,type:'ice'},{x:2680,y:358,w:200,h:42,type:'water'},{x:2770,y:298,w:68,h:14,type:'ice'},{x:2880,y:358,w:680,h:42,type:'rock'},{x:3000,y:262,w:90,h:14,type:'ice'},{x:3200,y:240,w:90,h:14,type:'rock'},{x:3400,y:268,w:100,h:14,type:'ice'}],
+    enemies:buildEnemies([320,520,720,1220,1480,1660,2120,2340,2540,2960,3220]),fish:buildFish(120,255,40,52),outfits:[{x:1660,y:246,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:3460,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:3760,bgTint:'#050020',blizzard:true,maxFish:40},
+
+  '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic, the sacred GEM, then prove your heart in the King\'s trial to awaken the Whisperer.',
+    platforms:[{x:0,y:358,w:420,h:42,type:'snow'},{x:200,y:292,w:90,h:14,type:'snow'},{x:380,y:262,w:85,h:14,type:'ice'},{x:540,y:288,w:100,h:14,type:'snow'},{x:420,y:358,w:560,h:42,type:'snow'},{x:720,y:252,w:88,h:14,type:'ice'},{x:880,y:278,w:95,h:14,type:'snow'},{x:1010,y:358,w:200,h:42,type:'water'},{x:1100,y:300,w:68,h:14,type:'ice'},{x:1210,y:358,w:640,h:42,type:'snow'},{x:1320,y:280,w:90,h:14,type:'ice'},{x:1500,y:250,w:84,h:14,type:'snow'},{x:1680,y:282,w:90,h:14,type:'ice'},{x:1850,y:358,w:200,h:42,type:'water'},{x:1940,y:300,w:68,h:14,type:'ice'},{x:2050,y:358,w:680,h:42,type:'snow'},{x:2180,y:258,w:90,h:14,type:'ice'},{x:2380,y:238,w:84,h:14,type:'snow'},{x:2580,y:262,w:90,h:14,type:'ice'},{x:2740,y:358,w:200,h:42,type:'water'},{x:2830,y:298,w:68,h:14,type:'ice'},{x:2940,y:358,w:760,h:42,type:'snow'},{x:3060,y:256,w:90,h:14,type:'ice'},{x:3260,y:236,w:120,h:14,type:'snow'},{x:3440,y:282,w:120,h:14,type:'ice'}],
+    enemies:buildEnemies([320,540,740,1240,1420,1700,2120,2340,2620,3020,3280]),fish:buildFish(140,248,42,52),outfits:[{x:3500,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:3400,y:46},end:'outfit',width:3760,bgTint:'#00001a',blizzard:false,maxFish:42},
+
+  '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins. Battle through Magnus\'s outer patrols along the rocky coast and reach the far cliffs to press inland.',
+    platforms:[{x:0,y:358,w:420,h:42,type:'ground'},{x:190,y:298,w:110,h:18,type:'ice'},{x:375,y:258,w:92,h:18,type:'rock'},{x:560,y:298,w:115,h:18,type:'ice'},{x:420,y:358,w:560,h:42,type:'ground'},{x:740,y:238,w:92,h:18,type:'rock'},{x:900,y:288,w:105,h:18,type:'ice'},{x:980,y:358,w:200,h:42,type:'water'},{x:1080,y:308,w:72,h:18,type:'ice'},{x:1180,y:358,w:660,h:42,type:'ground'},{x:1300,y:293,w:105,h:18,type:'rock'},{x:1490,y:256,w:92,h:18,type:'ice'},{x:1660,y:295,w:120,h:18,type:'rock'},{x:1840,y:358,w:200,h:42,type:'water'},{x:1930,y:300,w:70,h:18,type:'ice'},{x:2040,y:358,w:760,h:42,type:'ground'},{x:2160,y:273,w:115,h:18,type:'rock'},{x:2360,y:245,w:92,h:18,type:'ice'},{x:2560,y:285,w:105,h:18,type:'rock'},{x:2740,y:252,w:120,h:18,type:'ice'},{x:2900,y:358,w:200,h:42,type:'water'},{x:2990,y:300,w:68,h:18,type:'ice'},{x:3100,y:358,w:700,h:42,type:'ground'},{x:3220,y:280,w:100,h:18,type:'rock'}],
+    enemies:buildEnemies([320,540,760,1240,1420,1640,2080,2300,2560,2780,3140,3320]),fish:buildFish(150,255,36,52),outfits:[],end:'reach',width:3800,bgTint:null,blizzard:false,maxFish:36},
+
+  '3-2':{name:'3-2  THE FROZEN FLEET',desc:'GOAL: Board Magnus\'s anchored warships. Leap from deck to deck across the freezing harbour and fight your way to the fortress gates.',
+    platforms:[{x:0,y:358,w:380,h:42,type:'ground'},{x:180,y:290,w:100,h:18,type:'ice'},{x:340,y:258,w:88,h:18,type:'rock'},{x:520,y:288,w:105,h:18,type:'ship'},{x:400,y:358,w:200,h:42,type:'water'},{x:680,y:248,w:88,h:18,type:'rock'},{x:860,y:278,w:140,h:18,type:'ship'},{x:1020,y:358,w:200,h:42,type:'water'},{x:1120,y:298,w:68,h:18,type:'ice'},{x:1220,y:278,w:260,h:18,type:'ship'},{x:1280,y:358,w:280,h:42,type:'water'},{x:1520,y:248,w:85,h:18,type:'ice'},{x:1660,y:358,w:200,h:42,type:'water'},{x:1760,y:292,w:68,h:18,type:'ice'},{x:1840,y:278,w:280,h:18,type:'ship'},{x:1900,y:358,w:320,h:42,type:'water'},{x:2160,y:285,w:68,h:18,type:'ice'},{x:2300,y:358,w:240,h:42,type:'water'},{x:2360,y:265,w:300,h:18,type:'ship'},{x:2700,y:358,w:640,h:42,type:'ground'},{x:2820,y:258,w:100,h:18,type:'rock'},{x:3000,y:280,w:90,h:18,type:'ice'},{x:3200,y:252,w:90,h:18,type:'rock'}],
+    enemies:buildEnemies([340,560,720,900,1240,1340,1860,1960,2380,2480,2860,3040,3220]),fish:buildFish(160,248,38,52),outfits:[],end:'reach',width:3500,bgTint:'#080010',blizzard:false,maxFish:38},
+
+  '3-3':{name:'3-3  THE FORTRESS OF FURY',desc:'GOAL: Storm Magnus\'s stronghold. Smash through the heaviest defences yet and reach the prison cage at the heart of the keep to free Eric.',
+    platforms:[{x:0,y:358,w:400,h:42,type:'ground'},{x:180,y:290,w:95,h:18,type:'rock'},{x:360,y:258,w:88,h:18,type:'ice'},{x:540,y:288,w:100,h:18,type:'rock'},{x:400,y:358,w:560,h:42,type:'ground'},{x:700,y:248,w:88,h:18,type:'ice'},{x:880,y:278,w:100,h:18,type:'rock'},{x:980,y:358,w:200,h:42,type:'water'},{x:1075,y:300,w:68,h:18,type:'ice'},{x:1180,y:358,w:620,h:42,type:'ground'},{x:1300,y:280,w:90,h:18,type:'rock'},{x:1480,y:250,w:85,h:18,type:'ice'},{x:1660,y:282,w:90,h:18,type:'rock'},{x:1800,y:358,w:200,h:42,type:'water'},{x:1890,y:292,w:68,h:18,type:'ice'},{x:2000,y:358,w:720,h:42,type:'ground'},{x:2120,y:258,w:92,h:18,type:'rock'},{x:2320,y:238,w:86,h:18,type:'ice'},{x:2520,y:262,w:92,h:18,type:'rock'},{x:2700,y:358,w:200,h:42,type:'water'},{x:2790,y:288,w:68,h:18,type:'ice'},{x:2900,y:358,w:760,h:42,type:'ground'},{x:3020,y:255,w:90,h:18,type:'ice'},{x:3220,y:288,w:90,h:18,type:'rock'},{x:3420,y:262,w:120,h:18,type:'rock'}],
+    enemies:buildEnemies([320,540,720,900,1280,1480,1680,2120,2340,2540,2960,3180,3400]),fish:buildFish(150,250,38,52),outfits:[],goal:{x:3560,y:292,w:55,h:68,rescued:false},end:'rescue',width:3800,bgTint:'#080010',blizzard:false,maxFish:38},
+
+  '3-4':{name:'3-4  MAGNUS THE MERCILESS',desc:'GOAL: The final battle. Dodge Magnus\'s clubs, charge your Tail-Spin on the fish between his platforms, and strike him until the tyrant falls.',
+    platforms:[{x:0,y:358,w:2400,h:42,type:'ground'},{x:200,y:258,w:220,h:18,type:'rock'},{x:520,y:230,w:200,h:18,type:'ice'},{x:820,y:258,w:220,h:18,type:'rock'},{x:1140,y:230,w:200,h:18,type:'ice'},{x:1460,y:258,w:220,h:18,type:'rock'},{x:1780,y:230,w:200,h:18,type:'ice'},{x:2060,y:258,w:220,h:18,type:'rock'}],
+    enemies:buildEnemies([300,650,1000,1350,1700,2050]),fish:buildFish(120,210,24,80),outfits:[],
+    boss:{x:1200,y:220,w:66,h:138,vx:1.3,hp:12,maxHp:12,alive:true,facingRight:false,frame:0,frameTick:0,hurtTimer:0,phase:1,clubTimer:80,jumpTimer:150,vy:0,onGround:true},
+    end:'boss',width:2400,bgTint:'#0a0008',blizzard:false,maxFish:24}
+};
+var STAGE_ORDER=['1-1','1-2','2-1','2-2','2-3','3-1','3-2','3-3','3-4'];
+
+// ═══════════════════════════════════════════════════════
+// GAME ENGINE
+// ═══════════════════════════════════════════════════════
+var game=null, keys={}, animTick=null, stageIdx=0;
+var mainCanvas=document.getElementById('canvas');
+var mainCtx=mainCanvas.getContext('2d');
+var notifQ=[], notifActive=null, notifTimer=0;
+
+// ═══════════════════════════════════════════════════════
+// AUDIO SYSTEM  -  streams from echoxstudios.art/sealbert/audio/
+// Upload the 10 mp3s to that folder with these exact filenames.
+// ═══════════════════════════════════════════════════════
+var AUDIO_BASE = '/sealbert/audio/';
+var TRACKS = {
+  stage1:   'Seal on Ice.mp3',
+  stage2:   'Blizzard in Boxers.mp3',
+  tundra:   'Tundra Tofu Trek.mp3',
+  caves:    'Echoes in the Ice Caves.mp3',
+  palace:   'Bjorns Bear Palace.mp3',
+  rescue:   'Rescue the Whisperer.mp3',
+  coast:    'Coastline Clash.mp3',
+  fortress: 'Fortress of Fury.mp3',
+  shaman:   'Shamans Awakening.mp3',
+  ending:   'Arctic Swim Sunset.mp3'
+};
+// Which track plays on which bana
+var STAGE_MUSIC = {
+  '1-1':'stage1', '1-2':'stage1',
+  '2-1':'tundra', '2-2':'caves', '2-3':'palace',
+  '3-1':'coast',  '3-2':'coast', '3-3':'fortress', '3-4':'fortress'
+};
+var audioEl=null, currentTrack=null, musicMuted=false, audioReady=false;
+function initAudio(){
+  if(audioEl) return;
+  audioEl=new Audio();
+  audioEl.loop=true; audioEl.volume=0.55;
+  audioEl.addEventListener('canplay',function(){ audioReady=true; });
+  audioEl.addEventListener('error',function(){ /* track missing  -  fail silently */ });
+}
+function playTrack(key){
+  if(musicMuted) return;
+  initAudio();
+  if(currentTrack===key) return;
+  currentTrack=key;
+  var file=TRACKS[key];
+  if(!file) return;
+  audioEl.src=AUDIO_BASE+encodeURIComponent(file);
+  var p=audioEl.play();
+  if(p&&p.catch) p.catch(function(){ /* autoplay blocked until user gesture */ });
+}
+function playStageMusic(stageKey){
+  var key=STAGE_MUSIC[stageKey]||'stage1';
+  playTrack(key);
+}
+function stopMusic(){ if(audioEl){ audioEl.pause(); currentTrack=null; } }
+function toggleMute(){
+  musicMuted=!musicMuted;
+  if(musicMuted){ if(audioEl) audioEl.pause(); }
+  else { if(audioEl&&currentTrack){ var p=audioEl.play(); if(p&&p.catch)p.catch(function(){}); } }
+  var b=document.getElementById('mute-btn'); if(b) b.textContent=musicMuted?'🔇':'🔊';
+}
+
+
+function showNotif(msg){ notifQ.push(msg); }
+function tickNotif(){
+  var el=document.getElementById('tofu-notif');
+  if(notifActive){ notifTimer--; if(notifTimer<=0){ notifActive=null; el.style.display='none'; } }
+  if(!notifActive&&notifQ.length){ notifActive=notifQ.shift(); el.textContent=notifActive; el.style.display='block'; notifTimer=90; }
+}
+
+function showGoalBanner(name,desc){
+  var b=document.getElementById('goal-banner');
+  document.getElementById('gb-name').textContent=name;
+  document.getElementById('gb-desc').textContent=desc||'';
+  b.style.display='flex';
+  if(game) game.bannerTimer=150;
+}
+
+function initStage(key){
+  var lvlTemplate=STAGE_DATA[key];
+  // Deep clone the level so fish/outfits reset
+  var lvl=JSON.parse(JSON.stringify(lvlTemplate));
+  var diff=currentDiff;
+  // Apply difficulty to fish count
+  lvl.fish=buildFish(lvlTemplate.fish[0]?lvlTemplate.fish[0].x:120,lvlTemplate.fish[0]?lvlTemplate.fish[0].y:262,lvlTemplate.maxFish,52,diff.fishMult);
+  // Apply difficulty to enemies
+  lvl.enemies.forEach(function(e){ e.vx*=diff.enemySpeed; e.patrolLeft=e.x-90; e.patrolRight=e.x+90; });
+  if(lvl.boss) lvl.boss.hp=lvl.boss.maxHp=diff.magnusHP;
+
+  setCtx(mainCtx);
+  keys={}; notifQ=[]; notifActive=null;
+  game={
+    score:0,lives:diff.lives,tofu:0,over:false,won:false,stageComplete:false,
+    stageKey:key,lvl:lvl,diff:diff,
+    gravity:0.45,
+    bossActive:false,bossIntroDone:false,
+    particles:[],clubs:[],
+    erikFollowX:100,erikFollowY:250,erikAnim:{frame:0,tick:0},
+    companionRescued:false,companion:null,
+    outfitsCollected:0,spinDoneNearEric:false,spinHintShown:false,
+    quizPassed:false,
+    stageTimer:0,deaths:0,bannerTimer:0,
+    platforms:lvl.platforms,enemies:lvl.enemies,
+    collectibles:lvl.fish,outfits:lvl.outfits||[],
+    goal:lvl.goal||null,boss:lvl.boss||null,
+    camera:{x:0}
+  };
+  // Init player
+  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0};
+
+  document.getElementById('hud').style.display='flex';
+  document.getElementById('game-wrapper').style.display='block';
+  document.getElementById('controls-hint').style.display='block';
+  document.getElementById('boss-hp-wrap').style.display='none';
+  document.getElementById('stage-label').textContent=lvl.name;
+  playStageMusic(key);
+  showGoalBanner(lvl.name, lvl.desc);
+  document.getElementById('diff-badge').textContent=diff.icon+' '+diff.name;
+  var prevStars=getStars(key,diff.id);
+  document.getElementById('stars-row').textContent=starsHTML(prevStars);
+  ['stage-complete','boss-intro','game-over-screen','win-screen','diff-unlock'].forEach(function(id){ document.getElementById(id).style.display='none'; });
+}
+
+function startIntro(){
+  initAudio();
+  currentDiff=DIFFICULTIES.filter(function(d){ return d.id===selectedDiff; })[0];
+  stageIdx=0;
+  playTrack('shaman'); startCutscene(makeIntroCutscene(),function(){ startStageByKey('1-1'); });
+}
+function startStageByKey(key){
+  if(animTick) cancelAnimationFrame(animTick);
+  stageIdx=STAGE_ORDER.indexOf(key);
+  initStage(key);
+  loop();
+}
+function restartLevel(){
+  document.getElementById('game-over-screen').style.display='none';
+  var key=game?game.stageKey:'1-1';
+  var score=game?game.score:0, tofu=game?game.tofu:0, lives=game?game.lives:currentDiff.lives;
+  if(animTick) cancelAnimationFrame(animTick);
+  initStage(key);
+  game.score=score; game.tofu=tofu; game.lives=lives;
+  saveGame();
+  showNotif('Level '+key+' restart  -  '+lives+' lives left');
+  loop();
+}
+function advanceStage(){
+  document.getElementById('stage-complete').style.display='none';
+  if(game) saveGame();
+  var key=game?game.stageKey:'1-1';
+  if(key==='1-2'){ playTrack('shaman'); startCutscene(makeIceBearCutscene(),function(){ startStageByKey('2-1'); }); return; }
+  if(key==='2-3'){ playTrack('rescue'); startCutscene(makeCapturedCutscene(),function(){ startStageByKey('3-1'); }); return; }
+  var next=STAGE_ORDER[stageIdx+1];
+  if(next) startStageByKey(next); else location.reload();
+}
+function dismissBossIntro(){ document.getElementById('boss-intro').style.display='none'; game.bossIntroDone=true; game.bossActive=true; document.getElementById('boss-hp-wrap').style.display='block'; }
+
+function doStageCompleteDisplay(){
+  if(game.stageComplete&&document.getElementById('stage-complete').style.display==='flex') return;
+  game.stageComplete=true;
+  var stars=calcStars(game.tofu,game.lvl.maxFish||20,game.deaths,game.stageTimer);
+  saveStars(game.stageKey,game.diff.id,stars);
+  var msgs={
+    '1-1':['ERIK IS AMAZED!','He has never seen a tail-spin like that.\nHis cold heart cracks wide open.\n"I must follow this seal."'],
+    '1-2':['ERIK THROWS IT ALL AWAY!','His coat. His hat. His club. Into the sea.\n"I RENOUNCE SEAL-CLUBBING!\nI AM VEGAN NOW!"'],
+    '2-1':['COAT FOUND!','Eric grabs it from the snow.\n"Finally. Some dignity."\n(He is still very cold.)'],
+    '2-2':['FEATHERS AND STAFF!','The ancient relics hum with power.\nEric feels something awakening.\n"The ice speaks to me..."'],
+    '2-3':['THE SACRED GEM!','The final relic. It all clicks.\nBjorn nods slowly.\n"It is time."'],
+    '3-1':['COAST CLEARED!','Magnus\'s outer patrols defeated.\nDeeper into enemy territory...'],
+    '3-2':['FLEET DESTROYED!','The warships scatter.\nThe fortress looms ahead.\nEric is inside.'],
+    '3-3':['ERIK RESCUED!','Sealbert smashes the cage!\nEric bursts free in full shaman glory.\n"I knew you\'d come for me, little one."'],
+    '3-4':['MAGNUS DEFEATED!','The Seal-Clubbing Empire crumbles.\nEric and Sealbert swim free.\n"...For now."  -  The Arctic']
+  };
+  var m=msgs[game.stageKey]||['STAGE COMPLETE!','Well done.'];
+  document.getElementById('sc-title').textContent=m[0];
+  document.getElementById('sc-msg').textContent=m[1];
+  document.getElementById('sc-stars').textContent=starsHTML(stars);
+  document.getElementById('stage-complete').style.display='flex';
+}
+function triggerStageComplete(){
+  if(game.stageComplete) return;
+  if(game.stageKey==='2-3'&&!game.quizPassed){
+    game.stageComplete=true;
+    startBearQuiz(function(){
+      game.quizPassed=true; game.stageComplete=false;
+      setTimeout(doStageCompleteDisplay,400);
+    });
+    return;
+  }
+  doStageCompleteDisplay();
+}
+
+// ── UPDATE ──────────────────────────────────────────
+function update(){
+  var g=game;
+  if(!g||g.over||g.won||g.stageComplete) return;
+  setCtx(mainCtx);
+  tickNotif();
+  var p=g.player;
+  // Goal banner hold at level start
+  if(g.bannerTimer>0){
+    g.bannerTimer--;
+    if(g.bannerTimer<=0){ document.getElementById('goal-banner').style.display='none'; }
+    p.frameTick++; if(p.frameTick>7){ p.frame++; p.frameTick=0; }
+    return;
+  }
+  p.frameTick++; if(p.frameTick>7){ p.frame++; p.frameTick=0; }
+  g.erikAnim.tick++; if(g.erikAnim.tick>8){ g.erikAnim.frame++; g.erikAnim.tick=0; }
+  g.stageTimer++;
+
+  var left=keys['ArrowLeft']||keys['a']||keys['A'];
+  var right=keys['ArrowRight']||keys['d']||keys['D'];
+  var jumpK=keys['z']||keys['Z']||keys[' '];
+  var slideK=keys['x']||keys['X'];
+  var spinK=keys['c']||keys['C'];
+
+  if(spinK&&p.spinCooldown<=0&&p.spinCharge>=100&&p.spinTimer<=0){
+    p.spinTimer=44; p.spinCooldown=130; p.spinCharge=0;
+    spawnParts(p.x+30,p.y+27,SB.tail,14,6); spawnParts(p.x+30,p.y+27,'#ffe040',10,5);
+    if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric){
+      var erikWX=g.lvl.erikPos.x*PS;
+      if(Math.abs(p.x-erikWX)<300){ g.spinDoneNearEric=true; setTimeout(triggerStageComplete,1800); }
+    }
+  }
+  if(p.spinTimer>0) p.spinTimer--;
+  if(p.spinCooldown>0) p.spinCooldown--;
+  var spinRate=g.diff?g.diff.spinChargeRate:0.4;
+  if(p.spinCharge<100&&p.spinTimer<=0) p.spinCharge=Math.min(100,p.spinCharge+spinRate);
+
+  if(p.hurtTimer<=0&&p.spinTimer<=0){
+    var spd=p.slideTimer>0?6.8:3.6;
+    if(left){ p.vx=Math.max(p.vx-0.58,-spd); p.facingRight=false; }
+    if(right){ p.vx=Math.min(p.vx+0.58,spd); p.facingRight=true; }
+    if(!left&&!right) p.vx*=0.7;
+  } else if(p.spinTimer>0) p.vx*=0.88;
+
+  if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
+  p.jumpPressed=jumpK;
+  if(slideK&&p.onGround&&p.slideTimer<=0&&p.hurtTimer<=0&&p.spinTimer<=0){ p.slideTimer=30; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7); }
+  if(p.slideTimer>0) p.slideTimer--;
+
+  p.vy+=g.gravity; if(p.vy>15) p.vy=15;
+  p.x+=p.vx; p.y+=p.vy;
+
+  if(p.spinTimer>0) p.state='spin'; else if(p.slideTimer>0) p.state='slide';
+  else if(!p.onGround) p.state=p.vy<0?'jump':'fall';
+  else if(Math.abs(p.vx)>0.5) p.state='walk'; else p.state='idle';
+  if(p.hurtTimer>0) p.hurtTimer--;
+
+  p.onGround=false;
+  for(var pi=0;pi<g.platforms.length;pi++){
+    var pl=g.platforms[pi];
+    if(pl.type==='water'){
+      if(p.x+p.w>pl.x&&p.x<pl.x+pl.w&&p.y+p.h>pl.y+5&&p.y<pl.y+pl.h){ spawnParts(p.x+30,pl.y+8,ENV.watC,12); hurtPlayer(); }
+      continue;
+    }
+    if(p.x+p.w>pl.x&&p.x<pl.x+pl.w){
+      if(p.y+p.h>pl.y&&p.y+p.h<pl.y+pl.h&&p.vy>=0){ p.y=pl.y-p.h; p.vy=0; p.onGround=true; }
+      if(p.y<pl.y+pl.h&&p.y>pl.y&&p.vy<0){ p.y=pl.y+pl.h; p.vy=0; }
+    }
+  }
+  if(p.y>460) hurtPlayer();
+  if(p.x<0) p.x=0;
+  var maxX=(g.lvl.width||4000)-10; if(p.x>maxX) p.x=maxX;
+
+  // Enemies
+  var clubFreq=g.diff?g.diff.clubFreq:1;
+  for(var ei=0;ei<g.enemies.length;ei++){
+    var e=g.enemies[ei];
+    if(!e.alive) continue;
+    e.frameTick++; if(e.frameTick>6){ e.frame++; e.frameTick=0; }
+    e.x+=e.vx; if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx*=-1; if(e.x<0) e.vx=Math.abs(e.vx);
+    e.facingRight=e.vx>0;
+    var onG=false;
+    for(var pj=0;pj<g.platforms.length;pj++){
+      var pll=g.platforms[pj];
+      if(pll.type==='water') continue;
+      if(e.x+e.w>pll.x&&e.x<pll.x+pll.w&&e.y+e.h>=pll.y&&e.y+e.h<=pll.y+10){ e.y=pll.y-e.h; onG=true; break; }
+    }
+    if(!onG) e.y=Math.min(e.y+2,358-e.h);
+    e.clubCooldown--;
+    if(Math.abs(p.x-e.x)<230&&e.clubCooldown<=0&&Math.abs(p.y-e.y)<90){
+      throwClub(e.x+(e.facingRight?e.w:0),e.y+6,e.facingRight?3.5:-3.5,-2);
+      e.clubCooldown=(80+Math.random()*60|0)/clubFreq|0;
+    }
+    if(p.hurtTimer<=0&&rectsOverlap(p,e)){
+      var stomp=p.vy>0&&p.y+p.h<e.y+e.h*0.5, spin=p.spinTimer>0, slide=p.slideTimer>0;
+      if(stomp||spin||slide){ e.alive=false; g.score+=spin?260:155; if(stomp) p.vy=-8; spawnParts(e.x+18,e.y+10,'#c02020',12); spawnParts(e.x+18,e.y+10,'#f0d000',7); }
+      else hurtPlayer();
+    }
+  }
+
+  // Clubs
+  for(var ci=g.clubs.length-1;ci>=0;ci--){
+    var cl=g.clubs[ci];
+    cl.x+=cl.vx; cl.vy+=0.32; cl.y+=cl.vy; cl.rot+=0.28;
+    for(var pk=0;pk<g.platforms.length;pk++){
+      var plk=g.platforms[pk]; if(plk.type==='water') continue;
+      if(cl.x>plk.x&&cl.x<plk.x+plk.w&&cl.y+22>=plk.y) cl.dead=true;
+    }
+    if(cl.y>440) cl.dead=true;
+    if(!cl.dead&&p.hurtTimer<=0){
+      if(p.spinTimer>0&&Math.abs(cl.x-p.x-30)<40&&Math.abs(cl.y-p.y-27)<40){ cl.dead=true; g.score+=30; spawnParts(cl.x,cl.y,'#ffe040',8); }
+      else{ var cr={x:cl.x-10,y:cl.y-10,w:20,h:20}; if(rectsOverlap(p,cr)) hurtPlayer(); }
+    }
+  }
+  g.clubs=g.clubs.filter(function(c){ return !c.dead; });
+
+  // Fish
+  for(var fi=0;fi<g.collectibles.length;fi++){
+    var c=g.collectibles[fi];
+    if(c.collected) continue;
+    c.bob+=0.065;
+    if(rectsOverlap(p,{x:c.x*PS,y:c.y*PS,w:c.w*PS,h:c.h*PS})){
+      c.collected=true; g.tofu++; g.score+=50;
+      p.spinCharge=Math.min(100,p.spinCharge+12);
+      spawnParts(c.x*PS+27,c.y*PS+21,SB.eyS,6);
+      showNotif('🐟 Tofu Fish! +50pts');
+    }
+  }
+  if(p.spinCharge>=100&&!g.spinHintShown&&g.lvl.end==='spin'){ g.spinHintShown=true; showNotif('★ Press C to TAIL-SPIN near Eric!'); }
+
+  // Outfit pickups
+  for(var oi=0;oi<g.outfits.length;oi++){
+    var o=g.outfits[oi];
+    if(o.collected) continue;
+    o.bob+=0.06;
+    if(rectsOverlap(p,{x:o.x*PS,y:o.y*PS,w:o.w*PS,h:o.h*PS})){
+      o.collected=true; g.outfitsCollected++; g.score+=500;
+      showNotif('✦ '+o.type.toUpperCase()+' obtained! +500pts');
+      spawnParts(o.x*PS+15,o.y*PS+24,EK.gem,18); spawnParts(o.x*PS+15,o.y*PS+24,'#ffe040',12);
+      if(g.lvl.end==='outfit'&&g.outfitsCollected>=g.lvl.outfits.length) setTimeout(triggerStageComplete,1200);
+    }
+  }
+
+  // Goal
+  var gl=g.goal;
+  if(gl&&!gl.rescued&&rectsOverlap(p,gl)){
+    gl.rescued=true; g.companionRescued=true; g.score+=1500;
+    spawnParts(gl.x+28,gl.y+34,ENV.gndD,22); spawnParts(gl.x+28,gl.y+34,'#ffe040',14);
+    showNotif('★ ERIK RESCUED! ★');
+    g.companion={x:gl.x-60,y:gl.y-28,frame:0,frameTick:0};
+    if(g.lvl.end==='rescue') setTimeout(triggerStageComplete,1400);
+  }
+  if(g.companion){ g.companion.frameTick++; if(g.companion.frameTick>8){ g.companion.frame++; g.companion.frameTick=0; } g.companion.x+=(p.x-65-g.companion.x)*0.07; g.companion.y=p.y-8; }
+
+  // Reach end
+  if(g.lvl.end==='reach'&&p.x>g.lvl.width-180) triggerStageComplete();
+
+  // Eric follows stage 2
+  if(g.lvl.erikFollows){ g.erikFollowX=Math.min(p.x-80,g.lvl.width-200); g.erikFollowY=p.y-10; }
+
+  // Boss
+  if(g.boss&&g.bossActive) updateBoss();
+
+  // Camera
+  var maxCam=Math.max(0,g.lvl.width-640);
+  g.camera.x=Math.min(maxCam,Math.max(0,g.camera.x+(p.x-200-g.camera.x)*0.1));
+
+  for(var pti=g.particles.length-1;pti>=0;pti--){ var pt=g.particles[pti]; pt.x+=pt.vx; pt.y+=pt.vy; pt.vy+=0.18; pt.life--; if(pt.life<=0) g.particles.splice(pti,1); }
+
+  document.getElementById('score-val').textContent=g.score;
+  document.getElementById('tofu-val').textContent=g.tofu;
+  document.getElementById('lives-val').textContent=g.lives;
+  document.getElementById('spin-fill').style.width=game.player.spinCharge+'%';
+}
+
+function updateBoss(){
+  var g=game, b=g.boss, p=g.player;
+  if(!b.alive) return;
+  b.frameTick++; if(b.frameTick>5){ b.frame++; b.frameTick=0; }
+  if(b.hurtTimer>0) b.hurtTimer--;
+  if(b.hp<=b.maxHp/2&&b.phase===1){ b.phase=2; b.vx=2.0; spawnParts(b.x+33,b.y+60,'#c000c0',22); }
+  if(b.x<p.x-90) b.vx=Math.abs(b.vx); else if(b.x>p.x+40) b.vx=-Math.abs(b.vx);
+  b.facingRight=b.vx>0; b.x=Math.max(50,Math.min(g.lvl.width-120,b.x+b.vx));
+  if(!b.onGround){ b.vy+=g.gravity; b.y+=b.vy; }
+  b.onGround=false;
+  for(var i=0;i<g.platforms.length;i++){
+    var pl=g.platforms[i]; if(pl.type==='water') continue;
+    if(b.x+b.w>pl.x&&b.x<pl.x+pl.w&&b.y+b.h>=pl.y&&b.y+b.h<=pl.y+12&&b.vy>=0){ b.y=pl.y-b.h; b.vy=0; b.onGround=true; break; }
+  }
+  b.jumpTimer--; if(b.jumpTimer<=0&&b.onGround){ b.vy=b.phase===2?-13:-10; b.jumpTimer=b.phase===2?75:125; }
+  var cf=g.diff?g.diff.clubFreq:1;
+  b.clubTimer--; if(b.clubTimer<=0){
+    var n=b.phase===2?3:1;
+    for(var i=0;i<n;i++){
+      (function(ii){ setTimeout(function(){ throwClub(b.x+(b.facingRight?b.w:0),b.y+32,b.facingRight?3.8:-3.8,b.phase===2?-3.5:-2); },ii*200); })(i);
+    }
+    b.clubTimer=(b.phase===2?52:88)/cf|0;
+  }
+  if(!g.bossActive&&!g.bossIntroDone&&p.x>b.x-400){ document.getElementById('boss-intro').style.display='flex'; g.bossIntroDone=true; }
+  var bR={x:b.x,y:b.y,w:b.w,h:b.h};
+  if(p.hurtTimer<=0&&rectsOverlap(p,bR)){
+    var stomp=p.vy>1&&p.y+p.h<b.y+b.h*0.42, spin=p.spinTimer>0;
+    if(stomp||spin){ b.hp--; b.hurtTimer=28; if(stomp) p.vy=-9; g.score+=spin?320:210; spawnParts(b.x+33,b.y+40,'#ff2020',16); if(b.hp<=0) bossDead(); }
+    else hurtPlayer();
+  }
+  document.getElementById('boss-hp-fill').style.width=(b.hp/b.maxHp*100)+'%';
+}
+function throwClub(x,y,vx,vy){ game.clubs.push({x:x,y:y,vx:vx,vy:vy||(-2),rot:0,dead:false}); }
+function bossDead(){
+  var g=game, b=g.boss; b.alive=false; b.hp=0; g.bossActive=false; g.won=true; g.score+=3500;
+  document.getElementById('boss-hp-wrap').style.display='none';
+  for(var i=0;i<5;i++){ (function(ii){ setTimeout(function(){ spawnParts(b.x+33,b.y+60,'#ffe040',20); spawnParts(b.x+33,b.y+60,MG.cp3,16); },ii*220); })(i); }
+  setTimeout(function(){
+    document.getElementById('win-title').textContent='MAGNUS FALLS!\nERIK IS FREE!';
+    document.getElementById('win-msg').textContent='Score: '+g.score+' · Tofu: '+g.tofu+'\n\nEric and Sealbert swim out into the open sea.\nNo words. Just the two of them.\nAnd the sound of the waves.\n\n"...For now."  -  The Arctic';
+    document.getElementById('win-screen').style.display='flex';
+    playTrack('ending');
+    deleteCurrent();
+  },2600);
+}
+function hurtPlayer(){
+  var p=game.player; if(p.hurtTimer>0) return;
+  game.deaths++; game.lives--;
+  if(game.lives<=0){
+    game.over=true;
+    document.getElementById('go-msg').textContent='No lives left...\nThe ocean never forgets.';
+    setTimeout(function(){ document.getElementById('game-over-screen').style.display='flex'; },1000);
+  } else {
+    var key=game.stageKey, score=game.score, tofu=game.tofu, lives=game.lives;
+    if(animTick) cancelAnimationFrame(animTick);
+    initStage(key);
+    game.score=score; game.tofu=tofu; game.lives=lives;
+    saveGame();
+    showNotif('Level '+key+'  -  '+lives+' lives remaining');
+    loop();
+  }
+}
+
+// ── RENDER ──────────────────────────────────────────
+function render(){
+  var g=game; setCtx(mainCtx); mainCtx.clearRect(0,0,640,400);
+  var scroll=g.camera.x|0;
+  drawBackground(scroll,g.lvl.bgTint,g.lvl.blizzard);
+  for(var i=0;i<g.platforms.length;i++) drawPlatform(g.platforms[i],scroll);
+
+  for(var i=0;i<g.collectibles.length;i++){ var c=g.collectibles[i]; if(!c.collected) drawTofuFish(c.x-scroll/PS|0,c.y,c.bob); }
+  for(var i=0;i<g.outfits.length;i++){ var o=g.outfits[i]; if(!o.collected) drawOutfitPickup((o.x*PS-scroll)/PS|0,o.y,o.type,o.bob); }
+
+  if(g.goal){ var gl=g.goal; drawGoal(gl.x-scroll,gl.y-72,gl.rescued); }
+  for(var i=0;i<g.enemies.length;i++){ var e=g.enemies[i]; if(e.alive) drawClubber((e.x-scroll)/PS|0,e.y/PS|0,e.facingRight,e.type==='big',e.frame); }
+  for(var i=0;i<g.clubs.length;i++) drawClub(g.clubs[i]);
+
+  if(g.boss&&g.boss.alive&&g.bossActive) drawMagnus(g.boss);
+
+  // Eric on ship (stage 1)
+  if(g.lvl.erikPos){
+    var ep=g.lvl.erikPos, ex=(ep.x*PS-scroll)/PS|0;
+    if(ep.type==='pirate') drawEricPirate(ex,ep.y||65,g.erikAnim.frame);
+    else drawEric(ex,ep.y||65,g.erikAnim.frame,false);
+    if(g.spinDoneNearEric){ mainCtx.font='20px serif'; mainCtx.fillStyle='#ff80a0'; mainCtx.fillText('♥',ep.x*PS-scroll+60,200); }
+  }
+  // Eric follows stage 2
+  if(g.lvl.erikFollows){
+    var ec=g.outfitsCollected, ex2=(g.erikFollowX-scroll)/PS|0, ey2=g.erikFollowY/PS|0;
+    if(ec>=4) drawEric(ex2,ey2,g.erikAnim.frame,false);
+    else drawEricUnderwear(ex2,ey2,g.erikAnim.frame,g.lvl.blizzard);
+    mainCtx.fillStyle='rgba(0,10,30,.85)'; mainCtx.fillRect(scroll+6,6,145,14);
+    mainCtx.fillStyle='#70c8ff'; mainCtx.font='6px monospace'; mainCtx.fillText('RELICS '+ec+'/'+g.lvl.outfits.length,scroll+10,17);
+  }
+  // Ice Bear King throne
+  if(g.lvl.iceBearKingPos){ var ib=g.lvl.iceBearKingPos; drawIceBearKing((ib.x*PS-scroll)/PS|0,ib.y,g.erikAnim.frame,false); }
+  // Companion
+  if(g.companion) drawEric((g.companion.x-scroll)/PS|0,(g.companion.y)/PS|0,g.companion.frame,true);
+
+  // Player
+  var p=g.player;
+  drawSealbert((p.x-scroll)/PS|0,p.y/PS|0,p.facingRight,p.state,p.hurtTimer,p.spinTimer,p.frame);
+
+  // Particles (upgraded: stars + glowing squares + spin)
+  for(var i=0;i<g.particles.length;i++){
+    var pt=g.particles[i];
+    mainCtx.save();
+    mainCtx.globalAlpha=Math.min(1,pt.life/40);
+    mainCtx.fillStyle=pt.color;
+    var px=(pt.x-scroll)|0, py=pt.y|0;
+    if(pt.star){
+      mainCtx.translate(px,py);
+      mainCtx.rotate(pt.spin||0);
+      var s=pt.size+1;
+      mainCtx.fillRect(-s,-1,s*2,2);
+      mainCtx.fillRect(-1,-s,2,s*2);
+      mainCtx.globalAlpha*=0.6;
+      mainCtx.fillStyle='#fff';
+      mainCtx.fillRect(-1,-1,2,2);
+    } else {
+      mainCtx.fillRect(px,py,pt.size,pt.size);
+      mainCtx.globalAlpha*=0.5;
+      mainCtx.fillStyle='#fff';
+      mainCtx.fillRect(px+1,py,1,1);
+    }
+    mainCtx.restore();
+    if(pt.vr) pt.spin=(pt.spin||0)+pt.vr;
+  }
+  mainCtx.globalAlpha=1;
+
+  // Spin ready badge
+  if(p.spinCharge>=100&&p.spinTimer<=0&&p.spinCooldown<=0){
+    var ix=(p.x-scroll+30)|0, iy=(p.y-18)|0;
+    mainCtx.fillStyle='rgba(10,5,0,.78)'; mainCtx.fillRect(ix-22,iy-2,50,12);
+    mainCtx.fillStyle='#ffe040'; mainCtx.font='6px monospace'; mainCtx.textAlign='center'; mainCtx.fillText('★SPIN!',ix+3,iy+8); mainCtx.textAlign='left';
+  }
+  // Stage 1 hint arrow
+  if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric&&p.spinCharge>=100){
+    var ex3=g.lvl.erikPos.x*PS-scroll;
+    if(ex3>0&&ex3<640){ mainCtx.fillStyle='#ffe040'; mainCtx.font='bold 9px monospace'; mainCtx.fillText('→ SPIN NEAR ERIK!',Math.min(ex3-130,490),285); }
+  }
+  if(g.over) r(0,0,640,400,'rgba(0,0,0,.5)');
+}
+function drawGoal(gx,gy,rescued){
+  if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIK!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
+  else{ r(gx+18,gy-60,4,64,'#a0a0a0'); mainCtx.fillStyle=ENV.gndD; mainCtx.fillRect(gx+22,gy-58,28,18); mainCtx.fillStyle='#fff'; mainCtx.font='6px monospace'; mainCtx.fillText('FREE!',gx+24,gy-46); }
+}
+function drawClub(cl){
+var sx=cl.x-game.camera.x, sy=cl.y;
+mainCtx.save(); mainCtx.translate(sx,sy);
+// faint motion trail
+mainCtx.globalAlpha=0.25; mainCtx.fillStyle='#806030';
+mainCtx.fillRect(-cl.vx*2-3,-cl.vy*2-3,6,6);
+mainCtx.globalAlpha=1;
+mainCtx.rotate(cl.rot);
+r(-5,-24,10,30,'#402000'); r(-4,-24,8,30,'#604020'); r(-3,-22,4,26,'#806030');
+r(-8,-30,16,9,'#503010'); r(-7,-29,14,8,'#705020'); r(-7,-29,12,4,'#90703a');
+// nail glints
+r(-6,-28,2,2,'#e0e0e0'); r(4,-26,2,2,'#e0e0e0'); r(0,-24,1,1,'#c0c0c0');
+mainCtx.restore();
+}
+
+function loop(){ setCtx(mainCtx); update(); render(); animTick=requestAnimationFrame(loop); }
+
+// ── INPUT ──────────────────────────────────────────
+window.addEventListener('keydown',function(e){
+  keys[e.key]=true;
+  if(e.key==='s'||e.key==='S'){ if(game&&!game.over&&!game.won&&!game.stageComplete) saveGame(); }
+  if([' ','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].indexOf(e.key)>=0) e.preventDefault();
+});
+window.addEventListener('keyup',function(e){ keys[e.key]=false; });
+function addTouch(id,key){
+  var el=document.getElementById(id); if(!el) return;
+  el.addEventListener('touchstart',function(e){ keys[key]=true; e.preventDefault(); },{passive:false});
+  el.addEventListener('touchend',function(e){ keys[key]=false; e.preventDefault(); },{passive:false});
+}
+if('ontouchstart' in window){
+  document.getElementById('touch-controls').style.display='flex';
+  addTouch('btn-left','ArrowLeft'); addTouch('btn-right','ArrowRight');
+  addTouch('btn-jump','z'); addTouch('btn-slide','x'); addTouch('btn-spin','c');
+}
+
+window.addEventListener('load',function(){ buildDiffUI(); });
+</script>
+</body>
+</html>
