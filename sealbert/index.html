@@ -12,6 +12,8 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;max-w
 #hud{display:none;justify-content:space-between;align-items:center;width:640px;max-width:100vw;padding:5px 10px;background:#000814;border-bottom:2px solid #1060a0;font-size:9px;gap:6px;flex-wrap:wrap}
 #hud span{color:#ffe040}
 #spin-bar{width:55px;height:7px;background:#0a1828;border:1px solid #1080c0;overflow:hidden;border-radius:2px;display:inline-block;vertical-align:middle}
+#hp-bar{width:60px;height:8px;background:#2a0808;border:1px solid #c04040;overflow:hidden;border-radius:2px;display:inline-block;vertical-align:middle}
+#hp-fill{height:100%;background:linear-gradient(90deg,#e02020,#ff6040,#ffd040);width:100%;transition:width .15s}
 #spin-fill{height:100%;background:linear-gradient(90deg,#ff6000,#ffe040);width:0%}
 .overlay{position:absolute;top:0;left:0;width:640px;height:400px;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30;text-align:center;gap:10px;background:rgba(2,8,22,.93)}
 .overlay h2{font-size:16px;line-height:1.8}
@@ -59,7 +61,9 @@ window.onerror = function(msg,src,line,col){
 <div id="hud">
   <div id="stage-label" style="font-size:8px;color:#60b0ff;max-width:200px"></div>
   <div>🐟<span id="tofu-val">0</span></div>
+  <div>🍬<span id="candy-val">0</span></div>
   <div>❤<span id="lives-val">3</span></div>
+  <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:#ff9090">HP<div id="hp-bar"><div id="hp-fill"></div></div></div>
   <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:#90d0ff">SPIN<div id="spin-bar"><div id="spin-fill"></div></div></div>
   <div style="font-size:9px"><span id="score-val">0</span>pts</div>
   <div id="diff-badge" style="font-size:8px;color:#806020"></div>
@@ -381,826 +385,776 @@ function rrect(c,x,y,w,h,rad){
 function drawSealbert(cx,cy,facingRight,state,hurtTimer,spinTimer,frame){
   var tick=Date.now();
   var H=hurtTimer>0&&(Math.floor(hurtTimer/4)%2===0);
-  var blinking=Math.floor(tick/2800)%8===0&&!spinTimer;
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(28*PS,0); ctx.scale(-1,1); }
-  if(spinTimer>0){ drawSealSpin(tick); ctx.restore(); return; }
-  if(state==='slide') drawSealSlide(H);
-  else drawSealStand(H,blinking,state,frame);
-  ctx.restore();
+  var c=ctx;
+  c.save();
+  c.translate(cx*PS, cy*PS);
+  // local box ~ 84w x 60h (matches old w:60 h:54 collision near enough)
+  if(!facingRight){ c.translate(84,0); c.scale(-1,1); }
+  if(spinTimer>0){ drawSealSpinV(c,tick,H); c.restore(); return; }
+  drawSealBodyV(c,tick,state,frame,H);
+  c.restore();
 }
-function drawSealStand(H,blinking,state,frame){
-  var C1=H?'#3a1010':SB.dk;   // darkest outline
-  var C2=H?'#7a2020':SB.sh;   // dark shade
-  var C3=H?'#b04040':SB.md;   // mid
-  var C4=H?'#d07070':SB.lt;   // light
-  var C5=H?'#f0c0c0':SB.hl;   // highlight
-  var walk=state==='walk';
-  var bob=(walk&&frame%2===0)?0:1;
+function drawSealBodyV(c,tick,state,frame,H){
+  // ---- motion params ----
+  var walking=(state==='walk');
+  var sliding=(state==='slide');
+  var t=tick/220;
+  var waddle=walking?Math.sin(t*6):Math.sin(t*1.4); // belly sway
+  var bodyDip=walking?Math.abs(Math.sin(t*6))*3:Math.sin(t*1.4)*1.2; // up-down bob
+  var breath=Math.sin(tick/700)*1.4;
+  var blink=(Math.floor(tick/2600)%9===0);
 
-  // ── DROP SHADOW ──
-  ctx.globalAlpha=0.18; ctx.fillStyle='#000';
-  ctx.beginPath(); ctx.ellipse(13*PS,26*PS,11*PS,3*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
+  // palette
+  var oC = H?'#7a1818':'#1c3a55';        // outline / deepest
+  var dk = H?'#a23030':'#2f5f86';        // shadow tone
+  var md = H?'#cf5a5a':'#4f93c0';        // mid
+  var lt = H?'#e88c8c':'#7fc4e8';        // light
+  var hl = H?'#f4bcbc':'#b7e8fb';        // highlight
+  var bellyA = H?'#f6dada':'#dff2fb';
+  var bellyB = '#ffffff';
 
-  // ── TAIL (hidden behind body — small cute rounded nub top-right) ──
-  // Tail is a small heart-shaped flip tucked at the rear, NOT sticking out sideways
-  pr(22,16,5,5,SB.tail);  pr(23,15,4,4,SB.tl2);
-  pr(24,14,3,5,SB.tail);  pr(23,17,3,3,SB.tl2);
+  // ---- DROP SHADOW ----
+  c.save();
+  c.globalAlpha=0.20; c.fillStyle='#000';
+  c.beginPath(); c.ellipse(40, 58, 30-waddle*2, 5, 0, 0, Math.PI*2); c.fill();
+  c.restore();
 
-  // ── BODY (large round oval — 5 tone shading) ──
-  pr(2,13,22,14,C1);  // outline bottom
-  pr(1,10,24,14,C1);  // outline mid
-  pr(3,8,20,4,C1);    // outline top
-  pr(3,13,21,13,C2);  // dark shade
-  pr(4,11,19,13,C3);  // mid
-  pr(5,10,17,12,C4);  // light
-  pr(6,9,15,11,C5);   // highlight patch top-left
-  pr(7,9,6,5,SB.wh);  // brightest highlight
+  c.save();
+  c.translate(0, bodyDip*0.5);
 
-  // ── BELLY (cream oval, lower centre) ──
-  pr(7,16,13,9,SB.wh);
-  pr(8,15,11,10,'#e8f8f8');
-  pr(9,14,9,10,SB.wh);
+  // ============ TAIL FLUKE (elegant, behind body, left side) ============
+  c.save();
+  c.translate(8, 36+waddle*1.5);
+  c.rotate(-0.25 + Math.sin(t*6)*0.08);
+  var tg=c.createLinearGradient(-16,0,4,0);
+  tg.addColorStop(0,oC); tg.addColorStop(0.5,dk); tg.addColorStop(1,md);
+  c.fillStyle=tg;
+  c.beginPath();
+  c.moveTo(4,-2);
+  c.quadraticCurveTo(-14,-14,-20,-8);   // upper fluke lobe
+  c.quadraticCurveTo(-12,-2,-20,6);     // notch
+  c.quadraticCurveTo(-14,12,4,8);       // lower fluke lobe
+  c.closePath(); c.fill();
+  c.restore();
 
-  // ── HEAD (round, sits on top-left of body) ──
-  pr(1,2,18,12,C1);  // outline
-  pr(2,1,16,12,C2);  // shade
-  pr(3,0,14,11,C3);  // mid
-  pr(4,0,12,10,C4);  // light
-  pr(5,0,9,8,C5);    // highlight
-  pr(6,0,5,4,SB.wh); // bright
+  // ============ MAIN BODY — long, curved, elegant ============
+  // The body is a long banana-curve: head high-right, belly low-left.
+  var bg=c.createLinearGradient(0,8,0,56);
+  bg.addColorStop(0,lt); bg.addColorStop(0.45,md); bg.addColorStop(1,dk);
+  c.fillStyle=bg;
+  c.beginPath();
+  // elongated banana-curve: long low back rising to a head at the right
+  c.moveTo(6, 46);
+  c.bezierCurveTo(-2, 30, 6, 14, 30, 13);          // long back rising to neck
+  c.bezierCurveTo(52, 11, 68, 15, 74, 25);         // over head/snout top
+  c.bezierCurveTo(80, 33, 75, 43, 64, 47);         // down the face/front
+  c.bezierCurveTo(58, 50, 54, 51, 50, 53);         // chin to chest
+  c.bezierCurveTo(44, 59+breath, 18, 60+breath, 10, 55); // long belly bulge
+  c.bezierCurveTo(5, 52, 4, 49, 6, 46);
+  c.closePath(); c.fill();
 
-  // ── MUZZLE (lighter rounded bump) ──
-  pr(2,7,8,6,C4);  pr(1,8,9,4,'#e8f4f0');  pr(2,8,7,3,SB.wh);
+  // body rim-light along the back
+  c.strokeStyle=hl; c.globalAlpha=0.5; c.lineWidth=2.4;
+  c.beginPath();
+  c.moveTo(18,30);
+  c.bezierCurveTo(16,18,28,14,40,13.5);
+  c.stroke(); c.globalAlpha=1;
 
-  // ── NOSE (pink heart shape) ──
-  pr(3,7,4,2,SB.nos);  pr(4,6,2,2,SB.nos);  pr(3,8,2,1,'#c02050');  pr(5,8,2,1,'#c02050');
+  // ---- soft outline ----
+  c.strokeStyle=oC; c.globalAlpha=0.55; c.lineWidth=1.6;
+  c.beginPath();
+  c.moveTo(6, 46);
+  c.bezierCurveTo(-2, 30, 6, 14, 30, 13);
+  c.bezierCurveTo(52, 11, 68, 15, 74, 25);
+  c.bezierCurveTo(80, 33, 75, 43, 64, 47);
+  c.bezierCurveTo(58, 50, 54, 51, 50, 53);
+  c.bezierCurveTo(44, 59+breath, 18, 60+breath, 10, 55);
+  c.bezierCurveTo(5, 52, 4, 49, 6, 46);
+  c.stroke(); c.globalAlpha=1;
 
-  // ── WHISKERS ──
-  ctx.globalAlpha=0.55; ctx.fillStyle='#a0b8b0';
-  ctx.fillRect(10*PS,9*PS,5*PS,1); ctx.fillRect(10*PS,11*PS,6*PS,1);
-  ctx.fillRect(10*PS,13*PS,4*PS,1); ctx.globalAlpha=1;
+  // ============ CREAM BELLY (soft inner gradient) ============
+  var blg=c.createRadialGradient(40,42,4,40,44,26);
+  blg.addColorStop(0,bellyB); blg.addColorStop(0.7,bellyA); blg.addColorStop(1,'rgba(190,225,245,0)');
+  c.fillStyle=blg;
+  c.beginPath();
+  c.moveTo(30,26);
+  c.bezierCurveTo(52,28,58,40,50,50);
+  c.bezierCurveTo(40,57+breath,26,56+breath,22,46);
+  c.bezierCurveTo(20,38,22,30,30,26);
+  c.closePath(); c.fill();
 
-  // ── CHEEK BLUSH ──
-  ctx.globalAlpha=0.45; pr(1,9,3,3,SB.blush); ctx.globalAlpha=1;
+  // ============ REAR FLIPPER (little foot, waddles) ============
+  c.save();
+  c.translate(20, 53);
+  c.rotate(walking?Math.sin(t*6)*0.25:0.05);
+  var fg=c.createLinearGradient(0,0,0,10);
+  fg.addColorStop(0,md); fg.addColorStop(1,dk);
+  c.fillStyle=fg;
+  c.beginPath(); c.ellipse(0,4,10,6,0,0,Math.PI*2); c.fill();
+  c.strokeStyle=oC; c.globalAlpha=0.4; c.lineWidth=1.2; c.stroke(); c.globalAlpha=1;
+  c.restore();
 
-  // ── LEFT EYE (big, round, dewy — 5 layers) ──
-  pr(8,2,6,7,C1);    // outline
-  pr(9,2,5,6,'#0a1830');  // deep dark
-  pr(9,2,5,6,SB.eyS);    // blue iris
-  pr(10,3,4,5,SB.eyS);
-  pr(10,3,3,4,SB.eye);   // pupil
-  pr(11,4,2,3,SB.eye);
-  pr(13,2,2,2,SB.eyR);   // main shine
-  pr(12,2,2,1,SB.eyR);
-  pr(12,4,1,1,'#a0d8f8'); // secondary shine
-  if(blinking){ pr(8,4,7,3,C3); pr(8,5,7,2,C4); } // eyelid
+  // ============ FRONT FLIPPER (on chest, gentle paddle) ============
+  c.save();
+  c.translate(52, 40);
+  c.rotate(0.5 + (walking?Math.sin(t*6+1)*0.3:Math.sin(t*1.4)*0.12));
+  var ffg=c.createLinearGradient(0,0,14,6);
+  ffg.addColorStop(0,lt); ffg.addColorStop(1,md);
+  c.fillStyle=ffg;
+  c.beginPath();
+  c.moveTo(0,0);
+  c.quadraticCurveTo(16,2,18,10);
+  c.quadraticCurveTo(10,14,2,8);
+  c.closePath(); c.fill();
+  c.strokeStyle=oC; c.globalAlpha=0.4; c.lineWidth=1; c.stroke(); c.globalAlpha=1;
+  c.restore();
 
-  // ── SMILE ──
-  pr(3,11,2,1,'#c03858'); pr(5,12,2,1,'#c03858'); pr(7,13,2,1,'#c03858');
+  // ============ HEAD DETAILING (snout, nose, eyes, whiskers) ============
+  // snout highlight
+  var sg=c.createRadialGradient(60,30,2,62,32,16);
+  sg.addColorStop(0,hl); sg.addColorStop(1,'rgba(180,230,250,0)');
+  c.fillStyle=sg;
+  c.beginPath(); c.ellipse(60,30,15,12,0,0,Math.PI*2); c.fill();
 
-  // ── FRONT FLIPPERS (rounded, animated) ──
-  pr(20,17,6,5,C1); pr(21,16+bob,6,5,C2); pr(22,16+bob,5,4,C3); pr(22,16+bob,4,2,C4);
-  // rear flipper
-  pr(1,19,6,5,C1); pr(2,18,6,5,C2); pr(3,18,5,4,C3); pr(3,18,3,2,C4);
+  // cheek blush
+  c.save(); c.globalAlpha=0.4; c.fillStyle=H?'#ff9aa8':'#ff9ec0';
+  c.beginPath(); c.ellipse(52,36,5,3.5,0,0,Math.PI*2); c.fill(); c.restore();
 
-  // ── OUTLINE STROKES ──
-  pr(1,9,1,12,C1); pr(26,10,1,12,C1); pr(3,26,21,1,C1);
+  // NOSE (heart-ish, glossy)
+  c.fillStyle=H?'#a83048':'#22405c';
+  c.beginPath(); c.ellipse(72,28,4.6,3.7,0,0,Math.PI*2); c.fill();
+  c.fillStyle='rgba(255,255,255,0.65)';
+  c.beginPath(); c.ellipse(71,26.5,1.6,1.1,0,0,Math.PI*2); c.fill();
+
+  // mouth — gentle smile curve
+  c.strokeStyle=H?'#8a2030':'#1c3550'; c.lineWidth=1.6; c.lineCap='round';
+  c.beginPath();
+  c.moveTo(69,33);
+  c.quadraticCurveTo(62,38,56,35);
+  c.stroke();
+
+  // WHISKERS
+  c.strokeStyle='rgba(255,255,255,0.7)'; c.lineWidth=1;
+  for(var w=0; w<3; w++){
+    c.beginPath();
+    c.moveTo(63,30+w*2);
+    c.quadraticCurveTo(74,30+w*3-2, 80,30+w*4-3);
+    c.stroke();
+  }
+
+  // EYE (big, glossy, expressive) ---------------------------------
+  var ex=57, ey=23;
+  if(blink){
+    c.strokeStyle=oC; c.lineWidth=2; c.lineCap='round';
+    c.beginPath(); c.moveTo(ex-5,ey); c.quadraticCurveTo(ex,ey+3,ex+5,ey); c.stroke();
+  } else {
+    // eye white
+    c.fillStyle='#ffffff';
+    c.beginPath(); c.ellipse(ex,ey,6,7,0,0,Math.PI*2); c.fill();
+    // iris gradient
+    var ig=c.createRadialGradient(ex+1,ey+1,1,ex,ey,6);
+    ig.addColorStop(0,'#5fa8e0'); ig.addColorStop(0.7,'#2766a8'); ig.addColorStop(1,'#16314f');
+    c.fillStyle=ig;
+    c.beginPath(); c.ellipse(ex+0.5,ey+0.5,4.4,5.2,0,0,Math.PI*2); c.fill();
+    // pupil
+    c.fillStyle='#0b1a2c';
+    c.beginPath(); c.ellipse(ex+0.8,ey+1,2.4,3,0,0,Math.PI*2); c.fill();
+    // big catch-light
+    c.fillStyle='#ffffff';
+    c.beginPath(); c.ellipse(ex+2.4,ey-1.4,1.8,2.2,0,0,Math.PI*2); c.fill();
+    // small secondary glint
+    c.globalAlpha=0.8; c.beginPath(); c.ellipse(ex-1.4,ey+2.6,1,1.1,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+    // upper lash line
+    c.strokeStyle=oC; c.lineWidth=1.4;
+    c.beginPath(); c.moveTo(ex-6,ey-3); c.quadraticCurveTo(ex,ey-9,ex+6,ey-4); c.stroke();
+  }
+  // eyebrow-ish soft shading above eye for cuteness
+  c.restore();
 }
-function drawSealSlide(H){
-  var C2=H?'#7a2020':SB.sh; var C3=H?'#b04040':SB.md; var C4=H?'#d07070':SB.lt;
+function drawSealSlideV(c,H){
+  // kept for compatibility; vector body handles slide via state, so just call body flat
+}
+function drawSealSpinV(c,tick,H){
+  var t=tick/30;
+  var md = H?'#cf5a5a':'#4f93c0';
+  var lt = H?'#e88c8c':'#7fc4e8';
+  var tail = '#e878b0';
+  c.save(); c.translate(42,34);
   // shadow
-  ctx.globalAlpha=0.15; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(12*PS,18*PS,13*PS,2*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-  // tail nub tucked at rear
-  pr(22,8,5,4,SB.tail); pr(23,7,3,4,SB.tl2);
-  // stretched body
-  pr(0,8,26,11,SB.dk); pr(1,7,24,11,C2); pr(2,7,22,10,C3); pr(3,7,20,9,C4);
-  pr(4,8,17,7,SB.hl); pr(5,8,10,4,SB.wh);
-  // belly
-  pr(6,11,13,5,SB.wh); pr(7,10,11,5,'#e8f8f8');
-  // head forward
-  pr(0,5,11,9,SB.dk); pr(1,4,10,9,C2); pr(2,4,9,8,C3); pr(3,4,8,7,C4); pr(3,4,5,4,SB.hl);
-  // muzzle
-  pr(1,9,6,4,SB.wh); pr(1,9,4,2,'#e8f4f0');
-  // nose
-  pr(2,8,3,2,SB.nos);
-  // eye (squished for speed)
-  pr(5,5,5,4,SB.dk); pr(6,5,4,4,SB.eyS); pr(6,6,3,3,SB.eye); pr(9,5,2,2,SB.eyR);
-  // speed lines
-  ctx.fillStyle='rgba(255,255,255,0.35)'; for(var i=0;i<4;i++) ctx.fillRect((14+i*4)*PS,9*PS-2,PS*3,2);
-  pr(0,17,26,2,SB.dk);
-}
-function drawSealSpin(tick){
-  var t=tick/38;
-  ctx.save(); ctx.translate(14*PS,13*PS);
-  // 6 ghost bodies for full spin blur
+  c.globalAlpha=0.2; c.fillStyle='#000';
+  c.beginPath(); c.ellipse(0,24,30,5,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // spinning ghost discs
   for(var i=0;i<6;i++){
-    ctx.save(); ctx.rotate(t+i*1.05); ctx.globalAlpha=i===0?1:0.35;
-    ctx.fillStyle=SB.lt; ctx.beginPath(); ctx.ellipse(0,0,13*PS,8*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=SB.wh; ctx.beginPath(); ctx.ellipse(2*PS,1*PS,7*PS,5*PS,0,0,Math.PI*2); ctx.fill();
-    // tail fin swept out — ellipse at side
-    ctx.fillStyle=SB.tail; ctx.beginPath(); ctx.ellipse(15*PS,1*PS,5*PS,3*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=SB.tl2; ctx.beginPath(); ctx.ellipse(16*PS,0,3*PS,2*PS,0,0,Math.PI*2); ctx.fill();
-    // head blob
-    ctx.fillStyle=SB.md; ctx.beginPath(); ctx.ellipse(-10*PS,-1*PS,6*PS,5*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.restore();
+    c.save(); c.rotate(t+i*1.05); c.globalAlpha=i===0?1:0.32;
+    var g=c.createLinearGradient(-30,0,30,0);
+    g.addColorStop(0,md); g.addColorStop(0.5,lt); g.addColorStop(1,md);
+    c.fillStyle=g;
+    c.beginPath(); c.ellipse(0,0,30,17,0,0,Math.PI*2); c.fill();
+    // belly streak
+    c.fillStyle='rgba(255,255,255,0.6)';
+    c.beginPath(); c.ellipse(4,2,15,9,0,0,Math.PI*2); c.fill();
+    // fluke sweep
+    c.fillStyle=tail;
+    c.beginPath(); c.ellipse(33,0,11,6,0,0,Math.PI*2); c.fill();
+    c.restore();
   }
-  ctx.globalAlpha=1;
-  // sparkle stars around spin
+  c.globalAlpha=1;
+  // sparkle ring
   for(var j=0;j<16;j++){
-    var a=t*3+j*Math.PI/8, rd=22*PS;
-    ctx.fillStyle=j%3===0?'#ffe040':j%3===1?SB.tl2:'#ffffff';
-    var ss=j%2===0?5:3;
-    ctx.fillRect(Math.cos(a)*rd-ss/2,Math.sin(a)*rd-ss/2,ss,ss);
+    var a=t*3+j*Math.PI/8, rd=46;
+    c.fillStyle=j%3===0?'#ffe040':j%3===1?'#fff':tail;
+    var s=j%2?7:4;
+    c.save(); c.translate(Math.cos(a)*rd,Math.sin(a)*rd); c.rotate(a);
+    c.fillRect(-s/2,-s/2,s,s); c.restore();
   }
-  ctx.restore();
+  c.restore();
 }
+
+// ===== VECTOR DRAW HELPERS =====
+function vLimb(c,x1,y1,x2,y2,w,colA,colB){
+  var g=c.createLinearGradient(x1,y1,x2,y2); g.addColorStop(0,colA); g.addColorStop(1,colB);
+  c.strokeStyle=g; c.lineWidth=w; c.lineCap='round';
+  c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+}
+function vBlob(c,x,y,rx,ry,colA,colB,rot){
+  var g=c.createRadialGradient(x-rx*0.3,y-ry*0.3,1,x,y,Math.max(rx,ry));
+  g.addColorStop(0,colA); g.addColorStop(1,colB);
+  c.fillStyle=g; c.save(); c.translate(x,y); if(rot)c.rotate(rot);
+  c.beginPath(); c.ellipse(0,0,rx,ry,0,0,Math.PI*2); c.fill(); c.restore();
+}
+function vEye(c,x,y,r,look){
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(x,y,r,r*1.15,0,0,Math.PI*2); c.fill();
+  var ig=c.createRadialGradient(x+1,y+1,0.5,x,y,r);
+  ig.addColorStop(0,'#6a86b8'); ig.addColorStop(0.7,'#2a3e66'); ig.addColorStop(1,'#10203a');
+  c.fillStyle=ig; c.beginPath(); c.ellipse(x+(look||0),y+0.5,r*0.7,r*0.82,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#0a1424'; c.beginPath(); c.ellipse(x+(look||0),y+0.8,r*0.38,r*0.48,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(x+1.2,y-1.2,r*0.3,r*0.36,0,0,Math.PI*2); c.fill();
+}
+
+
+// Handsome Eric head — proper jaw, young swept hair, short blond beard.
+// cxh,cyh = head centre in local coords. style: 'bare'|'pirate'|'shaman'
+function drawEricHead(c, cxh, cyh, style, blush, shiver){
+  c.save(); c.translate(cxh,cyh);
+  // ---- NECK ----
+  c.fillStyle='#e0b078'; c.fillRect(-5,9,10,8);
+  // ---- FACE shape: rounded top, tapering to a defined jaw + chin ----
+  var fg=c.createLinearGradient(0,-13,0,16);
+  fg.addColorStop(0,'#f8e0b4'); fg.addColorStop(0.6,'#f0d0a0'); fg.addColorStop(1,'#d8aa70');
+  c.fillStyle=fg;
+  c.beginPath();
+  c.moveTo(-12,-6);
+  c.bezierCurveTo(-13,-15,13,-15,12,-6);   // cranium / temples
+  c.bezierCurveTo(12,0,11,5,7,10);          // right cheek
+  c.bezierCurveTo(4,15,-4,15,-7,10);        // jaw to chin
+  c.bezierCurveTo(-11,5,-12,0,-12,-6);      // left cheek
+  c.closePath(); c.fill();
+  // cheek/jaw shadow for structure
+  c.globalAlpha=0.18; c.fillStyle='#b07c40';
+  c.beginPath(); c.moveTo(-9,4); c.quadraticCurveTo(0,14,9,4); c.quadraticCurveTo(0,9,-9,4); c.fill();
+  c.globalAlpha=1;
+  // cheekbone highlight
+  c.globalAlpha=0.4; c.fillStyle='#fff0d4';
+  c.beginPath(); c.ellipse(-6,-2,2.5,1.6,0,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(6,-2,2.5,1.6,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // ---- EYES ----
+  vEye(c,-5,-3,3,0.3); vEye(c,5,-3,3,-0.3);
+  // brows (strong, masculine)
+  c.strokeStyle='#c89830'; c.lineWidth=2; c.lineCap='round';
+  c.beginPath(); c.moveTo(-9,-7); c.lineTo(-2,-6); c.stroke();
+  c.beginPath(); c.moveTo(9,-7); c.lineTo(2,-6); c.stroke();
+  // ---- NOSE (straight, defined) ----
+  c.strokeStyle='#c89858'; c.lineWidth=1.6; c.lineCap='round';
+  c.beginPath(); c.moveTo(0,-3); c.lineTo(-1,3); c.lineTo(1,3); c.stroke();
+  // ---- SHORT BLOND BEARD (handsome stubble-beard along the jaw) ----
+  var bd=c.createLinearGradient(0,2,0,14);
+  bd.addColorStop(0,'#d8b048'); bd.addColorStop(1,'#b08828');
+  c.fillStyle=bd;
+  c.beginPath();
+  c.moveTo(-9,2);
+  c.bezierCurveTo(-10,8,-6,14,0,15);        // left jawline beard
+  c.bezierCurveTo(6,14,10,8,9,2);           // right jawline beard
+  c.bezierCurveTo(7,6,5,7,4,6);             // under-cheek edge
+  c.bezierCurveTo(0,9,0,9,-4,6);
+  c.bezierCurveTo(-5,7,-7,6,-9,2);
+  c.closePath(); c.fill();
+  // moustache (subtle)
+  c.fillStyle='#c8a038';
+  c.beginPath(); c.moveTo(-4,4); c.quadraticCurveTo(0,6,4,4); c.quadraticCurveTo(0,7,-4,4); c.fill();
+  // beard texture strokes
+  c.strokeStyle='rgba(150,110,30,0.5)'; c.lineWidth=0.7;
+  for(var bi=-3;bi<=3;bi++){ c.beginPath(); c.moveTo(bi*2.2,6); c.lineTo(bi*2.0,13); c.stroke(); }
+  // ---- MOUTH (confident slight smile, between moustache & beard) ----
+  c.strokeStyle='#8a4828'; c.lineWidth=1.4; c.lineCap='round';
+  c.beginPath(); c.moveTo(-4,4.5); c.quadraticCurveTo(0,6.5,4,4.5); c.stroke();
+  // ---- HAIR ----
+  if(style!=='pirate'){
+    // young swept-back blond hair with a side part and a few loose strands
+    var hg=c.createLinearGradient(0,-16,0,2);
+    hg.addColorStop(0,'#ffe87a'); hg.addColorStop(1,'#e0c040');
+    c.fillStyle=hg;
+    c.beginPath();
+    c.moveTo(-12,-4);
+    c.bezierCurveTo(-15,-16,-4,-20,2,-17);      // left mass up over crown
+    c.bezierCurveTo(10,-20,15,-14,12,-4);       // right side
+    c.bezierCurveTo(11,-9,7,-11,4,-10);         // swept fringe dips
+    c.bezierCurveTo(6,-13,-2,-13,-3,-9);        // side part notch
+    c.bezierCurveTo(-4,-12,-9,-12,-9,-7);
+    c.bezierCurveTo(-10,-9,-12,-8,-12,-4);
+    c.closePath(); c.fill();
+    // a couple loose hero strands
+    c.strokeStyle='#ffe87a'; c.lineWidth=2; c.lineCap='round';
+    c.beginPath(); c.moveTo(-2,-16); c.quadraticCurveTo(2,-19,6,-16); c.stroke();
+    // sideburns connecting to beard
+    c.fillStyle='#d8b048';
+    c.fillRect(-11,-4,2.5,7); c.fillRect(8.5,-4,2.5,7);
+  } else {
+    // just sideburns under the hat for pirate
+    c.fillStyle='#d8b048';
+    c.fillRect(-11,-4,2.5,7); c.fillRect(8.5,-4,2.5,7);
+    // a little fringe peeking from hat
+    c.fillStyle='#e8c84a';
+    c.beginPath(); c.moveTo(-10,-6); c.quadraticCurveTo(0,-11,10,-6); c.quadraticCurveTo(0,-8,-10,-6); c.fill();
+  }
+  // blush
+  if(blush){ c.globalAlpha=0.5; c.fillStyle='#f08060';
+    c.beginPath(); c.ellipse(-7,2,3,2,0,0,Math.PI*2); c.fill();
+    c.beginPath(); c.ellipse(7,2,3,2,0,0,Math.PI*2); c.fill(); c.globalAlpha=1; }
+  // shiver
+  if(shiver){ c.strokeStyle='rgba(180,220,255,0.8)'; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(14,-6); c.lineTo(18,-11); c.stroke(); }
+  c.restore();
+}
+
 function drawEricPirate(cx,cy,frame){
-  var tick=Date.now(); var step=frame%2===0?0:1;
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-
-  // ── SHADOW ──
-  ctx.globalAlpha=0.2; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-
-  // ── BOOTS (dark leather, detailed) ──
-  pr(3,42+step,6,8,'#0e0c08'); pr(13,42,6,8,'#0e0c08');
-  pr(4,41+step,5,8,'#2a1e12'); pr(14,41,5,8,'#2a1e12');
-  pr(4,41+step,4,6,'#3a2e1c'); pr(14,41,4,6,'#3a2e1c');
-  pr(4,48+step,6,2,'#1a1208'); pr(14,48,6,2,'#1a1208'); // sole
-
-  // ── TROUSERS (dark navy) ──
-  pr(4,32,14,12,'#12182a'); pr(5,31,12,12,'#1c2840'); pr(6,31,10,10,'#242e4a');
-  pr(4,38+step,5,5,'#12182a'); pr(13,38,5,5,'#12182a'); // legs split
-
-  // ── COAT (rich scarlet, 4-tone shading) ──
-  // Base shadow
-  pr(1,14,20,20,'#5a0808');
-  // Main coat body
-  pr(2,13,18,20,'#8a1010'); pr(3,12,16,20,'#b01818'); pr(4,12,14,18,'#c82020');
-  // Highlight stripe down center
-  pr(9,13,4,18,'#d83030');
-  // Gold button row
-  for(var i=0;i<5;i++) pr(9,14+i*3,2,2,'#e8c840');
-  // Gold epaulettes
-  pr(2,13,4,4,'#d8a020'); pr(16,13,4,4,'#d8a020');
-  pr(2,13,4,2,'#f0d040'); pr(16,13,4,2,'#f0d040');
-  // Coat lapels
-  pr(8,12,2,8,'#6a0808'); pr(12,12,2,8,'#6a0808');
-  // Belt
-  pr(3,30,16,3,'#2a1808'); pr(4,30,14,2,'#503818'); pr(9,30,4,2,'#d0a820'); // buckle
-
-  // ── ARMS ──
-  pr(1,16,3,16,'#8a1010'); pr(2,15,3,16,'#c82020'); pr(19,16,3,16,'#8a1010'); pr(18,15,3,16,'#c82020');
-  // Cuffs (white)
-  pr(1,30,4,3,'#e8e0d0'); pr(18,30,4,3,'#e8e0d0');
-  // Hands
-  pr(2,32,4,5,EK.sk); pr(18,32,4,5,EK.sk); pr(3,33,3,4,EK.skS);
-
-  // ── CLUB (right hand, the weapon he will soon renounce) ──
-  pr(21,10,3,28,'#3a1800'); pr(21,9,4,28,'#6a3010'); pr(21,9,2,26,'#8a4820');
-  pr(19,6,8,6,'#5a2808'); pr(20,5,7,6,'#7a3c18'); pr(20,5,6,3,'#9a5028');
-  // Nails in club
-  pr(20,7,2,2,'#d0d0c0'); pr(24,8,2,2,'#d0d0c0');
-
-  // ── NECK ──
-  pr(8,9,6,5,EK.skS); pr(9,8,5,6,EK.sk);
-
-  // ── HEAD (wide, expressive) ──
-  pr(4,2,14,9,'#d09040'); pr(5,1,12,10,EK.sk); pr(6,1,10,9,EK.sk); pr(7,1,8,8,EK.sk);
-  pr(7,1,6,6,EK.sk); // highlight cheekbone area
-  // Cheekbone highlight
-  pr(7,2,4,3,'#f0d8a8');
-
-  // ── HAIR (golden, tousled under hat) ──
-  pr(4,1,4,4,EK.hrS); pr(16,1,3,4,EK.hrS);
-  pr(5,0,3,3,EK.hr); pr(16,0,2,3,EK.hr);
-
-  // ── PIRATE HAT (dark, skull badge) ──
-  pr(2,-9,18,12,'#100e04'); pr(3,-10,16,12,'#181408'); pr(4,-10,14,10,'#201c0c');
-  // Hat brim
-  pr(0,-3,22,4,'#0c0a02'); pr(1,-2,20,3,'#181408');
-  // Skull emblem
-  pr(9,-8,4,3,'#d8d0a0'); pr(8,-7,6,3,'#d8d0a0');
-  pr(9,-6,2,2,'#100e04'); pr(12,-6,2,2,'#100e04'); // eye sockets
-  pr(9,-4,2,2,'#d8d0a0'); pr(11,-4,1,2,'#d8d0a0'); pr(12,-4,2,2,'#d8d0a0');
-
-  // ── FACE FEATURES ──
-  // Eyebrows (thick, mean but not cartoonish)
-  pr(6,3,4,1,'#5a3008'); pr(12,3,4,1,'#5a3008');
-  // Eyes (warm brown — he has a soul)
-  pr(6,4,4,4,'#1a1008'); pr(12,4,4,4,'#1a1008');
-  pr(7,4,3,3,'#8a5020'); pr(13,4,3,3,'#8a5020'); // iris
-  pr(8,5,2,2,'#c07030'); pr(14,5,2,2,'#c07030'); // highlight
-  pr(9,4,1,1,'#f0e8d0'); pr(15,4,1,1,'#f0e8d0'); // shine
-  // Eyepatch (left eye — pirate detail)
-  pr(12,3,5,5,'#181008'); pr(11,4,6,4,'#282010'); pr(10,5,2,1,'#0a0802'); pr(16,5,2,1,'#0a0802');
-  // Strong nose
-  pr(9,7,4,2,EK.skS);
-  // Determined mouth (set jaw)
-  pr(7,9,8,1,'#7a3818'); pr(7,9,1,2,'#7a3818'); pr(14,9,1,2,'#7a3818');
-  // Stubble
-  ctx.globalAlpha=0.4; pr(6,10,2,1,'#5a3010'); pr(9,10,2,1,'#5a3010'); pr(13,10,2,1,'#5a3010'); ctx.globalAlpha=1;
-
-  ctx.restore();
+  var c=ctx, tick=Date.now(); var step=Math.sin(tick/180)*2;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.15,1.15);
+  c.globalAlpha=0.2; c.fillStyle='#000'; c.beginPath(); c.ellipse(28,150,22,5,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // legs
+  vLimb(c,22,108,18+step,148,9,'#16233e','#0c1626');
+  vLimb(c,36,108,40-step,148,9,'#16233e','#0c1626');
+  // boots
+  vBlob(c,17+step,150,9,6,'#2a2418','#120e08'); vBlob(c,41-step,150,9,6,'#2a2418','#120e08');
+  // ---- NAVAL COAT (deep blue) with SHOULDERS ----
+  var bg=c.createLinearGradient(8,38,50,120); bg.addColorStop(0,'#3a72c0'); bg.addColorStop(0.5,'#1e4690'); bg.addColorStop(1,'#102a58');
+  c.fillStyle=bg; c.beginPath();
+  c.moveTo(13,52);
+  c.bezierCurveTo(2,70,4,110,14,118); c.lineTo(44,118);
+  c.bezierCurveTo(54,110,56,70,45,52);
+  c.bezierCurveTo(49,42,38,38,29,38);   // right shoulder
+  c.bezierCurveTo(20,38,9,42,13,52);    // left shoulder
+  c.closePath(); c.fill();
+  // gold-trimmed lapels (open coat showing white shirt)
+  c.fillStyle='#f4f0e0'; c.beginPath(); c.moveTo(24,42); c.lineTo(34,42); c.lineTo(31,80); c.lineTo(27,80); c.closePath(); c.fill();
+  c.fillStyle='#e8c84a'; c.beginPath(); c.moveTo(23,42); c.lineTo(26,42); c.lineTo(29,84); c.lineTo(27,84); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(35,42); c.lineTo(32,42); c.lineTo(29,84); c.lineTo(31,84); c.closePath(); c.fill();
+  // EPAULETTES (big gold shoulder boards)
+  vBlob(c,13,44,7,4,'#f0d040','#a07810'); vBlob(c,45,44,7,4,'#f0d040','#a07810');
+  c.fillStyle='#ffe87a'; for(var fi=0;fi<3;fi++){ c.fillRect(8+fi*2,46,1.4,5); c.fillRect(44+fi*2,46,1.4,5); }
+  // brass buttons in two rows
+  c.fillStyle='#f0d040'; for(var i=0;i<5;i++){ c.beginPath(); c.arc(25,52+i*11,1.8,0,7); c.fill(); c.beginPath(); c.arc(33,52+i*11,1.8,0,7); c.fill(); }
+  // gold belt + sash
+  c.fillStyle='#b01818'; c.fillRect(13,92,32,5); // red sash
+  c.fillStyle='#2a1808'; c.fillRect(13,97,32,4); c.fillStyle='#d0a820'; c.fillRect(26,97,6,4);
+  // ---- ARMS with shoulder seams ----
+  vLimb(c,15,50,6,92,8,'#1e4690','#102a58'); // back arm
+  vLimb(c,43,50,56,90,8,'#1e4690','#102a58'); // front arm
+  // gold cuffs
+  vBlob(c,6,93,4,3,'#f0d040','#a07810'); vBlob(c,56,91,4,3,'#f0d040','#a07810');
+  vBlob(c,6,96,4,4,'#f0d0a0','#c89058'); vBlob(c,57,93,5,5,'#f0d0a0','#c89058');
+  // ---- CUTLASS in right hand (instead of crude club) ----
+  c.save(); c.translate(58,92); c.rotate(-0.4);
+  c.fillStyle='#8a6010'; c.fillRect(-2,0,4,8);               // grip
+  c.fillStyle='#f0d040'; c.beginPath(); c.ellipse(0,0,6,2.5,0,0,Math.PI*2); c.fill(); // guard
+  var blg=c.createLinearGradient(-2,-2,2,-44); blg.addColorStop(0,'#e8eef8'); blg.addColorStop(1,'#9aa8c0');
+  c.fillStyle=blg; c.beginPath(); c.moveTo(-2,-2); c.lineTo(2,-2); c.lineTo(1,-44); c.lineTo(-3,-42); c.closePath(); c.fill();
+  c.strokeStyle='#fff'; c.lineWidth=0.8; c.beginPath(); c.moveTo(-1,-4); c.lineTo(0,-42); c.stroke();
+  c.restore();
+  // neck
+  c.fillStyle='#e0b078'; c.fillRect(25,40,10,8);
+  // ---- handsome bearded head, hat style ----
+  drawEricHead(c, 30, 30, 'pirate', false, false);
+  // ---- NAPOLEON BICORNE HAT (sits high on the head) ----
+  c.save(); c.translate(30,9);
+  var hatg=c.createLinearGradient(0,-10,0,2); hatg.addColorStop(0,'#1c2840'); hatg.addColorStop(1,'#0a1020');
+  c.fillStyle=hatg;
+  // classic wide bicorne: two tall peaks fore & aft, low curved brim between
+  c.beginPath();
+  c.moveTo(-26,0);
+  c.quadraticCurveTo(-20,-16,-9,-9);      // left peak rising in
+  c.quadraticCurveTo(0,-6,9,-9);          // dip over the crown
+  c.quadraticCurveTo(20,-16,26,0);        // right peak
+  c.quadraticCurveTo(13,4,0,4);           // brim underside
+  c.quadraticCurveTo(-13,4,-26,0);
+  c.closePath(); c.fill();
+  // gold rope trim along the upper edge
+  c.strokeStyle='#d4b048'; c.lineWidth=1.6;
+  c.beginPath(); c.moveTo(-25,-1); c.quadraticCurveTo(-19,-14,-9,-8); c.quadraticCurveTo(0,-5,9,-8); c.quadraticCurveTo(19,-14,25,-1); c.stroke();
+  // tricolour cockade on the left peak
+  c.save(); c.translate(-15,-7);
+  c.fillStyle='#1a3a8a'; c.beginPath(); c.arc(0,0,3.4,0,7); c.fill();
+  c.fillStyle='#f0f0f0'; c.beginPath(); c.arc(0,0,2.2,0,7); c.fill();
+  c.fillStyle='#c01818'; c.beginPath(); c.arc(0,0,1,0,7); c.fill();
+  c.restore();
+  // gold tassels at both peaks
+  c.fillStyle='#f0d040'; c.beginPath(); c.arc(-25,0,2,0,7); c.fill(); c.beginPath(); c.arc(25,0,2,0,7); c.fill();
+  c.fillStyle='#ffe87a'; c.fillRect(-26,0,1.5,4); c.fillRect(24.5,0,1.5,4);
+  c.restore();
+  // eyepatch (over right eye)
+  c.fillStyle='#140c06'; c.beginPath(); c.ellipse(35,27,4,4.4,0,0,Math.PI*2); c.fill();
+  c.strokeStyle='#140c06'; c.lineWidth=1.5; c.beginPath(); c.moveTo(31,24); c.lineTo(46,22); c.stroke();
+  c.restore();
 }
 function drawEricUnderwear(cx,cy,frame,shiver){
-  var sh=shiver?(frame%4<2?-2:2):0;
-  ctx.save(); ctx.translate(cx*PS+sh,cy*PS);
+  var c=ctx, tick=Date.now();
+  var sh=shiver?Math.sin(tick/60)*1.2:0;
+  // gentle idle hop so legs read clearly
+  var hop=Math.abs(Math.sin(tick/450))*5;
+  var legSplay=Math.sin(tick/450)*2;
+  c.save(); c.translate(cx*PS+sh,cy*PS-hop); c.scale(1.18,1.18);
+  // shadow (stays on ground, shrinks as he hops)
+  c.globalAlpha=0.18-hop*0.01; c.fillStyle='#000';
+  c.beginPath(); c.ellipse(29,120+hop*0.85,20-hop*0.4,5,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
 
-  // shadow
-  ctx.globalAlpha=0.18; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+  // ---- LEGS (bare, clearly visible below the shorts) ----
+  // thighs from hips (~80) down
+  vLimb(c,24,80,22-legSplay,98,10,'#f0d0a0','#d8b075');
+  vLimb(c,36,80,38+legSplay,98,10,'#f0d0a0','#d8b075');
+  // knees
+  vBlob(c,22-legSplay,98,5,4,'#f4d8a8','#d0a070'); vBlob(c,38+legSplay,98,5,4,'#f4d8a8','#d0a070');
+  // calves
+  vLimb(c,22-legSplay,98,20-legSplay,116,8,'#f0d0a0','#cc9860');
+  vLimb(c,38+legSplay,98,40+legSplay,116,8,'#f0d0a0','#cc9860');
+  // calf muscle hint
+  c.globalAlpha=0.22; c.strokeStyle='#a0703a'; c.lineWidth=3; c.lineCap='round';
+  c.beginPath(); c.moveTo(21-legSplay,102); c.lineTo(20-legSplay,110); c.stroke();
+  c.beginPath(); c.moveTo(39+legSplay,102); c.lineTo(40+legSplay,110); c.stroke(); c.globalAlpha=1;
+  // feet
+  vBlob(c,20-legSplay,118,7,4,'#e8c088','#c89858'); vBlob(c,40+legSplay,118,7,4,'#e8c088','#c89858');
 
-  // ── BOOTS ──
-  pr(4,42,5,7,'#181008'); pr(14,42,5,7,'#181008');
-  pr(5,41,4,7,'#2a1c10'); pr(15,41,4,7,'#2a1c10');
+  // ---- BOXERS (short, end mid-thigh so bare legs show below) ----
+  var bx=c.createLinearGradient(16,64,42,82); bx.addColorStop(0,'#efe2ff'); bx.addColorStop(1,'#b4a4e4');
+  c.fillStyle=bx; c.beginPath();
+  c.moveTo(16,64); c.quadraticCurveTo(29,60,42,64);     // waistband
+  c.lineTo(43,78); c.quadraticCurveTo(37,82,34,77);     // right leg hem
+  c.quadraticCurveTo(29,80,24,77); c.quadraticCurveTo(21,82,15,78); // left leg hem
+  c.closePath(); c.fill();
+  // waistband
+  c.fillStyle='#5040a0'; c.fillRect(16,62,26,4);
+  c.fillStyle='#7060d0'; c.fillRect(16,62,26,1.5);
+  // stripes
+  c.strokeStyle='#6848b8'; c.lineWidth=2.2;
+  for(var i=0;i<4;i++){ c.beginPath(); c.moveTo(19+i*7,63); c.lineTo(19+i*7,79); c.stroke(); }
+  // hem shadow on thighs (so the shorts read as shorts)
+  c.globalAlpha=0.18; c.fillStyle='#9070d0';
+  c.beginPath(); c.ellipse(23,79,5,2,0,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(35,79,5,2,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
 
-  // ── BARE LEGS ──
-  pr(5,32,5,12,EK.skS); pr(14,32,5,12,EK.skS);
-  pr(6,31,4,12,EK.sk); pr(15,31,4,12,EK.sk);
-  pr(6,31,3,10,'#f0d8a8'); pr(15,31,3,10,'#f0d8a8');
+  // ---- TORSO (V-taper athletic) ----
+  var tg=c.createLinearGradient(12,24,46,66); tg.addColorStop(0,'#f6dcae'); tg.addColorStop(1,'#cfa070');
+  c.fillStyle=tg; c.beginPath();
+  c.moveTo(14,32);
+  c.bezierCurveTo(7,44,13,58,21,66);
+  c.lineTo(37,66);
+  c.bezierCurveTo(45,58,51,44,44,32);
+  c.bezierCurveTo(39,25,19,25,14,32);
+  c.closePath(); c.fill();
+  // pecs
+  vBlob(c,23,40,7,4.5,'#f8e0b0','#e0b078'); vBlob(c,35,40,7,4.5,'#f8e0b0','#e0b078');
+  // abs
+  c.globalAlpha=0.22; c.strokeStyle='#9a6a36'; c.lineWidth=1.8; c.lineCap='round';
+  c.beginPath(); c.moveTo(29,46); c.lineTo(29,62); c.stroke();
+  c.beginPath(); c.moveTo(24,50); c.lineTo(34,50); c.stroke();
+  c.beginPath(); c.moveTo(24,56); c.lineTo(34,56); c.stroke();
+  c.beginPath(); c.moveTo(29,36); c.lineTo(29,44); c.stroke(); c.globalAlpha=1;
+  // collarbone
+  c.globalAlpha=0.4; c.strokeStyle='#fff0d0'; c.lineWidth=1.4;
+  c.beginPath(); c.moveTo(19,34); c.lineTo(39,34); c.stroke(); c.globalAlpha=1;
 
-  // ── BOXERS (purple with stripes — dignified even now) ──
-  pr(3,24,16,9,EK.uwS); pr(4,23,14,9,EK.uw); pr(5,23,12,8,'#ece0ff');
-  pr(3,24,16,2,'#5040b0'); // waistband
-  pr(4,24,14,1,'#7060d0'); // waistband highlight
-  for(var i=0;i<5;i++) pr(4+i*3,25,2,7,EK.uwStr);
+  // ---- ARMS (raised a bit during hop) ----
+  var armRaise=hop*0.6;
+  vLimb(c,16,34,9,54-armRaise,8,'#f0d0a0','#d8b075');
+  vLimb(c,9,54-armRaise,7,72-armRaise,6,'#f0d0a0','#cc9860');
+  vLimb(c,42,34,49,54-armRaise,8,'#f0d0a0','#d8b075');
+  vLimb(c,49,54-armRaise,51,72-armRaise,6,'#f0d0a0','#cc9860');
+  vBlob(c,7,73-armRaise,4.5,4.5,'#f0d0a0','#c89058'); vBlob(c,51,73-armRaise,4.5,4.5,'#f0d0a0','#c89058');
 
-  // ── BARE TORSO (muscular, he is/was a seal clubber after all) ──
-  pr(3,12,16,13,EK.skS); pr(4,11,14,13,EK.sk); pr(5,11,12,12,EK.sk); pr(6,11,10,10,'#f0d8a8');
-  // Chest definition
-  pr(9,14,4,6,EK.skS); pr(9,13,4,2,'#f0d0a0');
-  // Chest hair (vestige of his old life)
-  ctx.globalAlpha=0.5; pr(8,15,2,1,'#b08040'); pr(10,16,2,1,'#b08040'); pr(12,15,2,1,'#b08040'); ctx.globalAlpha=1;
-
-  // ── ARMS (bare, strong) ──
-  pr(1,12,4,14,EK.skS); pr(2,11,4,14,EK.sk); pr(2,11,3,12,'#f0d8a8');
-  pr(18,12,4,14,EK.skS); pr(18,11,4,14,EK.sk); pr(18,11,3,12,'#f0d8a8');
-  pr(2,24,4,4,EK.sk); pr(18,24,4,4,EK.sk); // hands
-
-  // ── NECK + HEAD ──
-  pr(8,8,6,5,EK.skS); pr(9,7,5,6,EK.sk);
-  // Head base
-  pr(5,1,12,9,'#d09040'); pr(6,0,11,10,EK.sk); pr(7,0,10,9,EK.sk); pr(8,1,8,7,'#f0d8a8');
-
-  // ── HAIR (dishevelled — hat is gone) ──
-  pr(4,0,14,5,EK.hrS); pr(5,0,12,4,EK.hr); pr(3,2,3,6,EK.hr); pr(17,2,3,6,EK.hr);
-  pr(4,-2,4,4,EK.hr); pr(14,-2,4,4,EK.hr); pr(10,-1,4,3,'#ffffa0');
-  pr(3,4,2,4,EK.hrS); pr(18,4,2,4,EK.hrS); // wild side locks
-
-  // ── FACE (embarrassed but resolute) ──
-  pr(7,5,4,1,EK.hrS); pr(13,5,4,1,EK.hrS); // brows
-  pr(7,6,4,4,'#181008'); pr(13,6,4,4,'#181008'); // eyes
-  pr(8,6,3,3,'#8a5020'); pr(14,6,3,3,'#8a5020'); // iris
-  pr(9,7,2,2,'#c07030'); pr(15,7,2,2,'#c07030');
-  pr(10,6,1,1,'#f0e8d0'); pr(16,6,1,1,'#f0e8d0'); // shine
-  pr(9,10,4,2,'#7a3818'); // determined mouth
-  // Blush (mortified)
-  ctx.globalAlpha=0.6; pr(5,8,4,3,'#f09060'); pr(14,8,4,3,'#f09060'); ctx.globalAlpha=1;
-
-  // ── GOOSEBUMPS / COLD SHIMMER ──
-  if(shiver){
-    ctx.strokeStyle='rgba(180,220,255,0.7)'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(20*PS,12*PS); ctx.lineTo(22*PS,8*PS); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(3*PS,10*PS); ctx.lineTo(1*PS,6*PS); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(18*PS,20*PS); ctx.lineTo(20*PS,17*PS); ctx.stroke();
-  }
-  ctx.restore();
+  // ---- HEAD (handsome, bearded) ----
+  drawEricHead(c, 29, 16, 'bare', true, shiver);
+  c.restore();
 }
 function drawEric(cx,cy,frame,wavingArm){
-  var tick=Date.now(), wv=wavingArm?(Math.floor(tick/300)%2===0?-3:0):0;
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-
-  // ── SHADOW ──
-  ctx.globalAlpha=0.18; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-
-  // ── BOOTS ──
-  pr(4,42,5,7,'#181008'); pr(14,42,5,7,'#181008');
-  pr(5,41,4,7,'#2a1c10'); pr(15,41,4,7,'#2a1c10');
-  pr(5,41,3,5,'#3a2c1a'); pr(15,41,3,5,'#3a2c1a');
-
-  // ── COAT (deep ocean blue, 4 tones, flowing) ──
-  // Shadow/outline
-  pr(1,16,20,28,'#0a1e50');
-  // Main coat
-  pr(2,15,18,28,'#143070'); pr(3,14,16,28,'#1a4090'); pr(4,13,14,26,EK.coat);
-  // Highlight stripe
-  pr(8,14,3,26,EK.coH);
-  pr(7,14,2,20,'rgba(72,160,240,0.4)');
-  // Coat flare at hem
-  pr(2,40,18,4,'#0a2460'); pr(3,39,16,4,'#143070'); pr(4,38,14,4,EK.coat);
-
-  // ── RUNE EMBROIDERY on coat ──
-  pr(5,20,2,5,EK.run); pr(6,20,1,1,EK.run2); pr(6,22,1,1,EK.run2); pr(6,24,1,1,EK.run2);
-  pr(14,24,1,5,EK.run); pr(13,24,2,1,EK.run); pr(13,28,2,1,EK.run);
-
-  // ── FUR TRIM (collar, cuffs, hem) ──
-  pr(3,13,16,4,EK.furS); pr(4,12,14,4,EK.fur); pr(5,12,12,3,EK.fur);
-  for(var i=0;i<8;i++) pr(4+i*2,12,2,2,i%2?EK.fur:EK.furS);
-  for(var i=0;i<8;i++) pr(4+i*2,40,2,3,i%2?EK.fur:EK.furS);
-
-  // ── ARMS ──
-  pr(1,14+wv,4,16,EK.coS); pr(2,13+wv,4,16,EK.coat); pr(2,13+wv,3,14,EK.coH);
-  pr(2,13+wv,4,3,EK.fur);  // cuff
-  pr(2,28+wv,4,4,EK.sk);   // hand
-  pr(18,14,4,14,EK.coS); pr(17,13,4,14,EK.coat); pr(17,13,3,13,EK.coH);
-  pr(17,13,4,3,EK.fur);   pr(17,26,5,4,EK.sk);
-
-  // ── SPIRIT STAFF (right hand) — glowing ──
-  pr(21,4,3,36,'#1a1008'); pr(22,3,2,36,EK.boot); pr(22,3,1,32,'#c08840');
-  // Staff head (ornate cross with gem)
-  pr(19,0,8,3,EK.run); pr(20,-1,6,5,EK.run2); pr(22,-3,3,3,EK.gem); pr(22,-2,2,2,EK.gm2);
-  pr(21,-1,4,2,EK.gem);
-  // Gem glow pulse
-  ctx.globalAlpha=0.25+Math.sin(tick/380)*0.15;
-  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(23*PS,1*PS,9*PS,9*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-  // Rune rings on staff
-  for(var i=0;i<5;i++) pr(20,8+i*6,4,1,EK.run);
-
-  // ── NECK + HEAD ──
-  pr(8,8,6,7,EK.skS); pr(9,7,5,8,EK.sk); pr(9,6,5,7,EK.sk);
-
-  // ── HAIR (flowing golden, heroic) ──
-  pr(4,-1,14,8,EK.hrS); pr(5,-1,12,7,EK.hr); pr(6,0,10,6,EK.hr); pr(7,0,8,5,'#ffffa0');
-  // Side locks flowing down
-  pr(4,4,3,12,EK.hr); pr(3,6,3,14,EK.hrS); pr(3,5,2,8,EK.hr);
-  pr(17,4,2,10,EK.hr); pr(18,5,2,8,EK.hrS);
-
-  // ── HEADDRESS BAND ──
-  pr(5,1,12,3,EK.run); pr(6,0,10,3,EK.run2); pr(7,0,8,2,'#ffffe0');
-  // Forehead gem
-  pr(11,-1,4,4,EK.gem); pr(12,-1,2,3,EK.gm2);
-  // Feathers
-  pr(6,-9,2,10,EK.ft3); pr(7,-11,2,14,EK.fth); pr(7,-12,1,5,EK.ft2);
-  pr(11,-12,2,14,EK.ft3); pr(11,-13,1,16,EK.fth); pr(11,-14,1,5,EK.ft2);
-  pr(15,-8,2,10,EK.ft3); pr(15,-10,1,12,EK.fth); pr(15,-10,1,4,EK.ft2);
-
-  // ── FACE (warm, wise) ──
-  // Skin base, 3-tone
-  pr(5,7,12,10,EK.skS); pr(6,6,11,10,EK.sk); pr(7,6,10,9,EK.sk); pr(8,6,8,7,'#f8e0b0');
-  // Eyebrows (strong, arched)
-  pr(7,6,4,1,EK.hrS); pr(13,6,4,1,EK.hrS);
-  // Eyes (perceptive blue-grey)
-  pr(7,7,4,4,'#181020'); pr(13,7,4,4,'#181020');
-  pr(8,7,3,4,'#4878a0'); pr(14,7,3,4,'#4878a0'); // iris
-  pr(8,8,2,2,'#70a8d0'); pr(14,8,2,2,'#70a8d0'); // highlight
-  pr(10,7,1,1,'#ffffff'); pr(16,7,1,1,'#ffffff'); // shine
-  // Nose (strong bridge)
-  pr(10,10,3,3,EK.skS); pr(11,10,2,2,'#d0a868');
-  // Wise smile
-  pr(8,13,7,1,'#905028'); pr(8,13,1,2,'#905028'); pr(14,13,1,2,'#905028'); pr(9,14,5,1,'#905028');
-
-  // ── SPIRIT AMULET on chest ──
-  pr(10,17,4,5,EK.coS); pr(11,16,3,6,EK.gem); pr(11,16,2,3,EK.gm2);
-  ctx.globalAlpha=0.3+Math.sin(tick/500)*0.15;
-  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(12*PS,19*PS,5*PS,6*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-
-  ctx.restore();
+  var c=ctx, tick=Date.now(); var wv=wavingArm?Math.sin(tick/200)*8:0;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.15,1.15);
+  c.globalAlpha=0.2; c.fillStyle='#000'; c.beginPath(); c.ellipse(28,150,22,5,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // legs/boots
+  vLimb(c,22,110,19,148,9,'#143070','#0a1e50'); vLimb(c,36,110,41,148,9,'#143070','#0a1e50');
+  vBlob(c,18,150,8,6,'#3a2c1a','#1a1208'); vBlob(c,42,150,8,6,'#3a2c1a','#1a1208');
+  // long flowing coat (ocean blue)
+  var bg=c.createLinearGradient(6,44,52,124); bg.addColorStop(0,'#48a0f0'); bg.addColorStop(0.5,'#1a4090'); bg.addColorStop(1,'#0a2460');
+  c.fillStyle=bg; c.beginPath();
+  c.moveTo(12,52); c.bezierCurveTo(-2,72,2,116,12,126);
+  c.lineTo(46,126); c.bezierCurveTo(56,116,60,72,46,52);
+  c.bezierCurveTo(38,44,20,44,12,52); c.closePath(); c.fill();
+  // rune embroidery
+  c.strokeStyle='#ffe878'; c.lineWidth=1.6; c.globalAlpha=0.8;
+  c.beginPath(); c.moveTo(18,70); c.lineTo(18,84); c.lineTo(24,84); c.stroke();
+  c.beginPath(); c.moveTo(40,90); c.lineTo(40,104); c.lineTo(34,104); c.stroke(); c.globalAlpha=1;
+  // fur trim collar + hem
+  c.fillStyle='#f0e8d0';
+  c.beginPath(); c.ellipse(29,50,16,5,0,0,Math.PI*2); c.fill();
+  for(var i=0;i<9;i++){ c.beginPath(); c.arc(14+i*4,124,2.5,0,Math.PI*2); c.fill(); }
+  // arms
+  vLimb(c,15,56,6+wv*0.3,94-wv,8,'#1a4090','#0a2460');
+  vLimb(c,43,56,58,90,8,'#1a4090','#0a2460');
+  vBlob(c,6+wv*0.3,96-wv,5,5,'#f0d0a0','#c89058'); vBlob(c,59,90,5,5,'#f0d0a0','#c89058');
+  // glowing spirit staff
+  c.save(); c.translate(60,88); c.rotate(-0.45);
+  vLimb(c,0,4,0,-52,5,'#c08840','#8a5420');
+  c.globalAlpha=0.25+Math.sin(tick/380)*0.15; c.fillStyle='#40f0ff';
+  c.beginPath(); c.arc(0,-54,16,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  vBlob(c,0,-54,6,7,'#a0ffff','#40c0e0');
+  c.restore();
+  // neck
+  c.fillStyle='#e0b078'; c.fillRect(25,42,10,8);
+  // handsome bearded head
+  drawEricHead(c, 30, 32, 'shaman', false, false);
+  // headdress band + gem over the brow
+  c.fillStyle='#e87820'; c.fillRect(18,20,24,4);
+  c.fillStyle='#ffa030'; c.fillRect(18,20,24,1.5);
+  vBlob(c,30,21,3.5,3.5,'#a0ffff','#40c0e0');
+  // feathers rising from the band
+  c.save(); c.translate(30,18);
+  for(var f=-1;f<2;f++){ c.save(); c.rotate(f*0.4);
+    var fgr=c.createLinearGradient(0,-24,0,0); fgr.addColorStop(0,'#a0e878'); fgr.addColorStop(1,'#2d7a3a');
+    c.fillStyle=fgr; c.beginPath(); c.ellipse(0,-13,2.5,13,0,0,Math.PI*2); c.fill();
+    c.strokeStyle='#1d5028'; c.lineWidth=0.6; c.beginPath(); c.moveTo(0,-1); c.lineTo(0,-24); c.stroke();
+    c.restore(); }
+  c.restore();
+  // amulet on chest
+  vBlob(c,30,60,3.5,4,'#a0ffff','#40c0e0');
+  c.restore();
 }
 function drawIceBearKing(cx,cy,frame,facingRight){
-  var tick=Date.now();
-  var breath=Math.sin(tick/900)|0;
-  var pawSwing=(Math.floor(tick/600)%2===0)?0:1;
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(32*PS,0); ctx.scale(-1,1); }
-
-  // ── SHADOW ──
-  ctx.globalAlpha=0.20; ctx.fillStyle='#000';
-  ctx.beginPath(); ctx.ellipse(16*PS,50*PS,16*PS,4*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-
-  // ── BODY (massive, 5-tone arctic white fur) ──
-  // Dark outline
-  pr(4,18,24,30,'#4060a0');
-  // Dark fur base
-  pr(5,17,22,30,IB.furD);
-  // Mid fur
-  pr(6,16,20,30,IB.furS);
-  // Light fur
-  pr(7,15,18,28,IB.fur);
-  // Bright chest
-  pr(10,18,12,24,'#f0f8ff');
-  // Belly (cream, breathing)
-  pr(11,24,10,12+breath,'#ffffff');
-  pr(12,25,8,10+breath,'#f8fcff');
-  // Fur texture streaks
-  for(var i=0;i<6;i++) pr(8+i*2,18,1,24,'rgba(160,200,230,0.2)');
-
-  // ── LEGS (thick, powerful) ──
-  pr(5,42,9,10,IB.furD); pr(6,41,8,10,IB.furS); pr(7,41,7,9,IB.fur); pr(8,41,5,7,'#f0f8ff');
-  pr(19,42,9,10,IB.furD); pr(19,41,8,10,IB.furS); pr(20,41,7,9,IB.fur); pr(21,41,5,7,'#f0f8ff');
-  // Paw pads (dark leathery)
-  pr(6,50,8,3,'#3050a8'); pr(20,50,8,3,'#3050a8');
-  pr(7,50,6,2,'#4060b8'); pr(21,50,6,2,'#4060b8');
-  for(var i=0;i<4;i++) pr(7+i*2,51,1,2,'#6080c8'); for(var i=0;i<4;i++) pr(21+i*2,51,1,2,'#6080c8');
-
-  // ── ARMS (bear arms, reaching slightly out) ──
-  // Left arm (raised regally)
-  pr(0,18,7,20,IB.furD); pr(1,17,7,20,IB.furS); pr(2,16,6,18,IB.fur); pr(3,16,5,16,'#f0f8ff');
-  // Left paw
-  pr(0,36,8,8,IB.furD); pr(1,35,7,8,IB.furS); pr(2,35,6,7,IB.fur);
-  pr(1,42,2,2,'#3050a8'); pr(3,43,2,2,'#3050a8'); pr(5,42,2,2,'#3050a8'); pr(7,42,2,2,'#3050a8');
-  // Right arm (holds ice staff)
-  pr(25,18,7,20,IB.furD); pr(25,17,7,20,IB.furS); pr(25,16,6,18,IB.fur); pr(25,16,5,16,'#f0f8ff');
-  pr(24,36,8,8,IB.furD); pr(25,35,7,8,IB.furS); pr(25,35,6,7,IB.fur);
-  pr(25,42,2,2,'#3050a8'); pr(27,43,2,2,'#3050a8'); pr(29,42,2,2,'#3050a8');
-
-  // ── ICE CRYSTAL STAFF (right hand) ──
-  pr(30,0,3,52,'#1840a0'); pr(31,-1,2,52,IB.iceS); pr(31,-1,1,50,IB.ice); pr(31,-1,1,20,'#d0f0ff');
-  // Staff crystal head
-  pr(27,-8,9,10,IB.iceS); pr(28,-10,7,10,IB.ice); pr(29,-11,5,8,'#e0f8ff');
-  pr(30,-12,3,6,'#f0ffff'); // tip
-  // Crystal facets
-  pr(28,-8,2,6,'rgba(200,240,255,0.6)'); pr(33,-6,2,4,'rgba(200,240,255,0.6)');
-  // Staff glow
-  ctx.globalAlpha=0.18+Math.sin(tick/400)*0.10;
-  ctx.fillStyle=IB.ice; ctx.beginPath(); ctx.ellipse(32*PS,-5*PS,10*PS,10*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-  // Rune rings on shaft
-  for(var i=0;i<5;i++){ pr(30,6+i*9,4,2,IB.iceS); pr(30,6+i*9,4,1,'#a0d8f0'); }
-
-  // ── NECK (thick, noble) ──
-  pr(11,10,10,8,IB.furD); pr(12,9,9,8,IB.furS); pr(13,8,8,7,IB.fur); pr(14,8,6,6,'#f0f8ff');
-
-  // ── HEAD (massive, round, regal — 5 tone) ──
-  // Outline
-  pr(5,0,22,14,'#3050a0');
-  // Dark
-  pr(6,-1,20,14,IB.furD);
-  // Mid
-  pr(7,-2,18,14,IB.furS);
-  // Light
-  pr(8,-2,16,13,IB.fur);
-  // Bright face centre
-  pr(10,-1,12,12,'#f4f8ff');
-  pr(11,0,10,10,'#ffffff'); // brightest
-  // Cheek poufs
-  pr(6,4,5,6,IB.fur); pr(21,4,5,6,IB.fur);
-  pr(6,4,4,5,'#edf4ff'); pr(22,4,4,5,'#edf4ff');
-
-  // ── EARS (round, pink inside) ──
-  pr(6,-6,6,6,IB.furD); pr(7,-7,5,6,IB.furS); pr(8,-7,4,5,IB.fur);
-  pr(8,-6,3,4,'#f0d8e8'); pr(9,-5,2,3,'#f8d0e4'); // pink inner
-  pr(20,-6,6,6,IB.furD); pr(20,-7,5,6,IB.furS); pr(20,-7,4,5,IB.fur);
-  pr(21,-6,3,4,'#f0d8e8'); pr(22,-5,2,3,'#f8d0e4');
-
-  // ── MUZZLE (broad, prominent) ──
-  pr(9,7,14,8,IB.furS); pr(10,7,12,7,IB.fur); pr(11,8,10,6,'#f0f8ff'); pr(12,8,8,5,'#ffffff');
-  // Nose (blue-black, glistening) ──
-  pr(11,7,10,5,'#101840'); pr(12,6,8,6,'#1c2860'); pr(13,6,6,5,'#283870');
-  pr(14,7,4,3,'#3a4a90'); // highlight band
-  pr(15,6,2,2,'#8090d0'); // glint
-  pr(14,10,4,1,'#101840'); // nostril line
-  // Mouth (gentle, wise smile)
-  pr(13,12,6,1,'#1828a0'); // centre line
-  pr(11,13,3,1,'#1828a0'); pr(18,13,3,1,'#1828a0'); // corners
-  pr(12,14,2,1,'#3848c0'); pr(18,14,2,1,'#3848c0'); // smile curve
-
-  // ── EYES (wise, kind, ancient — deep blue) ──
-  // Left eye
-  pr(9,2,5,5,'#0a1030'); // socket dark
-  pr(10,2,4,5,'#182060'); // iris dark
-  pr(10,2,4,5,IB.eye);
-  pr(11,2,3,5,'#2838a0'); // iris mid
-  pr(11,3,3,3,'#4060d0'); // iris light
-  pr(12,3,2,2,'#6080e0'); // highlight
-  pr(13,2,1,1,'#e0e8ff'); // shine
-  pr(12,2,2,1,'#c0d0ff'); // secondary shine
-  // Left brow (wise, slightly raised)
-  pr(9,1,5,1,'#283060');
-  // Right eye
-  pr(18,2,5,5,'#0a1030');
-  pr(18,2,4,5,IB.eye);
-  pr(19,2,3,5,'#2838a0');
-  pr(19,3,3,3,'#4060d0');
-  pr(20,3,2,2,'#6080e0');
-  pr(22,2,1,1,'#e0e8ff');
-  pr(20,2,2,1,'#c0d0ff');
-  pr(18,1,5,1,'#283060'); // brow
-
-  // ── CROWN (magnificent, multi-gem) ──
-  // Base band (solid gold)
-  pr(7,-10,18,6,'#7a5808'); pr(8,-11,16,7,'#a07810'); pr(9,-11,14,6,'#c89a18'); pr(10,-10,12,5,'#e0b820');
-  pr(9,-10,14,3,'#f0d040'); // top highlight
-  // Crown teeth (5 points)
-  pr(8,-16,4,7,IB.crwS); pr(9,-17,3,8,IB.crown); pr(10,-17,2,6,'#f0d040');
-  pr(13,-18,4,9,IB.crwS); pr(14,-19,3,10,IB.crown); pr(14,-19,2,8,'#f0d040');
-  pr(18,-16,4,7,IB.crwS); pr(19,-17,3,8,IB.crown); pr(19,-17,2,6,'#f0d040');
-  pr(10,-13,2,4,IB.crwS); pr(21,-13,2,4,IB.crwS); // side mini points
-  // Crown gems (3 colours, sparkle)
-  pr(9,-14,4,5,'#20c0e8'); pr(10,-14,3,4,'#60e8ff'); pr(11,-13,1,2,'#b0f4ff'); // aquamarine
-  pr(14,-16,4,7,'#e040c8'); pr(15,-17,3,6,'#ff80e0'); pr(15,-16,2,3,'#ffc0ff'); // magenta
-  pr(19,-14,4,5,'#e89020'); pr(20,-14,3,4,'#ffc040'); pr(20,-13,2,2,'#ffee90'); // topaz
-  // Gem sparkles
-  var gs=Math.floor(tick/200)%4;
-  if(gs===0){ pr(11,-12,1,1,'#ffffff'); } if(gs===1){ pr(15,-15,1,1,'#ffffff'); } if(gs===2){ pr(21,-12,1,1,'#ffffff'); }
-
-  // ── ROYAL FUR RUFF at crown base ──
-  for(var i=0;i<10;i++) pr(7+i*2,-10,1,3,i%2?'#a09070':'#d0c090');
-
-  ctx.restore();
+  var c=ctx, tick=Date.now(); var breath=Math.sin(tick/900)*2;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.2,1.2);
+  if(!facingRight){ c.translate(96,0); c.scale(-1,1); }
+  c.globalAlpha=0.2; c.fillStyle='#000'; c.beginPath(); c.ellipse(48,156,32,6,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // legs
+  vLimb(c,30,120,28,152,16,'#c0cce0','#8090b0'); vLimb(c,66,120,68,152,16,'#c0cce0','#8090b0');
+  vBlob(c,28,154,11,7,'#e8f0ff','#a0b8d8'); vBlob(c,68,154,11,7,'#e8f0ff','#a0b8d8');
+  // big body
+  var bg=c.createRadialGradient(40,80,10,48,90,60); bg.addColorStop(0,'#ffffff'); bg.addColorStop(0.6,'#e0e8f8'); bg.addColorStop(1,'#aebfdb');
+  c.fillStyle=bg; c.beginPath(); c.ellipse(48,90,40,46+breath*0.3,0,0,Math.PI*2); c.fill();
+  // belly lighter
+  vBlob(c,48,98,26,30,'#ffffff','#dfeafb');
+  // arms
+  vLimb(c,16,66,6,108,16,'#e0e8f8','#a0b8d8'); vLimb(c,80,66,90,108,16,'#e0e8f8','#a0b8d8');
+  vBlob(c,6,110,11,9,'#e8f0ff','#a0b8d8'); vBlob(c,90,110,11,9,'#e8f0ff','#a0b8d8');
+  // ice staff (right paw)
+  c.save(); c.translate(92,108); c.rotate(0.1);
+  vLimb(c,0,8,0,-96,6,'#80c8ff','#3060a0');
+  c.globalAlpha=0.2+Math.sin(tick/400)*0.1; c.fillStyle='#80c8ff'; c.beginPath(); c.arc(0,-100,18,0,7); c.fill(); c.globalAlpha=1;
+  c.fillStyle='#e0f8ff'; c.beginPath(); c.moveTo(0,-114); c.lineTo(-8,-98); c.lineTo(8,-98); c.closePath(); c.fill();
+  c.restore();
+  // head
+  var hg=c.createRadialGradient(40,30,8,48,40,42); hg.addColorStop(0,'#ffffff'); hg.addColorStop(0.7,'#e8f0ff'); hg.addColorStop(1,'#b8c8e0');
+  c.fillStyle=hg; c.beginPath(); c.ellipse(48,38,38,34,0,0,Math.PI*2); c.fill();
+  // ears
+  vBlob(c,20,8,11,11,'#e8f0ff','#a8bcd8'); vBlob(c,76,8,11,11,'#e8f0ff','#a8bcd8');
+  vBlob(c,20,9,6,6,'#f0d8e8','#e0b0c8'); vBlob(c,76,9,6,6,'#f0d8e8','#e0b0c8');
+  // muzzle
+  vBlob(c,48,52,20,15,'#ffffff','#dfeafb');
+  // nose (glossy blue-black)
+  vBlob(c,48,46,9,7,'#2a3870','#101840');
+  c.fillStyle='rgba(255,255,255,0.6)'; c.beginPath(); c.ellipse(45,43,3,2,0,0,Math.PI*2); c.fill();
+  // gentle mouth
+  c.strokeStyle='#1828a0'; c.lineWidth=2; c.lineCap='round';
+  c.beginPath(); c.moveTo(48,54); c.lineTo(48,58); c.moveTo(48,58); c.quadraticCurveTo(40,62,34,58);
+  c.moveTo(48,58); c.quadraticCurveTo(56,62,62,58); c.stroke();
+  // wise eyes (large, blue)
+  vEye(c,34,30,5,0.5); vEye(c,62,30,5,-0.5);
+  // crown
+  var cg=c.createLinearGradient(0,-18,0,8); cg.addColorStop(0,'#f8e050'); cg.addColorStop(1,'#c09010');
+  c.fillStyle=cg;
+  c.beginPath(); c.moveTo(22,4); c.lineTo(26,-18); c.lineTo(36,2);
+  c.lineTo(48,-24); c.lineTo(60,2); c.lineTo(70,-18); c.lineTo(74,4); c.closePath(); c.fill();
+  c.fillStyle='#a07810'; c.fillRect(22,2,52,7);
+  // crown gems
+  vBlob(c,36,-2,4,5,'#60e8ff','#2080c0'); vBlob(c,48,-8,5,6,'#ff80e0','#c040a0'); vBlob(c,60,-2,4,5,'#ffc040','#c08010');
+  c.restore();
 }
 function drawClubber(cx,cy,facingRight,big,frame){
-  var sc=big?1.3:1;
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(16*PS*sc,0); ctx.scale(-1,1); }
-  ctx.scale(sc,sc);
-
-  var raise=(frame%6<3)?0:-4;
-  var step=(frame%4<2)?0:1;
-
-  // ── SHADOW ──
-  ctx.globalAlpha=0.22; ctx.fillStyle='#000';
-  ctx.beginPath(); ctx.ellipse(8*PS,37*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-
-  // ── BOOTS (chunky leather, snow-capped) ──
-  pr(2,31+step,5,7,'#0e0c08'); pr(10,31,5,7,'#0e0c08');
-  pr(3,30+step,4,7,'#221a10'); pr(11,30,4,7,'#221a10');
-  pr(3,30+step,3,5,'#362a1a'); pr(11,30,3,5,'#362a1a');
-  pr(2,30+step,1,7,'#4a3a28'); pr(9,30,1,7,'#4a3a28'); // side highlight
-  pr(2,36+step,6,2,ENV.snwA); pr(10,36,6,2,ENV.snwA); // snow on boots
-  pr(2,37+step,6,1,'#c0ddf0'); pr(10,37,6,1,'#c0ddf0');
-
-  // ── TROUSERS (dark forest green, worn) ──
-  pr(2,21,12,11,'#1c2c12'); pr(3,20,10,12,'#283c1a'); pr(4,20,8,10,'#344e22');
-  pr(2,27+step,4,5,'#1c2c12'); pr(10,27,4,5,'#1c2c12'); // legs apart
-  // Seam line
-  pr(7,20,2,12,'#222e16');
-  // Knee patches
-  pr(3,26,4,3,'#202a10'); pr(9,26,4,3,'#202a10');
-
-  // ── COAT (deep blood-red, layered shading) ──
-  // Darkest outline
-  pr(0,9,16,13,'#3a0000');
-  // Dark base
-  pr(1,8,14,13,'#660808');
-  // Mid coat
-  pr(2,8,12,12,'#8a1010');
-  // Light face
-  pr(3,8,10,11,'#a81818');
-  // Highlight streak down one side
-  pr(3,9,3,9,'#bc2828');
-  // Coat bottom hem detail
-  pr(1,19,14,2,'#550606'); pr(2,20,12,1,'#3a0000');
-  // Belt (dark leather)
-  pr(1,19,14,3,'#1a1208'); pr(2,19,12,2,'#2e2010'); pr(6,19,4,2,'#c09020'); // buckle
-
-  // ── FUR COLLAR (dirty, unkempt) ──
-  pr(1,7,14,4,'#7a7060'); pr(2,6,12,4,'#9a9078'); pr(3,6,10,3,'#b0a888');
-  for(var i=0;i<7;i++) pr(2+i*2,6,1,3,i%2?'#887860':'#c0b090');
-
-  // ── ARMS ──
-  // Left (walking side)
-  pr(0,10,3,13,'#660808'); pr(1,9,3,13,'#8a1010'); pr(1,9,2,11,'#a81818');
-  pr(0,21,4,3,'#8a7060'); // cuff
-  pr(1,23,3,4,'#c09060'); // hand/glove
-  // Right arm (holds club — raised)
-  pr(13,10+raise,3,12,'#660808'); pr(13,9+raise,3,12,'#8a1010');
-  pr(13,9+raise,2,10,'#a81818');
-  pr(13,20+raise,4,3,'#8a7060'); // cuff
-  pr(13,22+raise,3,4,'#c09060'); // fist
-
-  // ── THE CLUB (massive, brutal, gnarly wood) ──
-  // Shaft — 3-tone wood
-  pr(15,2+raise,3,24,'#2a1400'); pr(16,1+raise,3,24,'#4a2c10'); pr(16,1+raise,2,22,'#6e4420');
-  // Club head (knobbly, with nails)
-  pr(12,-4+raise,9,9,'#3a1c08'); pr(13,-5+raise,8,9,'#5c3010'); pr(13,-4+raise,7,8,'#7a4420');
-  pr(14,-3+raise,5,6,'#906030'); pr(14,-3+raise,4,3,'#a87040'); // highlight face
-  // Nails / spikes
-  pr(13,-3+raise,2,2,'#d8d8c0'); pr(18,-3+raise,2,2,'#d8d8c0');
-  pr(13,-1+raise,1,1,'#f0f0d8'); pr(18,0+raise,1,1,'#f0f0d8');
-  pr(14,2+raise,1,1,'#d0d0b0'); // dried blood hint
-  pr(13,-2+raise,2,1,'#600000'); pr(17,1+raise,2,1,'#600000');
-
-  // ── HEAD (wide, brutish, 4-tone) ──
-  pr(2,-1,12,9,'#7a5020'); pr(3,-2,10,10,'#a07030'); pr(4,-2,8,9,'#c08840'); pr(5,-1,6,7,'#d0a050');
-  // Jaw shadow
-  pr(2,5,12,3,'#906028'); pr(3,6,10,2,'#784818');
-
-  // ── FUR HAT (patchy animal fur, villainous) ──
-  pr(0,-8,16,8,'#181808'); pr(1,-9,14,8,'#242810'); pr(2,-9,12,7,'#30341a');
-  pr(0,-5,16,4,'#101008'); pr(1,-4,14,3,'#1c2010'); // brim
-  // Fur texture on hat
-  for(var i=0;i<8;i++) pr(1+i*2,-9,1,4,i%2?'#1c1e0c':'#2e3214');
-  // Animal skull badge on hat
-  pr(5,-8,6,4,'#c8c090'); pr(6,-9,4,4,'#d8d0a0');
-  pr(6,-8,2,2,'#101008'); pr(9,-8,2,2,'#101008'); // eye sockets
-  pr(6,-5,1,2,'#c8c090'); pr(8,-5,2,1,'#c8c090'); pr(10,-5,1,2,'#c8c090');
-
-  // ── FACE (mean, weathered, 5 o'clock shadow) ──
-  // Brow ridge (thick, aggressive)
-  pr(3,-1,4,1,'#4a2c08'); pr(9,-1,4,1,'#4a2c08');
-  pr(2,0,5,1,'#382008'); pr(9,0,5,1,'#382008');
-  // Eyes (small, piggy, mean)
-  pr(3,0,4,3,'#0e0808'); pr(9,0,4,3,'#0e0808'); // socket
-  pr(4,0,3,3,'#5a2808'); pr(10,0,3,3,'#5a2808'); // iris (brown)
-  pr(4,1,2,2,'#883c18'); pr(10,1,2,2,'#883c18'); // lighter iris
-  pr(5,0,1,1,'#f0e8d8'); pr(11,0,1,1,'#f0e8d8'); // shine
-  // Nose (broad, red-tipped)
-  pr(6,3,4,3,'#b07030'); pr(7,2,2,4,'#c88040'); pr(7,4,2,1,'#d09050');
-  pr(7,4,2,1,'#a04020'); // nostril shadow
-  // Mouth (sneer)
-  pr(4,6,8,1,'#3a1808'); pr(4,6,1,2,'#3a1808'); pr(11,6,1,2,'#3a1808');
-  pr(5,7,6,1,'#4a2010');
-  // Stubble
-  ctx.globalAlpha=0.5;
-  for(var i=0;i<5;i++) pr(3+i*2,7,1,1,'#4a3020');
-  for(var i=0;i<4;i++) pr(4+i*2,5,1,1,'#3a2818');
-  ctx.globalAlpha=1;
-  // Scar across left cheek
-  pr(3,2,1,3,'#8a4020'); pr(3,3,2,1,'#6a2c10');
-
-  ctx.restore();
+  var c=ctx, tick=Date.now(); var sc=big?1.32:1.12;
+  // walk cycle drives both legs AND the weapon swing
+  var ph=tick/150;
+  var stride=Math.sin(ph)*3.2;
+  var swing=Math.sin(ph)*0.5;       // weapon swings with stride
+  c.save(); c.translate(cx*PS,cy*PS);
+  if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
+  c.scale(sc,sc);
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(22,100,16,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // ---- LEGS ----
+  vLimb(c,17,72,13+stride,98,8,'#21304a','#141d2e'); vLimb(c,29,72,33-stride,98,8,'#21304a','#141d2e');
+  vBlob(c,12+stride,100,7,5,'#2a2418','#120e08'); vBlob(c,33-stride,100,7,5,'#2a2418','#120e08');
+  c.fillStyle='#e0f0ff'; c.beginPath(); c.ellipse(12+stride,98,6,2,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(33-stride,98,6,2,0,0,Math.PI*2); c.fill();
+  // ---- TORSO: navy-blue naval coat with SHOULDERS ----
+  var bg=c.createLinearGradient(4,28,40,76); bg.addColorStop(0,'#3a6db0'); bg.addColorStop(0.5,'#1f4585'); bg.addColorStop(1,'#102a55');
+  c.fillStyle=bg; c.beginPath();
+  c.moveTo(9,40);
+  c.bezierCurveTo(1,52,3,70,11,76); c.lineTo(35,76);
+  c.bezierCurveTo(43,70,45,52,37,40);
+  c.bezierCurveTo(40,33,32,30,23,30);     // right shoulder pad
+  c.bezierCurveTo(14,30,6,33,9,40);       // left shoulder pad
+  c.closePath(); c.fill();
+  // shoulder epaulettes (gold)
+  vBlob(c,9,34,5,3,'#f0d040','#a07810'); vBlob(c,37,34,5,3,'#f0d040','#a07810');
+  // coat highlight + brass buttons
+  vLimb(c,23,34,23,72,3,'#4a82c8','#2a5a9a');
+  c.fillStyle='#e8c84a'; for(var bi=0;bi<4;bi++){ c.beginPath(); c.arc(23,40+bi*9,1.8,0,7); c.fill(); }
+  // belt
+  c.fillStyle='#10203a'; c.fillRect(9,66,28,5); c.fillStyle='#c09020'; c.fillRect(20,66,6,5);
+  // ---- ARMS (one swings the weapon) ----
+  // back arm
+  vLimb(c,11,40,4,64,6,'#1f4585','#102a55'); vBlob(c,4,66,4,4,'#caa070','#9a7038');
+  // ---- HEAD with bone structure (jaw + brow + cheek) ----
+  c.save(); c.translate(23,22);
+  // neck
+  c.fillStyle='#b88a52'; c.fillRect(-4,8,8,6);
+  // face shape (angular jaw, not a circle)
+  var fg=c.createLinearGradient(0,-11,0,12); fg.addColorStop(0,'#e8b878'); fg.addColorStop(1,'#b07e42');
+  c.fillStyle=fg; c.beginPath();
+  c.moveTo(-10,-4); c.bezierCurveTo(-11,-12,11,-12,10,-4);
+  c.bezierCurveTo(10,2,8,7,4,11); c.bezierCurveTo(2,13,-2,13,-4,11);
+  c.bezierCurveTo(-8,7,-10,2,-10,-4); c.closePath(); c.fill();
+  // heavy brow ridge
+  c.fillStyle='#9a6a38'; c.fillRect(-9,-5,18,2);
+  // cheekbones
+  c.globalAlpha=0.3; c.fillStyle='#f0d0a0'; c.beginPath(); c.ellipse(-6,-1,2,1.4,0,0,7); c.fill(); c.beginPath(); c.ellipse(6,-1,2,1.4,0,0,7); c.fill(); c.globalAlpha=1;
+  // mean squinting eyes
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(-4,-2,2.6,2,0,0,7); c.fill(); c.beginPath(); c.ellipse(4,-2,2.6,2,0,0,7); c.fill();
+  c.fillStyle='#3a2008'; c.beginPath(); c.arc(-4,-2,1.3,0,7); c.fill(); c.beginPath(); c.arc(4,-2,1.3,0,7); c.fill();
+  // angry brows
+  c.strokeStyle='#3a2410'; c.lineWidth=1.6; c.lineCap='round';
+  c.beginPath(); c.moveTo(-8,-5); c.lineTo(-2,-3); c.stroke(); c.beginPath(); c.moveTo(8,-5); c.lineTo(2,-3); c.stroke();
+  // broad nose with bridge
+  c.fillStyle='#b07e42'; c.beginPath(); c.moveTo(0,-1); c.lineTo(-2,4); c.lineTo(2,4); c.closePath(); c.fill();
+  c.fillStyle='#9a6a38'; c.fillRect(-2,4,4,1);
+  // snarl mouth showing a tooth
+  c.strokeStyle='#3a1808'; c.lineWidth=1.4; c.beginPath(); c.moveTo(-4,8); c.quadraticCurveTo(0,6,4,8); c.stroke();
+  c.fillStyle='#fff'; c.fillRect(1,7,1.4,1.6);
+  // dark beard stubble along jaw
+  c.globalAlpha=0.35; c.fillStyle='#2a1c0e';
+  c.beginPath(); c.moveTo(-8,5); c.quadraticCurveTo(0,13,8,5); c.quadraticCurveTo(0,10,-8,5); c.fill(); c.globalAlpha=1;
+  // fur ushanka hat (sits high, not over eyes)
+  var hg=c.createLinearGradient(0,-16,0,-4); hg.addColorStop(0,'#3a3220'); hg.addColorStop(1,'#1c1810');
+  c.fillStyle=hg; c.beginPath(); c.ellipse(0,-9,11,7,0,Math.PI,0); c.fill();
+  c.fillStyle='#2a2418'; c.fillRect(-11,-10,22,3);
+  // hat flaps
+  c.fillStyle='#332b1c'; c.fillRect(-11,-9,3,6); c.fillRect(8,-9,3,6);
+  // red star badge
+  c.fillStyle='#d02020'; c.beginPath();
+  for(var s=0;s<5;s++){ var a=-Math.PI/2+s*2*Math.PI/5; c.lineTo(Math.cos(a)*3, -12+Math.sin(a)*3); var a2=a+Math.PI/5; c.lineTo(Math.cos(a2)*1.3,-12+Math.sin(a2)*1.3); }
+  c.closePath(); c.fill();
+  c.restore();
+  // ---- FRONT ARM + SWINGING WEAPON ----
+  c.save(); c.translate(34,42); c.rotate(swing);
+  vLimb(c,0,0,8,16,6,'#2a5a9a','#102a55'); // forearm
+  vBlob(c,9,18,4.5,4.5,'#caa070','#9a7038'); // fist
+  c.translate(9,18); c.rotate(-0.5+swing*0.6);
+  if(big){
+    // HOCKEY STICK
+    vLimb(c,0,0,2,-34,5,'#9a6a30','#5a3a14');           // shaft
+    c.strokeStyle='#3a2410'; c.lineWidth=1; c.beginPath(); c.moveTo(1,-10); c.lineTo(1,-30); c.stroke();
+    // blade
+    c.save(); c.translate(2,-34); c.rotate(0.5);
+    c.fillStyle='#1a1a22'; c.beginPath(); c.moveTo(0,0); c.lineTo(16,3); c.lineTo(16,8); c.lineTo(0,6); c.closePath(); c.fill();
+    c.fillStyle='#33333f'; c.fillRect(0,1,14,2);
+    c.restore();
+    // tape on grip
+    c.fillStyle='#111'; c.fillRect(-2,-6,5,2); c.fillRect(-2,-1,5,2);
+  } else {
+    // BASEBALL BAT
+    var btg=c.createLinearGradient(0,0,0,-32); btg.addColorStop(0,'#caa060'); btg.addColorStop(1,'#9a6e34');
+    c.fillStyle=btg; c.beginPath();
+    c.moveTo(-2,2); c.lineTo(2,2);                  // knob
+    c.lineTo(4,-30); c.quadraticCurveTo(4.5,-36,0,-37);
+    c.quadraticCurveTo(-4.5,-36,-4,-30); c.closePath(); c.fill();
+    // knob + grip rings
+    c.fillStyle='#7a5424'; c.fillRect(-3,1,6,2);
+    c.strokeStyle='rgba(90,60,20,0.6)'; c.lineWidth=0.8;
+    for(var gi=0;gi<3;gi++){ c.beginPath(); c.moveTo(-3,-4-gi*3); c.lineTo(3,-4-gi*3); c.stroke(); }
+    // wood grain
+    c.strokeStyle='rgba(120,84,36,0.5)'; c.lineWidth=0.7; c.beginPath(); c.moveTo(0,-10); c.lineTo(0,-34); c.stroke();
+  }
+  c.restore();
+  c.restore();
 }
 function drawMagnus(boss){
-  var bx=boss.x, by=boss.y;
-  var sx=(bx-game.camera.x)/PS|0, sy=by/PS|0;
+  var c=ctx, tick=Date.now();
+  var sx=(boss.x-game.camera.x), sy=boss.y;
   var H=boss.hurtTimer>0&&(Math.floor(boss.hurtTimer/3)%2===0);
-  var tick=Date.now(), raise=(boss.frame%8<4)?0:-5;
-  var p2=boss.phase===2;
-
-  ctx.save(); ctx.translate(sx*PS,sy*PS);
-  if(!boss.facingRight){ ctx.translate(26*PS,0); ctx.scale(-1,1); }
-
-  // ── PHASE 2 AURA (dark energy) ──
-  if(p2){
-    ctx.globalAlpha=0.22+Math.sin(tick/180)*0.12;
-    ctx.fillStyle='#8000c0';
-    ctx.beginPath(); ctx.ellipse(13*PS,28*PS,22*PS,34*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.globalAlpha=0.12+Math.sin(tick/120)*0.08;
-    ctx.fillStyle='#ff0060';
-    ctx.beginPath(); ctx.ellipse(13*PS,28*PS,18*PS,28*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.globalAlpha=1;
-  }
-
-  // ── SHADOW ──
-  ctx.globalAlpha=0.25; ctx.fillStyle='#000';
-  ctx.beginPath(); ctx.ellipse(13*PS,50*PS,13*PS,4*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-
-  // ── CAPE (sweeping, dramatic, 4-tone purple-black) ──
-  // Outer edge (darkest)
-  pr(0,14,4,38,'#180010'); pr(22,14,4,38,'#180010');
-  // Cape body shadow
-  pr(1,12,4,40,MG.dk); pr(21,12,4,40,MG.dk);
-  // Cape body
-  pr(2,10,4,42,MG.cape); pr(20,10,4,42,MG.cape);
-  // Cape inner face (lighter)
-  pr(3,10,3,42,MG.cp2); pr(20,10,3,42,MG.cp2);
-  // Cape back (full sweep)
-  pr(3,14,20,36,MG.dk); pr(4,12,18,38,MG.cape); pr(5,11,16,38,MG.cp2); pr(6,11,14,36,MG.cp3);
-  // Cape hem trim (gold)
-  for(var i=0;i<12;i++) pr(4+i*2,48,2,3,i%2?'#806010':'#c09020');
-  // Clan emblem on cape (skull)
-  pr(11,28,4,3,'#d0c880'); pr(10,29,6,3,'#d0c880');
-  pr(11,29,2,2,MG.cape); pr(14,29,2,2,MG.cape); // eye sockets
-  pr(11,32,1,2,'#d0c880'); pr(13,32,2,1,'#d0c880'); pr(15,32,1,2,'#d0c880'); // teeth
-
-  // ── BOOTS (heavy armoured war-boots) ──
-  pr(3,44,6,8,'#1a1008'); pr(17,44,6,8,'#1a1008');
-  pr(4,43,5,8,'#2e1c10'); pr(18,43,5,8,'#2e1c10');
-  pr(4,43,4,6,'#422c18'); pr(18,43,4,6,'#422c18');
-  pr(3,50,7,2,'#140e06'); pr(17,50,7,2,'#140e06'); // sole
-  // Boot metal buckle
-  pr(5,46,3,3,'#808070'); pr(18,46,3,3,'#808070');
-  pr(6,46,2,2,'#b0b0a0'); pr(19,46,2,2,'#b0b0a0');
-
-  // ── TROUSERS (dark blood-purple) ──
-  pr(4,34,18,12,'#1e0028'); pr(5,33,16,12,'#2a0038'); pr(6,33,14,10,'#340048');
-  pr(4,40,6,6,'#1e0028'); pr(16,40,6,6,'#1e0028'); // legs
-
-  // ── COAT (rich crimson, 5-tone, damaged from battle) ──
-  // Outline
-  pr(2,14,22,22,'#3a0000');
-  // Base shadow
-  pr(3,13,20,22,H?'#b80000':'#600808');
-  // Dark coat
-  pr(4,12,18,22,H?'#e00000':'#8a1010');
-  // Main coat
-  pr(5,12,16,21,H?'#ff2020':MG.coat);
-  // Light face / highlight
-  pr(6,12,8,20,H?'#ff5050':MG.co2);
-  // Highlight streak
-  pr(6,13,4,18,H?'#ff8080':MG.co3);
-  // Battle damage tear lines
-  pr(14,18,2,8,'#600000'); pr(10,22,1,6,'#500000');
-
-  // ── FUR TRIM (thick, ivory, decadent) ──
-  pr(3,12,20,4,MG.furS); pr(4,11,18,4,MG.fur); pr(5,11,16,3,MG.fur);
-  for(var i=0;i<10;i++) pr(4+i*2,11,2,3,i%2?MG.fur:MG.furS);
-  pr(3,32,20,4,MG.furS); pr(4,31,18,4,MG.fur);
-  for(var i=0;i<10;i++) pr(4+i*2,31,2,3,i%2?MG.fur:MG.furS);
-  // Collar fur sides
-  pr(3,11,4,22,MG.furS); pr(3,12,3,21,MG.fur);
-  pr(19,11,4,22,MG.furS); pr(20,12,3,21,MG.fur);
-
-  // ── MEDALS (row of three — stolen glory) ──
-  pr(9,18,3,4,'#806008'); pr(9,18,3,4,MG.med); pr(10,19,2,3,'#fff060'); pr(10,18,1,1,'#ffffff');
-  pr(13,18,3,4,'#806008'); pr(13,18,3,4,MG.med); pr(14,19,2,3,'#fff060'); pr(13,18,1,1,'#ffffff');
-  pr(9,23,3,4,'#806008'); pr(9,23,3,4,MG.med); pr(10,24,2,3,'#fff060'); // third medal
-
-  // ── LEFT ARM ──
-  pr(1,14,4,18,'#600808'); pr(2,13,4,18,MG.coat); pr(2,13,3,16,MG.co2);
-  pr(1,13,5,3,MG.fur); // cuff
-  pr(2,30,4,5,MG.sk); // hand
-
-  // ── RIGHT ARM + ENORMOUS CLUB (signature weapon) ──
-  pr(21,10+raise,4,18,'#600808'); pr(21,9+raise,4,18,MG.coat); pr(21,9+raise,3,16,MG.co2);
-  pr(21,9+raise,5,3,MG.fur); // cuff
-  pr(21,26+raise,5,5,MG.sk); // fist
-
-  // Club shaft (thick, ancient, rune-carved)
-  pr(23,0+raise,4,34,'#1e0e04'); pr(24,-1+raise,3,34,'#4a2c10'); pr(24,-1+raise,2,32,'#7a4a1c'); pr(24,-1+raise,1,28,'#a07030');
-  // Runes on shaft (glowing slightly)
-  ctx.globalAlpha=0.7+Math.sin(tick/300)*0.2;
-  pr(24,4+raise,2,2,'#ff8020'); pr(24,10+raise,2,2,'#ff8020'); pr(24,16+raise,2,2,'#ff8020');
-  ctx.globalAlpha=1;
-
-  // Club head (massive, iron-banded, brutal)
-  pr(20,-8+raise,10,10,'#180c04'); pr(21,-9+raise,9,10,'#362010'); pr(21,-8+raise,8,9,'#5a3618');
-  pr(22,-7+raise,7,8,'#7a4e28'); pr(23,-6+raise,5,6,'#9a6638'); // highlight face
-  // Iron bands
-  pr(20,-6+raise,10,2,'#484848'); pr(21,-6+raise,9,1,'#686868');
-  pr(20,-2+raise,10,2,'#484848'); pr(21,-2+raise,9,1,'#686868');
-  // Massive spikes
-  pr(20,-10+raise,4,4,'#3a3030'); pr(21,-11+raise,3,4,'#504848'); pr(21,-12+raise,2,3,'#706060');
-  pr(26,-10+raise,4,4,'#3a3030'); pr(26,-11+raise,3,4,'#504848'); pr(27,-12+raise,2,3,'#706060');
-  pr(23,-12+raise,4,5,'#3a3030'); pr(23,-13+raise,3,5,'#504848'); pr(24,-14+raise,2,4,'#706060');
-  // Blood stain (he's used this)
-  pr(22,-3+raise,4,3,'#400000'); pr(23,-4+raise,3,2,'#600000');
-  // Phase 2: club glows
-  if(p2){
-    ctx.globalAlpha=0.35+Math.sin(tick/150)*0.2;
-    ctx.fillStyle='#ff2080';
-    ctx.beginPath(); ctx.ellipse(25*PS,-4*PS+raise*PS,8*PS,8*PS,0,0,Math.PI*2); ctx.fill();
-    ctx.globalAlpha=1;
-  }
-
-  // ── NECK ──
-  pr(9,8,8,6,MG.sk); pr(10,7,7,7,MG.sk); pr(10,7,6,5,'#e8b060');
-
-  // ── HEAD (wide, powerful, 4-tone shading) ──
-  pr(5,1,16,11,'#7a4808'); pr(6,0,15,12,MG.sk); pr(7,0,13,11,MG.sk); pr(8,0,12,10,'#e8b860');
-  pr(8,0,8,6,'#f0c870'); // forehead highlight
-  // Jaw shadow
-  pr(6,8,14,4,'#a06020'); pr(7,9,12,3,'#8a4c18');
-
-  // ── VIKING HELMET (intimidating, horned) ──
-  // Helm base
-  pr(4,-8,18,10,'#505010'); pr(5,-9,16,10,'#6a6818'); pr(6,-9,14,9,'#888820');
-  pr(7,-9,12,8,'#a0a028'); pr(8,-8,10,6,'#b8b830'); // highlight
-  // Helm brim
-  pr(2,-4,22,4,'#383808'); pr(3,-3,20,3,'#505012'); pr(4,-2,18,2,'#686818');
-  // Nose guard (T-bar)
-  pr(12,-9,2,14,'#3a3808'); pr(12,-8,2,13,'#555218'); pr(12,-8,1,11,'#707030');
-  // Eye slits in helm
-  pr(7,-5,4,2,'#181808'); pr(15,-5,4,2,'#181808');
-  // Horns (curved, massive)
-  pr(-2,-14,6,12,'#4a4808'); pr(-1,-16,5,12,'#686818'); pr(0,-17,4,10,'#8a8820'); pr(0,-18,3,6,'#a8a030');
-  pr(-2,-12,3,4,'#b0a838'); // horn inner curve highlight
-  pr(22,-14,6,12,'#4a4808'); pr(22,-16,5,12,'#686818'); pr(22,-17,4,10,'#8a8820'); pr(23,-18,3,6,'#a8a030');
-  pr(25,-12,3,4,'#b0a838');
-  // Skull ornament on helm front
-  pr(10,-7,6,4,'#d0c880'); pr(9,-6,8,4,'#d0c880');
-  pr(10,-6,2,2,'#383808'); pr(14,-6,2,2,'#383808'); // sockets
-  pr(10,-3,2,2,'#d0c880'); pr(13,-3,3,1,'#d0c880'); pr(15,-3,2,2,'#d0c880');
-
-  // ── FACE (villain's face — war paint, scar, burning eyes) ──
-  // War paint stripes (blood red across cheeks)
-  pr(5,2,4,7,'#6a0808'); pr(5,2,3,6,'#8a0a0a'); // left stripe
-  pr(17,2,4,7,'#6a0808'); pr(17,2,3,6,'#8a0a0a'); // right stripe
-  // Thick angry brow ridge
-  pr(6,1,5,2,'#200000'); pr(15,1,5,2,'#200000');
-  // Eyes (burning red, evil — with glow) ──
-  pr(6,2,5,5,'#1a0000'); pr(7,2,4,5,'#3a0000'); // socket shadow
-  pr(7,3,4,4,MG.eye); // iris red
-  pr(7,3,3,4,'#ff3020'); // brighter
-  pr(8,3,2,3,'#ff6040'); // bright centre
-  pr(9,3,1,1,'#ffb090'); // fire highlight
-  pr(15,2,5,5,'#1a0000'); pr(16,2,4,5,'#3a0000');
-  pr(16,3,4,4,MG.eye); pr(16,3,3,4,'#ff3020'); pr(17,3,2,3,'#ff6040'); pr(18,3,1,1,'#ffb090');
-  // Eye glow pulse
-  ctx.globalAlpha=0.40+Math.sin(tick/250)*0.18;
-  ctx.fillStyle=MG.eye;
-  ctx.beginPath(); ctx.ellipse(9*PS,5*PS,4*PS,4*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(18*PS,5*PS,4*PS,4*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-  // Scar (left side, diagonal)
-  pr(7,3,1,5,'#a82808'); pr(8,4,1,4,'#c03010');
-  // Broad villain nose
-  pr(11,7,4,4,MG.sk); pr(12,6,3,5,'#d0a040'); pr(12,9,3,1,'#805010'); // nostril
-  // Villain beard (dense, dark, trimmed to a point)
-  pr(6,9,14,6,'#2a1808'); pr(7,10,12,6,'#3c2410'); pr(8,10,10,5,'#503020');
-  // Beard point
-  pr(10,14,6,4,'#2a1808'); pr(11,15,4,4,'#3c2410'); pr(12,16,2,4,'#3c2410'); pr(12,18,2,2,'#2a1808');
-  // Sneer (mouth)
-  pr(8,10,10,1,'#200a00'); pr(8,10,1,2,'#200a00'); pr(17,10,1,2,'#200a00');
-  pr(9,11,8,1,'#2e1008');
-
-  ctx.restore();
+  var raise=Math.sin(tick/200)*6; var p2=boss.phase===2;
+  c.save(); c.translate(sx,sy); c.scale(1.25,1.25);
+  if(!boss.facingRight){ c.translate(60,0); c.scale(-1,1); }
+  // phase-2 aura
+  if(p2){ c.globalAlpha=0.22+Math.sin(tick/180)*0.12; c.fillStyle='#a000d0'; c.beginPath(); c.ellipse(30,70,40,56,0,0,Math.PI*2); c.fill(); c.globalAlpha=1; }
+  c.globalAlpha=0.25; c.fillStyle='#000'; c.beginPath(); c.ellipse(30,150,26,6,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // cape behind
+  var cg=c.createLinearGradient(0,30,60,140); cg.addColorStop(0,'#a040a0'); cg.addColorStop(0.5,'#500038'); cg.addColorStop(1,'#180010');
+  c.fillStyle=cg; c.beginPath();
+  c.moveTo(12,40); c.bezierCurveTo(-12,80,-8,140,6,150); c.lineTo(54,150); c.bezierCurveTo(68,140,72,80,48,40);
+  c.bezierCurveTo(40,32,20,32,12,40); c.closePath(); c.fill();
+  // legs/boots
+  vLimb(c,22,108,18,148,11,'#2a0038','#1a0028'); vLimb(c,38,108,42,148,11,'#2a0038','#1a0028');
+  vBlob(c,18,150,9,7,'#3a2418','#1a1008'); vBlob(c,42,150,9,7,'#3a2418','#1a1008');
+  // crimson coat
+  var bg=c.createLinearGradient(8,40,52,116); bg.addColorStop(0,H?'#ff8080':'#ff5050'); bg.addColorStop(0.5,H?'#ff2020':'#a01010'); bg.addColorStop(1,'#5a0000');
+  c.fillStyle=bg; c.beginPath();
+  c.moveTo(12,48); c.bezierCurveTo(0,68,2,108,12,116); c.lineTo(48,116); c.bezierCurveTo(58,108,60,68,48,48);
+  c.bezierCurveTo(40,40,20,40,12,48); c.closePath(); c.fill();
+  // medals
+  c.fillStyle='#f0c020'; for(var i=0;i<3;i++){ c.beginPath(); c.arc(20+i*7,62,3,0,7); c.fill(); }
+  // fur trim
+  c.fillStyle='#e8d8b0'; c.beginPath(); c.ellipse(30,46,18,5,0,0,Math.PI*2); c.fill();
+  for(var i=0;i<10;i++){ c.beginPath(); c.arc(13+i*4,114,2.5,0,7); c.fill(); }
+  // arms
+  vLimb(c,14,52,6,92,9,'#a01010','#5a0000'); vLimb(c,46,52,56,46+raise,9,'#a01010','#5a0000');
+  vBlob(c,6,94,5,5,'#e0b070','#b07830'); vBlob(c,57,46+raise,6,6,'#e0b070','#b07830');
+  // giant spiked club
+  c.save(); c.translate(57,46+raise); c.rotate(-0.6);
+  vLimb(c,0,6,4,-54,9,'#7a4a1c','#2a1404');
+  if(p2){ c.globalAlpha=0.4+Math.sin(tick/150)*0.2; c.fillStyle='#ff2080'; c.beginPath(); c.arc(4,-58,16,0,7); c.fill(); c.globalAlpha=1; }
+  vBlob(c,4,-58,13,14,'#7a4e28','#2a1404');
+  c.fillStyle='#707070';
+  for(var s=0;s<3;s++){ var sa=s*2.1; c.beginPath(); c.moveTo(4+Math.cos(sa)*10,-58+Math.sin(sa)*11); c.lineTo(4+Math.cos(sa)*18,-58+Math.sin(sa)*18); c.lineTo(4+Math.cos(sa+0.4)*11,-58+Math.sin(sa+0.4)*12); c.closePath(); c.fill(); }
+  c.restore();
+  // neck/head
+  vBlob(c,30,44,8,6,'#e0b070','#b07830');
+  vBlob(c,30,30,15,14,'#e8b860','#c08838');
+  // beard (dark, pointed)
+  c.fillStyle='#2a1808'; c.beginPath();
+  c.moveTo(18,34); c.quadraticCurveTo(30,56,42,34); c.quadraticCurveTo(34,46,30,50); c.quadraticCurveTo(26,46,18,34); c.closePath(); c.fill();
+  // viking helmet
+  var hg=c.createLinearGradient(0,8,0,30); hg.addColorStop(0,'#b0b030'); hg.addColorStop(1,'#606010');
+  c.fillStyle=hg; c.beginPath(); c.arc(30,22,16,Math.PI,0); c.lineTo(46,26); c.lineTo(14,26); c.closePath(); c.fill();
+  c.fillStyle='#787818'; c.fillRect(12,24,36,4);
+  // horns
+  c.fillStyle='#a8a030'; 
+  c.beginPath(); c.moveTo(14,22); c.quadraticCurveTo(-4,16,-2,2); c.quadraticCurveTo(6,12,16,16); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(46,22); c.quadraticCurveTo(64,16,62,2); c.quadraticCurveTo(54,12,44,16); c.closePath(); c.fill();
+  // war paint
+  c.globalAlpha=0.5; c.fillStyle='#8a0a0a'; c.fillRect(20,28,3,8); c.fillRect(37,28,3,8); c.globalAlpha=1;
+  // burning eyes
+  c.fillStyle='#1a0000'; c.beginPath(); c.ellipse(24,30,4,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(36,30,4,4,0,0,Math.PI*2); c.fill();
+  var eg=c.createRadialGradient(24,30,0.5,24,30,4); eg.addColorStop(0,'#ff8040'); eg.addColorStop(1,'#d01000');
+  c.fillStyle=eg; c.beginPath(); c.arc(24,30,3,0,7); c.fill();
+  var eg2=c.createRadialGradient(36,30,0.5,36,30,4); eg2.addColorStop(0,'#ff8040'); eg2.addColorStop(1,'#d01000');
+  c.fillStyle=eg2; c.beginPath(); c.arc(36,30,3,0,7); c.fill();
+  // glow
+  c.globalAlpha=0.4+Math.sin(tick/250)*0.18; c.fillStyle='#ff2000';
+  c.beginPath(); c.arc(24,30,5,0,7); c.fill(); c.beginPath(); c.arc(36,30,5,0,7); c.fill(); c.globalAlpha=1;
+  c.restore();
 }
 function drawTofuFish(cx,cy,bob){
 var by=Math.sin(bob)*3, tick=Date.now();
@@ -1240,6 +1194,37 @@ else if(type==='staff'){ pr(4,0,2,18,'#a07040'); pr(2,0,6,4,EK.run); pr(3,0,4,4,
 else if(type==='gem'){ pr(2,2,8,8,EK.gem); pr(3,1,6,10,EK.gem); pr(4,2,4,6,EK.gm2); pr(5,1,2,2,EK.gm2); }
 ctx.restore();
 }
+
+function drawCandy(cx,cy,bob){
+  var c=ctx, tick=Date.now();
+  var by=Math.sin(bob)*3.5;
+  c.save(); c.translate(cx*PS,(cy+by)*PS);
+  // glow halo (rainbow shimmer)
+  c.globalAlpha=0.3+Math.sin(tick/250)*0.18;
+  var hue=(tick/12)%360;
+  c.fillStyle='hsl('+hue+',90%,65%)';
+  c.beginPath(); c.arc(18,18,16,0,Math.PI*2); c.fill();
+  c.globalAlpha=1;
+  // orbiting sparkles
+  for(var i=0;i<4;i++){ var a=tick/280+i*1.57; c.fillStyle=i%2?'#fff':'#ffe040'; c.fillRect(18+Math.cos(a)*16-2,18+Math.sin(a)*16-2,3,3); }
+  c.save(); c.translate(18,18); c.rotate(Math.sin(tick/400)*0.2);
+  // left wrapper twist
+  c.fillStyle='#ff70b0'; c.beginPath(); c.moveTo(-14,0); c.lineTo(-7,-5); c.lineTo(-7,5); c.closePath(); c.fill();
+  c.fillStyle='#ff90c8'; c.beginPath(); c.moveTo(-13,-1); c.lineTo(-8,-4); c.lineTo(-8,1); c.closePath(); c.fill();
+  // right wrapper twist
+  c.fillStyle='#ff70b0'; c.beginPath(); c.moveTo(14,0); c.lineTo(7,-5); c.lineTo(7,5); c.closePath(); c.fill();
+  c.fillStyle='#ff90c8'; c.beginPath(); c.moveTo(13,-1); c.lineTo(8,-4); c.lineTo(8,1); c.closePath(); c.fill();
+  // candy body (glossy bonbon)
+  var g=c.createRadialGradient(-3,-3,1,0,0,9);
+  g.addColorStop(0,'#fff0a0'); g.addColorStop(0.5,'#ff80c0'); g.addColorStop(1,'#d02080');
+  c.fillStyle=g; c.beginPath(); c.ellipse(0,0,8,7,0,0,Math.PI*2); c.fill();
+  // candy stripe + shine
+  c.strokeStyle='rgba(255,255,255,0.7)'; c.lineWidth=1.5; c.beginPath(); c.arc(0,0,5,-0.6,1.0); c.stroke();
+  c.fillStyle='rgba(255,255,255,0.85)'; c.beginPath(); c.ellipse(-3,-3,2,1.5,0,0,Math.PI*2); c.fill();
+  c.restore();
+  c.restore();
+}
+
 function drawBackground(scroll,tintColor,blizzard){
 r(0,0,640,400,ENV.skyA); r(0,55,640,115,ENV.skyB); r(0,170,640,90,ENV.skyC);
 if(tintColor){ ctx.globalAlpha=0.22; r(0,0,640,400,tintColor); ctx.globalAlpha=1; }
@@ -1353,35 +1338,51 @@ function drawPlatform(pl,scroll){
     }
   } else if(pl.type==='crack'){
     if(pl.gone){
-      // collapsed — show faint outline + cracks in the gap
-      ctx.globalAlpha=0.25;
-      r(x,y,w,3,'#3a6a90');
+      // collapsed — broken shards + dark gap so it's clearly a hole now
+      ctx.globalAlpha=0.5;
+      ctx.strokeStyle='#5a8ab0'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(x,y+1); ctx.lineTo(x+w*0.3,y+4); ctx.lineTo(x+w*0.5,y); ctx.lineTo(x+w*0.7,y+4); ctx.lineTo(x+w,y+1); ctx.stroke();
       ctx.globalAlpha=1;
       return;
     }
     var shk=pl.shake||0;
     var ox=shk?(Math.random()-0.5)*shk*2:0;
     var danger=(pl.crackTimer||0)/70;
-    // base ice slab
-    r(x+ox,y,w,h,'#2870a8'); r(x+ox,y+3,w,h-3,'#3890c8'); r(x+ox,y+4,w,h-4,'#48a8e0');
-    r(x+ox,y,w,6,ENV.icA); r(x+ox,y,w,3,ENV.icC);
-    // warning tint as it cracks (reddens)
-    if(danger>0.1){
-      ctx.globalAlpha=danger*0.4; r(x+ox,y,w,h,'#ff4040'); ctx.globalAlpha=1;
+    // ── DISTINCT FRAGILE ICE LOOK (pale, frosty, blue-white — different from solid ice) ──
+    var fg=ctx.createLinearGradient(0,y,0,y+h);
+    fg.addColorStop(0,'#dff0ff'); fg.addColorStop(0.5,'#a8d0ec'); fg.addColorStop(1,'#78a8d0');
+    ctx.fillStyle=fg; ctx.fillRect(x+ox,y,w,h);
+    // frosty top crust
+    r(x+ox,y,w,4,'#f0faff'); r(x+ox,y,w,2,'#ffffff');
+    // permanent pre-existing crack web (always visible — the warning sign)
+    ctx.strokeStyle='rgba(70,110,150,0.75)'; ctx.lineWidth=1.2;
+    var cxp=x+w/2+ox, cyp=y+h*0.5;
+    var segs=Math.max(4,(w/20)|0);
+    for(var i=0;i<segs;i++){
+      var a=i*(Math.PI*2/segs)+(pl.x%7);
+      var len=(0.45+((i*13)%10)/22); // pseudo-random spoke length
+      ctx.beginPath(); ctx.moveTo(cxp,cyp);
+      ctx.lineTo(cxp+Math.cos(a)*w*0.5*len, cyp+Math.sin(a)*h*0.95*len);
+      ctx.stroke();
     }
-    // crack lines spreading from centre as timer rises
-    if(danger>0.15){
-      ctx.strokeStyle='rgba(20,40,70,'+Math.min(1,danger*1.4)+')'; ctx.lineWidth=1.5;
-      var cxp=x+w/2+ox, cyp=y+h/2, n=Math.floor(danger*6)+2;
-      for(var i=0;i<n;i++){
-        var a=i*(Math.PI*2/n)+pl.x;
+    // central fracture ring
+    ctx.strokeStyle='rgba(70,110,150,0.6)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.ellipse(cxp,cyp,w*0.16,h*0.28,0,0,Math.PI*2); ctx.stroke();
+    // hazard dashes along the top edge (yellow/black warning stripe, subtle)
+    for(var d=0; d<w; d+=10){ ctx.fillStyle=(d/10|0)%2? 'rgba(255,210,60,0.5)':'rgba(40,40,40,0.35)'; ctx.fillRect(x+ox+d, y, 6, 2); }
+    // ── DANGER ESCALATION when stepped on (reddens + cracks widen + shakes) ──
+    if(danger>0.05){
+      ctx.globalAlpha=danger*0.5; ctx.fillStyle='#ff5030'; ctx.fillRect(x+ox,y,w,h); ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(120,20,10,'+Math.min(1,danger*1.5)+')'; ctx.lineWidth=2;
+      for(var i=0;i<segs;i++){
+        var a2=i*(Math.PI*2/segs)+(pl.x%7);
         ctx.beginPath(); ctx.moveTo(cxp,cyp);
-        ctx.lineTo(cxp+Math.cos(a)*w*0.5*danger,cyp+Math.sin(a)*h*0.9*danger);
+        ctx.lineTo(cxp+Math.cos(a2)*w*0.5*danger, cyp+Math.sin(a2)*h*0.95*danger);
         ctx.stroke();
       }
     }
     // edge shadow
-    r(x+ox,y,2,h,'#90c8e8'); r(x+ox+w-2,y,2,h,'#1858a0');
+    r(x+ox,y,2,h,'#bfe0f4'); r(x+ox+w-2,y,2,h,'#5888b8');
   } else {
     r(x,y,w,h,'#506878');
   }
@@ -1479,12 +1480,111 @@ function csVignette(){
   g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,10,0.55)');
   csCtx.fillStyle=g; csCtx.fillRect(0,0,640,400);
 }
-function csSpeech(x,y,w,lines,frame){
-  csCtx.fillStyle='rgba(248,252,255,0.95)'; rrect(csCtx,x,y,w,16+lines.length*14,5); csCtx.fill();
-  csCtx.fillStyle='rgba(248,252,255,0.95)'; csCtx.beginPath(); csCtx.moveTo(x+18,y+16+lines.length*14-1); csCtx.lineTo(x+10,y+16+lines.length*14+10); csCtx.lineTo(x+30,y+16+lines.length*14-1); csCtx.fill();
-  csCtx.fillStyle='#16243c'; csCtx.font='7px "Press Start 2P",monospace'; csCtx.textAlign='center';
-  for(var i=0;i<lines.length;i++) csCtx.fillText(lines[i],x+w/2,y+16+i*14);
-  csCtx.textAlign='left';
+function csSpeech(ax, ay, lines, opts){
+  opts=opts||{};
+  var c=csCtx;
+  c.font='8px "Press Start 2P",monospace';
+  // measure
+  var maxw=0; for(var i=0;i<lines.length;i++){ var ww=c.measureText(lines[i]).width; if(ww>maxw)maxw=ww; }
+  var padX=14, padY=12, lineH=15;
+  var bw=maxw+padX*2;
+  var bh=lines.length*lineH+padY*2-3;
+  // decide side: default place bubble up-and-toward-screen-centre so it clears the speaker
+  var side=opts.side|| (ax<320?'right':'left');
+  var bx,by, tailFromX,tailFromY, tailToX,tailToY;
+  if(side==='up'){
+    bx=ax-bw/2; by=ay-bh-26;
+    tailToX=ax; tailToY=ay-6;
+  } else if(side==='right'){
+    bx=ax+22; by=ay-bh-8;
+    tailToX=ax+4; tailToY=ay-2;
+  } else { // left
+    bx=ax-bw-22; by=ay-bh-8;
+    tailToX=ax-4; tailToY=ay-2;
+  }
+  // clamp to screen
+  if(bx<6)bx=6; if(bx+bw>634)bx=634-bw; if(by<46)by=46;
+  // tail anchor on the bubble nearest the speaker
+  var tx=Math.max(bx+10,Math.min(bx+bw-10, ax));
+  var ty=by+bh;
+  // bubble
+  c.save();
+  c.shadowColor='rgba(0,0,0,0.35)'; c.shadowBlur=8; c.shadowOffsetY=3;
+  c.fillStyle='rgba(250,252,255,0.97)';
+  rrect(c,bx,by,bw,bh,7); c.fill();
+  c.shadowColor='transparent'; c.shadowBlur=0; c.shadowOffsetY=0;
+  // tail (triangle) from bubble to the speaker's mouth
+  c.fillStyle='rgba(250,252,255,0.97)';
+  c.beginPath();
+  c.moveTo(tx-8,ty-1); c.lineTo(tailToX,tailToY); c.lineTo(tx+8,ty-1);
+  c.closePath(); c.fill();
+  // gold border
+  c.strokeStyle='rgba(255,176,0,0.9)'; c.lineWidth=2;
+  rrect(c,bx,by,bw,bh,7); c.stroke();
+  c.restore();
+  // text
+  c.fillStyle='#16243c'; c.textAlign='center';
+  for(var j=0;j<lines.length;j++) c.fillText(lines[j], bx+bw/2, by+padY+6+j*lineH);
+  c.textAlign='left';
+}
+
+// Reusable vector pirate ship (drawn at given left x, waterline y, scale)
+function csShip(c, ox, oy, scale, flag){
+  c.save(); c.translate(ox,oy); c.scale(scale,scale);
+  // hull — curved wooden body
+  var hg=c.createLinearGradient(0,0,0,80);
+  hg.addColorStop(0,'#7a4a22'); hg.addColorStop(0.4,'#5a3214'); hg.addColorStop(1,'#2e1a0a');
+  c.fillStyle=hg;
+  c.beginPath();
+  c.moveTo(0,0);
+  c.lineTo(220,0);
+  c.bezierCurveTo(218,46,196,78,150,82);   // stern curve
+  c.lineTo(70,82);
+  c.bezierCurveTo(28,80,6,52,-14,8);        // bow sweep up
+  c.bezierCurveTo(-10,2,-4,0,0,0);
+  c.closePath(); c.fill();
+  // deck rail highlight
+  c.fillStyle='#9a6e38'; c.fillRect(-8,-4,232,7);
+  c.fillStyle='#c8a060'; c.fillRect(-8,-4,232,3);
+  // plank lines
+  c.strokeStyle='rgba(30,16,6,0.5)'; c.lineWidth=1;
+  for(var i=0;i<10;i++){ c.beginPath(); c.moveTo(8+i*22,4); c.lineTo(8+i*22,76); c.stroke(); }
+  // gold trim stripe
+  c.fillStyle='#b8893a'; c.fillRect(-10,30,232,4);
+  c.fillStyle='#d8b050'; c.fillRect(-10,30,232,1.5);
+  // cannon ports
+  c.fillStyle='#140c04';
+  for(var i=0;i<3;i++){ c.beginPath(); c.arc(40+i*64,46,7,0,Math.PI*2); c.fill(); }
+  c.fillStyle='#3a2a14'; for(var i=0;i<3;i++){ c.beginPath(); c.arc(40+i*64,46,8.5,0,Math.PI*2); c.stroke(); }
+  // bowsprit
+  c.strokeStyle='#3a2410'; c.lineWidth=5; c.lineCap='round';
+  c.beginPath(); c.moveTo(-12,6); c.lineTo(-40,-10); c.stroke();
+  // mast
+  c.fillStyle='#3a2410'; c.fillRect(104,-92,8,96);
+  c.fillStyle='#4a3018'; c.fillRect(104,-92,3,96);
+  // crossbeam
+  c.fillStyle='#2e1c0c'; c.fillRect(74,-78,68,5);
+  // sail (torn black, pirate)
+  if(flag!==false){
+    var sg=c.createLinearGradient(70,-74,142,-20);
+    sg.addColorStop(0,'#2a2a2e'); sg.addColorStop(1,'#161618');
+    c.fillStyle=sg;
+    c.beginPath();
+    c.moveTo(78,-74); c.lineTo(138,-74);
+    c.lineTo(140,-28); c.quadraticCurveTo(120,-22,128,-34);
+    c.quadraticCurveTo(108,-26,116,-38); c.quadraticCurveTo(92,-24,100,-36);
+    c.lineTo(78,-28); c.closePath(); c.fill();
+    // skull on sail
+    c.fillStyle='#d8d4c0';
+    c.beginPath(); c.arc(108,-52,8,0,Math.PI*2); c.fill();
+    c.fillStyle='#161618';
+    c.beginPath(); c.arc(105,-54,2,0,7); c.fill(); c.beginPath(); c.arc(111,-54,2,0,7); c.fill();
+    c.fillRect(106,-48,5,3);
+  }
+  // little pennant flag at masthead
+  c.fillStyle='#b01818';
+  c.beginPath(); c.moveTo(108,-92); c.lineTo(132,-88); c.lineTo(108,-84); c.closePath(); c.fill();
+  c.restore();
 }
 
 function makeIntroCutscene(){
@@ -1493,28 +1593,23 @@ function makeIntroCutscene(){
       draw:function(t){
         setCtx(csCtx); csBackdrop('sea',t);
         for(var i=0;i<8;i++){ var wx=((i*90+t*3)%820)-90; r(wx,250,80,9,'#0a2050'); r(wx+12,259,46,5,'#1a3a78'); r(wx+20,265,30,3,'#3a6ab0'); }
-        // pirate ship, detailed
-        r(70,255,300,85,'#1a0f06'); r(70,250,300,8,'#2e1a0a'); r(70,338,300,6,'#0e0804');
-        r(160,195,18,60,'#0e0804'); r(140,198,58,5,'#2e1a0a');
-        // torn black sail
-        r(150,200,40,45,'#181818'); r(150,200,40,3,'#282828');
-        r(168,205,24,16,'#000'); r(171,207,5,5,'#e8e8e8'); r(180,207,5,5,'#e8e8e8'); r(174,214,8,2,'#e8e8e8');
-        // lanterns glow
-        var fl=0.6+Math.sin(t/8)*0.3; csCtx.globalAlpha=fl; csCtx.fillStyle='#ffb030'; csCtx.fillRect(95,250,5,6); csCtx.fillRect(330,250,5,6); csCtx.globalAlpha=1;
-        drawEricPirate(40,62,Math.floor(t/20));
+        // proper vector pirate ship
+        csShip(csCtx, 60, 250, 1.0, true);
+        // lantern glow
+        var fl=0.5+Math.sin(t/8)*0.3; csCtx.globalAlpha=fl; csCtx.fillStyle='#ffb030'; csCtx.beginPath(); csCtx.arc(72,248,4,0,7); csCtx.fill(); csCtx.beginPath(); csCtx.arc(266,248,4,0,7); csCtx.fill(); csCtx.globalAlpha=1;
+        // Eric standing on deck
+        drawEricPirate(92,26,Math.floor(t/20));
         csVignette();
         csTitle('THE ARCTIC SEAS  -  LONG AGO','#90c0ff');
-        if(t>30){ csCtx.globalAlpha=Math.min(1,(t-30)/30); csCtx.fillStyle='#e8c060'; csCtx.font='8px "Press Start 2P",monospace'; csCtx.textAlign='center'; csCtx.fillText('CAPTAIN ERIK MAGNUSSON',180,300); csCtx.font='6px "Press Start 2P",monospace'; csCtx.fillStyle='#b09040'; csCtx.fillText('Seal-Clubbing Tyrant',180,316); csCtx.textAlign='left'; csCtx.globalAlpha=1; }
+        if(t>30){ csCtx.globalAlpha=Math.min(1,(t-30)/30); csCtx.fillStyle='#e8c060'; csCtx.font='9px "Press Start 2P",monospace'; csCtx.textAlign='center'; csCtx.fillText('CAPTAIN ERIC BEARCLAW',300,300); csCtx.font='7px "Press Start 2P",monospace'; csCtx.fillStyle='#b09040'; csCtx.fillText('Seal-Clubbing Tyrant',300,318); csCtx.textAlign='left'; csCtx.globalAlpha=1; }
       }
     },
-    { text:"But out on the drifting ice, a small seal danced alone  - \nasking nothing of the world, simply spinning for joy.",
+    { text:"But out on the drifting ice, a small seal danced alone -\nasking nothing of the world, simply spinning for joy.",
       draw:function(t){
         setCtx(csCtx); csBackdrop('ice',t);
-        // ice floe with reflection
-        r(240,300,200,30,'#a0d0ec'); r(240,300,200,4,'#e0f8ff'); r(248,330,184,8,'#5a8ab0');
-        drawSealbert(96,90,true,'idle',0,t>50?60:0,Math.floor(t/12));
-        // joyful sparkles
-        if(t>40){ for(var i=0;i<5;i++){ var a=t/14+i*1.25; csCtx.fillStyle=i%2?'#ffe040':'#fff'; csCtx.fillRect(330+Math.cos(a)*36,270+Math.sin(a)*24,3,3); } }
+        r(220,300,220,30,'#a0d0ec'); r(220,300,220,4,'#e0f8ff'); r(228,330,204,8,'#5a8ab0');
+        drawSealbert(150,86,true,'idle',0,t>50?60:0,Math.floor(t/12));
+        if(t>40){ for(var i=0;i<6;i++){ var a=t/14+i*1.1; csCtx.fillStyle=i%2?'#ffe040':'#fff'; csCtx.fillRect(300+Math.cos(a)*40,250+Math.sin(a)*26,3,3); } }
         csVignette();
         csTitle('SEALBERT  -  THE GRACEFUL ONE','#90e0ff');
       }
@@ -1522,40 +1617,40 @@ function makeIntroCutscene(){
     { text:"Eric watched the tail-spin from his deck.\nThe grace. The freedom. Something in his chest cracked open.",
       draw:function(t){
         setCtx(csCtx); csBackdrop('ice',t); r(0,310,640,90,'#90c0e0'); r(0,310,640,3,'#d8f4ff');
-        // ship edge on left
-        r(20,210,110,130,'#1a0f06'); r(16,205,118,9,'#2e1a0a');
-        for(var i=0;i<3;i++) r(34+i*30,188,8,22,'#160c04');
-        drawEricPirate(8,52,0);
-        drawSealbert(150,92,true,'idle',0,t>30?60:0,Math.floor(t/8));
-        // heart rising
-        if(t>70){ var hy=190-Math.sin((t-70)/12)*30; csCtx.globalAlpha=Math.min(1,(t-70)/40); csCtx.font='22px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',95,hy); csCtx.globalAlpha=1; }
+        // ship prow on the left
+        csShip(csCtx, -150, 250, 1.0, true);
+        drawEricPirate(16,26,0);
+        drawSealbert(190,92,true,'idle',0,t>30?60:0,Math.floor(t/8));
+        // heart rising from Eric
+        if(t>70){ var hy=120-Math.sin((t-70)/12)*30; csCtx.globalAlpha=Math.min(1,(t-70)/40); csCtx.font='22px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',150,hy); csCtx.globalAlpha=1; }
         csVignette();
         csTitle('A FEELING HE HAD NEVER KNOWN','#ffb0d0');
       }
     },
-    { text:"He tore off his captain's coat and hurled his club into the sea.\n\"I RENOUNCE IT ALL!\" he roared. \"From this day  -  I am vegan!\"",
+    { text:"He tore off his coat and hurled his club into the sea.\nFrom this day, he vowed, he would harm seals no more.",
       draw:function(t){
-        setCtx(csCtx); csBackdrop('ice',t); r(0,310,640,90,'#80c0e0'); r(0,310,640,3,'#d8f4ff');
-        if(t<55) drawEricPirate(118,68,0); else drawEricUnderwear(118,68,Math.floor(t/12),true);
-        // coat flying
-        if(t>35){ csCtx.save(); csCtx.translate(330+t*2.2,205-Math.sin(t*0.06)*30); csCtx.rotate(t*0.045); r(-18,-26,38,54,'#3a1010'); r(-15,-23,12,48,'#500808'); csCtx.restore(); }
+        setCtx(csCtx); csBackdrop('ice',t); r(0,322,640,78,'#80c0e0'); r(0,322,640,3,'#d8f4ff');
+        // Eric transforms — full body visible, feet on the ice line (~322)
+        if(t<55) drawEricPirate(135,48,0); else drawEricUnderwear(135,59,Math.floor(t/12),true);
+        // coat flying off
+        if(t>35){ csCtx.save(); csCtx.translate(330+t*2.2,205-Math.sin(t*0.06)*30); csCtx.rotate(t*0.045); var cg=csCtx.createLinearGradient(-18,-26,18,28); cg.addColorStop(0,'#b01818'); cg.addColorStop(1,'#600808'); csCtx.fillStyle=cg; csCtx.beginPath(); csCtx.moveTo(-16,-24); csCtx.quadraticCurveTo(20,-10,14,28); csCtx.quadraticCurveTo(-10,18,-16,-24); csCtx.fill(); csCtx.restore(); }
         // club spinning away
-        if(t>20){ csCtx.save(); csCtx.translate(300+t*2.6,160-t*0.4); csCtx.rotate(t*0.16); r(-4,-22,8,30,'#705020'); r(-7,-26,14,8,'#604020'); csCtx.restore(); }
-        // hat
-        if(t>10){ csCtx.save(); csCtx.translate(270+t*1.6,150-t*0.5); csCtx.rotate(t*0.05); r(-12,-5,24,12,'#1a1200'); csCtx.restore(); }
-        drawSealbert(176,90,false,'idle',0,0,Math.floor(t/20));
-        if(t>75) csSpeech(170,236,240,['I RENOUNCE IT ALL!','I AM VEGAN NOW!'],t);
+        if(t>20){ csCtx.save(); csCtx.translate(300+t*2.6,160-t*0.4); csCtx.rotate(t*0.16); csCtx.strokeStyle='#7a4a1c'; csCtx.lineWidth=7; csCtx.lineCap='round'; csCtx.beginPath(); csCtx.moveTo(0,12); csCtx.lineTo(0,-18); csCtx.stroke(); csCtx.fillStyle='#7a4a24'; csCtx.beginPath(); csCtx.arc(0,-20,8,0,7); csCtx.fill(); csCtx.restore(); }
+        // hat tumbling
+        if(t>10){ csCtx.save(); csCtx.translate(270+t*1.6,150-t*0.5); csCtx.rotate(t*0.05); csCtx.fillStyle='#181208'; csCtx.beginPath(); csCtx.ellipse(0,0,14,5,0,0,Math.PI*2); csCtx.fill(); csCtx.beginPath(); csCtx.arc(0,-2,7,Math.PI,0); csCtx.fill(); csCtx.restore(); }
+        drawSealbert(78,87,false,'idle',0,0,Math.floor(t/20));
+        // speech emerges from Eric's mouth (~ x183, y128 in his local frame)
+        if(t>75) csSpeech(440, 196, ['I RENOUNCE','IT ALL!'], {side:'up'});
         csVignette();
         csTitle('THE VOW','#ffd0a0');
       }
     },
-    { text:"Sealbert looked at the shivering human  -  not with fear, but recognition.\nHere stood someone who had chosen the harder, kinder path.",
+    { text:"Sealbert looked at the shivering human - not with fear, but recognition.\nHere stood someone who had chosen the harder, kinder path.",
       draw:function(t){
-        setCtx(csCtx); csBackdrop('blizzard',t); r(0,305,640,95,'#5a6e84'); r(0,305,640,3,'#b8d8f0');
-        drawEricUnderwear(146,72,Math.floor(t/8),true);
-        drawSealbert(196,86,false,'idle',0,0,Math.floor(t/18));
-        // warm bond glow
-        if(t>50){ csCtx.globalAlpha=0.16+Math.sin(t/16)*0.08; csCtx.fillStyle='#ffe6a0'; csCtx.beginPath(); csCtx.ellipse(345,300,90,54,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1; }
+        setCtx(csCtx); csBackdrop('blizzard',t); r(0,318,640,82,'#5a6e84'); r(0,318,640,3,'#b8d8f0');
+        drawEricUnderwear(120,59,Math.floor(t/8),true);
+        drawSealbert(95,87,false,'idle',0,0,Math.floor(t/18));
+        if(t>50){ csCtx.globalAlpha=0.16+Math.sin(t/16)*0.08; csCtx.fillStyle='#ffe6a0'; csCtx.beginPath(); csCtx.ellipse(380,310,90,40,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1; }
         csVignette();
         csTitle('TWO SOULS, ONE SHORE','#cfe0ff');
       },
@@ -1578,27 +1673,27 @@ function makeIceBearCutscene(){
         csTitle('LOST IN THE WHITE','#a8c8e8');
       }
     },
-    { text:"A great paw lifted him from the drift. Bjorn the Ancient,\nKing of the Ice Bears, had watched Eric renounce the club.",
+    { text:"A great paw lifted him from the drift. Bjorn the Ancient,\nKing of the Ice Bears, saw the seal-friend named Bearclaw - and wondered.",
       draw:function(t){
         setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
         // throne glow
         csCtx.globalAlpha=0.2+Math.sin(t/22)*0.1; csCtx.fillStyle='#60d0ff'; csCtx.beginPath(); csCtx.ellipse(170,250,140,120,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1;
-        drawIceBearKing(64,22,Math.floor(t/12),true);
-        drawEricUnderwear(176,76,0,false);
-        csSpeech(376,236,238,['I am BJORN.','King of the Ice.','I have watched you long.'],t);
+        drawIceBearKing(44,40,Math.floor(t/12),true);
+        drawEricUnderwear(108,55,0,false);
+        csSpeech(190, 172, ['I am BJORN,','King of the Ice Bears.','"Bearclaw"... your name','honours my people.'], {side:'right'});
         csVignette();
         csTitle('BJORN THE ANCIENT','#80e0ff');
       }
     },
-    { text:'"Your love for the seals is true. But love alone is not enough.\nProve you understand their world  -  and I will grant you the old power."',
+    { text:'"You bear the name BEARCLAW - the name of my own kin.\nProve your heart is worthy of it, and I will make you our Shaman."',
       btn:'TAKE THE TRIAL',
       draw:function(t){
         setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
-        drawIceBearKing(58,22,0,true);
-        drawEricUnderwear(180,76,0,false);
+        drawIceBearKing(40,40,0,true);
+        drawEricUnderwear(108,55,0,false);
         // power beam between them
         if(t>40){ csCtx.globalAlpha=0.5+Math.sin(t/8)*0.25; var g=csCtx.createLinearGradient(160,300,300,120); g.addColorStop(0,'rgba(64,255,255,0.8)'); g.addColorStop(1,'rgba(160,120,255,0)'); csCtx.fillStyle=g; csCtx.save(); csCtx.translate(240,260); csCtx.rotate(-0.5); csCtx.fillRect(-16,-120,32,180); csCtx.restore(); csCtx.globalAlpha=1; }
-        csSpeech(366,230,250,['Answer my questions,','seal-friend. Prove','your heart is ready.'],t);
+        csSpeech(190, 172, ['One who bears our name','must prove our heart.','Answer my questions,','Eric Bearclaw.'], {side:'right'});
         csVignette();
         csTitle('THE TRIAL OF THE WHISPERER','#60ffff');
       }
@@ -1614,13 +1709,21 @@ function makeCapturedCutscene(){
         var shake=(t>50&&t<95)?Math.sin(t*1.3)*5:0;
         csCtx.save(); csCtx.translate(shake,shake*0.4);
         r(0,290,640,110,'#2a4818'); r(0,290,640,3,'#70c020');
-        drawEric(140,46,Math.floor(t/8),false);
+        drawEric(120,37,Math.floor(t/8),false);
         // power pillar
         if(t>40){ csCtx.globalAlpha=0.6+Math.sin(t/7)*0.3; var g=csCtx.createLinearGradient(330,0,330,290); g.addColorStop(0,'rgba(120,255,255,0)'); g.addColorStop(1,'rgba(64,255,255,0.95)'); csCtx.fillStyle=g; csCtx.fillRect(312,0,52,290); csCtx.globalAlpha=1; }
         // cracking ice
         if(t>55){ csCtx.strokeStyle='rgba(220,244,255,'+Math.min(1,(t-55)/30)+')'; csCtx.lineWidth=2; for(var i=0;i<7;i++){ csCtx.beginPath(); csCtx.moveTo(120+i*70,290); csCtx.lineTo(100+i*64,400); csCtx.stroke(); } }
-        // Magnus ship distant
-        if(t>30){ var a=Math.min(1,(t-30)/60); r(450,180,180,90,'rgba(24,0,0,'+a+')'); r(478,142,12,40,'rgba(16,0,0,'+a+')'); }
+        // Magnus's warship approaching on the horizon (dark silhouette)
+        if(t>30){ var a=Math.min(0.92,(t-30)/60);
+          csCtx.save(); csCtx.globalAlpha=a;
+          csShip(csCtx, 470, 250, 0.7, true);
+          // ominous red glow from its lanterns
+          csCtx.globalAlpha=a*0.5; csCtx.fillStyle='#ff2000';
+          csCtx.beginPath(); csCtx.arc(486,248,4,0,7); csCtx.fill();
+          csCtx.beginPath(); csCtx.arc(596,248,4,0,7); csCtx.fill();
+          csCtx.restore();
+        }
         csCtx.restore();
         csVignette();
         csTitle('THE WHISPERER AWAKENS','#80ffff');
@@ -1629,14 +1732,21 @@ function makeCapturedCutscene(){
     { text:"From the fog came Magnus  -  Eric's own brother, heir to the empire.\nHis hunters cast their nets before the power could be turned on them.",
       draw:function(t){
         setCtx(csCtx); csBackdrop('dark',t); r(0,288,640,112,'#283a12'); r(0,288,640,3,'#5aa018');
-        var netY=Math.min(150,t*2.3);
-        for(var nx=190;nx<430;nx+=18) r(nx,netY,3,400,'rgba(120,96,52,0.7)');
-        for(var ny=netY;ny<400;ny+=18) r(190,ny,240,3,'rgba(120,96,52,0.7)');
-        drawEric(138,58,0,false);
-        drawClubber((680-200)/PS|0,76,false,true,Math.floor(t/10));
-        drawClubber((680-150)/PS|0,76,true,false,Math.floor(t/10));
-        drawSealbert(8,82,false,'idle',0,0,Math.floor(t/20));
-        if(t>50){ csCtx.font='bold 22px "Press Start 2P",monospace'; csCtx.fillStyle='#ff4040'; csCtx.fillText('!',40,250); }
+        var netY=Math.min(120,t*2.0);
+        csCtx.save();
+        csCtx.strokeStyle='rgba(210,190,120,0.85)'; csCtx.lineWidth=2;
+        var nL=300,nR=400,nT=netY,nB=netY+150;
+        for(var nx=nL;nx<=nR;nx+=16){ csCtx.beginPath(); csCtx.moveTo(nx,nT); csCtx.lineTo(nx+8,nB); csCtx.stroke(); }
+        for(var ny=nT;ny<=nB;ny+=16){ var off=(ny-nT)*0.05; csCtx.beginPath(); csCtx.moveTo(nL+off,ny); csCtx.lineTo(nR+off,ny); csCtx.stroke(); }
+        // weighted corners
+        csCtx.fillStyle='#806030';
+        csCtx.beginPath(); csCtx.arc(nL,nB,4,0,7); csCtx.fill(); csCtx.beginPath(); csCtx.arc(nR+5,nB,4,0,7); csCtx.fill();
+        csCtx.restore();
+        drawEric(118,36,0,false);
+        drawClubber(150,55,false,true,Math.floor(t/10));
+        drawClubber(168,57,true,false,Math.floor(t/10));
+        drawSealbert(8,72,false,'idle',0,0,Math.floor(t/20));
+        if(t>50){ csCtx.font='bold 22px "Press Start 2P",monospace'; csCtx.fillStyle='#ff4040'; csCtx.fillText('!',40,210); }
         csVignette();
         csTitle('BETRAYED BY BLOOD','#ff8060');
       }
@@ -1646,17 +1756,20 @@ function makeCapturedCutscene(){
       draw:function(t){
         setCtx(csCtx); csBackdrop('dark',t); r(0,300,640,100,'#0a1830'); r(0,300,640,3,'#2a4a70');
         var shipX=Math.min(360,90+t*0.9);
-        r(shipX-300,210,330,120,'#160c04'); r(shipX-300,205,330,9,'#2a1808'); r(shipX-300,328,330,5,'#0c0602');
-        r(shipX-230,158,16,55,'#0e0804'); r(shipX-244,162,38,5,'#0e0804');
-        r(shipX-230,160,30,40,'#181818');
-        // cage with Eric
-        for(var i=0;i<5;i++) r(shipX-150+i*11,212,5,56,'#6a6a5a');
-        r(shipX-152,210,58,6,'#54483a'); r(shipX-152,262,58,6,'#54483a');
-        drawEric((shipX-144)/PS|0,74,0,false);
+        csShip(csCtx, shipX-280, 232, 1.0, true);
+        // prison cage on deck
+        var cgx=shipX-156;
+        drawEric((cgx+4)/PS|0,14,0,false);
+        // cage bars in front of Eric
+        csCtx.strokeStyle='#8a8a7a'; csCtx.lineWidth=3;
+        csCtx.strokeRect(cgx,150,64,98);
+        for(var i=1;i<5;i++){ csCtx.beginPath(); csCtx.moveTo(cgx+i*13,150); csCtx.lineTo(cgx+i*13,248); csCtx.stroke(); }
+        csCtx.lineWidth=4; csCtx.strokeStyle='#6a6a5a';
+        csCtx.beginPath(); csCtx.moveTo(cgx,150); csCtx.lineTo(cgx+64,150); csCtx.stroke();
         // Sealbert resolute
-        drawSealbert(168,86,false,'idle',0,0,Math.floor(t/20));
+        drawSealbert(40,87,false,'idle',0,0,Math.floor(t/20));
         // determination spark
-        if(t>40){ csCtx.fillStyle='#ffe040'; csCtx.fillRect(206,254,2,2); csCtx.fillRect(212,250,2,2); }
+        if(t>40){ csCtx.fillStyle='#ffe040'; csCtx.fillRect(150,250,2,2); csCtx.fillRect(156,246,2,2); }
         csVignette();
         csTitle('I WILL FIND YOU','#7090c0');
       }
@@ -1689,7 +1802,7 @@ function renderQuiz(){
   overlay.id='quiz-overlay';
   overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,5,20,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;font-family:"Press Start 2P",monospace;padding:16px;gap:10px';
   var progPct=(qs.idx/qs.questions.length*100);
-  overlay.innerHTML='<div style="font-size:11px;color:#60ffff;letter-spacing:2px">✦ BJORN THE ICE BEAR KING ✦</div><div style="font-size:8px;color:#4080a0">"Answer my questions and earn the shamanic gift."</div><div style="font-size:8px;color:#70a0c0">QUESTION '+(qs.idx+1)+' / '+qs.questions.length+'</div><div style="width:250px;height:5px;background:#0a1828;border:1px solid #1060a0;border-radius:2px;overflow:hidden"><div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,#40a0ff,#80ffff)"></div></div><div id="quiz-q" style="font-size:10px;color:#d0e8ff;text-align:center;max-width:400px;line-height:2;margin-top:6px">'+q.q+'</div><div id="quiz-opts" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;margin-top:6px"></div><div id="quiz-fb" style="font-size:8px;color:#60ffff;min-height:20px;text-align:center;line-height:1.8"></div>';
+  overlay.innerHTML='<div style="font-size:11px;color:#60ffff;letter-spacing:2px">✦ BJORN THE ICE BEAR KING ✦</div><div style="font-size:8px;color:#4080a0">"You carry our name, Bearclaw. Now earn it."</div><div style="font-size:8px;color:#70a0c0">QUESTION '+(qs.idx+1)+' / '+qs.questions.length+'</div><div style="width:250px;height:5px;background:#0a1828;border:1px solid #1060a0;border-radius:2px;overflow:hidden"><div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,#40a0ff,#80ffff)"></div></div><div id="quiz-q" style="font-size:10px;color:#d0e8ff;text-align:center;max-width:400px;line-height:2;margin-top:6px">'+q.q+'</div><div id="quiz-opts" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;margin-top:6px"></div><div id="quiz-fb" style="font-size:8px;color:#60ffff;min-height:20px;text-align:center;line-height:1.8"></div>';
   document.body.appendChild(overlay);
   var optDiv=overlay.querySelector('#quiz-opts');
   q.opts.forEach(function(opt,i){
@@ -1808,7 +1921,7 @@ var STAGE_DATA={
       {x:4440,y:338,w:560,h:42,type:'ship'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:760,type:'penguin'},{x:1500,type:'normal'},{x:1700,type:'netter',range:30},{x:2400,type:'penguin'},{x:2600,type:'normal'},{x:2900,type:'penguin'},{x:3450,type:'netter',range:30},{x:3700,type:'penguin'},{x:3950,type:'normal'},{x:4100,type:'penguin'}]),
-    fish:buildFish(100,262,52,52),outfits:[],erikPos:{x:4720,y:70,type:'pirate'},end:'spin',width:5000,bgTint:null,blizzard:false,maxFish:52},
+    fish:buildFish(100,262,52,52),candies:[{x:2400,y:250,w:12,h:12,bob:0,collected:false}],outfits:[],erikPos:{x:4720,y:70,type:'pirate'},end:'spin',width:5000,bgTint:null,blizzard:false,maxFish:52},
 
   '2-1':{name:'2-1  THE FROZEN TUNDRA',desc:'GOAL: Eric shivers in his underwear! Brave the blizzard, dodge net-hunters and penguins, and recover his lost SHAMAN COAT at the far end.',
     platforms:[
@@ -1833,8 +1946,8 @@ var STAGE_DATA={
       {x:4600,y:358,w:700,h:42,type:'snow'},
       {x:4720,y:284,w:90,h:14,type:'ice'},{x:4920,y:256,w:200,h:14,type:'snow'}
     ],
-    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:780,type:'netter',range:30},{x:1500,type:'penguin'},{x:1720,type:'normal'},{x:2000,type:'penguin'},{x:2500,type:'netter',range:30},{x:2750,type:'penguin'},{x:3000,type:'normal'},{x:3600,type:'penguin'},{x:3850,type:'netter',range:30},{x:4100,type:'penguin'},{x:4700,type:'normal'},{x:4900,type:'penguin'}]),
-    fish:buildFish(120,264,56,55),outfits:[{x:5040,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:5300,bgTint:'#0a0020',blizzard:true,maxFish:56},
+    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'skipenguin',range:260},{x:1100,type:'skipenguin',range:300},{x:1500,type:'icepenguin',range:40},{x:1900,type:'skipenguin',range:280},{x:2300,type:'penguin'},{x:2700,type:'skipenguin',range:300},{x:3000,type:'icepenguin',range:40},{x:3400,type:'skipenguin',range:280},{x:3900,type:'penguin'},{x:4300,type:'skipenguin',range:300},{x:4700,type:'icepenguin',range:40}]),
+    fish:buildFish(120,264,56,55),candies:[{x:1600,y:230,w:12,h:12,bob:0,collected:false},{x:3300,y:230,w:12,h:12,bob:1,collected:false}],outfits:[{x:5040,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:5300,bgTint:'#0a0020',blizzard:true,maxFish:56},
 
   '2-2':{name:'2-2  THE ICE CAVES',desc:'GOAL: Descend into the glacier. Two sacred relics wait deep inside - the FEATHERS midway, the STAFF at the end. Cracking ledges everywhere!',
     platforms:[
@@ -1860,7 +1973,7 @@ var STAGE_DATA={
       {x:4200,y:262,w:90,h:14,type:'ice'},{x:4400,y:240,w:90,h:14,type:'rock'},
       {x:4600,y:268,w:120,h:14,type:'ice'}
     ],
-    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:760,type:'penguin'},{x:1400,type:'netter',range:30},{x:1640,type:'penguin'},{x:2240,type:'normal'},{x:2440,type:'penguin'},{x:2700,type:'netter',range:30},{x:3240,type:'penguin'},{x:3500,type:'normal'},{x:4200,type:'penguin'},{x:4400,type:'netter',range:30}]),
+    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'icepenguin',range:40},{x:760,type:'penguin'},{x:1400,type:'icepenguin',range:40},{x:1640,type:'penguin'},{x:2240,type:'normal'},{x:2440,type:'icepenguin',range:40},{x:2700,type:'netter',range:30},{x:3240,type:'icepenguin',range:40},{x:3500,type:'normal'},{x:4200,type:'icepenguin',range:40},{x:4400,type:'netter',range:30}]),
     fish:buildFish(120,255,58,52),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
 
   '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic - the sacred GEM - then prove your heart in the King\'s trial to awaken the Whisperer.',
@@ -1885,8 +1998,8 @@ var STAGE_DATA={
       {x:4400,y:358,w:700,h:42,type:'snow'},
       {x:4520,y:256,w:90,h:14,type:'ice'},{x:4720,y:236,w:200,h:14,type:'snow'},{x:4900,y:282,w:120,h:14,type:'ice'}
     ],
-    enemies:buildMixed([{x:320,type:'penguin'},{x:560,type:'normal'},{x:780,type:'penguin'},{x:1560,type:'netter',range:30},{x:1800,type:'penguin'},{x:2560,type:'penguin'},{x:2800,type:'normal'},{x:3100,type:'penguin'},{x:3620,type:'netter',range:30},{x:3900,type:'penguin'},{x:4200,type:'normal'},{x:4500,type:'penguin'}]),
-    fish:buildFish(140,248,60,52),outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
+    enemies:buildMixed([{x:320,type:'penguin'},{x:560,type:'icepenguin',range:40},{x:780,type:'skipenguin',range:260},{x:1560,type:'icepenguin',range:40},{x:1800,type:'penguin'},{x:2560,type:'skipenguin',range:280},{x:2800,type:'normal'},{x:3100,type:'icepenguin',range:40},{x:3620,type:'netter',range:30},{x:3900,type:'penguin'},{x:4200,type:'icepenguin',range:40},{x:4500,type:'penguin'}]),
+    fish:buildFish(140,248,60,52),candies:[{x:2500,y:230,w:12,h:12,bob:0,collected:false}],outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
 
   '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins! Battle through Magnus\'s patrols and net-hunters along the rocky coast, then reach the far cliffs to press inland.',
     platforms:[
@@ -2069,23 +2182,23 @@ function initStage(key){
   setCtx(mainCtx);
   keys={}; notifQ=[]; notifActive=null;
   game={
-    score:0,lives:diff.lives,tofu:0,over:false,won:false,stageComplete:false,
+    score:0,lives:diff.lives,tofu:0,candy:0,over:false,won:false,stageComplete:false,
     stageKey:key,lvl:lvl,diff:diff,
     gravity:0.45,
     bossActive:false,bossIntroDone:false,
-    particles:[],clubs:[],nets:[],
+    particles:[],clubs:[],nets:[],ices:[],
     erikFollowX:100,erikFollowY:250,erikAnim:{frame:0,tick:0},
     companionRescued:false,companion:null,
     outfitsCollected:0,spinDoneNearEric:false,spinHintShown:false,
     quizPassed:false,
-    stageTimer:0,deaths:0,bannerTimer:0,
+    stageTimer:0,deaths:0,bannerTimer:0,flagActive:false,flagRaised:false,flagX:(lvl.width-120),
     platforms:lvl.platforms,enemies:lvl.enemies,
-    collectibles:lvl.fish,outfits:lvl.outfits||[],
+    collectibles:lvl.fish,candies:lvl.candies||[],outfits:lvl.outfits||[],
     goal:lvl.goal||null,boss:lvl.boss||null,
     camera:{x:0}
   };
   // Init player
-  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,slideCooldown:0,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0,netted:0,netEscapeSpins:0};
+  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,slideCooldown:0,slidePressed:false,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0,netted:0,netEscapeSpins:0,hp:100,maxHp:100,superSpin:0};
 
   document.getElementById('hud').style.display='flex';
   document.getElementById('game-wrapper').style.display='block';
@@ -2217,16 +2330,18 @@ function update(){
     if(p.netted>0) p.state='netted';
   } else
   if(spinK&&p.spinCooldown<=0&&p.spinCharge>=100&&p.spinTimer<=0){
-    p.spinTimer=44; p.spinCooldown=130; p.spinCharge=0;
+    p.spinTimer=p.superSpin>0?70:44; p.spinCooldown=p.superSpin>0?70:130; p.spinCharge=0;
     spawnParts(p.x+30,p.y+27,SB.tail,14,6); spawnParts(p.x+30,p.y+27,'#ffe040',10,5);
     if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric){
       var erikWX=g.lvl.erikPos.x*PS;
-      if(Math.abs(p.x-erikWX)<300){ g.spinDoneNearEric=true; setTimeout(triggerStageComplete,1800); }
+      if(Math.abs(p.x-erikWX)<300){ g.spinDoneNearEric=true; g.flagActive=true; showNotif('★ Eric is charmed! Reach the FLAG to finish!'); }
     }
   }
   if(p.spinTimer>0) p.spinTimer--;
   if(p.spinCooldown>0) p.spinCooldown--;
+  if(p.superSpin>0) p.superSpin--;
   var spinRate=g.diff?g.diff.spinChargeRate:0.4;
+  if(p.superSpin>0) spinRate*=4; // super-spin charges fast
   if(p.spinCharge<100&&p.spinTimer<=0) p.spinCharge=Math.min(100,p.spinCharge+spinRate);
 
   if(p.netted>0){ p.vx=0; } else
@@ -2245,7 +2360,11 @@ function update(){
 
   if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
   p.jumpPressed=jumpK;
-  if(slideK&&p.onGround&&p.slideTimer<=0&&p.slideCooldown<=0&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){ p.slideTimer=28; p.slideCooldown=55; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7); }
+  // Slide requires a FRESH key press (no auto-repeat while held) + a real cooldown
+  if(slideK&&!p.slidePressed&&p.onGround&&p.slideTimer<=0&&p.slideCooldown<=0&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){
+    p.slideTimer=20; p.slideCooldown=90; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7);
+  }
+  p.slidePressed=slideK;
   if(p.slideTimer>0) p.slideTimer--;
   if(p.slideCooldown>0) p.slideCooldown--;
 
@@ -2293,6 +2412,33 @@ function update(){
       e.x+=e.vx;
       if(!e.onGround){ e.vy+=0.4; e.y+=e.vy; }
     }
+    // ── ICE PENGUIN: stands back and lobs ice shards ──
+    else if(e.type==='icepenguin'){
+      // shuffle a little, face player, throw ice
+      e.x+=e.vx*0.3; if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx*=-1;
+      e.facingRight=(p.x>e.x);
+      var onGi=false;
+      for(var pj2=0;pj2<g.platforms.length;pj2++){ var pli=g.platforms[pj2]; if(pli.type==='water'||pli.gone) continue; if(e.x+e.w>pli.x&&e.x<pli.x+pli.w&&e.y+e.h>=pli.y&&e.y+e.h<=pli.y+14){ e.y=pli.y-e.h; onGi=true; break; } }
+      if(!onGi) e.y=Math.min(e.y+2,358-e.h);
+      e.iceCooldown=(e.iceCooldown||90)-1;
+      if(Math.abs(p.x-e.x)<420&&e.iceCooldown<=0&&Math.abs(p.y-e.y)<160){
+        throwIce(e.x+e.w/2,e.y+14,(p.x>e.x?4.5:-4.5),-3.5);
+        e.iceCooldown=(110+Math.random()*50|0)/clubFreq|0;
+      }
+    }
+    // ── SKI PENGUIN: rockets across the ice on skis, hard to dodge ──
+    else if(e.type==='skipenguin'){
+      // constant fast glide; reverses at patrol bounds
+      if(!e.skiDir) e.skiDir=e.vx>0?1:-1;
+      e.x+=e.skiDir*Math.abs(e.baseSpd)*3.4;
+      if(e.x<e.patrolLeft){ e.skiDir=1; } if(e.x>e.patrolRight){ e.skiDir=-1; }
+      e.facingRight=e.skiDir>0;
+      var onGs=false;
+      for(var pj3=0;pj3<g.platforms.length;pj3++){ var pls=g.platforms[pj3]; if(pls.type==='water'||pls.gone) continue; if(e.x+e.w>pls.x&&e.x<pls.x+pls.w&&e.y+e.h>=pls.y&&e.y+e.h<=pls.y+14){ e.y=pls.y-e.h; onGs=true; break; } }
+      if(!onGs) e.y=Math.min(e.y+2,358-e.h);
+      // little snow spray
+      if(Math.random()<0.3) spawnParts(e.x+(e.facingRight?0:e.w),e.y+e.h-4,'#e8f4ff',2,2);
+    }
     // ── NETTER: throws nets; charges in to gloat when player is caught ──
     else if(e.type==='netter'){
       if(p.netted>0&&e.charging){
@@ -2338,7 +2484,7 @@ function update(){
     }
 
     if(p.hurtTimer<=0&&rectsOverlap(p,e)){
-      var stomp=p.vy>0&&p.y+p.h<e.y+e.h*0.5, spin=p.spinTimer>0, slide=p.slideTimer>0;
+      var stomp=p.vy>0&&p.y+p.h<e.y+e.h*0.5, spin=p.spinTimer>0, slide=p.slideTimer>8;
       if(stomp||spin||slide){
         e.alive=false;
         g.score+=spin?260:155;
@@ -2390,6 +2536,21 @@ function update(){
   }
   g.nets=g.nets.filter(function(n){ return !n.dead; });
 
+  // ── ICE SHARDS (thrown by ice penguins) ──
+  if(g.ices){
+    for(var ii=g.ices.length-1;ii>=0;ii--){
+      var iceP=g.ices[ii];
+      iceP.x+=iceP.vx; iceP.vy+=0.18; iceP.y+=iceP.vy; iceP.spin+=0.3;
+      for(var pk2=0;pk2<g.platforms.length;pk2++){ var plk2=g.platforms[pk2]; if(plk2.type==='water'||plk2.gone) continue; if(iceP.x>plk2.x&&iceP.x<plk2.x+plk2.w&&iceP.y+8>=plk2.y&&iceP.y<plk2.y+10){ iceP.dead=true; spawnParts(iceP.x,iceP.y,'#bfe8ff',6); } }
+      if(iceP.y>440) iceP.dead=true;
+      if(!iceP.dead&&p.hurtTimer<=0&&p.netted<=0){
+        if(p.spinTimer>0&&Math.abs(iceP.x-p.x-30)<40&&Math.abs(iceP.y-p.y-27)<40){ iceP.dead=true; g.score+=25; spawnParts(iceP.x,iceP.y,'#ffe040',8); }
+        else { var icr={x:iceP.x-9,y:iceP.y-9,w:18,h:18}; if(rectsOverlap(p,icr)) hurtPlayer(18); }
+      }
+    }
+    g.ices=g.ices.filter(function(n){ return !n.dead; });
+  }
+
   // ── CRACKING ICE (platforms that dissolve when stood on) ──
   for(var ci2=0;ci2<g.platforms.length;ci2++){
     var cp=g.platforms[ci2];
@@ -2420,12 +2581,30 @@ function update(){
     c.bob+=0.065;
     if(rectsOverlap(p,{x:c.x*PS,y:c.y*PS,w:c.w*PS,h:c.h*PS})){
       c.collected=true; g.tofu++; g.score+=50;
-      p.spinCharge=Math.min(100,p.spinCharge+12);
-      spawnParts(c.x*PS+27,c.y*PS+21,SB.eyS,6);
-      showNotif('🐟 Tofu Fish! +50pts');
+      // every tofu: heal 12 and nudge max HP up (cap 200)
+      p.maxHp=Math.min(200,p.maxHp+4);
+      p.hp=Math.min(p.maxHp,p.hp+12);
+      spawnParts(c.x*PS+27,c.y*PS+21,'#ff80a0',6);
+      showNotif('🐟 Tofu! +HP');
     }
   }
   if(p.spinCharge>=100&&!g.spinHintShown&&g.lvl.end==='spin'){ g.spinHintShown=true; showNotif('★ Press C to TAIL-SPIN near Eric!'); }
+
+  // ── CANDY (wrapped sweets) → temporary SUPER-SPIN powerup ──
+  if(g.candies){
+    for(var ci3=0;ci3<g.candies.length;ci3++){
+      var cy3=g.candies[ci3];
+      if(cy3.collected) continue;
+      cy3.bob+=0.07;
+      if(rectsOverlap(p,{x:cy3.x*PS,y:cy3.y*PS,w:cy3.w*PS,h:cy3.h*PS})){
+        cy3.collected=true; g.candy=(g.candy||0)+1; g.score+=120;
+        p.superSpin=600; // ~10 seconds of super-spin
+        p.spinCharge=100;
+        spawnParts(cy3.x*PS+18,cy3.y*PS+18,'#ff60c0',16); spawnParts(cy3.x*PS+18,cy3.y*PS+18,'#ffe040',12);
+        showNotif('🍬 SUPER-SPIN! 10s of unstoppable power!');
+      }
+    }
+  }
 
   // Outfit pickups
   for(var oi=0;oi<g.outfits.length;oi++){
@@ -2436,7 +2615,7 @@ function update(){
       o.collected=true; g.outfitsCollected++; g.score+=500;
       showNotif('✦ '+o.type.toUpperCase()+' obtained! +500pts');
       spawnParts(o.x*PS+15,o.y*PS+24,EK.gem,18); spawnParts(o.x*PS+15,o.y*PS+24,'#ffe040',12);
-      if(g.lvl.end==='outfit'&&g.outfitsCollected>=g.lvl.outfits.length) setTimeout(triggerStageComplete,1200);
+      if(g.lvl.end==='outfit'&&g.outfitsCollected>=g.lvl.outfits.length){ g.flagActive=true; showNotif('★ All relics found! Reach the FLAG to finish!'); }
     }
   }
 
@@ -2447,12 +2626,21 @@ function update(){
     spawnParts(gl.x+28,gl.y+34,ENV.gndD,22); spawnParts(gl.x+28,gl.y+34,'#ffe040',14);
     showNotif('★ ERIK RESCUED! ★');
     g.companion={x:gl.x-60,y:gl.y-28,frame:0,frameTick:0};
-    if(g.lvl.end==='rescue') setTimeout(triggerStageComplete,1400);
+    if(g.lvl.end==='rescue'){ g.flagActive=true; showNotif('★ Eric is free! Reach the FLAG to finish!'); }
   }
   if(g.companion){ g.companion.frameTick++; if(g.companion.frameTick>8){ g.companion.frame++; g.companion.frameTick=0; } g.companion.x+=(p.x-65-g.companion.x)*0.07; g.companion.y=p.y-8; }
 
-  // Reach end
-  if(g.lvl.end==='reach'&&p.x>g.lvl.width-180) triggerStageComplete();
+  // Reach levels: flag is the destination, active immediately
+  if(g.lvl.end==='reach') g.flagActive=true;
+
+  // ── FINISH FLAG ── touch the raised flag to complete the level
+  if(g.flagActive){
+    if(!g.flagRaised){ g.flagRaised=true; }
+    var fx=g.flagX;
+    if(p.x+p.w>fx-10 && p.x<fx+30 && !g.stageComplete){
+      triggerStageComplete();
+    }
+  }
 
   // Eric follows stage 2
   if(g.lvl.erikFollows){ g.erikFollowX=Math.min(p.x-80,g.lvl.width-200); g.erikFollowY=p.y-10; }
@@ -2470,6 +2658,8 @@ function update(){
   document.getElementById('tofu-val').textContent=g.tofu;
   document.getElementById('lives-val').textContent=g.lives;
   document.getElementById('spin-fill').style.width=game.player.spinCharge+'%';
+  document.getElementById('hp-fill').style.width=(game.player.hp/game.player.maxHp*100)+'%';
+  document.getElementById('candy-val').textContent=g.candy||0;
 }
 
 function updateBoss(){
@@ -2506,6 +2696,7 @@ function updateBoss(){
 }
 function throwClub(x,y,vx,vy){ game.clubs.push({x:x,y:y,vx:vx,vy:vy||(-2),rot:0,dead:false}); }
 function throwNet(x,y,vx,vy,ownerIdx){ game.nets.push({x:x,y:y,vx:vx,vy:vy||(-4),spin:0,grow:0,dead:false,ownerIdx:(ownerIdx==null?null:ownerIdx)}); }
+function throwIce(x,y,vx,vy){ game.ices.push({x:x,y:y,vx:vx,vy:vy||(-3),spin:0,dead:false}); }
 function bossDead(){
   var g=game, b=g.boss; b.alive=false; b.hp=0; g.bossActive=false; g.won=true; g.score+=3500;
   document.getElementById('boss-hp-wrap').style.display='none';
@@ -2518,18 +2709,29 @@ function bossDead(){
     deleteCurrent();
   },2600);
 }
-function hurtPlayer(){
+function hurtPlayer(dmg){
   var p=game.player; if(p.hurtTimer>0) return;
+  dmg=dmg||25;
+  p.hp-=dmg; p.hurtTimer=50;
+  // knockback + flash
+  p.vx=p.facingRight?-5:5; p.vy=-5;
+  spawnParts(p.x+30,p.y+27,'#ff4040',12);
+  if(p.hp>0){
+    showNotif('Ouch! -'+dmg+' HP');
+    return;
+  }
+  // HP depleted → lose a life
   game.deaths++; game.lives--;
   if(game.lives<=0){
     game.over=true;
-    document.getElementById('go-msg').textContent='No lives left...\nThe ocean never forgets.';
+    document.getElementById('go-msg').textContent='The ice runs cold...\nThe ocean never forgets.';
     setTimeout(function(){ document.getElementById('game-over-screen').style.display='flex'; },1000);
   } else {
-    var key=game.stageKey, score=game.score, tofu=game.tofu, lives=game.lives;
+    var key=game.stageKey, score=game.score, tofu=game.tofu, lives=game.lives, mhp=p.maxHp;
     if(animTick) cancelAnimationFrame(animTick);
     initStage(key);
     game.score=score; game.tofu=tofu; game.lives=lives;
+    game.player.maxHp=mhp; game.player.hp=mhp; // keep earned max HP, refill on respawn
     saveGame();
     showNotif('Level '+key+'  -  '+lives+' lives remaining');
     loop();
@@ -2545,17 +2747,22 @@ function render(){
 
   for(var i=0;i<g.collectibles.length;i++){ var c=g.collectibles[i]; if(!c.collected) drawTofuFish(c.x-scroll/PS|0,c.y,c.bob); }
   for(var i=0;i<g.outfits.length;i++){ var o=g.outfits[i]; if(!o.collected) drawOutfitPickup((o.x*PS-scroll)/PS|0,o.y,o.type,o.bob); }
+  if(g.candies){ for(var i=0;i<g.candies.length;i++){ var cyy=g.candies[i]; if(!cyy.collected) drawCandy((cyy.x*PS-scroll)/PS|0,cyy.y,cyy.bob); } }
 
   if(g.goal){ var gl=g.goal; drawGoal(gl.x-scroll,gl.y-72,gl.rescued); }
+  if(g.flagActive) drawFinishFlag(g.flagX-scroll, g);
   for(var i=0;i<g.enemies.length;i++){
     var e=g.enemies[i]; if(!e.alive) continue;
     var ex=(e.x-scroll)/PS|0, ey=e.y/PS|0;
     if(e.type==='penguin') drawPenguin(ex,ey,e.facingRight,e.frame);
+    else if(e.type==='icepenguin') drawIcePenguin(ex,ey,e.facingRight,e.frame);
+    else if(e.type==='skipenguin') drawSkiPenguin(ex,ey,e.facingRight,e.frame);
     else if(e.type==='netter') drawNetter(ex,ey,e.facingRight,e.frame);
     else drawClubber(ex,ey,e.facingRight,e.type==='big',e.frame);
   }
   for(var i=0;i<g.clubs.length;i++) drawClub(g.clubs[i]);
   for(var i=0;i<g.nets.length;i++) drawNet(g.nets[i]);
+  if(g.ices){ for(var i=0;i<g.ices.length;i++) drawIce(g.ices[i]); }
 
   if(g.boss&&g.boss.alive&&g.bossActive) drawMagnus(g.boss);
 
@@ -2579,6 +2786,8 @@ function render(){
   // Companion
   if(g.companion) drawEric((g.companion.x-scroll)/PS|0,(g.companion.y)/PS|0,g.companion.frame,true);
 
+  // Super-spin aura
+  if(g.player.superSpin>0){ var sa=(g.player.x-scroll+30), sb=g.player.y+27; mainCtx.save(); mainCtx.globalAlpha=0.25+Math.sin(Date.now()/120)*0.15; var hue=(Date.now()/8)%360; mainCtx.fillStyle='hsl('+hue+',90%,60%)'; mainCtx.beginPath(); mainCtx.arc(sa,sb,38,0,Math.PI*2); mainCtx.fill(); mainCtx.restore(); }
   // Player
   var p=g.player;
   drawSealbert((p.x-scroll)/PS|0,p.y/PS|0,p.facingRight,p.state,p.hurtTimer,p.spinTimer,p.frame);
@@ -2661,75 +2870,200 @@ function render(){
   }
   if(g.over) r(0,0,640,400,'rgba(0,0,0,.5)');
 }
+
+function drawFinishFlag(fx, g){
+  if(fx<-40||fx>700) {
+    // off-screen arrow hint pointing toward the flag
+    var c=mainCtx; c.save();
+    c.fillStyle='rgba(255,224,64,0.9)'; c.font='9px "Press Start 2P",monospace'; c.textAlign='right';
+    if(fx>700){ c.textAlign='right'; c.fillText('FLAG \u2192',632,200); }
+    c.textAlign='left'; c.restore();
+    return;
+  }
+  var c=mainCtx, tick=Date.now();
+  var groundY=360;
+  // pole
+  var pg=c.createLinearGradient(fx,0,fx+6,0);
+  pg.addColorStop(0,'#d8d8e0'); pg.addColorStop(0.5,'#fff'); pg.addColorStop(1,'#9090a0');
+  c.fillStyle=pg; c.fillRect(fx,groundY-150,5,150);
+  // gold finial ball
+  c.fillStyle='#ffd040'; c.beginPath(); c.arc(fx+2.5,groundY-152,5,0,Math.PI*2); c.fill();
+  c.fillStyle='#fff6c0'; c.beginPath(); c.arc(fx+1,groundY-153,1.6,0,Math.PI*2); c.fill();
+  // checkered flag waving
+  var wave=Math.sin(tick/180);
+  var fw=46, fh=30, cols=6, rows=4;
+  var cw=fw/cols, ch=fh/rows;
+  for(var ry=0;ry<rows;ry++){
+    for(var cxk=0;cxk<cols;cxk++){
+      var sway=Math.sin(tick/180 + cxk*0.6)*4*(cxk/cols);
+      c.fillStyle=((cxk+ry)%2===0)?'#101018':'#f8f8ff';
+      c.fillRect(fx+5+cxk*cw, groundY-148+ry*ch+sway, cw+0.5, ch+0.5);
+    }
+  }
+  // "FINISH" label above
+  c.fillStyle='rgba(10,15,30,0.8)'; rrect(c,fx-18,groundY-176,80,16,4); c.fill();
+  c.fillStyle='#ffe040'; c.font='8px "Press Start 2P",monospace'; c.textAlign='center';
+  c.fillText('FINISH',fx+22,groundY-164); c.textAlign='left';
+  // sparkle base
+  if(Math.floor(tick/200)%2===0){ c.fillStyle='#ffe040'; c.fillRect(fx-6,groundY-4,3,3); c.fillRect(fx+10,groundY-6,3,3); }
+}
+
 function drawGoal(gx,gy,rescued){
   if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIK!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
   else{ r(gx+18,gy-60,4,64,'#a0a0a0'); mainCtx.fillStyle=ENV.gndD; mainCtx.fillRect(gx+22,gy-58,28,18); mainCtx.fillStyle='#fff'; mainCtx.font='6px monospace'; mainCtx.fillText('FREE!',gx+24,gy-46); }
 }
 function drawPenguin(cx,cy,facingRight,frame){
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(16*PS,0); ctx.scale(-1,1); }
-  var waddle=(frame%4<2)?0:1;
-  // shadow
-  ctx.globalAlpha=0.22; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(8*PS,30*PS,7*PS,2.5*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-  // feet (orange, waddling)
-  pr(3,28+waddle,4,3,'#e07010'); pr(9,28-waddle,4,3,'#e07010'); pr(3,30+waddle,4,1,'#a04800'); pr(9,30-waddle,4,1,'#a04800');
-  // body — round black back, 3-tone
-  pr(1,8,14,21,'#0a0a14'); pr(2,7,12,21,'#1a1a28'); pr(2,7,11,19,'#26263a');
-  pr(2,6,10,5,'#34344e'); // back sheen
+  var c=ctx, tick=Date.now(); var waddle=Math.sin(tick/120)*2;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,86,14,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // feet
+  c.fillStyle='#e87010'; c.beginPath(); c.ellipse(16+waddle,84,7,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(32-waddle,84,7,4,0,0,Math.PI*2); c.fill();
+  // body (black back)
+  var bg=c.createLinearGradient(8,16,40,80); bg.addColorStop(0,'#34344e'); bg.addColorStop(0.6,'#1a1a28'); bg.addColorStop(1,'#0a0a14');
+  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,18,32,0,0,Math.PI*2); c.fill();
   // white belly
-  pr(4,11,8,16,'#f0f0f8'); pr(5,10,7,17,'#ffffff'); pr(5,11,5,14,'#e8e8f4');
-  // wings/flippers (angry, flared out)
-  pr(0,11,3,12,'#0a0a14'); pr(1,10,2,12,'#1a1a28');
-  pr(13,11,3,12,'#0a0a14'); pr(13,10,2,12,'#1a1a28');
+  vBlob(c,24,54,12,24,'#ffffff','#e0e0f0');
+  // flippers (angry, flared)
+  c.save(); c.translate(7,46); c.rotate(-0.3+waddle*0.05); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
+  c.save(); c.translate(41,46); c.rotate(0.3-waddle*0.05); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
   // head
-  pr(2,1,12,9,'#0a0a14'); pr(3,0,10,9,'#1a1a28'); pr(3,0,9,8,'#26263a');
-  // angry eyebrows (V-shape)
-  pr(4,2,3,1,'#000'); pr(9,2,3,1,'#000'); pr(5,1,2,1,'#000'); pr(9,1,2,1,'#000');
-  // furious red eyes
-  pr(4,3,3,3,'#fff'); pr(9,3,3,3,'#fff');
-  pr(5,4,2,2,'#e02000'); pr(10,4,2,2,'#e02000');
-  pr(5,4,1,1,'#ff6040'); pr(10,4,1,1,'#ff6040');
+  vBlob(c,24,18,15,15,'#26263a','#0a0a14');
+  // furious brows
+  c.strokeStyle='#000'; c.lineWidth=2.5; c.lineCap='round';
+  c.beginPath(); c.moveTo(15,12); c.lineTo(23,16); c.stroke();
+  c.beginPath(); c.moveTo(33,12); c.lineTo(25,16); c.stroke();
+  // angry red eyes
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.5,3,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(29,18,3.5,3,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#e02000'; c.beginPath(); c.arc(20,19,1.8,0,7); c.fill(); c.beginPath(); c.arc(28,19,1.8,0,7); c.fill();
   // orange beak (open, squawking)
-  pr(6,6,5,2,'#f08000'); pr(7,5,4,2,'#ffa020'); pr(11,6,2,2,'#d06000');
-  pr(7,8,3,1,'#c05000'); // lower beak
-  // little furious cheek puffs
-  ctx.globalAlpha=0.4; pr(3,5,2,2,'#4060ff'); pr(11,5,2,2,'#4060ff'); ctx.globalAlpha=1;
-  ctx.restore();
+  c.fillStyle='#f08000'; c.beginPath(); c.moveTo(20,22); c.lineTo(34,24); c.lineTo(20,27); c.closePath(); c.fill();
+  c.fillStyle='#c05000'; c.beginPath(); c.moveTo(20,25); c.lineTo(32,26); c.lineTo(20,28); c.closePath(); c.fill();
+  c.restore();
 }
 
-function drawNetter(cx,cy,facingRight,frame){
-  ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(16*PS,0); ctx.scale(-1,1); }
-  // shadow
-  ctx.globalAlpha=0.22; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(8*PS,37*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-  // boots
-  pr(2,32,5,6,'#1a1008'); pr(9,32,5,6,'#1a1008'); pr(3,31,4,6,'#3a2818'); pr(9,31,4,6,'#3a2818');
-  // waders (teal rubber overalls — a hunter)
-  pr(2,16,12,17,'#10403a'); pr(3,15,10,18,'#185850'); pr(4,15,8,16,'#206e64');
-  pr(6,16,4,15,'#288078'); // highlight
-  // straps
-  pr(4,15,2,10,'#0c322c'); pr(10,15,2,10,'#0c322c');
-  // chest pouch
-  pr(5,20,6,5,'#0a2824'); pr(6,21,4,3,'#14443c');
-  // arms (holding a net behind, ready to throw)
-  pr(0,16,3,12,'#185850'); pr(1,15,3,12,'#206e64'); pr(1,26,3,3,'#d0a060');
-  pr(13,15,4,11,'#185850'); pr(13,14,4,11,'#206e64'); pr(14,24,3,4,'#d0a060');
-  // a coiled net in raised hand
-  pr(15,10,5,5,'#c0b070'); 
-  for(var i=0;i<3;i++){ pr(15,10+i*2,5,1,'#8a7840'); pr(15+i*2,10,1,5,'#8a7840'); }
+function drawIce(ic){
+  var sx=ic.x-game.camera.x, sy=ic.y;
+  var c=mainCtx; c.save(); c.translate(sx,sy); c.rotate(ic.spin);
+  // motion trail
+  c.globalAlpha=0.25; c.fillStyle='#bfe8ff'; c.fillRect(-ic.vx-4,-ic.vy-4,8,8); c.globalAlpha=1;
+  // jagged ice shard
+  var g=c.createLinearGradient(-8,-8,8,8); g.addColorStop(0,'#ffffff'); g.addColorStop(0.5,'#aee0ff'); g.addColorStop(1,'#5ba8e0');
+  c.fillStyle=g;
+  c.beginPath(); c.moveTo(0,-9); c.lineTo(4,-2); c.lineTo(9,0); c.lineTo(3,3); c.lineTo(2,9); c.lineTo(-3,3); c.lineTo(-9,1); c.lineTo(-4,-3); c.closePath(); c.fill();
+  c.fillStyle='rgba(255,255,255,0.8)'; c.beginPath(); c.moveTo(0,-9); c.lineTo(2,-3); c.lineTo(-2,-2); c.closePath(); c.fill();
+  c.restore();
+}
+
+function drawIcePenguin(cx,cy,facingRight,frame){
+  var c=ctx, tick=Date.now(); var waddle=Math.sin(tick/120)*2;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,86,14,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // feet
+  c.fillStyle='#3aa0d8'; c.beginPath(); c.ellipse(16+waddle,84,7,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(32-waddle,84,7,4,0,0,Math.PI*2); c.fill();
+  // body (icy blue-black back)
+  var bg=c.createLinearGradient(8,16,40,80); bg.addColorStop(0,'#3a5a7e'); bg.addColorStop(0.6,'#1a2e4a'); bg.addColorStop(1,'#0a1828');
+  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,18,32,0,0,Math.PI*2); c.fill();
+  // frosty belly
+  vBlob(c,24,54,12,24,'#e8f8ff','#bfe0f4');
+  // flippers
+  c.save(); c.translate(7,46); c.rotate(-0.3); c.fillStyle='#1a2e4a'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
+  c.save(); c.translate(41,46); c.rotate(0.3); c.fillStyle='#1a2e4a'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
   // head
-  pr(3,1,10,9,'#a07840'); pr(4,0,8,10,'#c89858'); pr(4,0,7,8,'#d8a868');
-  // hood/cap (waterproof)
-  pr(2,-3,12,6,'#0c322c'); pr(3,-4,10,6,'#14443c'); pr(3,-4,9,3,'#1c5048');
-  pr(2,0,12,2,'#0a2824'); // brim
+  vBlob(c,24,18,15,15,'#28405e','#0a1828');
+  // frost crown / icy tufts
+  c.fillStyle='#cfeaff'; c.beginPath(); c.moveTo(14,6); c.lineTo(18,-2); c.lineTo(22,6); c.lineTo(26,-2); c.lineTo(30,6); c.closePath(); c.fill();
+  // cold blue eyes
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.5,3,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(29,18,3.5,3,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#1080e0'; c.beginPath(); c.arc(19,18,1.8,0,7); c.fill(); c.beginPath(); c.arc(29,18,1.8,0,7); c.fill();
+  // determined brows
+  c.strokeStyle='#0a1828'; c.lineWidth=2; c.lineCap='round';
+  c.beginPath(); c.moveTo(15,13); c.lineTo(22,15); c.stroke(); c.beginPath(); c.moveTo(33,13); c.lineTo(26,15); c.stroke();
+  // orange beak
+  c.fillStyle='#f0a020'; c.beginPath(); c.moveTo(20,22); c.lineTo(32,23); c.lineTo(20,26); c.closePath(); c.fill();
+  // holding an ice ball in flipper
+  vBlob(c,44,46,5,5,'#dff4ff','#8ac8f0');
+  c.restore();
+}
+
+function drawSkiPenguin(cx,cy,facingRight,frame){
+  var c=ctx, tick=Date.now(); var lean=Math.sin(tick/200)*0.06;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
+  c.rotate(lean);
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,90,16,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // skis
+  c.fillStyle='#d02020'; c.fillRect(2,86,44,4); c.fillStyle='#ff5030'; c.fillRect(2,86,44,1.5);
+  c.beginPath(); c.moveTo(46,86); c.quadraticCurveTo(54,84,52,82); c.lineTo(46,84); c.closePath(); c.fill();
+  // legs slightly bent
+  c.fillStyle='#1a1a28'; c.fillRect(16,76,5,10); c.fillRect(28,76,5,10);
+  // body leaning forward (speed pose)
+  var bg=c.createLinearGradient(8,18,40,78); bg.addColorStop(0,'#34344e'); bg.addColorStop(0.6,'#1a1a28'); bg.addColorStop(1,'#0a0a14');
+  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,17,30,0,0,Math.PI*2); c.fill();
+  vBlob(c,24,54,11,22,'#ffffff','#e0e0f0');
+  // flippers back (aerodynamic)
+  c.save(); c.translate(8,44); c.rotate(0.6); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
+  c.save(); c.translate(40,44); c.rotate(0.6); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
+  // head
+  vBlob(c,26,18,14,14,'#26263a','#0a0a14');
+  // ski goggles
+  c.fillStyle='#222'; c.fillRect(18,15,18,6);
+  c.fillStyle='#60d0ff'; c.fillRect(20,16,6,4); c.fillRect(28,16,6,4);
+  c.fillStyle='rgba(255,255,255,0.6)'; c.fillRect(21,16,2,2); c.fillRect(29,16,2,2);
+  // red bobble beanie
+  c.fillStyle='#d02020'; c.beginPath(); c.arc(26,10,9,Math.PI,0); c.fill();
+  c.fillStyle='#ff4030'; c.beginPath(); c.arc(26,10,9,Math.PI*1.1,Math.PI*1.9); c.fill();
+  c.fillStyle='#fff'; c.fillRect(17,10,18,3); c.beginPath(); c.arc(26,2,3,0,7); c.fill();
+  // orange beak
+  c.fillStyle='#f08000'; c.beginPath(); c.moveTo(34,20); c.lineTo(44,22); c.lineTo(34,25); c.closePath(); c.fill();
+  // scarf trailing in the wind
+  c.fillStyle='#40b060'; c.beginPath(); c.moveTo(16,24); c.lineTo(2,22); c.lineTo(0,26); c.lineTo(16,28); c.closePath(); c.fill();
+  c.fillStyle='#50c878'; c.fillRect(14,23,4,5);
+  // speed lines
+  c.strokeStyle='rgba(255,255,255,0.5)'; c.lineWidth=1.5; c.lineCap='round';
+  c.beginPath(); c.moveTo(2,40); c.lineTo(-8,40); c.stroke();
+  c.beginPath(); c.moveTo(4,52); c.lineTo(-6,52); c.stroke();
+  c.restore();
+}
+
+
+function drawNetter(cx,cy,facingRight,frame){
+  var c=ctx, tick=Date.now(); var bob=Math.sin(tick/300)*1.5;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.12,1.12);
+  if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(22,100,15,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // legs/boots
+  vLimb(c,17,72,15,98,9,'#10403a','#0a2824'); vLimb(c,29,72,33,98,9,'#10403a','#0a2824');
+  vBlob(c,14,100,7,5,'#3a2818','#1a1008'); vBlob(c,33,100,7,5,'#3a2818','#1a1008');
+  // teal waders
+  var bg=c.createLinearGradient(6,30,40,74); bg.addColorStop(0,'#288078'); bg.addColorStop(0.6,'#185850'); bg.addColorStop(1,'#0c322c');
+  c.fillStyle=bg; c.beginPath();
+  c.moveTo(8,38); c.bezierCurveTo(2,54,4,70,12,74); c.lineTo(34,74); c.bezierCurveTo(42,70,44,54,38,38);
+  c.bezierCurveTo(32,30,14,30,8,38); c.closePath(); c.fill();
+  // straps
+  c.strokeStyle='#0c322c'; c.lineWidth=3; c.beginPath(); c.moveTo(16,32); c.lineTo(14,52); c.moveTo(30,32); c.lineTo(32,52); c.stroke();
+  // arms
+  vLimb(c,9,40,3,68,7,'#206e64','#10403a'); vLimb(c,37,38,46,30+bob,7,'#206e64','#10403a');
+  vBlob(c,3,70,4.5,4.5,'#d0a060','#a87838'); vBlob(c,47,30+bob,5,5,'#d0a060','#a87838');
+  // coiled net in raised hand
+  c.save(); c.translate(48,28+bob);
+  c.strokeStyle='#c0b070'; c.lineWidth=1.4;
+  c.beginPath(); c.arc(0,0,7,0,Math.PI*2); c.stroke();
+  for(var i=0;i<3;i++){ c.beginPath(); c.moveTo(-7,-3+i*3); c.lineTo(7,-3+i*3); c.stroke(); c.beginPath(); c.moveTo(-3+i*3,-7); c.lineTo(-3+i*3,7); c.stroke(); }
+  c.restore();
+  // head
+  vBlob(c,22,22,11,10,'#d8a868','#a87838');
+  // waterproof hood
+  var hg=c.createLinearGradient(0,4,0,20); hg.addColorStop(0,'#1c5048'); hg.addColorStop(1,'#0a2824');
+  c.fillStyle=hg; c.beginPath(); c.arc(22,18,12,Math.PI,0); c.lineTo(34,22); c.lineTo(10,22); c.closePath(); c.fill();
   // squinting hunter eyes
-  pr(4,3,3,2,'#100808'); pr(9,3,3,2,'#100808');
-  pr(5,3,2,1,'#3a6048'); pr(10,3,2,1,'#3a6048');
+  c.strokeStyle='#100808'; c.lineWidth=2; c.lineCap='round';
+  c.beginPath(); c.moveTo(15,20); c.lineTo(20,20); c.stroke();
+  c.beginPath(); c.moveTo(25,20); c.lineTo(30,20); c.stroke();
   // grim mouth
-  pr(5,6,6,1,'#3a1808'); pr(5,7,5,1,'#4a2010');
-  // stubble
-  ctx.globalAlpha=0.4; for(var i=0;i<4;i++) pr(4+i*2,8,1,1,'#4a3020'); ctx.globalAlpha=1;
-  ctx.restore();
+  c.lineWidth=1.6; c.beginPath(); c.moveTo(18,27); c.lineTo(27,27); c.stroke();
+  c.restore();
 }
 
 function drawNet(nt){
