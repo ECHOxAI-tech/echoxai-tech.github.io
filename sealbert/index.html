@@ -22,7 +22,7 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;max-w
 #boss-hp-label{font-size:6px;color:#ff8000;margin-bottom:2px}
 #boss-hp-bar{width:200px;height:10px;background:#1a0000;border:2px solid #ff6000;overflow:hidden;border-radius:2px}
 #boss-hp-fill{height:100%;background:linear-gradient(90deg,#c00,#f80,#fd0);transition:width .15s}
-#tofu-notif{display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,15,35,.92);border:2px solid #60d8ff;padding:5px 12px;font-size:7px;color:#60ffff;z-index:50;pointer-events:none;border-radius:3px;white-space:nowrap}
+#tofu-notif{display:none;font-size:10px !important;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,15,35,.92);border:2px solid #60d8ff;padding:5px 12px;font-size:7px;color:#60ffff;z-index:50;pointer-events:none;border-radius:3px;white-space:nowrap}
 #cutscene-canvas{display:none;max-width:100vw}
 #game-wrapper{position:relative;display:none}
 #touch-controls{display:none;justify-content:space-between;width:640px;max-width:100vw;padding:6px}
@@ -71,7 +71,13 @@ window.onerror = function(msg,src,line,col){
   <canvas id="canvas" width="640" height="400"></canvas>
   <div id="boss-hp-wrap"><div id="boss-hp-label">✦ MAGNUS THE MERCILESS ✦</div><div id="boss-hp-bar"><div id="boss-hp-fill"></div></div></div>
   <div id="tofu-notif"></div>
-  <div id="goal-banner" style="display:none;position:absolute;top:0;left:0;width:640px;height:400px;flex-direction:column;align-items:center;justify-content:center;z-index:25;background:rgba(2,8,22,0.72);text-align:center;gap:14px;pointer-events:none"><div id="gb-name" style="font-size:13px;color:#ffe040;text-shadow:2px 2px #603000"></div><div id="gb-desc" style="font-size:7px;color:#a8d0f0;line-height:2.2;max-width:440px;white-space:pre-line;padding:0 20px"></div><div style="font-size:6px;color:#5070a0;margin-top:6px">— get ready —</div></div>
+  <div id="goal-banner" style="display:none;position:absolute;top:0;left:0;width:640px;height:400px;flex-direction:column;align-items:center;justify-content:center;z-index:25;background:rgba(2,8,22,0.88);text-align:center;gap:16px;pointer-events:all">
+  <div style="font-size:7px;color:#60a0ff;letter-spacing:3px;text-transform:uppercase">— stage goal —</div>
+  <div id="gb-name" style="font-size:15px;color:#ffe040;text-shadow:0 0 12px #ff8000,2px 2px #603000;max-width:520px;line-height:1.6"></div>
+  <div style="width:360px;height:1px;background:linear-gradient(90deg,transparent,#304060,transparent)"></div>
+  <div id="gb-desc" style="font-size:9px;color:#c0d8f8;line-height:2.4;max-width:480px;white-space:pre-line;padding:0 24px"></div>
+  <button onclick="dismissGoalBanner()" style="font-family:'Press Start 2P',monospace;font-size:10px;color:#40ff80;background:rgba(0,30,0,0.6);border:2px solid #40ff80;padding:10px 24px;cursor:pointer;margin-top:8px;border-radius:3px">▶ LET'S GO!</button>
+</div>
 
   <div id="stage-complete" class="overlay">
     <h2 id="sc-title" style="color:#ffe040"></h2>
@@ -150,7 +156,7 @@ var DIFFICULTIES = [
   {
     id: 'arctic',
     name: 'Arctic Wanderer',
-    icon: '❄',
+    icon: '\u2744\ufe0f',
     desc: 'The blizzard never stops. Fewer fish. Faster enemies.',
     color: '#80c0ff',
     lives: 2,
@@ -244,7 +250,7 @@ function buildDiffUI(){
   DIFFICULTIES.forEach(function(d){
     var btn = document.createElement('button');
     btn.style.cssText = 'font-family:"Press Start 2P",monospace;font-size:10px;padding:10px 18px;background:'+(d.unlocked?'rgba(0,20,40,.9)':'rgba(10,10,20,.5)')+';border:2px solid '+(d.unlocked?d.color:'#303040')+';color:'+(d.unlocked?d.color:'#404050')+';cursor:'+(d.unlocked?'pointer':'default')+';width:300px;text-align:left;border-radius:2px;margin:0 auto';
-    btn.innerHTML = '<span style="font-family:sans-serif;font-size:13px">'+d.icon+'</span> '+d.name+(d.unlocked?'':' <span style="font-family:sans-serif">🔒</span>');
+    btn.innerHTML = '<span style="font-family:sans-serif;font-size:13px;filter:none">'+d.icon+'</span> '+d.name+(d.unlocked?'':' <span style="font-family:sans-serif">🔒</span>');
     if(d.unlocked){
       btn.onclick = function(){
         selectedDiff = d.id;
@@ -373,226 +379,827 @@ function rrect(c,x,y,w,h,rad){
 // CHARACTER DRAWERS
 // ═══════════════════════════════════════════════════════
 function drawSealbert(cx,cy,facingRight,state,hurtTimer,spinTimer,frame){
-var tick=Date.now();
-var isHurt=hurtTimer>0&&(Math.floor(hurtTimer/4)%2===0);
-var blinking=Math.floor(tick/2400)%8===0&&!spinTimer;
-ctx.save(); ctx.translate(cx*PS,cy*PS);
-if(!facingRight){ ctx.translate(26*PS,0); ctx.scale(-1,1); }
-if(spinTimer>0){ drawSealSpin(tick); ctx.restore(); return; }
-if(state==='slide') drawSealSlide(isHurt);
-else drawSealStand(isHurt,blinking,state,frame);
-ctx.restore();
+  var tick=Date.now();
+  var H=hurtTimer>0&&(Math.floor(hurtTimer/4)%2===0);
+  var blinking=Math.floor(tick/2800)%8===0&&!spinTimer;
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  if(!facingRight){ ctx.translate(28*PS,0); ctx.scale(-1,1); }
+  if(spinTimer>0){ drawSealSpin(tick); ctx.restore(); return; }
+  if(state==='slide') drawSealSlide(H);
+  else drawSealStand(H,blinking,state,frame);
+  ctx.restore();
 }
-function drawSealStand(H, blinking, state, frame){
-var dk = H ? '#602020' : SB.dk; var md = H ? '#d05050' : SB.md; var lt = H ? '#e07070' : SB.lt;
-pr(19,13,9,9,SB.tail); pr(20,12,8,8,SB.tl2);
-pr(2,11,19,17,dk); pr(3,10,17,16,md); pr(4,9,15,15,lt); pr(5,8,13,14,SB.wh);
-pr(7,3,13,12,md); pr(8,2,11,11,lt); pr(9,1,9,10,SB.wh);
-ctx.globalAlpha=0.8; pr(6,11,4,4,SB.blush); pr(14,11,4,4,SB.blush); ctx.globalAlpha=1;
-pr(11,8,5,3,SB.nos);
-pr(9,5,5,7,SB.eyS); pr(14,5,5,7,SB.eyS);
-pr(10,6,3,5,SB.eye); pr(15,6,3,5,SB.eye);
-pr(11,7,2,3,SB.eyR); pr(16,7,2,3,SB.eyR);
-if(blinking){ pr(9,7,5,3,SB.lt); pr(14,7,5,3,SB.lt); }
-var fb=(state==='walk'&&frame%2===0)?1:0;
-pr(3,20+fb,7,5,dk); pr(14,20,7,5,dk); pr(4,21+fb,6,3,md); pr(15,21,6,3,md);
+function drawSealStand(H,blinking,state,frame){
+  var C1=H?'#3a1010':SB.dk;   // darkest outline
+  var C2=H?'#7a2020':SB.sh;   // dark shade
+  var C3=H?'#b04040':SB.md;   // mid
+  var C4=H?'#d07070':SB.lt;   // light
+  var C5=H?'#f0c0c0':SB.hl;   // highlight
+  var walk=state==='walk';
+  var bob=(walk&&frame%2===0)?0:1;
+
+  // ── DROP SHADOW ──
+  ctx.globalAlpha=0.18; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(13*PS,26*PS,11*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // ── TAIL (hidden behind body — small cute rounded nub top-right) ──
+  // Tail is a small heart-shaped flip tucked at the rear, NOT sticking out sideways
+  pr(22,16,5,5,SB.tail);  pr(23,15,4,4,SB.tl2);
+  pr(24,14,3,5,SB.tail);  pr(23,17,3,3,SB.tl2);
+
+  // ── BODY (large round oval — 5 tone shading) ──
+  pr(2,13,22,14,C1);  // outline bottom
+  pr(1,10,24,14,C1);  // outline mid
+  pr(3,8,20,4,C1);    // outline top
+  pr(3,13,21,13,C2);  // dark shade
+  pr(4,11,19,13,C3);  // mid
+  pr(5,10,17,12,C4);  // light
+  pr(6,9,15,11,C5);   // highlight patch top-left
+  pr(7,9,6,5,SB.wh);  // brightest highlight
+
+  // ── BELLY (cream oval, lower centre) ──
+  pr(7,16,13,9,SB.wh);
+  pr(8,15,11,10,'#e8f8f8');
+  pr(9,14,9,10,SB.wh);
+
+  // ── HEAD (round, sits on top-left of body) ──
+  pr(1,2,18,12,C1);  // outline
+  pr(2,1,16,12,C2);  // shade
+  pr(3,0,14,11,C3);  // mid
+  pr(4,0,12,10,C4);  // light
+  pr(5,0,9,8,C5);    // highlight
+  pr(6,0,5,4,SB.wh); // bright
+
+  // ── MUZZLE (lighter rounded bump) ──
+  pr(2,7,8,6,C4);  pr(1,8,9,4,'#e8f4f0');  pr(2,8,7,3,SB.wh);
+
+  // ── NOSE (pink heart shape) ──
+  pr(3,7,4,2,SB.nos);  pr(4,6,2,2,SB.nos);  pr(3,8,2,1,'#c02050');  pr(5,8,2,1,'#c02050');
+
+  // ── WHISKERS ──
+  ctx.globalAlpha=0.55; ctx.fillStyle='#a0b8b0';
+  ctx.fillRect(10*PS,9*PS,5*PS,1); ctx.fillRect(10*PS,11*PS,6*PS,1);
+  ctx.fillRect(10*PS,13*PS,4*PS,1); ctx.globalAlpha=1;
+
+  // ── CHEEK BLUSH ──
+  ctx.globalAlpha=0.45; pr(1,9,3,3,SB.blush); ctx.globalAlpha=1;
+
+  // ── LEFT EYE (big, round, dewy — 5 layers) ──
+  pr(8,2,6,7,C1);    // outline
+  pr(9,2,5,6,'#0a1830');  // deep dark
+  pr(9,2,5,6,SB.eyS);    // blue iris
+  pr(10,3,4,5,SB.eyS);
+  pr(10,3,3,4,SB.eye);   // pupil
+  pr(11,4,2,3,SB.eye);
+  pr(13,2,2,2,SB.eyR);   // main shine
+  pr(12,2,2,1,SB.eyR);
+  pr(12,4,1,1,'#a0d8f8'); // secondary shine
+  if(blinking){ pr(8,4,7,3,C3); pr(8,5,7,2,C4); } // eyelid
+
+  // ── SMILE ──
+  pr(3,11,2,1,'#c03858'); pr(5,12,2,1,'#c03858'); pr(7,13,2,1,'#c03858');
+
+  // ── FRONT FLIPPERS (rounded, animated) ──
+  pr(20,17,6,5,C1); pr(21,16+bob,6,5,C2); pr(22,16+bob,5,4,C3); pr(22,16+bob,4,2,C4);
+  // rear flipper
+  pr(1,19,6,5,C1); pr(2,18,6,5,C2); pr(3,18,5,4,C3); pr(3,18,3,2,C4);
+
+  // ── OUTLINE STROKES ──
+  pr(1,9,1,12,C1); pr(26,10,1,12,C1); pr(3,26,21,1,C1);
 }
 function drawSealSlide(H){
-pr(19,7,7,7,SB.tail); pr(20,6,5,6,SB.tl2);
-pr(0,9,24,10,H?'#c04040':SB.md); pr(1,8,22,9,H?'#d05050':SB.lt);
-pr(4,10,15,6,SB.wh);
-pr(1,7,9,8,H?'#c04040':SB.md); pr(2,6,7,8,H?'#d05050':SB.lt);
-pr(4,9,6,4,SB.wh); pr(6,7,5,5,SB.eyS); pr(7,7,4,4,SB.eye); pr(8,8,2,2,SB.eyR);
-pr(12,9,5,1,SB.hl); pr(14,11,6,1,SB.hl);
-pr(0,17,24,2,SB.dk);
+  var C2=H?'#7a2020':SB.sh; var C3=H?'#b04040':SB.md; var C4=H?'#d07070':SB.lt;
+  // shadow
+  ctx.globalAlpha=0.15; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(12*PS,18*PS,13*PS,2*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+  // tail nub tucked at rear
+  pr(22,8,5,4,SB.tail); pr(23,7,3,4,SB.tl2);
+  // stretched body
+  pr(0,8,26,11,SB.dk); pr(1,7,24,11,C2); pr(2,7,22,10,C3); pr(3,7,20,9,C4);
+  pr(4,8,17,7,SB.hl); pr(5,8,10,4,SB.wh);
+  // belly
+  pr(6,11,13,5,SB.wh); pr(7,10,11,5,'#e8f8f8');
+  // head forward
+  pr(0,5,11,9,SB.dk); pr(1,4,10,9,C2); pr(2,4,9,8,C3); pr(3,4,8,7,C4); pr(3,4,5,4,SB.hl);
+  // muzzle
+  pr(1,9,6,4,SB.wh); pr(1,9,4,2,'#e8f4f0');
+  // nose
+  pr(2,8,3,2,SB.nos);
+  // eye (squished for speed)
+  pr(5,5,5,4,SB.dk); pr(6,5,4,4,SB.eyS); pr(6,6,3,3,SB.eye); pr(9,5,2,2,SB.eyR);
+  // speed lines
+  ctx.fillStyle='rgba(255,255,255,0.35)'; for(var i=0;i<4;i++) ctx.fillRect((14+i*4)*PS,9*PS-2,PS*3,2);
+  pr(0,17,26,2,SB.dk);
 }
 function drawSealSpin(tick){
-var t = tick / 40;
-ctx.save(); ctx.translate(13*PS, 13*PS);
-for(var i = 0; i < 6; i++){
-ctx.save(); ctx.rotate(t + i * 1.1); ctx.globalAlpha = i === 0 ? 1 : 0.45;
-ctx.fillStyle = SB.lt; ctx.beginPath(); ctx.ellipse(0,0,14*PS,8.5*PS,0,0,Math.PI*2); ctx.fill();
-ctx.fillStyle = SB.wh; ctx.beginPath(); ctx.ellipse(2*PS,1*PS,7*PS,5*PS,0,0,Math.PI*2); ctx.fill();
-ctx.fillStyle = SB.tail; ctx.beginPath(); ctx.ellipse(16*PS,0,6.5*PS,4*PS,0,0,Math.PI*2); ctx.fill();
-ctx.restore();
-}
-ctx.globalAlpha = 1;
-for(var j = 0; j < 14; j++){
-var a = t*3.5 + j*Math.PI/7, rd = 21*PS;
-ctx.fillStyle = (j%2 === 0) ? '#ffe040' : '#fff';
-ctx.fillRect(Math.cos(a)*rd-3.5, Math.sin(a)*rd-3.5, 7, 7);
-}
-ctx.restore();
+  var t=tick/38;
+  ctx.save(); ctx.translate(14*PS,13*PS);
+  // 6 ghost bodies for full spin blur
+  for(var i=0;i<6;i++){
+    ctx.save(); ctx.rotate(t+i*1.05); ctx.globalAlpha=i===0?1:0.35;
+    ctx.fillStyle=SB.lt; ctx.beginPath(); ctx.ellipse(0,0,13*PS,8*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=SB.wh; ctx.beginPath(); ctx.ellipse(2*PS,1*PS,7*PS,5*PS,0,0,Math.PI*2); ctx.fill();
+    // tail fin swept out — ellipse at side
+    ctx.fillStyle=SB.tail; ctx.beginPath(); ctx.ellipse(15*PS,1*PS,5*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=SB.tl2; ctx.beginPath(); ctx.ellipse(16*PS,0,3*PS,2*PS,0,0,Math.PI*2); ctx.fill();
+    // head blob
+    ctx.fillStyle=SB.md; ctx.beginPath(); ctx.ellipse(-10*PS,-1*PS,6*PS,5*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+  ctx.globalAlpha=1;
+  // sparkle stars around spin
+  for(var j=0;j<16;j++){
+    var a=t*3+j*Math.PI/8, rd=22*PS;
+    ctx.fillStyle=j%3===0?'#ffe040':j%3===1?SB.tl2:'#ffffff';
+    var ss=j%2===0?5:3;
+    ctx.fillRect(Math.cos(a)*rd-ss/2,Math.sin(a)*rd-ss/2,ss,ss);
+  }
+  ctx.restore();
 }
 function drawEricPirate(cx,cy,frame){
-ctx.save(); ctx.translate(cx*PS,cy*PS);
-pr(2,16,16,28,'#3a1010'); pr(4,13,12,30,'#500808'); pr(5,13,10,28,'#601010');
-for(var i=0;i<8;i++) pr(3+i*2,13,2,2,i%2?'#806020':'#c09030');
-pr(3,38,6,8,'#181008'); pr(11,38,6,8,'#181008'); pr(4,37,5,8,'#302010'); pr(11,37,5,8,'#302010');
-pr(8,20,6,5,'#d0c0a0'); pr(9,19,4,6,'#d0c0a0'); pr(9,24,2,1,'#181008'); pr(12,24,1,1,'#181008');
-pr(8,26,2,1,'#d0c0a0'); pr(11,26,2,1,'#d0c0a0'); pr(10,25,2,3,'#d0c0a0');
-pr(1,15,4,14,'#3a1010'); pr(17,15,4,14,'#3a1010'); pr(1,27,5,4,EK.skS); pr(16,27,5,4,EK.skS);
-pr(20,4,3,28,'#705020'); pr(20,3,4,28,'#705020'); pr(18,0,8,6,'#604020'); pr(19,0,7,5,'#906040'); pr(19,0,5,3,'#b08060');
-pr(7,8,6,6,EK.skS); pr(7,7,7,8,EK.sk); pr(8,6,6,8,EK.sk);
-pr(4,0,14,6,EK.hrS); pr(5,0,12,5,EK.hr); pr(3,3,3,8,EK.hr); pr(17,3,3,8,EK.hr);
-pr(2,-8,18,10,'#1a1200'); pr(3,-9,16,10,'#2a2000'); pr(0,-4,22,4,'#1a1200');
-pr(9,-7,4,3,'#d0c080'); pr(8,-6,6,3,'#d0c080'); pr(10,-2,2,2,'#d0c080'); pr(12,-2,2,2,'#d0c080'); pr(11,-1,2,2,'#d0c080');
-pr(8,8,3,2,'#1a0800'); pr(8,8,2,2,'#704020'); pr(9,8,1,1,'#fff');
-pr(13,8,3,2,'#1a0800'); pr(13,8,2,2,'#704020'); pr(14,8,1,1,'#fff');
-pr(7,7,5,1,'#381000'); pr(13,7,4,1,'#381000'); pr(9,12,6,2,'#381000'); pr(8,11,2,2,'#381000'); pr(14,11,2,2,'#381000');
-pr(13,7,4,4,'#101010'); pr(12,8,5,3,'#282828');
-ctx.restore();
+  var tick=Date.now(); var step=frame%2===0?0:1;
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+
+  // ── SHADOW ──
+  ctx.globalAlpha=0.2; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+
+  // ── BOOTS (dark leather, detailed) ──
+  pr(3,42+step,6,8,'#0e0c08'); pr(13,42,6,8,'#0e0c08');
+  pr(4,41+step,5,8,'#2a1e12'); pr(14,41,5,8,'#2a1e12');
+  pr(4,41+step,4,6,'#3a2e1c'); pr(14,41,4,6,'#3a2e1c');
+  pr(4,48+step,6,2,'#1a1208'); pr(14,48,6,2,'#1a1208'); // sole
+
+  // ── TROUSERS (dark navy) ──
+  pr(4,32,14,12,'#12182a'); pr(5,31,12,12,'#1c2840'); pr(6,31,10,10,'#242e4a');
+  pr(4,38+step,5,5,'#12182a'); pr(13,38,5,5,'#12182a'); // legs split
+
+  // ── COAT (rich scarlet, 4-tone shading) ──
+  // Base shadow
+  pr(1,14,20,20,'#5a0808');
+  // Main coat body
+  pr(2,13,18,20,'#8a1010'); pr(3,12,16,20,'#b01818'); pr(4,12,14,18,'#c82020');
+  // Highlight stripe down center
+  pr(9,13,4,18,'#d83030');
+  // Gold button row
+  for(var i=0;i<5;i++) pr(9,14+i*3,2,2,'#e8c840');
+  // Gold epaulettes
+  pr(2,13,4,4,'#d8a020'); pr(16,13,4,4,'#d8a020');
+  pr(2,13,4,2,'#f0d040'); pr(16,13,4,2,'#f0d040');
+  // Coat lapels
+  pr(8,12,2,8,'#6a0808'); pr(12,12,2,8,'#6a0808');
+  // Belt
+  pr(3,30,16,3,'#2a1808'); pr(4,30,14,2,'#503818'); pr(9,30,4,2,'#d0a820'); // buckle
+
+  // ── ARMS ──
+  pr(1,16,3,16,'#8a1010'); pr(2,15,3,16,'#c82020'); pr(19,16,3,16,'#8a1010'); pr(18,15,3,16,'#c82020');
+  // Cuffs (white)
+  pr(1,30,4,3,'#e8e0d0'); pr(18,30,4,3,'#e8e0d0');
+  // Hands
+  pr(2,32,4,5,EK.sk); pr(18,32,4,5,EK.sk); pr(3,33,3,4,EK.skS);
+
+  // ── CLUB (right hand, the weapon he will soon renounce) ──
+  pr(21,10,3,28,'#3a1800'); pr(21,9,4,28,'#6a3010'); pr(21,9,2,26,'#8a4820');
+  pr(19,6,8,6,'#5a2808'); pr(20,5,7,6,'#7a3c18'); pr(20,5,6,3,'#9a5028');
+  // Nails in club
+  pr(20,7,2,2,'#d0d0c0'); pr(24,8,2,2,'#d0d0c0');
+
+  // ── NECK ──
+  pr(8,9,6,5,EK.skS); pr(9,8,5,6,EK.sk);
+
+  // ── HEAD (wide, expressive) ──
+  pr(4,2,14,9,'#d09040'); pr(5,1,12,10,EK.sk); pr(6,1,10,9,EK.sk); pr(7,1,8,8,EK.sk);
+  pr(7,1,6,6,EK.sk); // highlight cheekbone area
+  // Cheekbone highlight
+  pr(7,2,4,3,'#f0d8a8');
+
+  // ── HAIR (golden, tousled under hat) ──
+  pr(4,1,4,4,EK.hrS); pr(16,1,3,4,EK.hrS);
+  pr(5,0,3,3,EK.hr); pr(16,0,2,3,EK.hr);
+
+  // ── PIRATE HAT (dark, skull badge) ──
+  pr(2,-9,18,12,'#100e04'); pr(3,-10,16,12,'#181408'); pr(4,-10,14,10,'#201c0c');
+  // Hat brim
+  pr(0,-3,22,4,'#0c0a02'); pr(1,-2,20,3,'#181408');
+  // Skull emblem
+  pr(9,-8,4,3,'#d8d0a0'); pr(8,-7,6,3,'#d8d0a0');
+  pr(9,-6,2,2,'#100e04'); pr(12,-6,2,2,'#100e04'); // eye sockets
+  pr(9,-4,2,2,'#d8d0a0'); pr(11,-4,1,2,'#d8d0a0'); pr(12,-4,2,2,'#d8d0a0');
+
+  // ── FACE FEATURES ──
+  // Eyebrows (thick, mean but not cartoonish)
+  pr(6,3,4,1,'#5a3008'); pr(12,3,4,1,'#5a3008');
+  // Eyes (warm brown — he has a soul)
+  pr(6,4,4,4,'#1a1008'); pr(12,4,4,4,'#1a1008');
+  pr(7,4,3,3,'#8a5020'); pr(13,4,3,3,'#8a5020'); // iris
+  pr(8,5,2,2,'#c07030'); pr(14,5,2,2,'#c07030'); // highlight
+  pr(9,4,1,1,'#f0e8d0'); pr(15,4,1,1,'#f0e8d0'); // shine
+  // Eyepatch (left eye — pirate detail)
+  pr(12,3,5,5,'#181008'); pr(11,4,6,4,'#282010'); pr(10,5,2,1,'#0a0802'); pr(16,5,2,1,'#0a0802');
+  // Strong nose
+  pr(9,7,4,2,EK.skS);
+  // Determined mouth (set jaw)
+  pr(7,9,8,1,'#7a3818'); pr(7,9,1,2,'#7a3818'); pr(14,9,1,2,'#7a3818');
+  // Stubble
+  ctx.globalAlpha=0.4; pr(6,10,2,1,'#5a3010'); pr(9,10,2,1,'#5a3010'); pr(13,10,2,1,'#5a3010'); ctx.globalAlpha=1;
+
+  ctx.restore();
 }
 function drawEricUnderwear(cx,cy,frame,shiver){
-var sh=shiver?(frame%4<2?-2:2):0;
-ctx.save(); ctx.translate(cx*PS+sh,cy*PS);
-pr(5,26,5,16,EK.sk); pr(12,26,5,16,EK.sk); pr(5,38,6,6,EK.skS); pr(12,38,6,6,EK.skS);
-pr(1,14,4,16,EK.skS); pr(17,14,4,16,EK.skS); pr(2,14,3,14,EK.sk); pr(17,14,3,14,EK.sk);
-pr(3,22,16,8,EK.uwS); pr(4,22,14,8,EK.uw);
-for(var i=0;i<4;i++) pr(4+i*4,22,2,8,EK.uwStr);
-pr(3,22,16,2,'#4030a0');
-pr(4,10,14,14,EK.skS); pr(5,9,12,14,EK.sk); pr(6,9,10,12,EK.sk);
-pr(8,11,6,1,'#c09040'); pr(9,12,4,1,'#c09040');
-pr(6,2,10,10,EK.skS); pr(7,1,9,10,EK.sk); pr(7,1,8,8,EK.sk);
-pr(4,0,14,5,EK.hrS); pr(5,0,12,4,EK.hr); pr(3,2,3,7,EK.hr); pr(17,2,3,7,EK.hr); pr(4,-2,4,4,EK.hr); pr(14,-2,4,4,EK.hr);
-pr(8,4,3,2,'#301000'); pr(8,5,2,2,'#704020'); pr(9,5,1,1,'#fff');
-pr(13,4,3,2,'#301000'); pr(13,5,2,2,'#704020'); pr(14,5,1,1,'#fff');
-pr(9,9,4,2,'#381000');
-ctx.globalAlpha=0.7; pr(6,7,3,2,'#f08060'); pr(14,7,3,2,'#f08060'); ctx.globalAlpha=1;
-if(shiver){ ctx.fillStyle='#a0c8e8'; pr(13,6,1,1,'#cfe8ff'); pr(4,5,1,1,'#cfe8ff'); pr(15,9,1,1,'#cfe8ff'); }
-ctx.restore();
+  var sh=shiver?(frame%4<2?-2:2):0;
+  ctx.save(); ctx.translate(cx*PS+sh,cy*PS);
+
+  // shadow
+  ctx.globalAlpha=0.18; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+
+  // ── BOOTS ──
+  pr(4,42,5,7,'#181008'); pr(14,42,5,7,'#181008');
+  pr(5,41,4,7,'#2a1c10'); pr(15,41,4,7,'#2a1c10');
+
+  // ── BARE LEGS ──
+  pr(5,32,5,12,EK.skS); pr(14,32,5,12,EK.skS);
+  pr(6,31,4,12,EK.sk); pr(15,31,4,12,EK.sk);
+  pr(6,31,3,10,'#f0d8a8'); pr(15,31,3,10,'#f0d8a8');
+
+  // ── BOXERS (purple with stripes — dignified even now) ──
+  pr(3,24,16,9,EK.uwS); pr(4,23,14,9,EK.uw); pr(5,23,12,8,'#ece0ff');
+  pr(3,24,16,2,'#5040b0'); // waistband
+  pr(4,24,14,1,'#7060d0'); // waistband highlight
+  for(var i=0;i<5;i++) pr(4+i*3,25,2,7,EK.uwStr);
+
+  // ── BARE TORSO (muscular, he is/was a seal clubber after all) ──
+  pr(3,12,16,13,EK.skS); pr(4,11,14,13,EK.sk); pr(5,11,12,12,EK.sk); pr(6,11,10,10,'#f0d8a8');
+  // Chest definition
+  pr(9,14,4,6,EK.skS); pr(9,13,4,2,'#f0d0a0');
+  // Chest hair (vestige of his old life)
+  ctx.globalAlpha=0.5; pr(8,15,2,1,'#b08040'); pr(10,16,2,1,'#b08040'); pr(12,15,2,1,'#b08040'); ctx.globalAlpha=1;
+
+  // ── ARMS (bare, strong) ──
+  pr(1,12,4,14,EK.skS); pr(2,11,4,14,EK.sk); pr(2,11,3,12,'#f0d8a8');
+  pr(18,12,4,14,EK.skS); pr(18,11,4,14,EK.sk); pr(18,11,3,12,'#f0d8a8');
+  pr(2,24,4,4,EK.sk); pr(18,24,4,4,EK.sk); // hands
+
+  // ── NECK + HEAD ──
+  pr(8,8,6,5,EK.skS); pr(9,7,5,6,EK.sk);
+  // Head base
+  pr(5,1,12,9,'#d09040'); pr(6,0,11,10,EK.sk); pr(7,0,10,9,EK.sk); pr(8,1,8,7,'#f0d8a8');
+
+  // ── HAIR (dishevelled — hat is gone) ──
+  pr(4,0,14,5,EK.hrS); pr(5,0,12,4,EK.hr); pr(3,2,3,6,EK.hr); pr(17,2,3,6,EK.hr);
+  pr(4,-2,4,4,EK.hr); pr(14,-2,4,4,EK.hr); pr(10,-1,4,3,'#ffffa0');
+  pr(3,4,2,4,EK.hrS); pr(18,4,2,4,EK.hrS); // wild side locks
+
+  // ── FACE (embarrassed but resolute) ──
+  pr(7,5,4,1,EK.hrS); pr(13,5,4,1,EK.hrS); // brows
+  pr(7,6,4,4,'#181008'); pr(13,6,4,4,'#181008'); // eyes
+  pr(8,6,3,3,'#8a5020'); pr(14,6,3,3,'#8a5020'); // iris
+  pr(9,7,2,2,'#c07030'); pr(15,7,2,2,'#c07030');
+  pr(10,6,1,1,'#f0e8d0'); pr(16,6,1,1,'#f0e8d0'); // shine
+  pr(9,10,4,2,'#7a3818'); // determined mouth
+  // Blush (mortified)
+  ctx.globalAlpha=0.6; pr(5,8,4,3,'#f09060'); pr(14,8,4,3,'#f09060'); ctx.globalAlpha=1;
+
+  // ── GOOSEBUMPS / COLD SHIMMER ──
+  if(shiver){
+    ctx.strokeStyle='rgba(180,220,255,0.7)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20*PS,12*PS); ctx.lineTo(22*PS,8*PS); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(3*PS,10*PS); ctx.lineTo(1*PS,6*PS); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(18*PS,20*PS); ctx.lineTo(20*PS,17*PS); ctx.stroke();
+  }
+  ctx.restore();
 }
 function drawEric(cx,cy,frame,wavingArm){
-  var tick=Date.now(), wv=wavingArm?(Math.floor(tick/280)%2===0?-3:0):0;
+  var tick=Date.now(), wv=wavingArm?(Math.floor(tick/300)%2===0?-3:0):0;
   ctx.save(); ctx.translate(cx*PS,cy*PS);
-  pr(2,18,16,28,EK.coS); pr(3,16,14,30,EK.coat); pr(4,15,12,30,EK.coat); pr(3,18,14,26,EK.coH); pr(6,16,2,28,EK.coH);
-  pr(5,22,2,4,EK.run); pr(9,26,4,1,EK.run); pr(9,28,1,2,EK.run); pr(12,28,1,2,EK.run); pr(11,27,2,1,EK.run); pr(10,21,1,4,EK.run2);
-  for(var i=0;i<8;i++) pr(3+i*2,42,2,2,i%2===0?EK.fur:EK.furS);
-  pr(3,40,6,6,EK.btS); pr(4,39,5,6,EK.boot); pr(11,40,6,6,EK.btS); pr(11,39,5,6,EK.boot);
-  pr(3,14,14,4,EK.furS); pr(4,13,12,4,EK.fur);
-  pr(1,15+wv,4,14,EK.coS); pr(2,14+wv,4,14,EK.coat); pr(1,14+wv,5,2,EK.fur); pr(1,26+wv,5,3,EK.sk);
-  pr(16,15,4,12,EK.coS); pr(15,14,4,12,EK.coat); pr(15,14,5,2,EK.fur); pr(15,24,5,3,EK.skS);
-  pr(19,6,2,28,'#302010'); pr(20,5,2,30,EK.boot); pr(20,5,1,24,'#a07040');
-  pr(18,2,6,6,EK.run); pr(19,1,4,7,EK.run2); pr(19,2,4,4,EK.gem); pr(20,2,2,2,EK.gm2);
-  ctx.globalAlpha=0.2+Math.sin(tick/400)*0.12;
-  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(21*PS,5*PS,8*PS,8*PS,0,0,Math.PI*2); ctx.fill();
+
+  // ── SHADOW ──
+  ctx.globalAlpha=0.18; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(10*PS,48*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+
+  // ── BOOTS ──
+  pr(4,42,5,7,'#181008'); pr(14,42,5,7,'#181008');
+  pr(5,41,4,7,'#2a1c10'); pr(15,41,4,7,'#2a1c10');
+  pr(5,41,3,5,'#3a2c1a'); pr(15,41,3,5,'#3a2c1a');
+
+  // ── COAT (deep ocean blue, 4 tones, flowing) ──
+  // Shadow/outline
+  pr(1,16,20,28,'#0a1e50');
+  // Main coat
+  pr(2,15,18,28,'#143070'); pr(3,14,16,28,'#1a4090'); pr(4,13,14,26,EK.coat);
+  // Highlight stripe
+  pr(8,14,3,26,EK.coH);
+  pr(7,14,2,20,'rgba(72,160,240,0.4)');
+  // Coat flare at hem
+  pr(2,40,18,4,'#0a2460'); pr(3,39,16,4,'#143070'); pr(4,38,14,4,EK.coat);
+
+  // ── RUNE EMBROIDERY on coat ──
+  pr(5,20,2,5,EK.run); pr(6,20,1,1,EK.run2); pr(6,22,1,1,EK.run2); pr(6,24,1,1,EK.run2);
+  pr(14,24,1,5,EK.run); pr(13,24,2,1,EK.run); pr(13,28,2,1,EK.run);
+
+  // ── FUR TRIM (collar, cuffs, hem) ──
+  pr(3,13,16,4,EK.furS); pr(4,12,14,4,EK.fur); pr(5,12,12,3,EK.fur);
+  for(var i=0;i<8;i++) pr(4+i*2,12,2,2,i%2?EK.fur:EK.furS);
+  for(var i=0;i<8;i++) pr(4+i*2,40,2,3,i%2?EK.fur:EK.furS);
+
+  // ── ARMS ──
+  pr(1,14+wv,4,16,EK.coS); pr(2,13+wv,4,16,EK.coat); pr(2,13+wv,3,14,EK.coH);
+  pr(2,13+wv,4,3,EK.fur);  // cuff
+  pr(2,28+wv,4,4,EK.sk);   // hand
+  pr(18,14,4,14,EK.coS); pr(17,13,4,14,EK.coat); pr(17,13,3,13,EK.coH);
+  pr(17,13,4,3,EK.fur);   pr(17,26,5,4,EK.sk);
+
+  // ── SPIRIT STAFF (right hand) — glowing ──
+  pr(21,4,3,36,'#1a1008'); pr(22,3,2,36,EK.boot); pr(22,3,1,32,'#c08840');
+  // Staff head (ornate cross with gem)
+  pr(19,0,8,3,EK.run); pr(20,-1,6,5,EK.run2); pr(22,-3,3,3,EK.gem); pr(22,-2,2,2,EK.gm2);
+  pr(21,-1,4,2,EK.gem);
+  // Gem glow pulse
+  ctx.globalAlpha=0.25+Math.sin(tick/380)*0.15;
+  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(23*PS,1*PS,9*PS,9*PS,0,0,Math.PI*2); ctx.fill();
   ctx.globalAlpha=1;
-  pr(7,8,6,7,EK.skS); pr(7,7,7,8,EK.sk); pr(8,6,6,9,EK.sk);
-  pr(5,0,12,8,EK.hrS); pr(6,0,10,7,EK.hr); pr(4,4,3,10,EK.hr); pr(3,6,3,12,EK.hrS); pr(16,4,2,8,EK.hr);
-  pr(8,8,3,2,'#301000'); pr(8,8,2,2,'#60a0c0'); pr(9,8,1,1,'#fff');
-  pr(13,8,3,2,'#301000'); pr(13,8,2,2,'#60a0c0'); pr(14,8,1,1,'#fff');
-  pr(7,6,4,1,EK.hrS); pr(12,6,4,1,EK.hrS);
-  pr(9,12,6,1,'#804020'); pr(9,12,1,2,'#804020'); pr(14,12,1,2,'#804020'); pr(10,13,4,1,'#804020');
-  pr(5,2,12,3,EK.run); pr(6,1,10,3,EK.run2); pr(10,0,4,3,EK.gem); pr(11,0,2,2,EK.gm2);
-  pr(6,-8,2,10,EK.ft3); pr(7,-9,2,12,EK.fth); pr(7,-10,1,4,EK.ft2);
-  pr(11,-10,2,12,EK.ft3); pr(11,-11,1,14,EK.fth); pr(11,-12,1,4,EK.ft2);
-  pr(15,-7,2,9,EK.ft3); pr(15,-8,1,11,EK.fth);
-  pr(10,3,2,1,EK.run2); pr(10,5,2,1,EK.run2); pr(10,3,1,3,EK.run2);
-  pr(9,16,5,4,EK.coS); pr(10,15,3,5,EK.gem); pr(11,15,1,2,EK.gm2);
+  // Rune rings on staff
+  for(var i=0;i<5;i++) pr(20,8+i*6,4,1,EK.run);
+
+  // ── NECK + HEAD ──
+  pr(8,8,6,7,EK.skS); pr(9,7,5,8,EK.sk); pr(9,6,5,7,EK.sk);
+
+  // ── HAIR (flowing golden, heroic) ──
+  pr(4,-1,14,8,EK.hrS); pr(5,-1,12,7,EK.hr); pr(6,0,10,6,EK.hr); pr(7,0,8,5,'#ffffa0');
+  // Side locks flowing down
+  pr(4,4,3,12,EK.hr); pr(3,6,3,14,EK.hrS); pr(3,5,2,8,EK.hr);
+  pr(17,4,2,10,EK.hr); pr(18,5,2,8,EK.hrS);
+
+  // ── HEADDRESS BAND ──
+  pr(5,1,12,3,EK.run); pr(6,0,10,3,EK.run2); pr(7,0,8,2,'#ffffe0');
+  // Forehead gem
+  pr(11,-1,4,4,EK.gem); pr(12,-1,2,3,EK.gm2);
+  // Feathers
+  pr(6,-9,2,10,EK.ft3); pr(7,-11,2,14,EK.fth); pr(7,-12,1,5,EK.ft2);
+  pr(11,-12,2,14,EK.ft3); pr(11,-13,1,16,EK.fth); pr(11,-14,1,5,EK.ft2);
+  pr(15,-8,2,10,EK.ft3); pr(15,-10,1,12,EK.fth); pr(15,-10,1,4,EK.ft2);
+
+  // ── FACE (warm, wise) ──
+  // Skin base, 3-tone
+  pr(5,7,12,10,EK.skS); pr(6,6,11,10,EK.sk); pr(7,6,10,9,EK.sk); pr(8,6,8,7,'#f8e0b0');
+  // Eyebrows (strong, arched)
+  pr(7,6,4,1,EK.hrS); pr(13,6,4,1,EK.hrS);
+  // Eyes (perceptive blue-grey)
+  pr(7,7,4,4,'#181020'); pr(13,7,4,4,'#181020');
+  pr(8,7,3,4,'#4878a0'); pr(14,7,3,4,'#4878a0'); // iris
+  pr(8,8,2,2,'#70a8d0'); pr(14,8,2,2,'#70a8d0'); // highlight
+  pr(10,7,1,1,'#ffffff'); pr(16,7,1,1,'#ffffff'); // shine
+  // Nose (strong bridge)
+  pr(10,10,3,3,EK.skS); pr(11,10,2,2,'#d0a868');
+  // Wise smile
+  pr(8,13,7,1,'#905028'); pr(8,13,1,2,'#905028'); pr(14,13,1,2,'#905028'); pr(9,14,5,1,'#905028');
+
+  // ── SPIRIT AMULET on chest ──
+  pr(10,17,4,5,EK.coS); pr(11,16,3,6,EK.gem); pr(11,16,2,3,EK.gm2);
+  ctx.globalAlpha=0.3+Math.sin(tick/500)*0.15;
+  ctx.fillStyle=EK.gem; ctx.beginPath(); ctx.ellipse(12*PS,19*PS,5*PS,6*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
   ctx.restore();
 }
 function drawIceBearKing(cx,cy,frame,facingRight){
-  var tick=Date.now(), breath=Math.sin(tick/800)*0.5|0;
+  var tick=Date.now();
+  var breath=Math.sin(tick/900)|0;
+  var pawSwing=(Math.floor(tick/600)%2===0)?0:1;
   ctx.save(); ctx.translate(cx*PS,cy*PS);
-  if(!facingRight){ ctx.translate(28*PS,0); ctx.scale(-1,1); }
-  pr(2,12,26,30,IB.furD); pr(3,10,24,32,IB.furS); pr(4,9,22,32,IB.fur); pr(8,11,16,30,IB.fur);
-  pr(10,24,10,8+breath,IB.fur); pr(11,24,8,7+breath,'#e0ecff');
-  pr(3,38,8,8,IB.furS); pr(4,37,7,8,IB.fur); pr(16,38,8,8,IB.furS); pr(17,37,7,8,IB.fur);
-  pr(0,14,5,18,IB.furS); pr(1,13,5,18,IB.fur); pr(25,14,5,18,IB.furS); pr(24,13,5,18,IB.fur);
-  pr(4,0,22,14,IB.furD); pr(5,-1,20,15,IB.furS); pr(6,-1,18,14,IB.fur); pr(9,0,12,12,IB.fur);
-  pr(4,-4,6,5,IB.furD); pr(5,-5,5,5,IB.furS); pr(6,-4,3,3,IB.fur); pr(3,-2,2,2,'#f0d0e0');
-  pr(20,-4,6,5,IB.furD); pr(20,-5,5,5,IB.furS); pr(21,-4,3,3,IB.fur); pr(25,-2,2,2,'#f0d0e0');
-  pr(9,8,12,6,IB.furS); pr(10,8,10,5,IB.fur); pr(10,9,10,4,'#e8f0ff');
-  pr(11,8,8,3,IB.nose); pr(12,7,6,4,IB.nose); pr(13,8,4,2,'#4040e0');
-  pr(8,2,4,4,IB.eye); pr(9,2,3,4,'#2030a0'); pr(10,3,2,2,'#4060d0'); pr(11,2,1,1,'#ffffff');
-  pr(19,2,4,4,IB.eye); pr(19,2,3,4,'#2030a0'); pr(20,3,2,2,'#4060d0'); pr(22,2,1,1,'#ffffff');
-  pr(7,1,5,1,'#101840'); pr(18,1,5,1,'#101840');
-  pr(12,12,6,1,'#2040a0'); pr(11,13,2,1,'#2040a0'); pr(17,13,2,1,'#2040a0');
-  pr(6,-9,18,6,IB.crwS); pr(7,-10,16,7,IB.crown); pr(8,-10,14,6,'#f8e050');
-  pr(7,-14,4,5,IB.crown); pr(13,-16,4,7,IB.crown); pr(20,-14,4,5,IB.crown);
-  pr(8,-12,3,3,IB.gem); pr(9,-12,2,2,'#c0ffff'); pr(14,-14,3,3,'#ff80ff'); pr(21,-12,3,3,'#ff8040');
-  pr(28,0,3,46,'#a0c8e0'); pr(29,-1,2,46,IB.ice); pr(29,-1,1,44,'#e0f4ff');
-  pr(25,-6,9,6,IB.iceS); pr(26,-8,8,6,IB.ice); pr(28,-10,5,4,'#e8f8ff');
+  if(!facingRight){ ctx.translate(32*PS,0); ctx.scale(-1,1); }
+
+  // ── SHADOW ──
+  ctx.globalAlpha=0.20; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(16*PS,50*PS,16*PS,4*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // ── BODY (massive, 5-tone arctic white fur) ──
+  // Dark outline
+  pr(4,18,24,30,'#4060a0');
+  // Dark fur base
+  pr(5,17,22,30,IB.furD);
+  // Mid fur
+  pr(6,16,20,30,IB.furS);
+  // Light fur
+  pr(7,15,18,28,IB.fur);
+  // Bright chest
+  pr(10,18,12,24,'#f0f8ff');
+  // Belly (cream, breathing)
+  pr(11,24,10,12+breath,'#ffffff');
+  pr(12,25,8,10+breath,'#f8fcff');
+  // Fur texture streaks
+  for(var i=0;i<6;i++) pr(8+i*2,18,1,24,'rgba(160,200,230,0.2)');
+
+  // ── LEGS (thick, powerful) ──
+  pr(5,42,9,10,IB.furD); pr(6,41,8,10,IB.furS); pr(7,41,7,9,IB.fur); pr(8,41,5,7,'#f0f8ff');
+  pr(19,42,9,10,IB.furD); pr(19,41,8,10,IB.furS); pr(20,41,7,9,IB.fur); pr(21,41,5,7,'#f0f8ff');
+  // Paw pads (dark leathery)
+  pr(6,50,8,3,'#3050a8'); pr(20,50,8,3,'#3050a8');
+  pr(7,50,6,2,'#4060b8'); pr(21,50,6,2,'#4060b8');
+  for(var i=0;i<4;i++) pr(7+i*2,51,1,2,'#6080c8'); for(var i=0;i<4;i++) pr(21+i*2,51,1,2,'#6080c8');
+
+  // ── ARMS (bear arms, reaching slightly out) ──
+  // Left arm (raised regally)
+  pr(0,18,7,20,IB.furD); pr(1,17,7,20,IB.furS); pr(2,16,6,18,IB.fur); pr(3,16,5,16,'#f0f8ff');
+  // Left paw
+  pr(0,36,8,8,IB.furD); pr(1,35,7,8,IB.furS); pr(2,35,6,7,IB.fur);
+  pr(1,42,2,2,'#3050a8'); pr(3,43,2,2,'#3050a8'); pr(5,42,2,2,'#3050a8'); pr(7,42,2,2,'#3050a8');
+  // Right arm (holds ice staff)
+  pr(25,18,7,20,IB.furD); pr(25,17,7,20,IB.furS); pr(25,16,6,18,IB.fur); pr(25,16,5,16,'#f0f8ff');
+  pr(24,36,8,8,IB.furD); pr(25,35,7,8,IB.furS); pr(25,35,6,7,IB.fur);
+  pr(25,42,2,2,'#3050a8'); pr(27,43,2,2,'#3050a8'); pr(29,42,2,2,'#3050a8');
+
+  // ── ICE CRYSTAL STAFF (right hand) ──
+  pr(30,0,3,52,'#1840a0'); pr(31,-1,2,52,IB.iceS); pr(31,-1,1,50,IB.ice); pr(31,-1,1,20,'#d0f0ff');
+  // Staff crystal head
+  pr(27,-8,9,10,IB.iceS); pr(28,-10,7,10,IB.ice); pr(29,-11,5,8,'#e0f8ff');
+  pr(30,-12,3,6,'#f0ffff'); // tip
+  // Crystal facets
+  pr(28,-8,2,6,'rgba(200,240,255,0.6)'); pr(33,-6,2,4,'rgba(200,240,255,0.6)');
+  // Staff glow
+  ctx.globalAlpha=0.18+Math.sin(tick/400)*0.10;
+  ctx.fillStyle=IB.ice; ctx.beginPath(); ctx.ellipse(32*PS,-5*PS,10*PS,10*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+  // Rune rings on shaft
+  for(var i=0;i<5;i++){ pr(30,6+i*9,4,2,IB.iceS); pr(30,6+i*9,4,1,'#a0d8f0'); }
+
+  // ── NECK (thick, noble) ──
+  pr(11,10,10,8,IB.furD); pr(12,9,9,8,IB.furS); pr(13,8,8,7,IB.fur); pr(14,8,6,6,'#f0f8ff');
+
+  // ── HEAD (massive, round, regal — 5 tone) ──
+  // Outline
+  pr(5,0,22,14,'#3050a0');
+  // Dark
+  pr(6,-1,20,14,IB.furD);
+  // Mid
+  pr(7,-2,18,14,IB.furS);
+  // Light
+  pr(8,-2,16,13,IB.fur);
+  // Bright face centre
+  pr(10,-1,12,12,'#f4f8ff');
+  pr(11,0,10,10,'#ffffff'); // brightest
+  // Cheek poufs
+  pr(6,4,5,6,IB.fur); pr(21,4,5,6,IB.fur);
+  pr(6,4,4,5,'#edf4ff'); pr(22,4,4,5,'#edf4ff');
+
+  // ── EARS (round, pink inside) ──
+  pr(6,-6,6,6,IB.furD); pr(7,-7,5,6,IB.furS); pr(8,-7,4,5,IB.fur);
+  pr(8,-6,3,4,'#f0d8e8'); pr(9,-5,2,3,'#f8d0e4'); // pink inner
+  pr(20,-6,6,6,IB.furD); pr(20,-7,5,6,IB.furS); pr(20,-7,4,5,IB.fur);
+  pr(21,-6,3,4,'#f0d8e8'); pr(22,-5,2,3,'#f8d0e4');
+
+  // ── MUZZLE (broad, prominent) ──
+  pr(9,7,14,8,IB.furS); pr(10,7,12,7,IB.fur); pr(11,8,10,6,'#f0f8ff'); pr(12,8,8,5,'#ffffff');
+  // Nose (blue-black, glistening) ──
+  pr(11,7,10,5,'#101840'); pr(12,6,8,6,'#1c2860'); pr(13,6,6,5,'#283870');
+  pr(14,7,4,3,'#3a4a90'); // highlight band
+  pr(15,6,2,2,'#8090d0'); // glint
+  pr(14,10,4,1,'#101840'); // nostril line
+  // Mouth (gentle, wise smile)
+  pr(13,12,6,1,'#1828a0'); // centre line
+  pr(11,13,3,1,'#1828a0'); pr(18,13,3,1,'#1828a0'); // corners
+  pr(12,14,2,1,'#3848c0'); pr(18,14,2,1,'#3848c0'); // smile curve
+
+  // ── EYES (wise, kind, ancient — deep blue) ──
+  // Left eye
+  pr(9,2,5,5,'#0a1030'); // socket dark
+  pr(10,2,4,5,'#182060'); // iris dark
+  pr(10,2,4,5,IB.eye);
+  pr(11,2,3,5,'#2838a0'); // iris mid
+  pr(11,3,3,3,'#4060d0'); // iris light
+  pr(12,3,2,2,'#6080e0'); // highlight
+  pr(13,2,1,1,'#e0e8ff'); // shine
+  pr(12,2,2,1,'#c0d0ff'); // secondary shine
+  // Left brow (wise, slightly raised)
+  pr(9,1,5,1,'#283060');
+  // Right eye
+  pr(18,2,5,5,'#0a1030');
+  pr(18,2,4,5,IB.eye);
+  pr(19,2,3,5,'#2838a0');
+  pr(19,3,3,3,'#4060d0');
+  pr(20,3,2,2,'#6080e0');
+  pr(22,2,1,1,'#e0e8ff');
+  pr(20,2,2,1,'#c0d0ff');
+  pr(18,1,5,1,'#283060'); // brow
+
+  // ── CROWN (magnificent, multi-gem) ──
+  // Base band (solid gold)
+  pr(7,-10,18,6,'#7a5808'); pr(8,-11,16,7,'#a07810'); pr(9,-11,14,6,'#c89a18'); pr(10,-10,12,5,'#e0b820');
+  pr(9,-10,14,3,'#f0d040'); // top highlight
+  // Crown teeth (5 points)
+  pr(8,-16,4,7,IB.crwS); pr(9,-17,3,8,IB.crown); pr(10,-17,2,6,'#f0d040');
+  pr(13,-18,4,9,IB.crwS); pr(14,-19,3,10,IB.crown); pr(14,-19,2,8,'#f0d040');
+  pr(18,-16,4,7,IB.crwS); pr(19,-17,3,8,IB.crown); pr(19,-17,2,6,'#f0d040');
+  pr(10,-13,2,4,IB.crwS); pr(21,-13,2,4,IB.crwS); // side mini points
+  // Crown gems (3 colours, sparkle)
+  pr(9,-14,4,5,'#20c0e8'); pr(10,-14,3,4,'#60e8ff'); pr(11,-13,1,2,'#b0f4ff'); // aquamarine
+  pr(14,-16,4,7,'#e040c8'); pr(15,-17,3,6,'#ff80e0'); pr(15,-16,2,3,'#ffc0ff'); // magenta
+  pr(19,-14,4,5,'#e89020'); pr(20,-14,3,4,'#ffc040'); pr(20,-13,2,2,'#ffee90'); // topaz
+  // Gem sparkles
+  var gs=Math.floor(tick/200)%4;
+  if(gs===0){ pr(11,-12,1,1,'#ffffff'); } if(gs===1){ pr(15,-15,1,1,'#ffffff'); } if(gs===2){ pr(21,-12,1,1,'#ffffff'); }
+
+  // ── ROYAL FUR RUFF at crown base ──
+  for(var i=0;i<10;i++) pr(7+i*2,-10,1,3,i%2?'#a09070':'#d0c090');
+
   ctx.restore();
 }
 function drawClubber(cx,cy,facingRight,big,frame){
-var sc=big?1.25:1;
-ctx.save(); ctx.translate(cx*PS,cy*PS);
-if(!facingRight){ ctx.translate(13*PS*sc,0); ctx.scale(-1,1); }
-ctx.scale(sc,sc);
-var raise=(frame%6<3)?0:-3;
-var step=(frame%4<2)?0:1;
-// shadow
-ctx.globalAlpha=0.25; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(7*PS,30*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-// boots with snow
-pr(1,24+step,5,7,'#1a1008'); pr(8,24,5,7,'#1a1008'); pr(1,23+step,5,7,'#3a2818'); pr(8,23,5,7,'#3a2818');
-pr(1,30+step,5,2,ENV.snwA); pr(8,30,5,2,ENV.snwA);
-// fur-trimmed trousers
-pr(1,16,11,10,'#2a3818'); pr(2,15,9,11,'#3a4c20');
-// red coat with darker shading
-pr(0,7,13,11,'#700000'); pr(1,6,11,12,'#a01818'); pr(2,6,9,11,'#c83030');
-pr(1,16,11,2,'#601010');
-// fur collar (scruffy)
-pr(0,6,13,3,'#9a9078'); pr(1,5,11,3,'#c0b890');
-for(var i=0;i<6;i++) pr(1+i*2,5,1,2,'#8a8068');
-// head
-pr(2,0,9,8,'#a07840'); pr(3,-1,7,9,'#d0a050'); pr(3,-1,6,8,'#e0b860');
-// fur hat
-pr(0,-5,13,6,'#1a1c08'); pr(1,-6,11,6,'#2a2e10'); pr(-1,-2,15,3,'#1a1c08');
-pr(2,-6,9,2,'#3a3e18');
-// angry squint eyes + heavy brow
-pr(3,1,9,1,'#100800');
-pr(4,2,3,2,'#100000'); pr(8,2,3,2,'#100000');
-pr(4,2,1,1,'#502000'); pr(8,2,1,1,'#502000');
-// grimace + stubble
-pr(4,6,6,1,'#502810'); pr(3,5,1,1,'#604020'); pr(10,5,1,1,'#604020');
-// arm + club (raised, animated)
-pr(10,8+raise,3,10,'#902020'); pr(10,7+raise,4,4,'#c83030');
-pr(10,17+raise,4,3,'#d0a050');
-// the club itself  -  nailed, gleaming
-pr(11,3+raise,3,16,'#402000'); pr(11,2+raise,4,16,'#604020'); pr(11,2+raise,2,14,'#806030');
-pr(9,0+raise,8,5,'#503010'); pr(10,-1+raise,7,5,'#705020'); pr(10,-1+raise,6,3,'#90703a');
-pr(11,0+raise,1,1,'#e0e0e0'); pr(14,1+raise,1,1,'#e0e0e0'); pr(12,3+raise,1,1,'#c0c0c0');
-ctx.restore();
+  var sc=big?1.3:1;
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  if(!facingRight){ ctx.translate(16*PS*sc,0); ctx.scale(-1,1); }
+  ctx.scale(sc,sc);
+
+  var raise=(frame%6<3)?0:-4;
+  var step=(frame%4<2)?0:1;
+
+  // ── SHADOW ──
+  ctx.globalAlpha=0.22; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(8*PS,37*PS,9*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // ── BOOTS (chunky leather, snow-capped) ──
+  pr(2,31+step,5,7,'#0e0c08'); pr(10,31,5,7,'#0e0c08');
+  pr(3,30+step,4,7,'#221a10'); pr(11,30,4,7,'#221a10');
+  pr(3,30+step,3,5,'#362a1a'); pr(11,30,3,5,'#362a1a');
+  pr(2,30+step,1,7,'#4a3a28'); pr(9,30,1,7,'#4a3a28'); // side highlight
+  pr(2,36+step,6,2,ENV.snwA); pr(10,36,6,2,ENV.snwA); // snow on boots
+  pr(2,37+step,6,1,'#c0ddf0'); pr(10,37,6,1,'#c0ddf0');
+
+  // ── TROUSERS (dark forest green, worn) ──
+  pr(2,21,12,11,'#1c2c12'); pr(3,20,10,12,'#283c1a'); pr(4,20,8,10,'#344e22');
+  pr(2,27+step,4,5,'#1c2c12'); pr(10,27,4,5,'#1c2c12'); // legs apart
+  // Seam line
+  pr(7,20,2,12,'#222e16');
+  // Knee patches
+  pr(3,26,4,3,'#202a10'); pr(9,26,4,3,'#202a10');
+
+  // ── COAT (deep blood-red, layered shading) ──
+  // Darkest outline
+  pr(0,9,16,13,'#3a0000');
+  // Dark base
+  pr(1,8,14,13,'#660808');
+  // Mid coat
+  pr(2,8,12,12,'#8a1010');
+  // Light face
+  pr(3,8,10,11,'#a81818');
+  // Highlight streak down one side
+  pr(3,9,3,9,'#bc2828');
+  // Coat bottom hem detail
+  pr(1,19,14,2,'#550606'); pr(2,20,12,1,'#3a0000');
+  // Belt (dark leather)
+  pr(1,19,14,3,'#1a1208'); pr(2,19,12,2,'#2e2010'); pr(6,19,4,2,'#c09020'); // buckle
+
+  // ── FUR COLLAR (dirty, unkempt) ──
+  pr(1,7,14,4,'#7a7060'); pr(2,6,12,4,'#9a9078'); pr(3,6,10,3,'#b0a888');
+  for(var i=0;i<7;i++) pr(2+i*2,6,1,3,i%2?'#887860':'#c0b090');
+
+  // ── ARMS ──
+  // Left (walking side)
+  pr(0,10,3,13,'#660808'); pr(1,9,3,13,'#8a1010'); pr(1,9,2,11,'#a81818');
+  pr(0,21,4,3,'#8a7060'); // cuff
+  pr(1,23,3,4,'#c09060'); // hand/glove
+  // Right arm (holds club — raised)
+  pr(13,10+raise,3,12,'#660808'); pr(13,9+raise,3,12,'#8a1010');
+  pr(13,9+raise,2,10,'#a81818');
+  pr(13,20+raise,4,3,'#8a7060'); // cuff
+  pr(13,22+raise,3,4,'#c09060'); // fist
+
+  // ── THE CLUB (massive, brutal, gnarly wood) ──
+  // Shaft — 3-tone wood
+  pr(15,2+raise,3,24,'#2a1400'); pr(16,1+raise,3,24,'#4a2c10'); pr(16,1+raise,2,22,'#6e4420');
+  // Club head (knobbly, with nails)
+  pr(12,-4+raise,9,9,'#3a1c08'); pr(13,-5+raise,8,9,'#5c3010'); pr(13,-4+raise,7,8,'#7a4420');
+  pr(14,-3+raise,5,6,'#906030'); pr(14,-3+raise,4,3,'#a87040'); // highlight face
+  // Nails / spikes
+  pr(13,-3+raise,2,2,'#d8d8c0'); pr(18,-3+raise,2,2,'#d8d8c0');
+  pr(13,-1+raise,1,1,'#f0f0d8'); pr(18,0+raise,1,1,'#f0f0d8');
+  pr(14,2+raise,1,1,'#d0d0b0'); // dried blood hint
+  pr(13,-2+raise,2,1,'#600000'); pr(17,1+raise,2,1,'#600000');
+
+  // ── HEAD (wide, brutish, 4-tone) ──
+  pr(2,-1,12,9,'#7a5020'); pr(3,-2,10,10,'#a07030'); pr(4,-2,8,9,'#c08840'); pr(5,-1,6,7,'#d0a050');
+  // Jaw shadow
+  pr(2,5,12,3,'#906028'); pr(3,6,10,2,'#784818');
+
+  // ── FUR HAT (patchy animal fur, villainous) ──
+  pr(0,-8,16,8,'#181808'); pr(1,-9,14,8,'#242810'); pr(2,-9,12,7,'#30341a');
+  pr(0,-5,16,4,'#101008'); pr(1,-4,14,3,'#1c2010'); // brim
+  // Fur texture on hat
+  for(var i=0;i<8;i++) pr(1+i*2,-9,1,4,i%2?'#1c1e0c':'#2e3214');
+  // Animal skull badge on hat
+  pr(5,-8,6,4,'#c8c090'); pr(6,-9,4,4,'#d8d0a0');
+  pr(6,-8,2,2,'#101008'); pr(9,-8,2,2,'#101008'); // eye sockets
+  pr(6,-5,1,2,'#c8c090'); pr(8,-5,2,1,'#c8c090'); pr(10,-5,1,2,'#c8c090');
+
+  // ── FACE (mean, weathered, 5 o'clock shadow) ──
+  // Brow ridge (thick, aggressive)
+  pr(3,-1,4,1,'#4a2c08'); pr(9,-1,4,1,'#4a2c08');
+  pr(2,0,5,1,'#382008'); pr(9,0,5,1,'#382008');
+  // Eyes (small, piggy, mean)
+  pr(3,0,4,3,'#0e0808'); pr(9,0,4,3,'#0e0808'); // socket
+  pr(4,0,3,3,'#5a2808'); pr(10,0,3,3,'#5a2808'); // iris (brown)
+  pr(4,1,2,2,'#883c18'); pr(10,1,2,2,'#883c18'); // lighter iris
+  pr(5,0,1,1,'#f0e8d8'); pr(11,0,1,1,'#f0e8d8'); // shine
+  // Nose (broad, red-tipped)
+  pr(6,3,4,3,'#b07030'); pr(7,2,2,4,'#c88040'); pr(7,4,2,1,'#d09050');
+  pr(7,4,2,1,'#a04020'); // nostril shadow
+  // Mouth (sneer)
+  pr(4,6,8,1,'#3a1808'); pr(4,6,1,2,'#3a1808'); pr(11,6,1,2,'#3a1808');
+  pr(5,7,6,1,'#4a2010');
+  // Stubble
+  ctx.globalAlpha=0.5;
+  for(var i=0;i<5;i++) pr(3+i*2,7,1,1,'#4a3020');
+  for(var i=0;i<4;i++) pr(4+i*2,5,1,1,'#3a2818');
+  ctx.globalAlpha=1;
+  // Scar across left cheek
+  pr(3,2,1,3,'#8a4020'); pr(3,3,2,1,'#6a2c10');
+
+  ctx.restore();
 }
 function drawMagnus(boss){
-  var bx=boss.x,by=boss.y,bw=boss.w,bh=boss.h;
+  var bx=boss.x, by=boss.y;
   var sx=(bx-game.camera.x)/PS|0, sy=by/PS|0;
-  var hurt=boss.hurtTimer>0&&(Math.floor(boss.hurtTimer/3)%2===0), tick=Date.now(), raise=(boss.frame%8<4)?0:-4;
+  var H=boss.hurtTimer>0&&(Math.floor(boss.hurtTimer/3)%2===0);
+  var tick=Date.now(), raise=(boss.frame%8<4)?0:-5;
+  var p2=boss.phase===2;
+
   ctx.save(); ctx.translate(sx*PS,sy*PS);
-  if(!boss.facingRight){ ctx.translate(22*PS,0); ctx.scale(-1,1); }
-  if(boss.phase===2){ ctx.globalAlpha=0.18+Math.sin(tick/200)*0.1; ctx.fillStyle='#c000c0'; ctx.beginPath(); ctx.ellipse(11*PS,20*PS,20*PS,28*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
-  pr(0,10,4,34,MG.cape); pr(1,8,3,36,MG.cp2); pr(18,10,4,34,MG.cape); pr(19,8,3,36,MG.cp2);
-  pr(4,12,14,30,MG.dk); pr(4,10,14,32,MG.cape); pr(5,9,12,33,MG.cp2); pr(6,9,10,32,MG.cp3);
-  for(var i=0;i<11;i++) pr(4+i*2,9,2,2,i%2===0?MG.fur:MG.furS);
-  for(var i=0;i<11;i++) pr(4+i*2,40,2,2,i%2===0?MG.fur:MG.furS);
-  pr(4,38,6,8,MG.dk); pr(4,37,6,8,'#302018'); pr(12,38,6,8,MG.dk); pr(12,37,6,8,'#302018');
-  pr(5,30,12,12,'#300020'); pr(6,29,10,12,'#400028');
-  pr(3,12,16,22,hurt?'#ff2020':MG.coat); pr(4,11,14,22,hurt?'#ff4040':MG.co2); pr(5,11,12,20,hurt?'#ff6060':MG.co3);
-  pr(3,11,16,3,MG.furS); pr(4,10,14,3,MG.fur); pr(3,30,16,3,MG.furS); pr(4,29,14,3,MG.fur);
-  pr(3,11,3,22,MG.furS); pr(3,10,2,23,MG.fur); pr(17,11,3,22,MG.furS); pr(19,10,2,23,MG.fur);
-  pr(7,16,3,3,MG.med); pr(7,17,3,3,'#fff080'); pr(11,16,3,3,MG.med); pr(11,17,3,3,'#fff080'); pr(15,16,3,3,MG.med); pr(15,17,3,3,'#fff080');
-  pr(1,13,4,14,MG.dk); pr(2,12,4,14,MG.coat); pr(2,12,3,12,MG.co2); pr(1,24,5,4,MG.sk); pr(1,12,5,2,MG.furS); pr(2,11,4,2,MG.fur);
-  pr(17,10+raise,4,16,MG.dk); pr(17,9+raise,4,15,MG.coat); pr(17,11,4,2,MG.fur); pr(17,23+raise,5,4,MG.sk);
-  pr(19,4+raise,3,26,'#302010'); pr(20,3+raise,2,26,MG.club); pr(20,3+raise,1,24,MG.clH);
-  pr(16,0+raise,9,7,'#503010'); pr(17,0+raise,8,6,MG.club); pr(18,0+raise,6,5,MG.clH);
-  pr(16,1+raise,2,2,'#c0c0b0'); pr(23,1+raise,2,2,'#c0c0b0'); pr(17,2+raise,3,2,'#600000');
-  pr(4,2,14,10,MG.sk); pr(5,1,12,11,MG.sk); pr(6,1,10,10,MG.sk);
-  pr(3,-6,16,8,MG.hmS); pr(4,-7,14,8,MG.helm); pr(5,-7,12,7,MG.hmH); pr(2,-4,18,3,MG.hmS); pr(3,-3,16,3,MG.helm);
-  pr(-2,-10,5,10,MG.hmS); pr(-1,-11,4,10,MG.hrn); pr(-1,-12,3,4,MG.hmH);
-  pr(19,-10,5,10,MG.hmS); pr(19,-11,4,10,MG.hrn); pr(20,-12,3,4,MG.hmH);
-  pr(5,3,5,2,'#180000'); pr(12,3,5,2,'#180000');
-  pr(5,5,4,4,MG.eye); pr(6,5,3,4,'#ff4020'); pr(6,5,2,2,'#ff8060');
-  pr(13,5,4,4,MG.eye); pr(13,5,3,4,'#ff4020'); pr(13,5,2,2,'#ff8060');
-  ctx.globalAlpha=0.36+Math.sin(tick/300)*0.14;
-  ctx.fillStyle=MG.eye;
-  ctx.beginPath(); ctx.ellipse(7*PS,6*PS,3*PS,3*PS,0,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(15*PS,6*PS,3*PS,3*PS,0,0,Math.PI*2); ctx.fill();
+  if(!boss.facingRight){ ctx.translate(26*PS,0); ctx.scale(-1,1); }
+
+  // ── PHASE 2 AURA (dark energy) ──
+  if(p2){
+    ctx.globalAlpha=0.22+Math.sin(tick/180)*0.12;
+    ctx.fillStyle='#8000c0';
+    ctx.beginPath(); ctx.ellipse(13*PS,28*PS,22*PS,34*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=0.12+Math.sin(tick/120)*0.08;
+    ctx.fillStyle='#ff0060';
+    ctx.beginPath(); ctx.ellipse(13*PS,28*PS,18*PS,28*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // ── SHADOW ──
+  ctx.globalAlpha=0.25; ctx.fillStyle='#000';
+  ctx.beginPath(); ctx.ellipse(13*PS,50*PS,13*PS,4*PS,0,0,Math.PI*2); ctx.fill();
   ctx.globalAlpha=1;
-  pr(5,4,2,6,'#c01000'); pr(15,4,2,6,'#c01000'); pr(9,3,1,5,'#a04000');
-  pr(4,8,14,5,MG.brd); pr(5,9,12,5,MG.brd); pr(6,10,10,4,'#806030');
-  for(var i=0;i<5;i++) pr(5+i*3,11,2,4,'#704828');
-  pr(7,10,8,1,'#401000'); pr(7,10,1,2,'#401000'); pr(14,10,1,2,'#401000');
+
+  // ── CAPE (sweeping, dramatic, 4-tone purple-black) ──
+  // Outer edge (darkest)
+  pr(0,14,4,38,'#180010'); pr(22,14,4,38,'#180010');
+  // Cape body shadow
+  pr(1,12,4,40,MG.dk); pr(21,12,4,40,MG.dk);
+  // Cape body
+  pr(2,10,4,42,MG.cape); pr(20,10,4,42,MG.cape);
+  // Cape inner face (lighter)
+  pr(3,10,3,42,MG.cp2); pr(20,10,3,42,MG.cp2);
+  // Cape back (full sweep)
+  pr(3,14,20,36,MG.dk); pr(4,12,18,38,MG.cape); pr(5,11,16,38,MG.cp2); pr(6,11,14,36,MG.cp3);
+  // Cape hem trim (gold)
+  for(var i=0;i<12;i++) pr(4+i*2,48,2,3,i%2?'#806010':'#c09020');
+  // Clan emblem on cape (skull)
+  pr(11,28,4,3,'#d0c880'); pr(10,29,6,3,'#d0c880');
+  pr(11,29,2,2,MG.cape); pr(14,29,2,2,MG.cape); // eye sockets
+  pr(11,32,1,2,'#d0c880'); pr(13,32,2,1,'#d0c880'); pr(15,32,1,2,'#d0c880'); // teeth
+
+  // ── BOOTS (heavy armoured war-boots) ──
+  pr(3,44,6,8,'#1a1008'); pr(17,44,6,8,'#1a1008');
+  pr(4,43,5,8,'#2e1c10'); pr(18,43,5,8,'#2e1c10');
+  pr(4,43,4,6,'#422c18'); pr(18,43,4,6,'#422c18');
+  pr(3,50,7,2,'#140e06'); pr(17,50,7,2,'#140e06'); // sole
+  // Boot metal buckle
+  pr(5,46,3,3,'#808070'); pr(18,46,3,3,'#808070');
+  pr(6,46,2,2,'#b0b0a0'); pr(19,46,2,2,'#b0b0a0');
+
+  // ── TROUSERS (dark blood-purple) ──
+  pr(4,34,18,12,'#1e0028'); pr(5,33,16,12,'#2a0038'); pr(6,33,14,10,'#340048');
+  pr(4,40,6,6,'#1e0028'); pr(16,40,6,6,'#1e0028'); // legs
+
+  // ── COAT (rich crimson, 5-tone, damaged from battle) ──
+  // Outline
+  pr(2,14,22,22,'#3a0000');
+  // Base shadow
+  pr(3,13,20,22,H?'#b80000':'#600808');
+  // Dark coat
+  pr(4,12,18,22,H?'#e00000':'#8a1010');
+  // Main coat
+  pr(5,12,16,21,H?'#ff2020':MG.coat);
+  // Light face / highlight
+  pr(6,12,8,20,H?'#ff5050':MG.co2);
+  // Highlight streak
+  pr(6,13,4,18,H?'#ff8080':MG.co3);
+  // Battle damage tear lines
+  pr(14,18,2,8,'#600000'); pr(10,22,1,6,'#500000');
+
+  // ── FUR TRIM (thick, ivory, decadent) ──
+  pr(3,12,20,4,MG.furS); pr(4,11,18,4,MG.fur); pr(5,11,16,3,MG.fur);
+  for(var i=0;i<10;i++) pr(4+i*2,11,2,3,i%2?MG.fur:MG.furS);
+  pr(3,32,20,4,MG.furS); pr(4,31,18,4,MG.fur);
+  for(var i=0;i<10;i++) pr(4+i*2,31,2,3,i%2?MG.fur:MG.furS);
+  // Collar fur sides
+  pr(3,11,4,22,MG.furS); pr(3,12,3,21,MG.fur);
+  pr(19,11,4,22,MG.furS); pr(20,12,3,21,MG.fur);
+
+  // ── MEDALS (row of three — stolen glory) ──
+  pr(9,18,3,4,'#806008'); pr(9,18,3,4,MG.med); pr(10,19,2,3,'#fff060'); pr(10,18,1,1,'#ffffff');
+  pr(13,18,3,4,'#806008'); pr(13,18,3,4,MG.med); pr(14,19,2,3,'#fff060'); pr(13,18,1,1,'#ffffff');
+  pr(9,23,3,4,'#806008'); pr(9,23,3,4,MG.med); pr(10,24,2,3,'#fff060'); // third medal
+
+  // ── LEFT ARM ──
+  pr(1,14,4,18,'#600808'); pr(2,13,4,18,MG.coat); pr(2,13,3,16,MG.co2);
+  pr(1,13,5,3,MG.fur); // cuff
+  pr(2,30,4,5,MG.sk); // hand
+
+  // ── RIGHT ARM + ENORMOUS CLUB (signature weapon) ──
+  pr(21,10+raise,4,18,'#600808'); pr(21,9+raise,4,18,MG.coat); pr(21,9+raise,3,16,MG.co2);
+  pr(21,9+raise,5,3,MG.fur); // cuff
+  pr(21,26+raise,5,5,MG.sk); // fist
+
+  // Club shaft (thick, ancient, rune-carved)
+  pr(23,0+raise,4,34,'#1e0e04'); pr(24,-1+raise,3,34,'#4a2c10'); pr(24,-1+raise,2,32,'#7a4a1c'); pr(24,-1+raise,1,28,'#a07030');
+  // Runes on shaft (glowing slightly)
+  ctx.globalAlpha=0.7+Math.sin(tick/300)*0.2;
+  pr(24,4+raise,2,2,'#ff8020'); pr(24,10+raise,2,2,'#ff8020'); pr(24,16+raise,2,2,'#ff8020');
+  ctx.globalAlpha=1;
+
+  // Club head (massive, iron-banded, brutal)
+  pr(20,-8+raise,10,10,'#180c04'); pr(21,-9+raise,9,10,'#362010'); pr(21,-8+raise,8,9,'#5a3618');
+  pr(22,-7+raise,7,8,'#7a4e28'); pr(23,-6+raise,5,6,'#9a6638'); // highlight face
+  // Iron bands
+  pr(20,-6+raise,10,2,'#484848'); pr(21,-6+raise,9,1,'#686868');
+  pr(20,-2+raise,10,2,'#484848'); pr(21,-2+raise,9,1,'#686868');
+  // Massive spikes
+  pr(20,-10+raise,4,4,'#3a3030'); pr(21,-11+raise,3,4,'#504848'); pr(21,-12+raise,2,3,'#706060');
+  pr(26,-10+raise,4,4,'#3a3030'); pr(26,-11+raise,3,4,'#504848'); pr(27,-12+raise,2,3,'#706060');
+  pr(23,-12+raise,4,5,'#3a3030'); pr(23,-13+raise,3,5,'#504848'); pr(24,-14+raise,2,4,'#706060');
+  // Blood stain (he's used this)
+  pr(22,-3+raise,4,3,'#400000'); pr(23,-4+raise,3,2,'#600000');
+  // Phase 2: club glows
+  if(p2){
+    ctx.globalAlpha=0.35+Math.sin(tick/150)*0.2;
+    ctx.fillStyle='#ff2080';
+    ctx.beginPath(); ctx.ellipse(25*PS,-4*PS+raise*PS,8*PS,8*PS,0,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // ── NECK ──
+  pr(9,8,8,6,MG.sk); pr(10,7,7,7,MG.sk); pr(10,7,6,5,'#e8b060');
+
+  // ── HEAD (wide, powerful, 4-tone shading) ──
+  pr(5,1,16,11,'#7a4808'); pr(6,0,15,12,MG.sk); pr(7,0,13,11,MG.sk); pr(8,0,12,10,'#e8b860');
+  pr(8,0,8,6,'#f0c870'); // forehead highlight
+  // Jaw shadow
+  pr(6,8,14,4,'#a06020'); pr(7,9,12,3,'#8a4c18');
+
+  // ── VIKING HELMET (intimidating, horned) ──
+  // Helm base
+  pr(4,-8,18,10,'#505010'); pr(5,-9,16,10,'#6a6818'); pr(6,-9,14,9,'#888820');
+  pr(7,-9,12,8,'#a0a028'); pr(8,-8,10,6,'#b8b830'); // highlight
+  // Helm brim
+  pr(2,-4,22,4,'#383808'); pr(3,-3,20,3,'#505012'); pr(4,-2,18,2,'#686818');
+  // Nose guard (T-bar)
+  pr(12,-9,2,14,'#3a3808'); pr(12,-8,2,13,'#555218'); pr(12,-8,1,11,'#707030');
+  // Eye slits in helm
+  pr(7,-5,4,2,'#181808'); pr(15,-5,4,2,'#181808');
+  // Horns (curved, massive)
+  pr(-2,-14,6,12,'#4a4808'); pr(-1,-16,5,12,'#686818'); pr(0,-17,4,10,'#8a8820'); pr(0,-18,3,6,'#a8a030');
+  pr(-2,-12,3,4,'#b0a838'); // horn inner curve highlight
+  pr(22,-14,6,12,'#4a4808'); pr(22,-16,5,12,'#686818'); pr(22,-17,4,10,'#8a8820'); pr(23,-18,3,6,'#a8a030');
+  pr(25,-12,3,4,'#b0a838');
+  // Skull ornament on helm front
+  pr(10,-7,6,4,'#d0c880'); pr(9,-6,8,4,'#d0c880');
+  pr(10,-6,2,2,'#383808'); pr(14,-6,2,2,'#383808'); // sockets
+  pr(10,-3,2,2,'#d0c880'); pr(13,-3,3,1,'#d0c880'); pr(15,-3,2,2,'#d0c880');
+
+  // ── FACE (villain's face — war paint, scar, burning eyes) ──
+  // War paint stripes (blood red across cheeks)
+  pr(5,2,4,7,'#6a0808'); pr(5,2,3,6,'#8a0a0a'); // left stripe
+  pr(17,2,4,7,'#6a0808'); pr(17,2,3,6,'#8a0a0a'); // right stripe
+  // Thick angry brow ridge
+  pr(6,1,5,2,'#200000'); pr(15,1,5,2,'#200000');
+  // Eyes (burning red, evil — with glow) ──
+  pr(6,2,5,5,'#1a0000'); pr(7,2,4,5,'#3a0000'); // socket shadow
+  pr(7,3,4,4,MG.eye); // iris red
+  pr(7,3,3,4,'#ff3020'); // brighter
+  pr(8,3,2,3,'#ff6040'); // bright centre
+  pr(9,3,1,1,'#ffb090'); // fire highlight
+  pr(15,2,5,5,'#1a0000'); pr(16,2,4,5,'#3a0000');
+  pr(16,3,4,4,MG.eye); pr(16,3,3,4,'#ff3020'); pr(17,3,2,3,'#ff6040'); pr(18,3,1,1,'#ffb090');
+  // Eye glow pulse
+  ctx.globalAlpha=0.40+Math.sin(tick/250)*0.18;
+  ctx.fillStyle=MG.eye;
+  ctx.beginPath(); ctx.ellipse(9*PS,5*PS,4*PS,4*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(18*PS,5*PS,4*PS,4*PS,0,0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=1;
+  // Scar (left side, diagonal)
+  pr(7,3,1,5,'#a82808'); pr(8,4,1,4,'#c03010');
+  // Broad villain nose
+  pr(11,7,4,4,MG.sk); pr(12,6,3,5,'#d0a040'); pr(12,9,3,1,'#805010'); // nostril
+  // Villain beard (dense, dark, trimmed to a point)
+  pr(6,9,14,6,'#2a1808'); pr(7,10,12,6,'#3c2410'); pr(8,10,10,5,'#503020');
+  // Beard point
+  pr(10,14,6,4,'#2a1808'); pr(11,15,4,4,'#3c2410'); pr(12,16,2,4,'#3c2410'); pr(12,18,2,2,'#2a1808');
+  // Sneer (mouth)
+  pr(8,10,10,1,'#200a00'); pr(8,10,1,2,'#200a00'); pr(17,10,1,2,'#200a00');
+  pr(9,11,8,1,'#2e1008');
+
   ctx.restore();
 }
 function drawTofuFish(cx,cy,bob){
@@ -667,34 +1274,117 @@ if(blizzard){ ctx.fillStyle='rgba(230,245,255,0.8)'; for(var i=0;i<46;i++){ var 
 r(0,290,640,110,ENV.gndA);
 }
 function drawPlatform(pl,scroll){
-var sx=pl.x-scroll, x=sx|0, y=pl.y|0, w=pl.w, h=pl.h;
-if(sx>680||sx+w<-20) return;
-if(pl.type==='ground'){
-  r(x,y,w,h,ENV.gndA); r(x,y+4,w,h-4,ENV.gndB); r(x,y,w,9,ENV.gndC); r(x,y,w,4,ENV.gndD);
-  for(var i=0;i<w/26|0;i++) r(x+i*26+5,y+1,14,5,ENV.snwA);
-  for(var i=0;i<w/22|0;i++){ r(x+i*22+7,y-3,2,5,'#60b030'); r(x+i*22+11,y-4,2,6,'#509020'); }
-  for(var i=0;i<w/40|0;i++) r(x+i*40+14,y+12,8,4,'#1a2e10');
-} else if(pl.type==='ice'){
-  r(x,y,w,h,'#3078b8'); r(x,y+3,w,h-3,'#50a0e0'); r(x,y,w,7,ENV.icA); r(x,y,w,3,ENV.icC);
-  r(x,y+4,w-8,2,'#c0f8ff');
-  var sh=(Date.now()/500|0)%3; r(x+sh*22+5,y+1,9,2,'#e0fcff');
-  r(x+8,y+12,w-20,2,'#a0d8ff'); r(x,y,3,h,'#a0d8ff');
-} else if(pl.type==='snow'){
-  r(x,y,w,h,'#80a0d0'); r(x,y+3,w,h-3,'#a0c0e8'); r(x,y,w,8,ENV.snwA); r(x,y,w,3,'#fff');
-  for(var i=0;i<w/30|0;i++) r(x+i*30+6,y+2,3,2,'#d0e4f8');
-} else if(pl.type==='rock'){
-  r(x,y,w,h,ENV.rokA); r(x,y+3,w,h-3,ENV.rokB); r(x,y,w,6,ENV.rokC); r(x+2,y,w-4,3,ENV.snwA);
-  for(var i=0;i<w/30|0;i++) r(x+i*30+10,y+5,2,h-5,'#384050');
-} else if(pl.type==='ship'){
-  r(x,y,w,h,'#4a2c10'); r(x,y,w,4,'#7a5430'); r(x,y+4,w,5,'#6a4c30');
-  for(var i=0;i<w/28|0;i++) r(x+i*28+6,y+6,4,h-12,'#2a1c08');
-  for(var i=0;i<w/14|0;i++) r(x+i*14+3,y+2,1,2,'#3a2818');
-} else if(pl.type==='water'){
-  r(x,y,w,h,'#003080'); r(x,y+4,w,h-8,'#0060c0'); r(x,y,w,3,'#60b0ff');
-  for(var i=0;i<w/32|0;i++){ var wx=x+(i*32+(Date.now()/80|0)%32); r(wx,y+10,18,4,'#40a0ff'); r(wx+4,y+15,10,3,'#80c8ff'); }
-} else {
-  r(x,y,w,h,'#506878');
-}
+  var sx=pl.x-scroll, x=sx|0, y=pl.y|0, w=pl.w, h=pl.h;
+  if(sx>680||sx+w<-20) return;
+
+  if(pl.type==='ground'){
+    r(x,y,w,h,'#1a2810');
+    r(x,y+6,w,h-6,'#243818');
+    r(x,y+3,w,8,'#385828');
+    r(x,y,w,8,ENV.gndC);
+    r(x,y,w,4,ENV.gndD);
+    for(var i=0;i<w/32|0;i++) r(x+i*32+8,y,10,3,ENV.snwA);
+    for(var i=0;i<w/18|0;i++){
+      var hh=3+i%3;
+      r(x+i*18+4,y-hh,2,hh,'#78c840');
+      r(x+i*18+8,y-hh-1,2,hh+1,'#58a020');
+      r(x+i*18+12,y-hh+1,2,hh-1,'#68b030');
+    }
+    for(var i=0;i<w/44|0;i++) r(x+i*44+16,y+12,6,3,'#1e3012');
+
+  } else if(pl.type==='ice'){
+    if(h>=30){
+      r(x,y,w,h,'#1c5888');
+      r(x,y,w,h-4,'#2870a8');
+      r(x,y,w,h-8,'#3888c0');
+      r(x,y,w,10,ENV.icA);
+      r(x,y,w,5,ENV.icC);
+      for(var i=1;i<4;i++) r(x,y+9+i*7,w,1,'#5098c8');
+      var sh=(Date.now()/500|0)%3; r(x+sh*28+6,y+2,14,2,'#e8feff');
+    } else {
+      r(x,y,w,h,'#2870a8');
+      r(x,y+3,w,h-3,'#3890c8');
+      r(x,y+4,w,h-4,'#48a8e0');
+      r(x,y,w,6,ENV.icA);
+      r(x,y,w,3,ENV.icC);
+      var sh=(Date.now()/500|0)%3; r(x+sh*22+4,y+1,10,2,'#e0fcff');
+      r(x,y,2,h,'#90c8e8');
+      r(x+w-2,y,2,h,'#1858a0');
+    }
+
+  } else if(pl.type==='snow'){
+    r(x,y,w,h,'#80a0d0');
+    r(x,y+3,w,h-3,'#a0c0e8');
+    r(x,y,w,8,ENV.snwA);
+    r(x,y,w,3,'#fff');
+    for(var i=0;i<w/30|0;i++) r(x+i*30+6,y+2,3,2,'#d0e4f8');
+
+  } else if(pl.type==='rock'){
+    r(x,y,w,h,ENV.rokA);
+    r(x,y+3,w,h-3,ENV.rokB);
+    r(x,y,w,6,'#8088a0');
+    r(x+2,y,w-4,3,ENV.snwA);
+    for(var i=0;i<w/30|0;i++) r(x+i*30+10,y+5,2,h-5,'#384050');
+
+  } else if(pl.type==='ship'){
+    r(x,y,w,h,'#2a1808');
+    r(x,y,w,h-4,'#3a2410');
+    r(x,y,w,h-8,'#502e18');
+    r(x,y,w,9,'#9a6e38');
+    r(x,y,w,5,'#b08848');
+    r(x,y,w,3,'#d0aa60');
+    for(var i=0;i<w/22|0;i++){
+      r(x+i*22,y,1,9,'#6a4020');
+      r(x+i*22+11,y,1,9,'#7a5030');
+    }
+    r(x,y+9,w,3,'#5a3818');
+    r(x,y+12,w,2,'#a07830');
+    r(x,y+14,w,1,'#c8a040');
+    for(var i=0;i<w/60|0;i++) r(x+i*60+20,y+18,12,8,'#1a0e04');
+
+  } else if(pl.type==='water'){
+    r(x,y,w,h,'#003080');
+    r(x,y+4,w,h-8,'#0060c0');
+    r(x,y,w,3,'#60b0ff');
+    for(var i=0;i<w/32|0;i++){
+      var wx=x+(i*32+(Date.now()/80|0)%32);
+      r(wx,y+10,18,4,'#40a0ff');
+      r(wx+4,y+15,10,3,'#80c8ff');
+    }
+  } else if(pl.type==='crack'){
+    if(pl.gone){
+      // collapsed — show faint outline + cracks in the gap
+      ctx.globalAlpha=0.25;
+      r(x,y,w,3,'#3a6a90');
+      ctx.globalAlpha=1;
+      return;
+    }
+    var shk=pl.shake||0;
+    var ox=shk?(Math.random()-0.5)*shk*2:0;
+    var danger=(pl.crackTimer||0)/70;
+    // base ice slab
+    r(x+ox,y,w,h,'#2870a8'); r(x+ox,y+3,w,h-3,'#3890c8'); r(x+ox,y+4,w,h-4,'#48a8e0');
+    r(x+ox,y,w,6,ENV.icA); r(x+ox,y,w,3,ENV.icC);
+    // warning tint as it cracks (reddens)
+    if(danger>0.1){
+      ctx.globalAlpha=danger*0.4; r(x+ox,y,w,h,'#ff4040'); ctx.globalAlpha=1;
+    }
+    // crack lines spreading from centre as timer rises
+    if(danger>0.15){
+      ctx.strokeStyle='rgba(20,40,70,'+Math.min(1,danger*1.4)+')'; ctx.lineWidth=1.5;
+      var cxp=x+w/2+ox, cyp=y+h/2, n=Math.floor(danger*6)+2;
+      for(var i=0;i<n;i++){
+        var a=i*(Math.PI*2/n)+pl.x;
+        ctx.beginPath(); ctx.moveTo(cxp,cyp);
+        ctx.lineTo(cxp+Math.cos(a)*w*0.5*danger,cyp+Math.sin(a)*h*0.9*danger);
+        ctx.stroke();
+      }
+    }
+    // edge shadow
+    r(x+ox,y,2,h,'#90c8e8'); r(x+ox+w-2,y,2,h,'#1858a0');
+  } else {
+    r(x,y,w,h,'#506878');
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -719,7 +1409,7 @@ function showCSSlide(){
   var btnEl=document.createElement('button');
   btnEl.id='cs-btn'; btnEl.className='ybtn';
   btnEl.textContent=cs.idx<cs.slides.length-1?'NEXT ▶':(slide.btn||'CONTINUE ▶');
-  btnEl.style.cssText='position:fixed;bottom:50px;left:50%;transform:translateX(-50%);z-index:60;font-size:8px';
+  btnEl.style.cssText='position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:60;font-size:10px;padding:8px 20px';
   btnEl.onclick=advanceCS; document.body.appendChild(btnEl);
   if(cs.animFrame) cancelAnimationFrame(cs.animFrame);
   cs.timer=0;
@@ -728,9 +1418,11 @@ function showCSSlide(){
     setCtx(csCtx); csCtx.clearRect(0,0,640,400);
     slide.draw(cs.timer);
     csCtx.fillStyle='rgba(0,0,20,0.88)'; csCtx.fillRect(0,340,640,60);
-    csCtx.font='6.5px monospace'; csCtx.fillStyle='#b0c8e8'; csCtx.textAlign='center';
-    var lines=(slide.text||'').split('\n');
-    for(var i=0;i<lines.length;i++) csCtx.fillText(lines[i],320,358+i*15);
+    csCtx.fillStyle='rgba(2,8,24,0.92)'; csCtx.fillRect(0,342,640,58);
+  csCtx.font='9px "Press Start 2P",monospace'; csCtx.fillStyle='#daeeff'; csCtx.textAlign='center';
+  var lines=(slide.text||'').split('\n');
+  var lineH=15; var startY=358+(lines.length===1?8:0);
+  for(var i=0;i<lines.length;i++) csCtx.fillText(lines[i],320,startY+i*lineH);
     csCtx.textAlign='left';
     cs.animFrame=requestAnimationFrame(anim);
   }
@@ -997,13 +1689,13 @@ function renderQuiz(){
   overlay.id='quiz-overlay';
   overlay.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,5,20,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;font-family:"Press Start 2P",monospace;padding:16px;gap:10px';
   var progPct=(qs.idx/qs.questions.length*100);
-  overlay.innerHTML='<div style="font-size:8px;color:#60ffff;letter-spacing:2px">✦ BJORN THE ICE BEAR KING ✦</div><div style="font-size:6px;color:#4080a0">"Answer my questions and earn the shamanic gift."</div><div style="font-size:5.5px;color:#70a0c0">QUESTION '+(qs.idx+1)+' / '+qs.questions.length+'</div><div style="width:250px;height:5px;background:#0a1828;border:1px solid #1060a0;border-radius:2px;overflow:hidden"><div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,#40a0ff,#80ffff)"></div></div><div id="quiz-q" style="font-size:7px;color:#d0e8ff;text-align:center;max-width:400px;line-height:2;margin-top:6px">'+q.q+'</div><div id="quiz-opts" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;margin-top:6px"></div><div id="quiz-fb" style="font-size:6px;color:#60ffff;min-height:20px;text-align:center;line-height:1.8"></div>';
+  overlay.innerHTML='<div style="font-size:11px;color:#60ffff;letter-spacing:2px">✦ BJORN THE ICE BEAR KING ✦</div><div style="font-size:8px;color:#4080a0">"Answer my questions and earn the shamanic gift."</div><div style="font-size:8px;color:#70a0c0">QUESTION '+(qs.idx+1)+' / '+qs.questions.length+'</div><div style="width:250px;height:5px;background:#0a1828;border:1px solid #1060a0;border-radius:2px;overflow:hidden"><div style="height:100%;width:'+progPct+'%;background:linear-gradient(90deg,#40a0ff,#80ffff)"></div></div><div id="quiz-q" style="font-size:10px;color:#d0e8ff;text-align:center;max-width:400px;line-height:2;margin-top:6px">'+q.q+'</div><div id="quiz-opts" style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:420px;margin-top:6px"></div><div id="quiz-fb" style="font-size:8px;color:#60ffff;min-height:20px;text-align:center;line-height:1.8"></div>';
   document.body.appendChild(overlay);
   var optDiv=overlay.querySelector('#quiz-opts');
   q.opts.forEach(function(opt,i){
     var btn=document.createElement('button');
     btn.textContent=String.fromCharCode(65+i)+')  '+opt;
-    btn.style.cssText='font-family:"Press Start 2P",monospace;font-size:6.5px;color:#c0d8f0;background:rgba(0,20,50,0.8);border:2px solid #204060;padding:9px 12px;cursor:pointer;text-align:left;border-radius:3px';
+    btn.style.cssText='font-family:"Press Start 2P",monospace;font-size:9px;color:#c0d8f0;background:rgba(0,20,50,0.8);border:2px solid #204060;padding:9px 12px;cursor:pointer;text-align:left;border-radius:3px';
     btn.onmouseover=function(){ btn.style.borderColor='#60c0ff'; btn.style.background='rgba(0,40,80,0.9)'; };
     btn.onmouseout=function(){ btn.style.borderColor='#204060'; btn.style.background='rgba(0,20,50,0.8)'; };
     btn.onclick=function(){ answerQuiz(i,optDiv,q); };
@@ -1035,7 +1727,7 @@ function showQuizResult(){
   var qs=quizState, passed=qs.correct>=3;
   var overlay=document.getElementById('quiz-overlay');
   var nextLabel=passed?'★ RECEIVE THE GIFT ★':'↩ TRY AGAIN';
-  overlay.innerHTML='<div style="font-size:8px;color:'+(passed?'#40ffaa':'#ff6060')+';text-shadow:0 0 12px '+(passed?'#40ffaa':'#ff4040')+';margin-bottom:6px">'+(passed?'★ YOU HAVE PASSED ★':'✗ NOT YET')+' </div><div style="font-size:6.5px;color:#80b0d0;text-align:center;line-height:2.2;max-width:380px">'+qs.correct+' / '+qs.questions.length+' correct.<br><br>'+(passed?'"Your heart is true. The seal spirits accept you."':'"You need 3 correct. Come back when you are ready."')+'</div><button id="quiz-done-btn" style="font-family:\'Press Start 2P\',monospace;font-size:9px;color:'+(passed?'#ffe040':'#ff8040')+';background:none;border:2px solid '+(passed?'#ffe040':'#ff8040')+';padding:10px 18px;cursor:pointer;margin-top:14px;animation:blink .9s step-end infinite">'+nextLabel+'</button>';
+  overlay.innerHTML='<div style="font-size:12px;color:'+(passed?'#40ffaa':'#ff6060')+';text-shadow:0 0 12px '+(passed?'#40ffaa':'#ff4040')+';margin-bottom:6px">'+(passed?'★ YOU HAVE PASSED ★':'✗ NOT YET')+' </div><div style="font-size:9px;color:#80b0d0;text-align:center;line-height:2.2;max-width:380px">'+qs.correct+' / '+qs.questions.length+' correct.<br><br>'+(passed?'"Your heart is true. The seal spirits accept you."':'"You need 3 correct. Come back when you are ready."')+'</div><button id="quiz-done-btn" style="font-family:\'Press Start 2P\',monospace;font-size:9px;color:'+(passed?'#ffe040':'#ff8040')+';background:none;border:2px solid '+(passed?'#ffe040':'#ff8040')+';padding:10px 18px;cursor:pointer;margin-top:14px;animation:blink .9s step-end infinite">'+nextLabel+'</button>';
   document.getElementById('quiz-done-btn').onclick=function(){
     overlay.remove();
     if(passed){ quizState.onPass(); }
@@ -1055,47 +1747,229 @@ function buildFish(sx,y,n,sp,diffMult){
 }
 function buildEnemies(xs){
   return xs.map(function(x,i){
-    return {x:x,y:318,w:36,h:42,vx:i%2?-0.9:0.9,alive:true,type:i%3===0?'big':'normal',frame:0,frameTick:0,patrolLeft:x-90,patrolRight:x+90,clubCooldown:60+i*7,facingRight:true};
+    return {x:x,y:258,w:48,h:108,vx:i%2?-0.9:0.9,baseSpd:0.9,alive:true,type:i%3===0?'big':'normal',frame:0,frameTick:0,patrolLeft:x-90,patrolRight:x+90,clubCooldown:60+i*7,netCooldown:120,facingRight:true,onGround:false,vy:0};
+  });
+}
+// Mixed-type enemy builder. spec = [{x, type}] where type in clubber|penguin|netter|big
+function buildMixed(spec){
+  return spec.map(function(s,i){
+    var t=s.type||'normal';
+    var w=t==='penguin'?48:48, h=t==='penguin'?90:108;
+    var spd=t==='penguin'?1.3:t==='netter'?0.5:0.9;
+    return {x:s.x,y:t==='penguin'?268:258,w:w,h:h,vx:i%2?-spd:spd,baseSpd:spd,alive:true,type:t,frame:0,frameTick:0,patrolLeft:s.x-(s.range||90),patrolRight:s.x+(s.range||90),clubCooldown:60+i*7,netCooldown:90+i*20,facingRight:true,onGround:false,vy:0};
   });
 }
 var STAGE_DATA={
-  '1-1':{name:'1-1  FIRST DANCE ON THE ICE',desc:'GOAL: Gather tofu fish to charge your Tail-Spin, then perform it close to Captain Eric on his ship to win his heart.',
-    platforms:[{x:0,y:338,w:260,h:42,type:'ice'},{x:160,y:288,w:100,h:14,type:'ice'},{x:330,y:262,w:90,h:14,type:'ice'},{x:480,y:288,w:100,h:14,type:'ice'},{x:300,y:338,w:900,h:42,type:'ice'},{x:660,y:256,w:90,h:14,type:'ice'},{x:820,y:290,w:100,h:14,type:'ice'},{x:1000,y:262,w:90,h:14,type:'ice'},{x:1260,y:338,w:700,h:42,type:'ice'},{x:1340,y:288,w:100,h:14,type:'ice'},{x:1520,y:262,w:90,h:14,type:'ice'},{x:1700,y:290,w:100,h:14,type:'ice'},{x:2000,y:338,w:480,h:42,type:'ship'}],
-    enemies:buildEnemies([400,560,900,1380,1620]),fish:buildFish(80,278,28,55),outfits:[],erikPos:{x:2250,y:70,type:'pirate'},end:'spin',width:2520,bgTint:null,blizzard:false,maxFish:28},
+  '1-1':{name:'1-1  FIRST DANCE ON THE ICE',desc:'GOAL: Gather tofu fish to charge your Tail-Spin, then perform it close to Captain Eric on his ship to win his heart. Watch for grumpy penguins!',
+    platforms:[
+      {x:0,y:338,w:1400,h:42,type:'ground'},
+      {x:160,y:288,w:100,h:14,type:'ice'},{x:330,y:262,w:90,h:14,type:'ice'},
+      {x:480,y:288,w:100,h:14,type:'ice'},{x:660,y:256,w:90,h:14,type:'ice'},
+      {x:820,y:290,w:100,h:14,type:'ice'},{x:1000,y:262,w:90,h:14,type:'ice'},
+      {x:1180,y:288,w:100,h:14,type:'ice'},
+      {x:1400,y:338,w:240,h:42,type:'water'},
+      {x:1480,y:296,w:80,h:16,type:'crack'},
+      {x:1640,y:338,w:1500,h:42,type:'ground'},
+      {x:1760,y:286,w:90,h:14,type:'ice'},{x:1940,y:262,w:90,h:14,type:'ice'},
+      {x:2120,y:290,w:100,h:14,type:'crack'},{x:2320,y:262,w:90,h:14,type:'ice'},
+      {x:2500,y:288,w:100,h:14,type:'ice'},{x:2700,y:262,w:90,h:14,type:'ice'},
+      {x:2900,y:290,w:100,h:14,type:'ice'},
+      {x:3140,y:338,w:200,h:42,type:'water'},
+      {x:3220,y:300,w:80,h:16,type:'crack'},
+      {x:3340,y:338,w:1400,h:42,type:'ground'},
+      {x:3460,y:286,w:90,h:14,type:'ice'},{x:3640,y:262,w:90,h:14,type:'ice'},
+      {x:3840,y:288,w:100,h:14,type:'ice'},{x:4040,y:262,w:90,h:14,type:'ice'},
+      {x:4240,y:290,w:100,h:14,type:'ice'},
+      {x:4740,y:338,w:560,h:42,type:'ship'}
+    ],
+    enemies:buildMixed([{x:400,type:'penguin'},{x:700,type:'normal'},{x:1000,type:'penguin'},{x:1850,type:'normal'},{x:2200,type:'penguin'},{x:2600,type:'penguin'},{x:2900,type:'normal'},{x:3550,type:'penguin'},{x:3900,type:'normal'},{x:4200,type:'penguin'}]),
+    fish:buildFish(80,278,46,55),outfits:[],erikPos:{x:5000,y:70,type:'pirate'},end:'spin',width:5320,bgTint:null,blizzard:false,maxFish:46},
 
-  '1-2':{name:'1-2  ACROSS THE FLOES',desc:'GOAL: Cross the breaking sea-ice, leaping the open water, and reach Eric\'s fleet to dazzle him once more with your spin.',
-    platforms:[{x:0,y:338,w:340,h:42,type:'ground'},{x:220,y:288,w:90,h:14,type:'ice'},{x:380,y:262,w:80,h:14,type:'ice'},{x:540,y:288,w:100,h:14,type:'ice'},{x:340,y:338,w:560,h:42,type:'ice'},{x:720,y:256,w:90,h:14,type:'ice'},{x:900,y:338,w:200,h:42,type:'water'},{x:980,y:296,w:70,h:14,type:'ice'},{x:1100,y:338,w:520,h:42,type:'ground'},{x:1200,y:286,w:90,h:14,type:'rock'},{x:1380,y:258,w:85,h:14,type:'ice'},{x:1560,y:288,w:90,h:14,type:'rock'},{x:1620,y:338,w:240,h:42,type:'water'},{x:1700,y:300,w:64,h:14,type:'ice'},{x:1860,y:338,w:620,h:42,type:'ground'},{x:1960,y:284,w:90,h:14,type:'rock'},{x:2140,y:256,w:90,h:14,type:'ice'},{x:2320,y:286,w:95,h:14,type:'rock'},{x:2540,y:338,w:240,h:42,type:'water'},{x:2620,y:298,w:64,h:14,type:'ice'},{x:2780,y:338,w:560,h:42,type:'ship'}],
-    enemies:buildEnemies([320,560,760,1240,1440,1640,2000,2200,2400]),fish:buildFish(100,262,34,52),outfits:[],erikPos:{x:3120,y:70,type:'pirate'},end:'spin',width:3400,bgTint:null,blizzard:false,maxFish:34},
+  '1-2':{name:'1-2  ACROSS THE FLOES',desc:'GOAL: Cross the breaking sea-ice, leap the open water, and reach Eric\'s fleet. The ice cracks under your weight - keep moving!',
+    platforms:[
+      {x:0,y:338,w:520,h:42,type:'ground'},
+      {x:220,y:288,w:90,h:14,type:'ice'},{x:380,y:262,w:80,h:14,type:'ice'},
+      {x:520,y:296,w:90,h:16,type:'crack'},
+      {x:640,y:338,w:520,h:42,type:'ice'},{x:720,y:256,w:90,h:14,type:'ice'},
+      {x:900,y:290,w:100,h:14,type:'crack'},
+      {x:1160,y:338,w:200,h:42,type:'water'},{x:1240,y:300,w:80,h:16,type:'crack'},
+      {x:1360,y:338,w:640,h:42,type:'ground'},
+      {x:1460,y:286,w:90,h:14,type:'rock'},{x:1640,y:258,w:85,h:14,type:'ice'},
+      {x:1820,y:288,w:90,h:14,type:'crack'},
+      {x:2000,y:338,w:280,h:42,type:'water'},{x:2080,y:300,w:70,h:16,type:'crack'},{x:2180,y:296,w:70,h:16,type:'crack'},
+      {x:2280,y:338,w:760,h:42,type:'ground'},
+      {x:2400,y:284,w:90,h:14,type:'rock'},{x:2580,y:256,w:90,h:14,type:'ice'},
+      {x:2760,y:286,w:95,h:14,type:'crack'},{x:2960,y:262,w:90,h:14,type:'ice'},
+      {x:3040,y:338,w:240,h:42,type:'water'},{x:3120,y:298,w:70,h:16,type:'crack'},
+      {x:3280,y:338,w:900,h:42,type:'ground'},
+      {x:3400,y:286,w:90,h:14,type:'ice'},{x:3600,y:258,w:90,h:14,type:'rock'},
+      {x:3800,y:288,w:100,h:14,type:'ice'},{x:4000,y:262,w:90,h:14,type:'ice'},
+      {x:4180,y:338,w:260,h:42,type:'water'},{x:4260,y:300,w:80,h:16,type:'crack'},
+      {x:4440,y:338,w:560,h:42,type:'ship'}
+    ],
+    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:760,type:'penguin'},{x:1500,type:'normal'},{x:1700,type:'netter',range:30},{x:2400,type:'penguin'},{x:2600,type:'normal'},{x:2900,type:'penguin'},{x:3450,type:'netter',range:30},{x:3700,type:'penguin'},{x:3950,type:'normal'},{x:4100,type:'penguin'}]),
+    fish:buildFish(100,262,52,52),outfits:[],erikPos:{x:4720,y:70,type:'pirate'},end:'spin',width:5000,bgTint:null,blizzard:false,maxFish:52},
 
-  '2-1':{name:'2-1  THE FROZEN TUNDRA',desc:'GOAL: Eric shivers in his underwear. Brave the blizzard, fight off the clubbers, and recover his lost SHAMAN COAT at the far end.',
-    platforms:[{x:0,y:358,w:420,h:42,type:'snow'},{x:200,y:296,w:90,h:14,type:'snow'},{x:360,y:266,w:80,h:14,type:'snow'},{x:540,y:292,w:100,h:14,type:'ice'},{x:420,y:358,w:560,h:42,type:'snow'},{x:720,y:258,w:90,h:14,type:'snow'},{x:900,y:288,w:100,h:14,type:'ice'},{x:980,y:358,w:200,h:42,type:'water'},{x:1070,y:300,w:68,h:14,type:'ice'},{x:1180,y:358,w:640,h:42,type:'snow'},{x:1300,y:288,w:90,h:14,type:'snow'},{x:1480,y:258,w:85,h:14,type:'ice'},{x:1660,y:288,w:90,h:14,type:'snow'},{x:1820,y:358,w:220,h:42,type:'water'},{x:1910,y:300,w:68,h:14,type:'snow'},{x:2040,y:358,w:680,h:42,type:'snow'},{x:2160,y:286,w:95,h:14,type:'ice'},{x:2360,y:256,w:88,h:14,type:'snow'},{x:2560,y:288,w:95,h:14,type:'ice'},{x:2720,y:358,w:240,h:42,type:'water'},{x:2810,y:300,w:64,h:14,type:'snow'},{x:2960,y:358,w:700,h:42,type:'snow'},{x:3080,y:284,w:90,h:14,type:'ice'},{x:3280,y:256,w:200,h:14,type:'snow'}],
-    enemies:buildEnemies([320,540,740,1240,1440,1660,2100,2320,2560,3020,3240]),fish:buildFish(120,264,38,55),outfits:[{x:3400,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:3700,bgTint:'#0a0020',blizzard:true,maxFish:38},
+  '2-1':{name:'2-1  THE FROZEN TUNDRA',desc:'GOAL: Eric shivers in his underwear! Brave the blizzard, dodge net-hunters and penguins, and recover his lost SHAMAN COAT at the far end.',
+    platforms:[
+      {x:0,y:358,w:640,h:42,type:'snow'},
+      {x:200,y:296,w:90,h:14,type:'snow'},{x:360,y:266,w:80,h:14,type:'snow'},
+      {x:540,y:292,w:100,h:14,type:'ice'},
+      {x:640,y:358,w:560,h:42,type:'snow'},{x:720,y:258,w:90,h:14,type:'snow'},
+      {x:900,y:288,w:100,h:16,type:'crack'},
+      {x:1200,y:358,w:220,h:42,type:'water'},{x:1280,y:300,w:80,h:16,type:'crack'},
+      {x:1420,y:358,w:720,h:42,type:'snow'},
+      {x:1540,y:288,w:90,h:14,type:'snow'},{x:1740,y:258,w:85,h:14,type:'ice'},
+      {x:1920,y:288,w:90,h:16,type:'crack'},{x:2080,y:262,w:90,h:14,type:'snow'},
+      {x:2140,y:358,w:240,h:42,type:'water'},{x:2220,y:300,w:80,h:16,type:'crack'},
+      {x:2380,y:358,w:800,h:42,type:'snow'},
+      {x:2500,y:286,w:95,h:14,type:'ice'},{x:2700,y:256,w:88,h:14,type:'snow'},
+      {x:2900,y:288,w:95,h:16,type:'crack'},{x:3080,y:262,w:90,h:14,type:'ice'},
+      {x:3180,y:358,w:260,h:42,type:'water'},{x:3260,y:298,w:80,h:16,type:'crack'},
+      {x:3440,y:358,w:900,h:42,type:'snow'},
+      {x:3560,y:284,w:90,h:14,type:'ice'},{x:3760,y:256,w:90,h:14,type:'snow'},
+      {x:3960,y:288,w:100,h:14,type:'ice'},{x:4160,y:262,w:90,h:14,type:'snow'},
+      {x:4340,y:358,w:260,h:42,type:'water'},{x:4420,y:300,w:80,h:16,type:'crack'},
+      {x:4600,y:358,w:700,h:42,type:'snow'},
+      {x:4720,y:284,w:90,h:14,type:'ice'},{x:4920,y:256,w:200,h:14,type:'snow'}
+    ],
+    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:780,type:'netter',range:30},{x:1500,type:'penguin'},{x:1720,type:'normal'},{x:2000,type:'penguin'},{x:2500,type:'netter',range:30},{x:2750,type:'penguin'},{x:3000,type:'normal'},{x:3600,type:'penguin'},{x:3850,type:'netter',range:30},{x:4100,type:'penguin'},{x:4700,type:'normal'},{x:4900,type:'penguin'}]),
+    fish:buildFish(120,264,56,55),outfits:[{x:5040,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:5300,bgTint:'#0a0020',blizzard:true,maxFish:56},
 
-  '2-2':{name:'2-2  THE ICE CAVES',desc:'GOAL: Descend into the glacier. Two sacred relics wait deep inside - the FEATHERS midway and the STAFF at the end. Collect both to proceed.',
-    platforms:[{x:0,y:358,w:360,h:42,type:'rock'},{x:180,y:292,w:85,h:14,type:'ice'},{x:340,y:262,w:80,h:14,type:'rock'},{x:500,y:290,w:95,h:14,type:'ice'},{x:360,y:358,w:520,h:42,type:'rock'},{x:680,y:254,w:85,h:14,type:'rock'},{x:860,y:284,w:100,h:14,type:'ice'},{x:980,y:358,w:180,h:42,type:'water'},{x:1070,y:298,w:66,h:14,type:'ice'},{x:1160,y:358,w:600,h:42,type:'rock'},{x:1280,y:278,w:90,h:14,type:'ice'},{x:1460,y:250,w:84,h:14,type:'rock'},{x:1640,y:282,w:90,h:14,type:'ice'},{x:1800,y:358,w:200,h:42,type:'water'},{x:1890,y:298,w:66,h:14,type:'ice'},{x:2000,y:358,w:680,h:42,type:'rock'},{x:2120,y:262,w:90,h:14,type:'ice'},{x:2320,y:242,w:84,h:14,type:'rock'},{x:2520,y:268,w:90,h:14,type:'ice'},{x:2680,y:358,w:200,h:42,type:'water'},{x:2770,y:298,w:68,h:14,type:'ice'},{x:2880,y:358,w:680,h:42,type:'rock'},{x:3000,y:262,w:90,h:14,type:'ice'},{x:3200,y:240,w:90,h:14,type:'rock'},{x:3400,y:268,w:100,h:14,type:'ice'}],
-    enemies:buildEnemies([320,520,720,1220,1480,1660,2120,2340,2540,2960,3220]),fish:buildFish(120,255,40,52),outfits:[{x:1660,y:246,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:3460,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:3760,bgTint:'#050020',blizzard:true,maxFish:40},
+  '2-2':{name:'2-2  THE ICE CAVES',desc:'GOAL: Descend into the glacier. Two sacred relics wait deep inside - the FEATHERS midway, the STAFF at the end. Cracking ledges everywhere!',
+    platforms:[
+      {x:0,y:358,w:560,h:42,type:'rock'},
+      {x:180,y:292,w:85,h:14,type:'ice'},{x:340,y:262,w:80,h:14,type:'rock'},
+      {x:500,y:290,w:95,h:16,type:'crack'},
+      {x:560,y:358,w:520,h:42,type:'rock'},{x:680,y:254,w:85,h:14,type:'rock'},
+      {x:860,y:284,w:100,h:16,type:'crack'},
+      {x:1080,y:358,w:200,h:42,type:'water'},{x:1160,y:300,w:70,h:16,type:'crack'},
+      {x:1280,y:358,w:600,h:42,type:'rock'},
+      {x:1400,y:278,w:90,h:14,type:'ice'},{x:1580,y:250,w:84,h:14,type:'rock'},
+      {x:1760,y:282,w:90,h:16,type:'crack'},
+      {x:1880,y:358,w:240,h:42,type:'water'},{x:1960,y:298,w:70,h:16,type:'crack'},
+      {x:2120,y:358,w:760,h:42,type:'rock'},
+      {x:2240,y:262,w:90,h:14,type:'ice'},{x:2440,y:242,w:84,h:14,type:'rock'},
+      {x:2640,y:268,w:90,h:16,type:'crack'},{x:2820,y:262,w:90,h:14,type:'ice'},
+      {x:2880,y:358,w:240,h:42,type:'water'},{x:2960,y:298,w:80,h:16,type:'crack'},
+      {x:3120,y:358,w:760,h:42,type:'rock'},
+      {x:3240,y:262,w:90,h:14,type:'ice'},{x:3440,y:240,w:90,h:14,type:'rock'},
+      {x:3640,y:268,w:100,h:16,type:'crack'},
+      {x:3880,y:358,w:200,h:42,type:'water'},{x:3960,y:300,w:80,h:16,type:'crack'},
+      {x:4080,y:358,w:700,h:42,type:'rock'},
+      {x:4200,y:262,w:90,h:14,type:'ice'},{x:4400,y:240,w:90,h:14,type:'rock'},
+      {x:4600,y:268,w:120,h:14,type:'ice'}
+    ],
+    enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:760,type:'penguin'},{x:1400,type:'netter',range:30},{x:1640,type:'penguin'},{x:2240,type:'normal'},{x:2440,type:'penguin'},{x:2700,type:'netter',range:30},{x:3240,type:'penguin'},{x:3500,type:'normal'},{x:4200,type:'penguin'},{x:4400,type:'netter',range:30}]),
+    fish:buildFish(120,255,58,52),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
 
-  '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic, the sacred GEM, then prove your heart in the King\'s trial to awaken the Whisperer.',
-    platforms:[{x:0,y:358,w:420,h:42,type:'snow'},{x:200,y:292,w:90,h:14,type:'snow'},{x:380,y:262,w:85,h:14,type:'ice'},{x:540,y:288,w:100,h:14,type:'snow'},{x:420,y:358,w:560,h:42,type:'snow'},{x:720,y:252,w:88,h:14,type:'ice'},{x:880,y:278,w:95,h:14,type:'snow'},{x:1010,y:358,w:200,h:42,type:'water'},{x:1100,y:300,w:68,h:14,type:'ice'},{x:1210,y:358,w:640,h:42,type:'snow'},{x:1320,y:280,w:90,h:14,type:'ice'},{x:1500,y:250,w:84,h:14,type:'snow'},{x:1680,y:282,w:90,h:14,type:'ice'},{x:1850,y:358,w:200,h:42,type:'water'},{x:1940,y:300,w:68,h:14,type:'ice'},{x:2050,y:358,w:680,h:42,type:'snow'},{x:2180,y:258,w:90,h:14,type:'ice'},{x:2380,y:238,w:84,h:14,type:'snow'},{x:2580,y:262,w:90,h:14,type:'ice'},{x:2740,y:358,w:200,h:42,type:'water'},{x:2830,y:298,w:68,h:14,type:'ice'},{x:2940,y:358,w:760,h:42,type:'snow'},{x:3060,y:256,w:90,h:14,type:'ice'},{x:3260,y:236,w:120,h:14,type:'snow'},{x:3440,y:282,w:120,h:14,type:'ice'}],
-    enemies:buildEnemies([320,540,740,1240,1420,1700,2120,2340,2620,3020,3280]),fish:buildFish(140,248,42,52),outfits:[{x:3500,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:3400,y:46},end:'outfit',width:3760,bgTint:'#00001a',blizzard:false,maxFish:42},
+  '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic - the sacred GEM - then prove your heart in the King\'s trial to awaken the Whisperer.',
+    platforms:[
+      {x:0,y:358,w:640,h:42,type:'snow'},
+      {x:200,y:292,w:90,h:14,type:'snow'},{x:380,y:262,w:85,h:14,type:'ice'},
+      {x:540,y:288,w:100,h:16,type:'crack'},
+      {x:640,y:358,w:560,h:42,type:'snow'},{x:720,y:252,w:88,h:14,type:'ice'},
+      {x:900,y:278,w:95,h:16,type:'crack'},
+      {x:1200,y:358,w:240,h:42,type:'water'},{x:1280,y:300,w:80,h:16,type:'crack'},
+      {x:1440,y:358,w:760,h:42,type:'snow'},
+      {x:1560,y:280,w:90,h:14,type:'ice'},{x:1760,y:250,w:84,h:14,type:'snow'},
+      {x:1960,y:282,w:90,h:16,type:'crack'},
+      {x:2200,y:358,w:240,h:42,type:'water'},{x:2280,y:300,w:80,h:16,type:'crack'},
+      {x:2440,y:358,w:820,h:42,type:'snow'},
+      {x:2560,y:258,w:90,h:14,type:'ice'},{x:2760,y:238,w:84,h:14,type:'snow'},
+      {x:2960,y:262,w:90,h:16,type:'crack'},{x:3160,y:240,w:90,h:14,type:'ice'},
+      {x:3260,y:358,w:240,h:42,type:'water'},{x:3340,y:298,w:80,h:16,type:'crack'},
+      {x:3500,y:358,w:900,h:42,type:'snow'},
+      {x:3620,y:256,w:90,h:14,type:'ice'},{x:3820,y:236,w:90,h:14,type:'snow'},
+      {x:4020,y:262,w:100,h:14,type:'ice'},{x:4220,y:238,w:90,h:14,type:'snow'},
+      {x:4400,y:358,w:700,h:42,type:'snow'},
+      {x:4520,y:256,w:90,h:14,type:'ice'},{x:4720,y:236,w:200,h:14,type:'snow'},{x:4900,y:282,w:120,h:14,type:'ice'}
+    ],
+    enemies:buildMixed([{x:320,type:'penguin'},{x:560,type:'normal'},{x:780,type:'penguin'},{x:1560,type:'netter',range:30},{x:1800,type:'penguin'},{x:2560,type:'penguin'},{x:2800,type:'normal'},{x:3100,type:'penguin'},{x:3620,type:'netter',range:30},{x:3900,type:'penguin'},{x:4200,type:'normal'},{x:4500,type:'penguin'}]),
+    fish:buildFish(140,248,60,52),outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
 
-  '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins. Battle through Magnus\'s outer patrols along the rocky coast and reach the far cliffs to press inland.',
-    platforms:[{x:0,y:358,w:420,h:42,type:'ground'},{x:190,y:298,w:110,h:18,type:'ice'},{x:375,y:258,w:92,h:18,type:'rock'},{x:560,y:298,w:115,h:18,type:'ice'},{x:420,y:358,w:560,h:42,type:'ground'},{x:740,y:238,w:92,h:18,type:'rock'},{x:900,y:288,w:105,h:18,type:'ice'},{x:980,y:358,w:200,h:42,type:'water'},{x:1080,y:308,w:72,h:18,type:'ice'},{x:1180,y:358,w:660,h:42,type:'ground'},{x:1300,y:293,w:105,h:18,type:'rock'},{x:1490,y:256,w:92,h:18,type:'ice'},{x:1660,y:295,w:120,h:18,type:'rock'},{x:1840,y:358,w:200,h:42,type:'water'},{x:1930,y:300,w:70,h:18,type:'ice'},{x:2040,y:358,w:760,h:42,type:'ground'},{x:2160,y:273,w:115,h:18,type:'rock'},{x:2360,y:245,w:92,h:18,type:'ice'},{x:2560,y:285,w:105,h:18,type:'rock'},{x:2740,y:252,w:120,h:18,type:'ice'},{x:2900,y:358,w:200,h:42,type:'water'},{x:2990,y:300,w:68,h:18,type:'ice'},{x:3100,y:358,w:700,h:42,type:'ground'},{x:3220,y:280,w:100,h:18,type:'rock'}],
-    enemies:buildEnemies([320,540,760,1240,1420,1640,2080,2300,2560,2780,3140,3320]),fish:buildFish(150,255,36,52),outfits:[],end:'reach',width:3800,bgTint:null,blizzard:false,maxFish:36},
+  '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins! Battle through Magnus\'s patrols and net-hunters along the rocky coast, then reach the far cliffs to press inland.',
+    platforms:[
+      {x:0,y:358,w:640,h:42,type:'ground'},
+      {x:190,y:298,w:110,h:18,type:'ice'},{x:375,y:258,w:92,h:18,type:'rock'},
+      {x:560,y:298,w:115,h:16,type:'crack'},
+      {x:640,y:358,w:560,h:42,type:'ground'},{x:740,y:238,w:92,h:18,type:'rock'},
+      {x:920,y:288,w:105,h:16,type:'crack'},
+      {x:1200,y:358,w:240,h:42,type:'water'},{x:1290,y:308,w:80,h:16,type:'crack'},
+      {x:1440,y:358,w:760,h:42,type:'ground'},
+      {x:1560,y:293,w:105,h:18,type:'rock'},{x:1760,y:256,w:92,h:18,type:'ice'},
+      {x:1960,y:295,w:120,h:16,type:'crack'},
+      {x:2200,y:358,w:240,h:42,type:'water'},{x:2280,y:300,w:80,h:18,type:'ice'},
+      {x:2440,y:358,w:820,h:42,type:'ground'},
+      {x:2560,y:273,w:115,h:18,type:'rock'},{x:2760,y:245,w:92,h:18,type:'ice'},
+      {x:2960,y:285,w:105,h:16,type:'crack'},{x:3160,y:252,w:120,h:18,type:'ice'},
+      {x:3280,y:358,w:240,h:42,type:'water'},{x:3360,y:300,w:80,h:16,type:'crack'},
+      {x:3520,y:358,w:900,h:42,type:'ground'},
+      {x:3640,y:280,w:100,h:18,type:'rock'},{x:3840,y:256,w:92,h:18,type:'ice'},
+      {x:4040,y:288,w:105,h:16,type:'crack'},{x:4240,y:262,w:100,h:18,type:'rock'},
+      {x:4420,y:358,w:600,h:42,type:'ground'},{x:4540,y:280,w:100,h:18,type:'rock'}
+    ],
+    enemies:buildMixed([{x:320,type:'normal'},{x:540,type:'netter',range:30},{x:760,type:'penguin'},{x:1560,type:'normal'},{x:1760,type:'netter',range:30},{x:2560,type:'penguin'},{x:2760,type:'normal'},{x:3000,type:'netter',range:30},{x:3640,type:'penguin'},{x:3840,type:'normal'},{x:4100,type:'netter',range:30},{x:4400,type:'penguin'}]),
+    fish:buildFish(150,255,52,52),outfits:[],end:'reach',width:5020,bgTint:null,blizzard:false,maxFish:52},
 
-  '3-2':{name:'3-2  THE FROZEN FLEET',desc:'GOAL: Board Magnus\'s anchored warships. Leap from deck to deck across the freezing harbour and fight your way to the fortress gates.',
-    platforms:[{x:0,y:358,w:380,h:42,type:'ground'},{x:180,y:290,w:100,h:18,type:'ice'},{x:340,y:258,w:88,h:18,type:'rock'},{x:520,y:288,w:105,h:18,type:'ship'},{x:400,y:358,w:200,h:42,type:'water'},{x:680,y:248,w:88,h:18,type:'rock'},{x:860,y:278,w:140,h:18,type:'ship'},{x:1020,y:358,w:200,h:42,type:'water'},{x:1120,y:298,w:68,h:18,type:'ice'},{x:1220,y:278,w:260,h:18,type:'ship'},{x:1280,y:358,w:280,h:42,type:'water'},{x:1520,y:248,w:85,h:18,type:'ice'},{x:1660,y:358,w:200,h:42,type:'water'},{x:1760,y:292,w:68,h:18,type:'ice'},{x:1840,y:278,w:280,h:18,type:'ship'},{x:1900,y:358,w:320,h:42,type:'water'},{x:2160,y:285,w:68,h:18,type:'ice'},{x:2300,y:358,w:240,h:42,type:'water'},{x:2360,y:265,w:300,h:18,type:'ship'},{x:2700,y:358,w:640,h:42,type:'ground'},{x:2820,y:258,w:100,h:18,type:'rock'},{x:3000,y:280,w:90,h:18,type:'ice'},{x:3200,y:252,w:90,h:18,type:'rock'}],
-    enemies:buildEnemies([340,560,720,900,1240,1340,1860,1960,2380,2480,2860,3040,3220]),fish:buildFish(160,248,38,52),outfits:[],end:'reach',width:3500,bgTint:'#080010',blizzard:false,maxFish:38},
+  '3-2':{name:'3-2  THE FROZEN FLEET',desc:'GOAL: Board Magnus\'s anchored warships. Leap deck to deck across the freezing harbour - mind the cracking ice floes - and reach the fortress gates.',
+    platforms:[
+      {x:0,y:358,w:520,h:42,type:'ground'},
+      {x:180,y:290,w:100,h:18,type:'ice'},{x:340,y:258,w:88,h:18,type:'rock'},
+      {x:520,y:288,w:105,h:18,type:'ship'},
+      {x:625,y:358,w:200,h:42,type:'water'},{x:700,y:300,w:80,h:16,type:'crack'},
+      {x:825,y:248,w:88,h:18,type:'rock'},{x:1000,y:278,w:140,h:18,type:'ship'},
+      {x:1140,y:358,w:240,h:42,type:'water'},{x:1220,y:300,w:80,h:16,type:'crack'},
+      {x:1380,y:278,w:260,h:18,type:'ship'},
+      {x:1640,y:358,w:280,h:42,type:'water'},{x:1720,y:298,w:70,h:16,type:'crack'},{x:1820,y:294,w:70,h:16,type:'crack'},
+      {x:1920,y:278,w:280,h:18,type:'ship'},
+      {x:2200,y:358,w:280,h:42,type:'water'},{x:2280,y:298,w:70,h:16,type:'crack'},
+      {x:2480,y:265,w:300,h:18,type:'ship'},
+      {x:2780,y:358,w:200,h:42,type:'water'},{x:2860,y:300,w:80,h:16,type:'crack'},
+      {x:2980,y:358,w:720,h:42,type:'ground'},
+      {x:3100,y:258,w:100,h:18,type:'rock'},{x:3300,y:280,w:90,h:16,type:'crack'},
+      {x:3500,y:252,w:100,h:18,type:'ship'},
+      {x:3700,y:358,w:700,h:42,type:'ground'},{x:3820,y:258,w:100,h:18,type:'rock'},{x:4020,y:280,w:90,h:18,type:'ice'}
+    ],
+    enemies:buildMixed([{x:340,type:'normal'},{x:560,type:'netter',range:30},{x:850,type:'penguin'},{x:1040,type:'normal'},{x:1450,type:'netter',range:30},{x:2000,type:'penguin'},{x:2100,type:'normal'},{x:2550,type:'netter',range:30},{x:3100,type:'penguin'},{x:3300,type:'normal'},{x:3550,type:'netter',range:30},{x:3850,type:'penguin'}]),
+    fish:buildFish(160,248,52,52),outfits:[],end:'reach',width:4400,bgTint:'#080010',blizzard:false,maxFish:52},
 
-  '3-3':{name:'3-3  THE FORTRESS OF FURY',desc:'GOAL: Storm Magnus\'s stronghold. Smash through the heaviest defences yet and reach the prison cage at the heart of the keep to free Eric.',
-    platforms:[{x:0,y:358,w:400,h:42,type:'ground'},{x:180,y:290,w:95,h:18,type:'rock'},{x:360,y:258,w:88,h:18,type:'ice'},{x:540,y:288,w:100,h:18,type:'rock'},{x:400,y:358,w:560,h:42,type:'ground'},{x:700,y:248,w:88,h:18,type:'ice'},{x:880,y:278,w:100,h:18,type:'rock'},{x:980,y:358,w:200,h:42,type:'water'},{x:1075,y:300,w:68,h:18,type:'ice'},{x:1180,y:358,w:620,h:42,type:'ground'},{x:1300,y:280,w:90,h:18,type:'rock'},{x:1480,y:250,w:85,h:18,type:'ice'},{x:1660,y:282,w:90,h:18,type:'rock'},{x:1800,y:358,w:200,h:42,type:'water'},{x:1890,y:292,w:68,h:18,type:'ice'},{x:2000,y:358,w:720,h:42,type:'ground'},{x:2120,y:258,w:92,h:18,type:'rock'},{x:2320,y:238,w:86,h:18,type:'ice'},{x:2520,y:262,w:92,h:18,type:'rock'},{x:2700,y:358,w:200,h:42,type:'water'},{x:2790,y:288,w:68,h:18,type:'ice'},{x:2900,y:358,w:760,h:42,type:'ground'},{x:3020,y:255,w:90,h:18,type:'ice'},{x:3220,y:288,w:90,h:18,type:'rock'},{x:3420,y:262,w:120,h:18,type:'rock'}],
-    enemies:buildEnemies([320,540,720,900,1280,1480,1680,2120,2340,2540,2960,3180,3400]),fish:buildFish(150,250,38,52),outfits:[],goal:{x:3560,y:292,w:55,h:68,rescued:false},end:'rescue',width:3800,bgTint:'#080010',blizzard:false,maxFish:38},
+  '3-3':{name:'3-3  THE FORTRESS OF FURY',desc:'GOAL: Storm Magnus\'s stronghold. Smash through the heaviest defences yet and reach the prison cage at the heart of the keep to free Eric!',
+    platforms:[
+      {x:0,y:358,w:560,h:42,type:'ground'},
+      {x:180,y:290,w:95,h:18,type:'rock'},{x:360,y:258,w:88,h:18,type:'ice'},
+      {x:540,y:288,w:100,h:16,type:'crack'},
+      {x:560,y:358,w:560,h:42,type:'ground'},{x:700,y:248,w:88,h:18,type:'ice'},
+      {x:880,y:278,w:100,h:16,type:'crack'},
+      {x:1120,y:358,w:240,h:42,type:'water'},{x:1200,y:300,w:80,h:16,type:'crack'},
+      {x:1360,y:358,w:720,h:42,type:'ground'},
+      {x:1480,y:280,w:90,h:18,type:'rock'},{x:1680,y:250,w:85,h:18,type:'ice'},
+      {x:1880,y:282,w:90,h:16,type:'crack'},
+      {x:2080,y:358,w:240,h:42,type:'water'},{x:2160,y:298,w:80,h:16,type:'crack'},
+      {x:2320,y:358,w:820,h:42,type:'ground'},
+      {x:2440,y:258,w:92,h:18,type:'rock'},{x:2640,y:238,w:86,h:18,type:'ice'},
+      {x:2840,y:262,w:92,h:16,type:'crack'},{x:3040,y:240,w:92,h:18,type:'rock'},
+      {x:3140,y:358,w:240,h:42,type:'water'},{x:3220,y:298,w:80,h:16,type:'crack'},
+      {x:3380,y:358,w:900,h:42,type:'ground'},
+      {x:3500,y:258,w:90,h:18,type:'rock'},{x:3700,y:238,w:90,h:18,type:'ice'},
+      {x:3900,y:262,w:100,h:16,type:'crack'},{x:4100,y:240,w:90,h:18,type:'rock'},
+      {x:4280,y:358,w:600,h:42,type:'ground'},{x:4400,y:262,w:90,h:18,type:'rock'}
+    ],
+    enemies:buildMixed([{x:320,type:'big'},{x:540,type:'netter',range:30},{x:760,type:'penguin'},{x:1480,type:'big'},{x:1700,type:'netter',range:30},{x:2440,type:'big'},{x:2660,type:'penguin'},{x:2900,type:'netter',range:30},{x:3500,type:'big'},{x:3750,type:'penguin'},{x:4000,type:'netter',range:30},{x:4300,type:'big'}]),
+    fish:buildFish(150,250,54,52),outfits:[],goal:{x:4640,y:292,w:55,h:68,rescued:false},end:'rescue',width:4880,bgTint:'#080010',blizzard:false,maxFish:54},
 
-  '3-4':{name:'3-4  MAGNUS THE MERCILESS',desc:'GOAL: The final battle. Dodge Magnus\'s clubs, charge your Tail-Spin on the fish between his platforms, and strike him until the tyrant falls.',
-    platforms:[{x:0,y:358,w:2400,h:42,type:'ground'},{x:200,y:258,w:220,h:18,type:'rock'},{x:520,y:230,w:200,h:18,type:'ice'},{x:820,y:258,w:220,h:18,type:'rock'},{x:1140,y:230,w:200,h:18,type:'ice'},{x:1460,y:258,w:220,h:18,type:'rock'},{x:1780,y:230,w:200,h:18,type:'ice'},{x:2060,y:258,w:220,h:18,type:'rock'}],
-    enemies:buildEnemies([300,650,1000,1350,1700,2050]),fish:buildFish(120,210,24,80),outfits:[],
-    boss:{x:1200,y:220,w:66,h:138,vx:1.3,hp:12,maxHp:12,alive:true,facingRight:false,frame:0,frameTick:0,hurtTimer:0,phase:1,clubTimer:80,jumpTimer:150,vy:0,onGround:true},
-    end:'boss',width:2400,bgTint:'#0a0008',blizzard:false,maxFish:24}
+  '3-4':{name:'3-4  MAGNUS THE MERCILESS',desc:'GOAL: The final battle! Dodge Magnus\'s clubs, charge your Tail-Spin on the fish between his platforms, and strike him until the tyrant falls. For Eric!',
+    platforms:[
+      {x:0,y:358,w:2800,h:42,type:'ground'},
+      {x:200,y:258,w:240,h:18,type:'rock'},{x:560,y:230,w:220,h:18,type:'ice'},
+      {x:900,y:258,w:240,h:18,type:'rock'},{x:1260,y:230,w:220,h:18,type:'ice'},
+      {x:1620,y:258,w:240,h:18,type:'rock'},{x:1980,y:230,w:220,h:18,type:'ice'},
+      {x:2340,y:258,w:240,h:18,type:'rock'}
+    ],
+    enemies:buildMixed([{x:300,type:'penguin'},{x:700,type:'penguin'},{x:1100,type:'penguin'},{x:1500,type:'penguin'},{x:1900,type:'penguin'},{x:2300,type:'penguin'}]),
+    fish:buildFish(120,210,30,80),outfits:[],
+    boss:{x:1400,y:200,w:78,h:150,vx:1.3,hp:12,maxHp:12,alive:true,facingRight:false,frame:0,frameTick:0,hurtTimer:0,phase:1,clubTimer:80,jumpTimer:150,vy:0,onGround:true},
+    end:'boss',width:2800,bgTint:'#0a0008',blizzard:false,maxFish:30}
 };
 var STAGE_ORDER=['1-1','1-2','2-1','2-2','2-3','3-1','3-2','3-3','3-4'];
 
@@ -1111,7 +1985,7 @@ var notifQ=[], notifActive=null, notifTimer=0;
 // AUDIO SYSTEM  -  streams from echoxstudios.art/sealbert/audio/
 // Upload the 10 mp3s to that folder with these exact filenames.
 // ═══════════════════════════════════════════════════════
-var AUDIO_BASE = '/sealbert/audio/';
+var AUDIO_BASE = 'https://echoxstudios.art/sealbert/audio/';
 var TRACKS = {
   stage1:   'Seal on Ice.mp3',
   stage2:   'Blizzard in Boxers.mp3',
@@ -1174,7 +2048,11 @@ function showGoalBanner(name,desc){
   document.getElementById('gb-name').textContent=name;
   document.getElementById('gb-desc').textContent=desc||'';
   b.style.display='flex';
-  if(game) game.bannerTimer=150;
+  if(game) game.bannerTimer=99999; // wait for button
+}
+function dismissGoalBanner(){
+  document.getElementById('goal-banner').style.display='none';
+  if(game) game.bannerTimer=0;
 }
 
 function initStage(key){
@@ -1195,7 +2073,7 @@ function initStage(key){
     stageKey:key,lvl:lvl,diff:diff,
     gravity:0.45,
     bossActive:false,bossIntroDone:false,
-    particles:[],clubs:[],
+    particles:[],clubs:[],nets:[],
     erikFollowX:100,erikFollowY:250,erikAnim:{frame:0,tick:0},
     companionRescued:false,companion:null,
     outfitsCollected:0,spinDoneNearEric:false,spinHintShown:false,
@@ -1207,7 +2085,7 @@ function initStage(key){
     camera:{x:0}
   };
   // Init player
-  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0};
+  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,slideCooldown:0,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0,netted:0,netEscapeSpins:0};
 
   document.getElementById('hud').style.display='flex';
   document.getElementById('game-wrapper').style.display='block';
@@ -1315,6 +2193,29 @@ function update(){
   var slideK=keys['x']||keys['X'];
   var spinK=keys['c']||keys['C'];
 
+  // NETTED: spinning struggles free (no charge needed); 2 spins escapes
+  if(p.netted>0){
+    p.vx=0;
+    if(spinK&&p.spinCooldown<=0&&p.spinTimer<=0){
+      p.spinTimer=30; p.spinCooldown=14;
+      p.netEscapeSpins++;
+      spawnParts(p.x+30,p.y+27,'#c0b070',12); spawnParts(p.x+30,p.y+27,'#ffe040',8);
+      if(p.netEscapeSpins>=2){
+        p.netted=0; p.netEscapeSpins=0;
+        spawnParts(p.x+30,p.y+27,'#ffe040',20);
+        showNotif('FREE! Keep moving!');
+        // brief mercy invuln after breaking out
+        p.hurtTimer=40;
+        // stop all netters charging
+        for(var ce=0;ce<g.enemies.length;ce++){ if(g.enemies[ce].type==='netter') g.enemies[ce].charging=false; }
+      } else {
+        showNotif('Almost! Spin once more!');
+      }
+    }
+    if(p.spinTimer>0) p.spinTimer--;
+    if(p.spinCooldown>0) p.spinCooldown--;
+    if(p.netted>0) p.state='netted';
+  } else
   if(spinK&&p.spinCooldown<=0&&p.spinCharge>=100&&p.spinTimer<=0){
     p.spinTimer=44; p.spinCooldown=130; p.spinCharge=0;
     spawnParts(p.x+30,p.y+27,SB.tail,14,6); spawnParts(p.x+30,p.y+27,'#ffe040',10,5);
@@ -1328,17 +2229,25 @@ function update(){
   var spinRate=g.diff?g.diff.spinChargeRate:0.4;
   if(p.spinCharge<100&&p.spinTimer<=0) p.spinCharge=Math.min(100,p.spinCharge+spinRate);
 
+  if(p.netted>0){ p.vx=0; } else
   if(p.hurtTimer<=0&&p.spinTimer<=0){
     var spd=p.slideTimer>0?6.8:3.6;
     if(left){ p.vx=Math.max(p.vx-0.58,-spd); p.facingRight=false; }
     if(right){ p.vx=Math.min(p.vx+0.58,spd); p.facingRight=true; }
     if(!left&&!right) p.vx*=0.7;
-  } else if(p.spinTimer>0) p.vx*=0.88;
+  } else if(p.spinTimer>0&&p.hurtTimer<=0){
+    // steerable spin: reduced control, can still drift sideways
+    var sspd=4.2;
+    if(left){ p.vx=Math.max(p.vx-0.4,-sspd); p.facingRight=false; }
+    else if(right){ p.vx=Math.min(p.vx+0.4,sspd); p.facingRight=true; }
+    else p.vx*=0.92;
+  }
 
-  if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
+  if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
   p.jumpPressed=jumpK;
-  if(slideK&&p.onGround&&p.slideTimer<=0&&p.hurtTimer<=0&&p.spinTimer<=0){ p.slideTimer=30; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7); }
+  if(slideK&&p.onGround&&p.slideTimer<=0&&p.slideCooldown<=0&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){ p.slideTimer=28; p.slideCooldown=55; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7); }
   if(p.slideTimer>0) p.slideTimer--;
+  if(p.slideCooldown>0) p.slideCooldown--;
 
   p.vy+=g.gravity; if(p.vy>15) p.vy=15;
   p.x+=p.vx; p.y+=p.vy;
@@ -1355,6 +2264,7 @@ function update(){
       if(p.x+p.w>pl.x&&p.x<pl.x+pl.w&&p.y+p.h>pl.y+5&&p.y<pl.y+pl.h){ spawnParts(p.x+30,pl.y+8,ENV.watC,12); hurtPlayer(); }
       continue;
     }
+    if(pl.gone) continue;
     if(p.x+p.w>pl.x&&p.x<pl.x+pl.w){
       if(p.y+p.h>pl.y&&p.y+p.h<pl.y+pl.h&&p.vy>=0){ p.y=pl.y-p.h; p.vy=0; p.onGround=true; }
       if(p.y<pl.y+pl.h&&p.y>pl.y&&p.vy<0){ p.y=pl.y+pl.h; p.vy=0; }
@@ -1370,24 +2280,72 @@ function update(){
     var e=g.enemies[ei];
     if(!e.alive) continue;
     e.frameTick++; if(e.frameTick>6){ e.frame++; e.frameTick=0; }
-    e.x+=e.vx; if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx*=-1; if(e.x<0) e.vx=Math.abs(e.vx);
-    e.facingRight=e.vx>0;
+
+    // ── PENGUIN: fast charger, hops toward player when close ──
+    if(e.type==='penguin'){
+      var dist=p.x-e.x;
+      if(Math.abs(dist)<280){ // aggro: charge the player
+        e.vx=dist>0?Math.abs(e.baseSpd)*1.8:-Math.abs(e.baseSpd)*1.8;
+        if(e.onGround&&Math.random()<0.04){ e.vy=-7; e.onGround=false; } // angry hops
+      } else {
+        if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx=(e.x<e.patrolLeft?Math.abs(e.baseSpd):-Math.abs(e.baseSpd));
+      }
+      e.x+=e.vx;
+      if(!e.onGround){ e.vy+=0.4; e.y+=e.vy; }
+    }
+    // ── NETTER: throws nets; charges in to gloat when player is caught ──
+    else if(e.type==='netter'){
+      if(p.netted>0&&e.charging){
+        // rush the trapped seal
+        var nd=p.x-e.x;
+        e.x+=nd>0?2.2:-2.2;
+        e.facingRight=nd>0;
+      } else {
+        e.charging=false;
+        e.x+=e.vx*0.4;
+        if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx*=-1;
+        e.facingRight=(p.x>e.x);
+        e.netCooldown--;
+        if(Math.abs(p.x-e.x)<360&&e.netCooldown<=0&&Math.abs(p.y-e.y)<140&&p.netted<=0){
+          throwNet(e.x+e.w/2,e.y+10,(p.x>e.x?4.2:-4.2),-5,ei);
+          e.netCooldown=(150+Math.random()*60|0)/clubFreq|0;
+        }
+      }
+    }
+    // ── CLUBBER (default) ──
+    else {
+      e.x+=e.vx; if(e.x<e.patrolLeft||e.x>e.patrolRight) e.vx*=-1; if(e.x<0) e.vx=Math.abs(e.vx);
+    }
+    e.facingRight=(e.type==='netter')?(p.x>e.x):(e.vx>0);
+
     var onG=false;
     for(var pj=0;pj<g.platforms.length;pj++){
       var pll=g.platforms[pj];
-      if(pll.type==='water') continue;
-      if(e.x+e.w>pll.x&&e.x<pll.x+pll.w&&e.y+e.h>=pll.y&&e.y+e.h<=pll.y+10){ e.y=pll.y-e.h; onG=true; break; }
+      if(pll.type==='water'||pll.gone) continue;
+      if(e.x+e.w>pll.x&&e.x<pll.x+pll.w&&e.y+e.h>=pll.y&&e.y+e.h<=pll.y+12){ e.y=pll.y-e.h; onG=true; if(e.vy>0)e.vy=0; break; }
     }
-    if(!onG) e.y=Math.min(e.y+2,358-e.h);
-    e.clubCooldown--;
-    if(Math.abs(p.x-e.x)<230&&e.clubCooldown<=0&&Math.abs(p.y-e.y)<90){
-      throwClub(e.x+(e.facingRight?e.w:0),e.y+6,e.facingRight?3.5:-3.5,-2);
-      e.clubCooldown=(80+Math.random()*60|0)/clubFreq|0;
+    e.onGround=onG;
+    if(!onG&&e.type!=='penguin') e.y=Math.min(e.y+2,358-e.h);
+    if(!onG&&e.type==='penguin'){ /* gravity handled above */ }
+
+    // Clubber throws clubs
+    if(e.type!=='penguin'&&e.type!=='netter'){
+      e.clubCooldown--;
+      if(Math.abs(p.x-e.x)<230&&e.clubCooldown<=0&&Math.abs(p.y-e.y)<90){
+        throwClub(e.x+(e.facingRight?e.w:0),e.y+6,e.facingRight?3.5:-3.5,-2);
+        e.clubCooldown=(80+Math.random()*60|0)/clubFreq|0;
+      }
     }
+
     if(p.hurtTimer<=0&&rectsOverlap(p,e)){
       var stomp=p.vy>0&&p.y+p.h<e.y+e.h*0.5, spin=p.spinTimer>0, slide=p.slideTimer>0;
-      if(stomp||spin||slide){ e.alive=false; g.score+=spin?260:155; if(stomp) p.vy=-8; spawnParts(e.x+18,e.y+10,'#c02020',12); spawnParts(e.x+18,e.y+10,'#f0d000',7); }
-      else hurtPlayer();
+      if(stomp||spin||slide){
+        e.alive=false;
+        g.score+=spin?260:155;
+        if(stomp) p.vy=-8;
+        var col=e.type==='penguin'?'#202020':'#c02020';
+        spawnParts(e.x+18,e.y+10,col,12); spawnParts(e.x+18,e.y+10,'#f0d000',7);
+      } else hurtPlayer();
     }
   }
 
@@ -1406,6 +2364,54 @@ function update(){
     }
   }
   g.clubs=g.clubs.filter(function(c){ return !c.dead; });
+
+  // ── NETS (thrown by netters; trap the player briefly) ──
+  for(var ni=g.nets.length-1;ni>=0;ni--){
+    var nt=g.nets[ni];
+    nt.x+=nt.vx; nt.vy+=0.22; nt.y+=nt.vy; nt.spin+=0.12;
+    if(nt.grow<1) nt.grow+=0.05;
+    for(var pk=0;pk<g.platforms.length;pk++){
+      var plk=g.platforms[pk]; if(plk.type==='water'||plk.gone) continue;
+      if(nt.x>plk.x&&nt.x<plk.x+plk.w&&nt.y+18>=plk.y&&nt.y<plk.y+8){ nt.dead=true; }
+    }
+    if(nt.y>440) nt.dead=true;
+    if(!nt.dead&&p.netted<=0){
+      // spinning through a flying net destroys it (no capture)
+      if(p.spinTimer>0&&Math.abs(nt.x-p.x-30)<42&&Math.abs(nt.y-p.y-27)<42){ nt.dead=true; g.score+=40; spawnParts(nt.x,nt.y,'#ffe040',10); }
+      else { var nr={x:nt.x-16,y:nt.y-16,w:32,h:32}; if(rectsOverlap(p,nr)){
+        // CAPTURED — trap the player, must spin twice to break free
+        nt.dead=true;
+        p.netted=1; p.netEscapeSpins=0; p.vx=0; p.vy=0;
+        if(nt.ownerIdx!=null&&g.enemies[nt.ownerIdx]) g.enemies[nt.ownerIdx].charging=true;
+        spawnParts(p.x+30,p.y+27,'#c0b070',16);
+        showNotif('CAUGHT! Press C twice to break free!');
+      } }
+    }
+  }
+  g.nets=g.nets.filter(function(n){ return !n.dead; });
+
+  // ── CRACKING ICE (platforms that dissolve when stood on) ──
+  for(var ci2=0;ci2<g.platforms.length;ci2++){
+    var cp=g.platforms[ci2];
+    if(cp.type!=='crack') continue;
+    if(cp.gone){
+      cp.respawn--; if(cp.respawn<=0){ cp.gone=false; cp.crackTimer=0; cp.shake=0; }
+      continue;
+    }
+    // is player standing on it?
+    var onThis=(p.onGround&&p.x+p.w>cp.x+4&&p.x<cp.x+cp.w-4&&Math.abs((p.y+p.h)-cp.y)<6);
+    if(onThis){
+      cp.crackTimer=(cp.crackTimer||0)+1;
+      cp.shake=Math.min(3,cp.crackTimer/20);
+      if(cp.crackTimer>70){ // collapses
+        cp.gone=true; cp.respawn=180; cp.crackTimer=0;
+        spawnParts(cp.x+cp.w/2,cp.y+6,ENV.icC,16); spawnParts(cp.x+cp.w/2,cp.y+6,'#90c8e8',12);
+      }
+    } else {
+      if(cp.crackTimer>0) cp.crackTimer=Math.max(0,cp.crackTimer-0.5);
+      cp.shake=0;
+    }
+  }
 
   // Fish
   for(var fi=0;fi<g.collectibles.length;fi++){
@@ -1499,6 +2505,7 @@ function updateBoss(){
   document.getElementById('boss-hp-fill').style.width=(b.hp/b.maxHp*100)+'%';
 }
 function throwClub(x,y,vx,vy){ game.clubs.push({x:x,y:y,vx:vx,vy:vy||(-2),rot:0,dead:false}); }
+function throwNet(x,y,vx,vy,ownerIdx){ game.nets.push({x:x,y:y,vx:vx,vy:vy||(-4),spin:0,grow:0,dead:false,ownerIdx:(ownerIdx==null?null:ownerIdx)}); }
 function bossDead(){
   var g=game, b=g.boss; b.alive=false; b.hp=0; g.bossActive=false; g.won=true; g.score+=3500;
   document.getElementById('boss-hp-wrap').style.display='none';
@@ -1540,8 +2547,15 @@ function render(){
   for(var i=0;i<g.outfits.length;i++){ var o=g.outfits[i]; if(!o.collected) drawOutfitPickup((o.x*PS-scroll)/PS|0,o.y,o.type,o.bob); }
 
   if(g.goal){ var gl=g.goal; drawGoal(gl.x-scroll,gl.y-72,gl.rescued); }
-  for(var i=0;i<g.enemies.length;i++){ var e=g.enemies[i]; if(e.alive) drawClubber((e.x-scroll)/PS|0,e.y/PS|0,e.facingRight,e.type==='big',e.frame); }
+  for(var i=0;i<g.enemies.length;i++){
+    var e=g.enemies[i]; if(!e.alive) continue;
+    var ex=(e.x-scroll)/PS|0, ey=e.y/PS|0;
+    if(e.type==='penguin') drawPenguin(ex,ey,e.facingRight,e.frame);
+    else if(e.type==='netter') drawNetter(ex,ey,e.facingRight,e.frame);
+    else drawClubber(ex,ey,e.facingRight,e.type==='big',e.frame);
+  }
   for(var i=0;i<g.clubs.length;i++) drawClub(g.clubs[i]);
+  for(var i=0;i<g.nets.length;i++) drawNet(g.nets[i]);
 
   if(g.boss&&g.boss.alive&&g.bossActive) drawMagnus(g.boss);
 
@@ -1568,6 +2582,29 @@ function render(){
   // Player
   var p=g.player;
   drawSealbert((p.x-scroll)/PS|0,p.y/PS|0,p.facingRight,p.state,p.hurtTimer,p.spinTimer,p.frame);
+  // Net cage overlay when captured
+  if(p.netted>0){
+    var nx=p.x-scroll, ny=p.y;
+    var jitter=p.spinTimer>0?(Math.random()-0.5)*4:0;
+    mainCtx.save(); mainCtx.translate(jitter,0);
+    // rope mesh over the seal
+    mainCtx.strokeStyle='rgba(216,200,136,0.95)'; mainCtx.lineWidth=2;
+    mainCtx.strokeRect(nx+2,ny+2,p.w-4,p.h-4);
+    mainCtx.lineWidth=1.4; mainCtx.strokeStyle='rgba(200,180,110,0.9)';
+    for(var gi=1;gi<5;gi++){
+      mainCtx.beginPath(); mainCtx.moveTo(nx+2+gi*(p.w-4)/5,ny+2); mainCtx.lineTo(nx+2+gi*(p.w-4)/5,ny+p.h-2); mainCtx.stroke();
+      mainCtx.beginPath(); mainCtx.moveTo(nx+2,ny+2+gi*(p.h-4)/5); mainCtx.lineTo(nx+p.w-2,ny+2+gi*(p.h-4)/5); mainCtx.stroke();
+    }
+    // weighted corner knots
+    mainCtx.fillStyle='#806030';
+    mainCtx.fillRect(nx,ny,5,5); mainCtx.fillRect(nx+p.w-5,ny,5,5);
+    mainCtx.fillRect(nx,ny+p.h-5,5,5); mainCtx.fillRect(nx+p.w-5,ny+p.h-5,5,5);
+    mainCtx.restore();
+    // escape prompt + progress
+    mainCtx.fillStyle='rgba(10,5,0,0.85)'; rrect(mainCtx,nx-6,ny-26,p.w+12,20,5); mainCtx.fill();
+    mainCtx.fillStyle='#ffe040'; mainCtx.font='9px "Press Start 2P",monospace'; mainCtx.textAlign='center';
+    mainCtx.fillText('SPIN! '+p.netEscapeSpins+'/2',nx+p.w/2,ny-12); mainCtx.textAlign='left';
+  }
 
   // Particles (upgraded: stars + glowing squares + spin)
   for(var i=0;i<g.particles.length;i++){
@@ -1596,16 +2633,31 @@ function render(){
   }
   mainCtx.globalAlpha=1;
 
-  // Spin ready badge
+  // Spin ready speech bubble (bigger, animated)
   if(p.spinCharge>=100&&p.spinTimer<=0&&p.spinCooldown<=0){
-    var ix=(p.x-scroll+30)|0, iy=(p.y-18)|0;
-    mainCtx.fillStyle='rgba(10,5,0,.78)'; mainCtx.fillRect(ix-22,iy-2,50,12);
-    mainCtx.fillStyle='#ffe040'; mainCtx.font='6px monospace'; mainCtx.textAlign='center'; mainCtx.fillText('★SPIN!',ix+3,iy+8); mainCtx.textAlign='left';
+    var ix=(p.x-scroll+33)|0, iy=(p.y-30)|0;
+    var puff=Math.sin(Date.now()/200)*2;
+    // bubble body
+    mainCtx.fillStyle='rgba(255,255,255,0.95)';
+    rrect(mainCtx,ix-34,iy-6+puff,72,22,6); mainCtx.fill();
+    // bubble tail pointing down to seal
+    mainCtx.beginPath();
+    mainCtx.moveTo(ix-6,iy+15+puff); mainCtx.lineTo(ix,iy+24+puff); mainCtx.lineTo(ix+8,iy+15+puff);
+    mainCtx.closePath(); mainCtx.fill();
+    // gold border
+    mainCtx.strokeStyle='#ffb000'; mainCtx.lineWidth=2;
+    rrect(mainCtx,ix-34,iy-6+puff,72,22,6); mainCtx.stroke();
+    // text
+    mainCtx.fillStyle='#e84818'; mainCtx.font='10px "Press Start 2P",monospace';
+    mainCtx.textAlign='center'; mainCtx.fillText('SPIN!',ix+2,iy+9+puff); mainCtx.textAlign='left';
+    // little stars
+    mainCtx.fillStyle='#ffd000';
+    mainCtx.fillRect(ix-30,iy-2+puff,3,3); mainCtx.fillRect(ix+28,iy+2+puff,3,3);
   }
   // Stage 1 hint arrow
   if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric&&p.spinCharge>=100){
     var ex3=g.lvl.erikPos.x*PS-scroll;
-    if(ex3>0&&ex3<640){ mainCtx.fillStyle='#ffe040'; mainCtx.font='bold 9px monospace'; mainCtx.fillText('→ SPIN NEAR ERIK!',Math.min(ex3-130,490),285); }
+    if(ex3>0&&ex3<640){ mainCtx.fillStyle='#ffe040'; mainCtx.font='10px "Press Start 2P",monospace'; mainCtx.fillText('SPIN NEAR ERIK!',Math.min(ex3-130,490),285); }
   }
   if(g.over) r(0,0,640,400,'rgba(0,0,0,.5)');
 }
@@ -1613,6 +2665,95 @@ function drawGoal(gx,gy,rescued){
   if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIK!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
   else{ r(gx+18,gy-60,4,64,'#a0a0a0'); mainCtx.fillStyle=ENV.gndD; mainCtx.fillRect(gx+22,gy-58,28,18); mainCtx.fillStyle='#fff'; mainCtx.font='6px monospace'; mainCtx.fillText('FREE!',gx+24,gy-46); }
 }
+function drawPenguin(cx,cy,facingRight,frame){
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  if(!facingRight){ ctx.translate(16*PS,0); ctx.scale(-1,1); }
+  var waddle=(frame%4<2)?0:1;
+  // shadow
+  ctx.globalAlpha=0.22; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(8*PS,30*PS,7*PS,2.5*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+  // feet (orange, waddling)
+  pr(3,28+waddle,4,3,'#e07010'); pr(9,28-waddle,4,3,'#e07010'); pr(3,30+waddle,4,1,'#a04800'); pr(9,30-waddle,4,1,'#a04800');
+  // body — round black back, 3-tone
+  pr(1,8,14,21,'#0a0a14'); pr(2,7,12,21,'#1a1a28'); pr(2,7,11,19,'#26263a');
+  pr(2,6,10,5,'#34344e'); // back sheen
+  // white belly
+  pr(4,11,8,16,'#f0f0f8'); pr(5,10,7,17,'#ffffff'); pr(5,11,5,14,'#e8e8f4');
+  // wings/flippers (angry, flared out)
+  pr(0,11,3,12,'#0a0a14'); pr(1,10,2,12,'#1a1a28');
+  pr(13,11,3,12,'#0a0a14'); pr(13,10,2,12,'#1a1a28');
+  // head
+  pr(2,1,12,9,'#0a0a14'); pr(3,0,10,9,'#1a1a28'); pr(3,0,9,8,'#26263a');
+  // angry eyebrows (V-shape)
+  pr(4,2,3,1,'#000'); pr(9,2,3,1,'#000'); pr(5,1,2,1,'#000'); pr(9,1,2,1,'#000');
+  // furious red eyes
+  pr(4,3,3,3,'#fff'); pr(9,3,3,3,'#fff');
+  pr(5,4,2,2,'#e02000'); pr(10,4,2,2,'#e02000');
+  pr(5,4,1,1,'#ff6040'); pr(10,4,1,1,'#ff6040');
+  // orange beak (open, squawking)
+  pr(6,6,5,2,'#f08000'); pr(7,5,4,2,'#ffa020'); pr(11,6,2,2,'#d06000');
+  pr(7,8,3,1,'#c05000'); // lower beak
+  // little furious cheek puffs
+  ctx.globalAlpha=0.4; pr(3,5,2,2,'#4060ff'); pr(11,5,2,2,'#4060ff'); ctx.globalAlpha=1;
+  ctx.restore();
+}
+
+function drawNetter(cx,cy,facingRight,frame){
+  ctx.save(); ctx.translate(cx*PS,cy*PS);
+  if(!facingRight){ ctx.translate(16*PS,0); ctx.scale(-1,1); }
+  // shadow
+  ctx.globalAlpha=0.22; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(8*PS,37*PS,8*PS,3*PS,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+  // boots
+  pr(2,32,5,6,'#1a1008'); pr(9,32,5,6,'#1a1008'); pr(3,31,4,6,'#3a2818'); pr(9,31,4,6,'#3a2818');
+  // waders (teal rubber overalls — a hunter)
+  pr(2,16,12,17,'#10403a'); pr(3,15,10,18,'#185850'); pr(4,15,8,16,'#206e64');
+  pr(6,16,4,15,'#288078'); // highlight
+  // straps
+  pr(4,15,2,10,'#0c322c'); pr(10,15,2,10,'#0c322c');
+  // chest pouch
+  pr(5,20,6,5,'#0a2824'); pr(6,21,4,3,'#14443c');
+  // arms (holding a net behind, ready to throw)
+  pr(0,16,3,12,'#185850'); pr(1,15,3,12,'#206e64'); pr(1,26,3,3,'#d0a060');
+  pr(13,15,4,11,'#185850'); pr(13,14,4,11,'#206e64'); pr(14,24,3,4,'#d0a060');
+  // a coiled net in raised hand
+  pr(15,10,5,5,'#c0b070'); 
+  for(var i=0;i<3;i++){ pr(15,10+i*2,5,1,'#8a7840'); pr(15+i*2,10,1,5,'#8a7840'); }
+  // head
+  pr(3,1,10,9,'#a07840'); pr(4,0,8,10,'#c89858'); pr(4,0,7,8,'#d8a868');
+  // hood/cap (waterproof)
+  pr(2,-3,12,6,'#0c322c'); pr(3,-4,10,6,'#14443c'); pr(3,-4,9,3,'#1c5048');
+  pr(2,0,12,2,'#0a2824'); // brim
+  // squinting hunter eyes
+  pr(4,3,3,2,'#100808'); pr(9,3,3,2,'#100808');
+  pr(5,3,2,1,'#3a6048'); pr(10,3,2,1,'#3a6048');
+  // grim mouth
+  pr(5,6,6,1,'#3a1808'); pr(5,7,5,1,'#4a2010');
+  // stubble
+  ctx.globalAlpha=0.4; for(var i=0;i<4;i++) pr(4+i*2,8,1,1,'#4a3020'); ctx.globalAlpha=1;
+  ctx.restore();
+}
+
+function drawNet(nt){
+  var sx=nt.x-game.camera.x, sy=nt.y;
+  var sz=10+nt.grow*8;
+  mainCtx.save(); mainCtx.translate(sx,sy); mainCtx.rotate(nt.spin);
+  // motion trail
+  mainCtx.globalAlpha=0.2; mainCtx.fillStyle='#c0b070';
+  mainCtx.fillRect(-nt.vx*2-sz/2,-nt.vy*2-sz/2,sz,sz); mainCtx.globalAlpha=1;
+  // net mesh
+  mainCtx.strokeStyle='#d8c888'; mainCtx.lineWidth=1.5;
+  mainCtx.strokeRect(-sz/2,-sz/2,sz,sz);
+  mainCtx.lineWidth=1; mainCtx.strokeStyle='#b0a060';
+  for(var i=1;i<4;i++){
+    mainCtx.beginPath(); mainCtx.moveTo(-sz/2+i*sz/4,-sz/2); mainCtx.lineTo(-sz/2+i*sz/4,sz/2); mainCtx.stroke();
+    mainCtx.beginPath(); mainCtx.moveTo(-sz/2,-sz/2+i*sz/4); mainCtx.lineTo(sz/2,-sz/2+i*sz/4); mainCtx.stroke();
+  }
+  // weighted corners
+  mainCtx.fillStyle='#806030';
+  mainCtx.fillRect(-sz/2-2,-sz/2-2,4,4); mainCtx.fillRect(sz/2-2,-sz/2-2,4,4);
+  mainCtx.fillRect(-sz/2-2,sz/2-2,4,4); mainCtx.fillRect(sz/2-2,sz/2-2,4,4);
+  mainCtx.restore();
+}
+
 function drawClub(cl){
 var sx=cl.x-game.camera.x, sy=cl.y;
 mainCtx.save(); mainCtx.translate(sx,sy);
