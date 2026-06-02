@@ -1095,65 +1095,124 @@ function drawMagnus(boss){
   var sx=(boss.x-game.camera.x), sy=boss.y;
   var H=boss.hurtTimer>0&&(Math.floor(boss.hurtTimer/3)%2===0);
   var raise=Math.sin(tick/200)*6; var p2=boss.phase===2;
-  c.save(); c.translate(sx,sy); c.scale(1.25,1.25);
+  var breath=Math.sin(tick/600)*1.5;
+  c.save(); c.translate(sx,sy); c.scale(1.28,1.28);
   if(!boss.facingRight){ c.translate(60,0); c.scale(-1,1); }
   // phase-2 aura
-  if(p2){ c.globalAlpha=0.22+Math.sin(tick/180)*0.12; c.fillStyle='#a000d0'; c.beginPath(); c.ellipse(30,70,40,56,0,0,Math.PI*2); c.fill(); c.globalAlpha=1; }
-  c.globalAlpha=0.25; c.fillStyle='#000'; c.beginPath(); c.ellipse(30,150,26,6,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
-  // cape behind
-  var cg=c.createLinearGradient(0,30,60,140); cg.addColorStop(0,'#a040a0'); cg.addColorStop(0.5,'#500038'); cg.addColorStop(1,'#180010');
+  if(p2){ c.globalAlpha=0.22+Math.sin(tick/180)*0.12; var ag=c.createRadialGradient(30,70,8,30,70,52); ag.addColorStop(0,'#d040ff'); ag.addColorStop(1,'rgba(120,0,160,0)'); c.fillStyle=ag; c.beginPath(); c.ellipse(30,70,42,58,0,0,Math.PI*2); c.fill(); c.globalAlpha=1; }
+  c.globalAlpha=0.28; c.fillStyle='#000'; c.beginPath(); c.ellipse(30,150,28,6,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // ---- CAPE behind (with inner shading + collar) ----
+  var cg=c.createLinearGradient(0,30,60,150); cg.addColorStop(0,'#b048b0'); cg.addColorStop(0.45,'#5a0040'); cg.addColorStop(1,'#16000e');
   c.fillStyle=cg; c.beginPath();
-  c.moveTo(12,40); c.bezierCurveTo(-12,80,-8,140,6,150); c.lineTo(54,150); c.bezierCurveTo(68,140,72,80,48,40);
-  c.bezierCurveTo(40,32,20,32,12,40); c.closePath(); c.fill();
-  // legs/boots
-  vLimb(c,22,108,18,148,11,'#2a0038','#1a0028'); vLimb(c,38,108,42,148,11,'#2a0038','#1a0028');
-  vBlob(c,18,150,9,7,'#3a2418','#1a1008'); vBlob(c,42,150,9,7,'#3a2418','#1a1008');
-  // crimson coat
-  var bg=c.createLinearGradient(8,40,52,116); bg.addColorStop(0,H?'#ff8080':'#ff5050'); bg.addColorStop(0.5,H?'#ff2020':'#a01010'); bg.addColorStop(1,'#5a0000');
+  c.moveTo(10,38); c.bezierCurveTo(-16,82,-10,144,6,152);
+  c.bezierCurveTo(2,130,4,96,14,72); c.lineTo(46,72);
+  c.bezierCurveTo(56,96,58,130,54,152); c.bezierCurveTo(70,144,76,82,50,38);
+  c.bezierCurveTo(42,30,18,30,10,38); c.closePath(); c.fill();
+  // cape folds
+  c.strokeStyle='rgba(20,0,16,0.5)'; c.lineWidth=2;
+  c.beginPath(); c.moveTo(14,72); c.lineTo(8,140); c.moveTo(46,72); c.lineTo(52,140); c.stroke();
+  // ---- LEGS ----
+  vLimb(c,22,108,18,148,12,'#2a0038','#160022'); vLimb(c,38,108,42,148,12,'#2a0038','#160022');
+  vBlob(c,18,150,10,7,'#3a2418','#160c06'); vBlob(c,42,150,10,7,'#3a2418','#160c06');
+  // armoured knee plates
+  vBlob(c,20,120,5,4,'#9aa0b0','#5a6070'); vBlob(c,40,120,5,4,'#9aa0b0','#5a6070');
+  // ---- CRIMSON COAT with SHOULDERS ----
+  var bg=c.createLinearGradient(8,40,52,118); bg.addColorStop(0,H?'#ffa0a0':'#e84040'); bg.addColorStop(0.5,H?'#ff3030':'#9a1010'); bg.addColorStop(1,'#480000');
   c.fillStyle=bg; c.beginPath();
-  c.moveTo(12,48); c.bezierCurveTo(0,68,2,108,12,116); c.lineTo(48,116); c.bezierCurveTo(58,108,60,68,48,48);
-  c.bezierCurveTo(40,40,20,40,12,48); c.closePath(); c.fill();
-  // medals
-  c.fillStyle='#f0c020'; for(var i=0;i<3;i++){ c.beginPath(); c.arc(20+i*7,62,3,0,7); c.fill(); }
-  // fur trim
-  c.fillStyle='#e8d8b0'; c.beginPath(); c.ellipse(30,46,18,5,0,0,Math.PI*2); c.fill();
-  for(var i=0;i<10;i++){ c.beginPath(); c.arc(13+i*4,114,2.5,0,7); c.fill(); }
-  // arms
-  vLimb(c,14,52,6,92,9,'#a01010','#5a0000'); vLimb(c,46,52,56,46+raise,9,'#a01010','#5a0000');
-  vBlob(c,6,94,5,5,'#e0b070','#b07830'); vBlob(c,57,46+raise,6,6,'#e0b070','#b07830');
-  // giant spiked club
-  c.save(); c.translate(57,46+raise); c.rotate(-0.6);
-  vLimb(c,0,6,4,-54,9,'#7a4a1c','#2a1404');
-  if(p2){ c.globalAlpha=0.4+Math.sin(tick/150)*0.2; c.fillStyle='#ff2080'; c.beginPath(); c.arc(4,-58,16,0,7); c.fill(); c.globalAlpha=1; }
-  vBlob(c,4,-58,13,14,'#7a4e28','#2a1404');
-  c.fillStyle='#707070';
-  for(var s=0;s<3;s++){ var sa=s*2.1; c.beginPath(); c.moveTo(4+Math.cos(sa)*10,-58+Math.sin(sa)*11); c.lineTo(4+Math.cos(sa)*18,-58+Math.sin(sa)*18); c.lineTo(4+Math.cos(sa+0.4)*11,-58+Math.sin(sa+0.4)*12); c.closePath(); c.fill(); }
+  c.moveTo(11,52);
+  c.bezierCurveTo(-1,72,1,108,11,118+breath); c.lineTo(49,118+breath);
+  c.bezierCurveTo(59,108,61,72,49,52);
+  c.bezierCurveTo(53,40,40,35,30,35);   // right shoulder
+  c.bezierCurveTo(20,35,7,40,11,52);    // left shoulder
+  c.closePath(); c.fill();
+  // armoured shoulder pauldrons
+  var pg=c.createLinearGradient(0,34,0,48); pg.addColorStop(0,'#c0c6d4'); pg.addColorStop(1,'#5a6272');
+  c.fillStyle=pg;
+  c.beginPath(); c.ellipse(11,42,9,7,0,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(49,42,9,7,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#3a4150'; c.beginPath(); c.arc(11,42,3,0,7); c.fill(); c.beginPath(); c.arc(49,42,3,0,7); c.fill();
+  // coat centre + gold medals
+  vLimb(c,30,46,30,114,3,'#c83030','#8a0c0c');
+  c.fillStyle='#f0c020'; for(var i=0;i<3;i++){ c.beginPath(); c.arc(22,58+i*9,3,0,7); c.fill(); c.fillStyle='#ffe060'; c.beginPath(); c.arc(21,57+i*9,1,0,7); c.fill(); c.fillStyle='#f0c020'; }
+  // skull belt buckle
+  c.fillStyle='#1a1208'; c.fillRect(12,104,36,7);
+  vBlob(c,30,107,5,4,'#e8e0c8','#a8a088');
+  c.fillStyle='#1a1208'; c.beginPath(); c.arc(28,106,1,0,7); c.fill(); c.beginPath(); c.arc(32,106,1,0,7); c.fill();
+  // fur trim collar + hem
+  c.fillStyle='#ede0c0';
+  for(var i=0;i<11;i++){ c.beginPath(); c.arc(12+i*3.6,116+breath,2.6,0,7); c.fill(); }
+  c.beginPath(); c.ellipse(30,44,16,4,0,0,Math.PI*2); c.fill();
+  // ---- ARMS (back + weapon arm) ----
+  vLimb(c,13,50,5,90,9,'#9a1010','#480000'); vBlob(c,5,92,5,5,'#e0b070','#a86828');
+  // ---- HEAD with bone structure ----
+  c.save(); c.translate(30,28);
+  c.fillStyle='#c89858'; c.fillRect(-5,12,10,7); // neck
+  // angular face
+  var fg=c.createLinearGradient(0,-12,0,14); fg.addColorStop(0,'#f0c078'); fg.addColorStop(1,'#a8702e');
+  c.fillStyle=fg; c.beginPath();
+  c.moveTo(-12,-5); c.bezierCurveTo(-13,-14,13,-14,12,-5);
+  c.bezierCurveTo(12,2,10,8,5,13); c.bezierCurveTo(2,15,-2,15,-5,13);
+  c.bezierCurveTo(-10,8,-12,2,-12,-5); c.closePath(); c.fill();
+  // brow ridge + cheekbones
+  c.fillStyle='#9a6228'; c.fillRect(-11,-6,22,2);
+  c.globalAlpha=0.3; c.fillStyle='#f8d8a0'; c.beginPath(); c.ellipse(-7,-1,2.5,1.6,0,0,7); c.fill(); c.beginPath(); c.ellipse(7,-1,2.5,1.6,0,0,7); c.fill(); c.globalAlpha=1;
+  // war paint streaks
+  c.globalAlpha=0.55; c.fillStyle='#8a0a0a'; c.fillRect(-9,-3,3,11); c.fillRect(6,-3,3,11); c.globalAlpha=1;
+  // burning eyes (deep sockets)
+  c.fillStyle='#1a0000'; c.beginPath(); c.ellipse(-5,-2,4,3.6,0,0,7); c.fill(); c.beginPath(); c.ellipse(5,-2,4,3.6,0,0,7); c.fill();
+  var eg=c.createRadialGradient(-5,-2,0.4,-5,-2,4); eg.addColorStop(0,'#ffd040'); eg.addColorStop(0.5,'#ff6020'); eg.addColorStop(1,'#a00000');
+  c.fillStyle=eg; c.beginPath(); c.arc(-5,-2,2.6,0,7); c.fill();
+  var eg2=c.createRadialGradient(5,-2,0.4,5,-2,4); eg2.addColorStop(0,'#ffd040'); eg2.addColorStop(0.5,'#ff6020'); eg2.addColorStop(1,'#a00000');
+  c.fillStyle=eg2; c.beginPath(); c.arc(5,-2,2.6,0,7); c.fill();
+  c.globalAlpha=0.5+Math.sin(tick/250)*0.2; c.fillStyle='#ff3000'; c.beginPath(); c.arc(-5,-2,4.5,0,7); c.fill(); c.beginPath(); c.arc(5,-2,4.5,0,7); c.fill(); c.globalAlpha=1;
+  // furious brows
+  c.strokeStyle='#2a1808'; c.lineWidth=2.2; c.lineCap='round';
+  c.beginPath(); c.moveTo(-10,-6); c.lineTo(-2,-3); c.stroke(); c.beginPath(); c.moveTo(10,-6); c.lineTo(2,-3); c.stroke();
+  // pointed braided beard
+  var bd=c.createLinearGradient(0,4,0,18); bd.addColorStop(0,'#3a2410'); bd.addColorStop(1,'#160c04');
+  c.fillStyle=bd; c.beginPath();
+  c.moveTo(-9,4); c.bezierCurveTo(-10,12,-4,18,0,20); c.bezierCurveTo(4,18,10,12,9,4);
+  c.bezierCurveTo(6,8,4,9,3,7); c.bezierCurveTo(0,11,0,11,-3,7); c.bezierCurveTo(-4,9,-6,8,-9,4); c.closePath(); c.fill();
+  // beard braid rings
+  c.fillStyle='#c0a030'; c.beginPath(); c.arc(0,15,1.6,0,7); c.fill();
+  // snarl
+  c.strokeStyle='#2a1004'; c.lineWidth=1.4; c.beginPath(); c.moveTo(-4,7); c.quadraticCurveTo(0,5,4,7); c.stroke();
+  c.fillStyle='#fff'; c.fillRect(-2,6.5,1.4,1.6); c.fillRect(1,6.5,1.4,1.6);
+  // ---- VIKING HELMET (metallic, sits high) ----
+  c.save(); c.translate(0,-8);
+  var hg=c.createLinearGradient(0,-8,0,6); hg.addColorStop(0,'#cacedc'); hg.addColorStop(0.5,'#8a90a4'); hg.addColorStop(1,'#4a5060');
+  c.fillStyle=hg; c.beginPath(); c.arc(0,2,15,Math.PI,0); c.lineTo(16,6); c.lineTo(-16,6); c.closePath(); c.fill();
+  // helmet rim + rivets
+  c.fillStyle='#3a4050'; c.fillRect(-16,4,32,4);
+  c.fillStyle='#c0c6d4'; for(var rv=0;rv<5;rv++){ c.beginPath(); c.arc(-12+rv*6,6,1,0,7); c.fill(); }
+  // centre ridge
+  c.fillStyle='#dadfe8'; c.fillRect(-1.5,-12,3,18);
+  // HORNS (curved, ivory with shading)
+  var hng=c.createLinearGradient(-26,-12,-10,4); hng.addColorStop(0,'#d8cca0'); hng.addColorStop(1,'#8a7c50');
+  c.fillStyle=hng;
+  c.beginPath(); c.moveTo(-13,0); c.quadraticCurveTo(-30,-6,-30,-20); c.quadraticCurveTo(-22,-10,-9,-6); c.closePath(); c.fill();
+  var hng2=c.createLinearGradient(26,-12,10,4); hng2.addColorStop(0,'#d8cca0'); hng2.addColorStop(1,'#8a7c50');
+  c.fillStyle=hng2;
+  c.beginPath(); c.moveTo(13,0); c.quadraticCurveTo(30,-6,30,-20); c.quadraticCurveTo(22,-10,9,-6); c.closePath(); c.fill();
+  // horn highlights
+  c.strokeStyle='rgba(255,250,230,0.6)'; c.lineWidth=1; c.beginPath(); c.moveTo(-13,-1); c.quadraticCurveTo(-26,-7,-27,-18); c.stroke();
   c.restore();
-  // neck/head
-  vBlob(c,30,44,8,6,'#e0b070','#b07830');
-  vBlob(c,30,30,15,14,'#e8b860','#c08838');
-  // beard (dark, pointed)
-  c.fillStyle='#2a1808'; c.beginPath();
-  c.moveTo(18,34); c.quadraticCurveTo(30,56,42,34); c.quadraticCurveTo(34,46,30,50); c.quadraticCurveTo(26,46,18,34); c.closePath(); c.fill();
-  // viking helmet
-  var hg=c.createLinearGradient(0,8,0,30); hg.addColorStop(0,'#b0b030'); hg.addColorStop(1,'#606010');
-  c.fillStyle=hg; c.beginPath(); c.arc(30,22,16,Math.PI,0); c.lineTo(46,26); c.lineTo(14,26); c.closePath(); c.fill();
-  c.fillStyle='#787818'; c.fillRect(12,24,36,4);
-  // horns
-  c.fillStyle='#a8a030'; 
-  c.beginPath(); c.moveTo(14,22); c.quadraticCurveTo(-4,16,-2,2); c.quadraticCurveTo(6,12,16,16); c.closePath(); c.fill();
-  c.beginPath(); c.moveTo(46,22); c.quadraticCurveTo(64,16,62,2); c.quadraticCurveTo(54,12,44,16); c.closePath(); c.fill();
-  // war paint
-  c.globalAlpha=0.5; c.fillStyle='#8a0a0a'; c.fillRect(20,28,3,8); c.fillRect(37,28,3,8); c.globalAlpha=1;
-  // burning eyes
-  c.fillStyle='#1a0000'; c.beginPath(); c.ellipse(24,30,4,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(36,30,4,4,0,0,Math.PI*2); c.fill();
-  var eg=c.createRadialGradient(24,30,0.5,24,30,4); eg.addColorStop(0,'#ff8040'); eg.addColorStop(1,'#d01000');
-  c.fillStyle=eg; c.beginPath(); c.arc(24,30,3,0,7); c.fill();
-  var eg2=c.createRadialGradient(36,30,0.5,36,30,4); eg2.addColorStop(0,'#ff8040'); eg2.addColorStop(1,'#d01000');
-  c.fillStyle=eg2; c.beginPath(); c.arc(36,30,3,0,7); c.fill();
-  // glow
-  c.globalAlpha=0.4+Math.sin(tick/250)*0.18; c.fillStyle='#ff2000';
-  c.beginPath(); c.arc(24,30,5,0,7); c.fill(); c.beginPath(); c.arc(36,30,5,0,7); c.fill(); c.globalAlpha=1;
+  c.restore();
+  // ---- WEAPON ARM + giant spiked mace ----
+  c.save(); c.translate(49,52); c.rotate(0.2);
+  vLimb(c,0,0,7,-6+raise*0.4,9,'#9a1010','#480000');
+  vBlob(c,8,-6+raise*0.4,6,6,'#e0b070','#a86828');
+  c.translate(8,-6+raise*0.4); c.rotate(-0.7);
+  vLimb(c,0,6,4,-50,8,'#6a4418','#241204');
+  // mace head
+  if(p2){ c.globalAlpha=0.4+Math.sin(tick/150)*0.2; var mg=c.createRadialGradient(4,-56,2,4,-56,18); mg.addColorStop(0,'#ff40a0'); mg.addColorStop(1,'rgba(160,0,80,0)'); c.fillStyle=mg; c.beginPath(); c.arc(4,-56,18,0,7); c.fill(); c.globalAlpha=1; }
+  var mhg=c.createRadialGradient(1,-59,2,4,-56,15); mhg.addColorStop(0,'#9aa0b0'); mhg.addColorStop(1,'#3a3a48');
+  c.fillStyle=mhg; c.beginPath(); c.arc(4,-56,12,0,Math.PI*2); c.fill();
+  // spikes all around
+  c.fillStyle='#c0c6d4';
+  for(var s=0;s<8;s++){ var sa=s*Math.PI/4; c.beginPath(); c.moveTo(4+Math.cos(sa)*9,-56+Math.sin(sa)*9); c.lineTo(4+Math.cos(sa)*19,-56+Math.sin(sa)*19); c.lineTo(4+Math.cos(sa+0.3)*9,-56+Math.sin(sa+0.3)*9); c.closePath(); c.fill(); }
+  c.fillStyle='#5a606e'; c.beginPath(); c.arc(4,-56,5,0,7); c.fill();
+  c.restore();
   c.restore();
 }
 function drawTofuFish(cx,cy,bob){
@@ -1225,7 +1284,7 @@ function drawCandy(cx,cy,bob){
   c.restore();
 }
 
-function drawBackground(scroll,tintColor,blizzard){
+function drawBackground(scroll,tintColor,blizzard,biome){
 r(0,0,640,400,ENV.skyA); r(0,55,640,115,ENV.skyB); r(0,170,640,90,ENV.skyC);
 if(tintColor){ ctx.globalAlpha=0.22; r(0,0,640,400,tintColor); ctx.globalAlpha=1; }
 // aurora ribbons
@@ -1255,6 +1314,56 @@ r(0,235,640,25,ENV.watA); r(0,250,640,12,ENV.watB);
 for(var i=0;i<14;i++){ var wx=((i*62-scroll*0.5)%760)-40; r(wx,243,46,3,ENV.watC); r(wx+8,248,26,2,ENV.watD); }
 // blizzard
 if(blizzard){ ctx.fillStyle='rgba(230,245,255,0.8)'; for(var i=0;i<46;i++){ var bx=((i*35+scroll*0.3+Date.now()*0.05)%760), by=((i*29+Date.now()*0.045)%460); ctx.fillRect(bx,by,2,2); } }
+// ── BIOME SCENERY ──
+if(biome==='cave'||biome==='palace'){
+  // dark cavern vignette walls
+  var cg=ctx.createLinearGradient(0,0,0,290); cg.addColorStop(0, biome==='palace'?'#0a1830':'#0a0a16'); cg.addColorStop(1,'rgba(10,10,22,0)');
+  ctx.fillStyle=cg; ctx.fillRect(0,0,640,200);
+  // back cave wall layer
+  ctx.fillStyle=biome==='palace'?'#10243f':'#14121f';
+  for(var i=0;i<8;i++){ var rx=((i*150-scroll*0.15)%1300)-130; ctx.beginPath(); ctx.moveTo(rx,0); ctx.lineTo(rx+40,0); ctx.lineTo(rx+70,70); ctx.lineTo(rx+10,70); ctx.closePath(); ctx.fill(); }
+  // STALACTITES from ceiling
+  for(var i=0;i<10;i++){ var sx=((i*130-scroll*0.32)%1500)-120; var sh=24+(i*37)%42;
+    var col=biome==='palace'?'#3a6a9a':'#2a2638';
+    ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(sx,0); ctx.lineTo(sx+16,0); ctx.lineTo(sx+8,sh); ctx.closePath(); ctx.fill();
+    if(biome==='palace'){ ctx.fillStyle='rgba(150,220,255,0.4)'; ctx.beginPath(); ctx.moveTo(sx+3,0); ctx.lineTo(sx+8,0); ctx.lineTo(sx+7,sh*0.7); ctx.closePath(); ctx.fill(); }
+  }
+  // STALAGMITES rising at mid-depth
+  for(var i=0;i<8;i++){ var gx=((i*170-scroll*0.5)%1500)-120; var gh=28+(i*53)%46;
+    var col2=biome==='palace'?'#1a3e64':'#1e1a2c';
+    ctx.fillStyle=col2; ctx.beginPath(); ctx.moveTo(gx,255); ctx.lineTo(gx+20,255); ctx.lineTo(gx+10,255-gh); ctx.closePath(); ctx.fill();
+  }
+  if(biome==='palace'){
+    // glowing ice crystals
+    for(var i=0;i<6;i++){ var cx3=((i*220-scroll*0.4)%1500)-100, cyc=120+(i%3)*30;
+      ctx.globalAlpha=0.5+Math.sin(Date.now()/600+i)*0.3; ctx.fillStyle='#80e0ff';
+      ctx.beginPath(); ctx.moveTo(cx3,cyc-12); ctx.lineTo(cx3+5,cyc); ctx.lineTo(cx3,cyc+12); ctx.lineTo(cx3-5,cyc); ctx.closePath(); ctx.fill(); ctx.globalAlpha=1; }
+  }
+}
+if(biome==='fortress'){
+  // ominous dark sky wash
+  var fgd=ctx.createLinearGradient(0,0,0,260); fgd.addColorStop(0,'#1a0a14'); fgd.addColorStop(1,'rgba(26,10,20,0)');
+  ctx.fillStyle=fgd; ctx.fillRect(0,0,640,260);
+  // distant fortress towers + battlements
+  for(var i=0;i<5;i++){ var tx=((i*240-scroll*0.22)%1400)-150; var th=120+(i*47)%70;
+    ctx.fillStyle='#241420'; ctx.fillRect(tx,255-th,56,th);
+    // crenellations
+    for(var b=0;b<4;b++){ ctx.fillRect(tx+b*15,255-th-8,9,8); }
+    // tower windows glowing
+    ctx.fillStyle='rgba(255,120,40,0.7)';
+    for(var wY=0;wY<3;wY++){ ctx.fillRect(tx+16,255-th+18+wY*26,7,12); ctx.fillRect(tx+34,255-th+18+wY*26,7,12); }
+    // pointed roof on a couple
+    if(i%2===0){ ctx.fillStyle='#3a1828'; ctx.beginPath(); ctx.moveTo(tx-4,255-th-8); ctx.lineTo(tx+28,255-th-34); ctx.lineTo(tx+60,255-th-8); ctx.closePath(); ctx.fill();
+      ctx.fillStyle='#6a1818'; ctx.beginPath(); ctx.moveTo(tx+28,255-th-34); ctx.lineTo(tx+28,255-th-48); ctx.lineTo(tx+36,255-th-44); ctx.closePath(); ctx.fill(); }
+  }
+  // foreground wall with torches
+  ctx.fillStyle='rgba(16,8,14,0.55)'; ctx.fillRect(0,235,640,25);
+  for(var i=0;i<6;i++){ var tx2=((i*130-scroll*0.5)%780)-40;
+    ctx.fillStyle='#2a1810'; ctx.fillRect(tx2,222,4,16);
+    var fl=0.6+Math.sin(Date.now()/120+i)*0.3; ctx.globalAlpha=fl; ctx.fillStyle='#ff8020';
+    ctx.beginPath(); ctx.ellipse(tx2+2,220,5,8,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#ffe040'; ctx.beginPath(); ctx.ellipse(tx2+2,221,2,4,0,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+}
 // foreground snow ground base
 r(0,290,640,110,ENV.gndA);
 }
@@ -1263,79 +1372,112 @@ function drawPlatform(pl,scroll){
   if(sx>680||sx+w<-20) return;
 
   if(pl.type==='ground'){
-    r(x,y,w,h,'#1a2810');
-    r(x,y+6,w,h-6,'#243818');
-    r(x,y+3,w,8,'#385828');
-    r(x,y,w,8,ENV.gndC);
-    r(x,y,w,4,ENV.gndD);
-    for(var i=0;i<w/32|0;i++) r(x+i*32+8,y,10,3,ENV.snwA);
-    for(var i=0;i<w/18|0;i++){
-      var hh=3+i%3;
-      r(x+i*18+4,y-hh,2,hh,'#78c840');
-      r(x+i*18+8,y-hh-1,2,hh+1,'#58a020');
-      r(x+i*18+12,y-hh+1,2,hh-1,'#68b030');
-    }
-    for(var i=0;i<w/44|0;i++) r(x+i*44+16,y+12,6,3,'#1e3012');
+    // layered earth with a vertical gradient + snowy grassy crust
+    var gg=ctx.createLinearGradient(0,y,0,y+h);
+    gg.addColorStop(0,'#3a5a28'); gg.addColorStop(0.18,'#2a4218'); gg.addColorStop(1,'#13200c');
+    ctx.fillStyle=gg; ctx.fillRect(x,y,w,h);
+    // soil speckle texture
+    ctx.fillStyle='rgba(20,32,12,0.5)';
+    for(var i=0;i<w/16|0;i++){ var rx=x+((i*53+pl.x)%w), ry=y+12+((i*29)%(h-12)); ctx.fillRect(rx,ry,2,2); }
+    // grassy top crust
+    r(x,y,w,7,'#4e8438'); r(x,y,w,4,'#62a444'); r(x,y,w,2,'#7ac050');
+    // snow caps nestled on the grass
+    ctx.fillStyle='#eaf4ff';
+    for(var i=0;i<w/30|0;i++){ var sxk=x+i*30+6; ctx.beginPath(); ctx.ellipse(sxk,y+1,7,2.5,0,0,Math.PI*2); ctx.fill(); }
+    // grass blades
+    for(var i=0;i<w/14|0;i++){ var hh=4+(i%3)*2, bx=x+i*14+4;
+      ctx.strokeStyle=i%2?'#6cc043':'#52982e'; ctx.lineWidth=1.4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(bx,y); ctx.quadraticCurveTo(bx+2,y-hh,bx+1,y-hh-1); ctx.stroke(); }
 
   } else if(pl.type==='ice'){
+    var ig=ctx.createLinearGradient(0,y,0,y+h);
     if(h>=30){
-      r(x,y,w,h,'#1c5888');
-      r(x,y,w,h-4,'#2870a8');
-      r(x,y,w,h-8,'#3888c0');
-      r(x,y,w,10,ENV.icA);
-      r(x,y,w,5,ENV.icC);
-      for(var i=1;i<4;i++) r(x,y+9+i*7,w,1,'#5098c8');
-      var sh=(Date.now()/500|0)%3; r(x+sh*28+6,y+2,14,2,'#e8feff');
+      ig.addColorStop(0,'#bfeaff'); ig.addColorStop(0.12,'#5aa8e0'); ig.addColorStop(0.5,'#2f7ab0'); ig.addColorStop(1,'#173e66');
+      ctx.fillStyle=ig; ctx.fillRect(x,y,w,h);
+      // glossy top sheet
+      r(x,y,w,5,'#eafaff'); r(x,y+5,w,2,'#bfeaff');
+      // internal refraction facets
+      ctx.strokeStyle='rgba(180,230,255,0.35)'; ctx.lineWidth=1;
+      for(var i=0;i<w/40|0;i++){ var fx=x+i*40+10; ctx.beginPath(); ctx.moveTo(fx,y+8); ctx.lineTo(fx+14,y+h*0.6); ctx.lineTo(fx+4,y+h-4); ctx.stroke(); }
+      // moving shine
+      var sh=(Date.now()/26|0)%(w+60)-30; var shg=ctx.createLinearGradient(x+sh-16,0,x+sh+16,0);
+      shg.addColorStop(0,'rgba(255,255,255,0)'); shg.addColorStop(0.5,'rgba(255,255,255,0.5)'); shg.addColorStop(1,'rgba(255,255,255,0)');
+      ctx.fillStyle=shg; ctx.fillRect(x+sh-16,y,32,6);
     } else {
-      r(x,y,w,h,'#2870a8');
-      r(x,y+3,w,h-3,'#3890c8');
-      r(x,y+4,w,h-4,'#48a8e0');
-      r(x,y,w,6,ENV.icA);
-      r(x,y,w,3,ENV.icC);
-      var sh=(Date.now()/500|0)%3; r(x+sh*22+4,y+1,10,2,'#e0fcff');
-      r(x,y,2,h,'#90c8e8');
-      r(x+w-2,y,2,h,'#1858a0');
+      ig.addColorStop(0,'#dff4ff'); ig.addColorStop(0.4,'#6ab4e4'); ig.addColorStop(1,'#2e74ac');
+      ctx.fillStyle=ig; ctx.fillRect(x,y,w,h);
+      r(x,y,w,3,'#f4fdff');
+      ctx.fillStyle='rgba(255,255,255,0.4)'; var sh2=(Date.now()/24|0)%(w+40)-20; ctx.fillRect(x+sh2,y+1,12,2);
+      r(x,y,2,h,'#bfe6f8'); r(x+w-2,y,2,h,'#1a5896');
     }
 
   } else if(pl.type==='snow'){
-    r(x,y,w,h,'#80a0d0');
-    r(x,y+3,w,h-3,'#a0c0e8');
-    r(x,y,w,8,ENV.snwA);
-    r(x,y,w,3,'#fff');
-    for(var i=0;i<w/30|0;i++) r(x+i*30+6,y+2,3,2,'#d0e4f8');
+    var sg=ctx.createLinearGradient(0,y,0,y+h);
+    sg.addColorStop(0,'#ffffff'); sg.addColorStop(0.3,'#dce8f6'); sg.addColorStop(1,'#9fb6d4');
+    ctx.fillStyle=sg; ctx.fillRect(x,y,w,h);
+    // rounded snow-mound top
+    ctx.fillStyle='#ffffff'; ctx.beginPath();
+    ctx.moveTo(x,y+5); 
+    for(var i=0;i<=w;i+=18){ ctx.quadraticCurveTo(x+i+9,y-2,x+i+18,y+4); }
+    ctx.lineTo(x+w,y+8); ctx.lineTo(x,y+8); ctx.closePath(); ctx.fill();
+    // sparkle glints
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    for(var i=0;i<w/26|0;i++){ if((i+((Date.now()/400|0)))%4===0){ var gx=x+i*26+8; ctx.fillRect(gx,y+10+((i*17)%(h-12)),2,2); } }
+    // soft blue shadow dimples
+    ctx.fillStyle='rgba(120,150,190,0.3)';
+    for(var i=0;i<w/40|0;i++){ ctx.beginPath(); ctx.ellipse(x+i*40+20,y+h-4,8,2,0,0,Math.PI*2); ctx.fill(); }
 
   } else if(pl.type==='rock'){
-    r(x,y,w,h,ENV.rokA);
-    r(x,y+3,w,h-3,ENV.rokB);
-    r(x,y,w,6,'#8088a0');
-    r(x+2,y,w-4,3,ENV.snwA);
-    for(var i=0;i<w/30|0;i++) r(x+i*30+10,y+5,2,h-5,'#384050');
+    var rg=ctx.createLinearGradient(0,y,0,y+h);
+    rg.addColorStop(0,'#7a8498'); rg.addColorStop(0.3,'#576275'); rg.addColorStop(1,'#2f3744');
+    ctx.fillStyle=rg; ctx.fillRect(x,y,w,h);
+    // faceted rock blocks
+    ctx.strokeStyle='rgba(30,36,46,0.7)'; ctx.lineWidth=1.4;
+    for(var i=0;i<w/34|0;i++){ var bx=x+i*34; ctx.beginPath(); ctx.moveTo(bx+17,y+4); ctx.lineTo(bx+17,y+h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx,y+h*0.55); ctx.lineTo(bx+34,y+h*0.55); ctx.stroke(); }
+    // lit top edge + facet highlights
+    r(x,y,w,4,'#8a94a8'); r(x,y,w,2,'#a4adbe');
+    ctx.fillStyle='rgba(180,190,205,0.4)';
+    for(var i=0;i<w/34|0;i++){ ctx.beginPath(); ctx.moveTo(x+i*34+2,y+5); ctx.lineTo(x+i*34+12,y+5); ctx.lineTo(x+i*34+4,y+14); ctx.closePath(); ctx.fill(); }
+    // snow dusting on top
+    ctx.fillStyle='#eaf2ff'; for(var i=0;i<w/22|0;i++){ ctx.beginPath(); ctx.ellipse(x+i*22+8,y+1,6,2,0,0,Math.PI*2); ctx.fill(); }
 
   } else if(pl.type==='ship'){
-    r(x,y,w,h,'#2a1808');
-    r(x,y,w,h-4,'#3a2410');
-    r(x,y,w,h-8,'#502e18');
-    r(x,y,w,9,'#9a6e38');
-    r(x,y,w,5,'#b08848');
-    r(x,y,w,3,'#d0aa60');
-    for(var i=0;i<w/22|0;i++){
-      r(x+i*22,y,1,9,'#6a4020');
-      r(x+i*22+11,y,1,9,'#7a5030');
-    }
-    r(x,y+9,w,3,'#5a3818');
-    r(x,y+12,w,2,'#a07830');
-    r(x,y+14,w,1,'#c8a040');
-    for(var i=0;i<w/60|0;i++) r(x+i*60+20,y+18,12,8,'#1a0e04');
+    // rich wooden deck with curved hull feel
+    var wg=ctx.createLinearGradient(0,y,0,y+h);
+    wg.addColorStop(0,'#7a4e26'); wg.addColorStop(0.3,'#5a371a'); wg.addColorStop(1,'#2e1c0c');
+    ctx.fillStyle=wg; ctx.fillRect(x,y,w,h);
+    // deck rail (lit top plank)
+    r(x,y,w,7,'#9a6e38'); r(x,y,w,4,'#b88a4e'); r(x,y,w,2,'#d4ac68');
+    // vertical plank seams with subtle shading
+    for(var i=0;i<w/20|0;i++){ var px=x+i*20;
+      ctx.fillStyle='rgba(30,18,8,0.55)'; ctx.fillRect(px,y+7,1,h-7);
+      ctx.fillStyle='rgba(150,110,60,0.3)'; ctx.fillRect(px+1,y+7,2,h-7); }
+    // gold trim stripe
+    r(x,y+9,w,3,'#3a2410'); r(x,y+11,w,2,'#b8893a'); r(x,y+12,w,1,'#e0c060');
+    // cannon ports (round, recessed)
+    for(var i=0;i<w/64|0;i++){ var cxp2=x+i*64+32;
+      ctx.fillStyle='#0c0804'; ctx.beginPath(); ctx.arc(cxp2,y+h*0.62,7,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#3a2812'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cxp2,y+h*0.62,8.5,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle='#5a4020'; ctx.beginPath(); ctx.arc(cxp2-2,y+h*0.62-2,2,0,Math.PI*2); ctx.fill(); }
 
   } else if(pl.type==='water'){
-    r(x,y,w,h,'#003080');
-    r(x,y+4,w,h-8,'#0060c0');
-    r(x,y,w,3,'#60b0ff');
-    for(var i=0;i<w/32|0;i++){
-      var wx=x+(i*32+(Date.now()/80|0)%32);
-      r(wx,y+10,18,4,'#40a0ff');
-      r(wx+4,y+15,10,3,'#80c8ff');
+    var wtg=ctx.createLinearGradient(0,y,0,y+h);
+    wtg.addColorStop(0,'#2a8ad0'); wtg.addColorStop(0.3,'#1060b8'); wtg.addColorStop(1,'#042a66');
+    ctx.fillStyle=wtg; ctx.fillRect(x,y,w,h);
+    // layered moving wave crests
+    var tnow=Date.now();
+    for(var layer=0;layer<2;layer++){
+      ctx.strokeStyle=layer? 'rgba(120,200,255,0.45)':'rgba(180,230,255,0.7)';
+      ctx.lineWidth=layer?2:1.6;
+      ctx.beginPath();
+      var amp=layer?5:3, spd=layer?60:90, yoff=y+6+layer*7;
+      for(var wx2=0;wx2<=w;wx2+=6){ var yy=yoff+Math.sin((wx2+tnow/spd*20)/22)*amp; if(wx2===0)ctx.moveTo(x+wx2,yy); else ctx.lineTo(x+wx2,yy); }
+      ctx.stroke();
     }
+    // sparkle glints on the surface
+    ctx.fillStyle='rgba(220,245,255,0.8)';
+    for(var i=0;i<w/40|0;i++){ if((i+((tnow/300|0)))%3===0){ var gx=x+(i*40+ (tnow/40|0)%40)%w; ctx.fillRect(gx,y+4,3,2); } }
   } else if(pl.type==='crack'){
     if(pl.gone){
       // collapsed — broken shards + dark gap so it's clearly a hole now
@@ -1440,30 +1582,75 @@ function advanceCS(){
 
 // ── CUTSCENE SLIDES  -  all use draw:function(t) for Safari compat ──
 function csBackdrop(mode,t){
-  // mode: 'sea','ice','blizzard','aurora','dark'
+  // mode: 'sea','ice','blizzard','aurora','dark','cave','fortress','palace'
   var c=csCtx;
   var grd=c.createLinearGradient(0,0,0,400);
   if(mode==='aurora'){ grd.addColorStop(0,'#030828'); grd.addColorStop(0.5,'#0a1840'); grd.addColorStop(1,'#102850'); }
   else if(mode==='dark'){ grd.addColorStop(0,'#02040f'); grd.addColorStop(1,'#0a0818'); }
   else if(mode==='blizzard'){ grd.addColorStop(0,'#101830'); grd.addColorStop(1,'#283848'); }
   else if(mode==='sea'){ grd.addColorStop(0,'#04183f'); grd.addColorStop(0.6,'#0a2f6a'); grd.addColorStop(1,'#06204a'); }
+  else if(mode==='cave'){ grd.addColorStop(0,'#0a0a16'); grd.addColorStop(0.5,'#12121f'); grd.addColorStop(1,'#1a1a2a'); }
+  else if(mode==='palace'){ grd.addColorStop(0,'#0a1830'); grd.addColorStop(0.5,'#10284a'); grd.addColorStop(1,'#163a64'); }
+  else if(mode==='fortress'){ grd.addColorStop(0,'#160812'); grd.addColorStop(0.5,'#1a0a16'); grd.addColorStop(1,'#240e1c'); }
   else { grd.addColorStop(0,'#062048'); grd.addColorStop(0.6,'#1850a0'); grd.addColorStop(1,'#3878c0'); }
   c.fillStyle=grd; c.fillRect(0,0,640,400);
   // aurora ribbons
-  if(mode==='aurora'||mode==='ice'){
+  if(mode==='aurora'||mode==='ice'||mode==='palace'){
     var cols=['#40ffb0','#60a0ff','#c060ff']; c.globalAlpha=0.18;
     for(var k=0;k<3;k++){ c.fillStyle=cols[k];
       for(var i=0;i<5;i++){ var ax=(i*150+Math.sin(t/40+i+k)*30)%760-60; c.fillRect(ax,10+k*10,30,150); } }
     c.globalAlpha=1;
   }
-  // stars
-  c.fillStyle='#ffffff'; c.globalAlpha=0.5;
-  for(var i=0;i<24;i++){ var sx=(i*97)%640, sy=(i*53)%200; if((Math.floor(t/20)+i)%5!==0) c.fillRect(sx,sy,1,1); }
-  c.globalAlpha=1;
-  // parallax glaciers
-  for(var i=0;i<6;i++){ var px=((i*150-t*0.3)%900)-100;
-    c.fillStyle='#1a3050'; c.beginPath(); c.moveTo(px,260); c.lineTo(px+70,180); c.lineTo(px+140,260); c.fill();
-    c.fillStyle='#2a4868'; c.beginPath(); c.moveTo(px+50,205); c.lineTo(px+70,178); c.lineTo(px+90,205); c.fill(); }
+  // stars (skip for cave)
+  if(mode!=='cave'&&mode!=='fortress'){
+    c.fillStyle='#ffffff'; c.globalAlpha=0.5;
+    for(var i=0;i<24;i++){ var sx=(i*97)%640, sy=(i*53)%200; if((Math.floor(t/20)+i)%5!==0) c.fillRect(sx,sy,1,1); }
+    c.globalAlpha=1;
+  }
+  // ── CAVE / PALACE scenery ──
+  if(mode==='cave'||mode==='palace'){
+    var stCol=mode==='palace'?'#1a3e64':'#1e1a2c';
+    var stTip=mode==='palace'?'#3a6a9a':'#2a2638';
+    // back wall columns
+    c.fillStyle=mode==='palace'?'#10243f':'#14121f';
+    for(var i=0;i<7;i++){ var rx=((i*150-t*0.4)%1100)-120; c.beginPath(); c.moveTo(rx,0); c.lineTo(rx+44,0); c.lineTo(rx+74,90); c.lineTo(rx+10,90); c.closePath(); c.fill(); }
+    // stalactites (ceiling)
+    for(var i=0;i<11;i++){ var sx2=((i*120-t*0.8)%1400)-120; var sh=28+(i*37)%48;
+      c.fillStyle=stTip; c.beginPath(); c.moveTo(sx2,0); c.lineTo(sx2+18,0); c.lineTo(sx2+9,sh); c.closePath(); c.fill();
+      if(mode==='palace'){ c.fillStyle='rgba(150,220,255,0.4)'; c.beginPath(); c.moveTo(sx2+4,0); c.lineTo(sx2+9,0); c.lineTo(sx2+8,sh*0.7); c.closePath(); c.fill(); } }
+    // stalagmites (floor, mid)
+    for(var i=0;i<8;i++){ var gx=((i*170-t*1.2)%1500)-120; var gh=30+(i*53)%50;
+      c.fillStyle=stCol; c.beginPath(); c.moveTo(gx,300); c.lineTo(gx+22,300); c.lineTo(gx+11,300-gh); c.closePath(); c.fill(); }
+    if(mode==='palace'){
+      for(var i=0;i<6;i++){ var cx3=((i*220-t*1.0)%1500)-100, cyc=130+(i%3)*30;
+        c.globalAlpha=0.5+Math.sin(t/30+i)*0.3; c.fillStyle='#80e0ff';
+        c.beginPath(); c.moveTo(cx3,cyc-12); c.lineTo(cx3+5,cyc); c.lineTo(cx3,cyc+12); c.lineTo(cx3-5,cyc); c.closePath(); c.fill(); c.globalAlpha=1; }
+    }
+  }
+  // ── FORTRESS scenery ──
+  else if(mode==='fortress'){
+    var fgd=c.createLinearGradient(0,0,0,260); fgd.addColorStop(0,'#1a0a14'); fgd.addColorStop(1,'rgba(26,10,20,0)');
+    c.fillStyle=fgd; c.fillRect(0,0,640,260);
+    for(var i=0;i<5;i++){ var tx=((i*240-t*0.5)%1400)-150; var th=120+(i*47)%70;
+      c.fillStyle='#241420'; c.fillRect(tx,255-th,56,th);
+      for(var b=0;b<4;b++){ c.fillRect(tx+b*15,255-th-8,9,8); }
+      c.fillStyle='rgba(255,120,40,0.7)';
+      for(var wY=0;wY<3;wY++){ c.fillRect(tx+16,255-th+18+wY*26,7,12); c.fillRect(tx+34,255-th+18+wY*26,7,12); }
+      if(i%2===0){ c.fillStyle='#3a1828'; c.beginPath(); c.moveTo(tx-4,255-th-8); c.lineTo(tx+28,255-th-34); c.lineTo(tx+60,255-th-8); c.closePath(); c.fill(); }
+    }
+    // torches
+    for(var i=0;i<6;i++){ var tx2=((i*130-t*0.9)%780)-40;
+      c.fillStyle='#2a1810'; c.fillRect(tx2,224,4,16);
+      var fl=0.6+Math.sin(t/8+i)*0.3; c.globalAlpha=fl; c.fillStyle='#ff8020';
+      c.beginPath(); c.ellipse(tx2+2,222,5,8,0,0,Math.PI*2); c.fill();
+      c.fillStyle='#ffe040'; c.beginPath(); c.ellipse(tx2+2,223,2,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1; }
+  }
+  // parallax glaciers (skip in cave/fortress where they look wrong)
+  else {
+    for(var i=0;i<6;i++){ var px=((i*150-t*0.3)%900)-100;
+      c.fillStyle='#1a3050'; c.beginPath(); c.moveTo(px,260); c.lineTo(px+70,180); c.lineTo(px+140,260); c.fill();
+      c.fillStyle='#2a4868'; c.beginPath(); c.moveTo(px+50,205); c.lineTo(px+70,178); c.lineTo(px+90,205); c.fill(); }
+  }
   // blizzard snow
   if(mode==='blizzard'){ c.fillStyle='rgba(230,245,255,0.7)'; for(var i=0;i<40;i++){ var bx=((i*38+t*3)%680), by=((i*31+t*2)%400); c.fillRect(bx,by,2,2); } }
 }
@@ -1675,7 +1862,7 @@ function makeIceBearCutscene(){
     },
     { text:"A great paw lifted him from the drift. Bjorn the Ancient,\nKing of the Ice Bears, saw the seal-friend named Bearclaw - and wondered.",
       draw:function(t){
-        setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
+        setCtx(csCtx); csBackdrop('palace',t); r(0,312,640,88,'#1a3a5a'); r(0,312,640,3,'#7ac0e8');
         // throne glow
         csCtx.globalAlpha=0.2+Math.sin(t/22)*0.1; csCtx.fillStyle='#60d0ff'; csCtx.beginPath(); csCtx.ellipse(170,250,140,120,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1;
         drawIceBearKing(44,40,Math.floor(t/12),true);
@@ -1688,7 +1875,7 @@ function makeIceBearCutscene(){
     { text:'"You bear the name BEARCLAW - the name of my own kin.\nProve your heart is worthy of it, and I will make you our Shaman."',
       btn:'TAKE THE TRIAL',
       draw:function(t){
-        setCtx(csCtx); csBackdrop('aurora',t); r(0,312,640,88,'#64788e'); r(0,312,640,3,'#c8e4f4');
+        setCtx(csCtx); csBackdrop('palace',t); r(0,312,640,88,'#1a3a5a'); r(0,312,640,3,'#7ac0e8');
         drawIceBearKing(40,40,0,true);
         drawEricUnderwear(108,55,0,false);
         // power beam between them
@@ -1705,7 +1892,7 @@ function makeCapturedCutscene(){
   return [
     { text:"Reborn as the Seal Whisperer, Eric raised his staff  - \nand the ancient power split the ice from horizon to horizon.",
       draw:function(t){
-        setCtx(csCtx); csBackdrop('aurora',t);
+        setCtx(csCtx); csBackdrop('palace',t);
         var shake=(t>50&&t<95)?Math.sin(t*1.3)*5:0;
         csCtx.save(); csCtx.translate(shake,shake*0.4);
         r(0,290,640,110,'#2a4818'); r(0,290,640,3,'#70c020');
@@ -1731,7 +1918,7 @@ function makeCapturedCutscene(){
     },
     { text:"From the fog came Magnus  -  Eric's own brother, heir to the empire.\nHis hunters cast their nets before the power could be turned on them.",
       draw:function(t){
-        setCtx(csCtx); csBackdrop('dark',t); r(0,288,640,112,'#283a12'); r(0,288,640,3,'#5aa018');
+        setCtx(csCtx); csBackdrop('fortress',t); r(0,288,640,112,'#241420'); r(0,288,640,3,'#5a3048');
         var netY=Math.min(120,t*2.0);
         csCtx.save();
         csCtx.strokeStyle='rgba(210,190,120,0.85)'; csCtx.lineWidth=2;
@@ -1754,7 +1941,7 @@ function makeCapturedCutscene(){
     { text:"The ship melted into the fog, carrying Eric away in chains.\nSealbert stood alone on the cracking ice. He did not hesitate.",
       btn:'BEGIN THE RESCUE',
       draw:function(t){
-        setCtx(csCtx); csBackdrop('dark',t); r(0,300,640,100,'#0a1830'); r(0,300,640,3,'#2a4a70');
+        setCtx(csCtx); csBackdrop('fortress',t); r(0,300,640,100,'#1a0e16'); r(0,300,640,3,'#4a2840');
         var shipX=Math.min(360,90+t*0.9);
         csShip(csCtx, shipX-280, 232, 1.0, true);
         // prison cage on deck
@@ -1974,7 +2161,7 @@ var STAGE_DATA={
       {x:4600,y:268,w:120,h:14,type:'ice'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'icepenguin',range:40},{x:760,type:'penguin'},{x:1400,type:'icepenguin',range:40},{x:1640,type:'penguin'},{x:2240,type:'normal'},{x:2440,type:'icepenguin',range:40},{x:2700,type:'netter',range:30},{x:3240,type:'icepenguin',range:40},{x:3500,type:'normal'},{x:4200,type:'icepenguin',range:40},{x:4400,type:'netter',range:30}]),
-    fish:buildFish(120,255,58,52),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
+    fish:buildFish(120,255,58,52),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',biome:'cave',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
 
   '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic - the sacred GEM - then prove your heart in the King\'s trial to awaken the Whisperer.',
     platforms:[
@@ -1999,7 +2186,7 @@ var STAGE_DATA={
       {x:4520,y:256,w:90,h:14,type:'ice'},{x:4720,y:236,w:200,h:14,type:'snow'},{x:4900,y:282,w:120,h:14,type:'ice'}
     ],
     enemies:buildMixed([{x:320,type:'penguin'},{x:560,type:'icepenguin',range:40},{x:780,type:'skipenguin',range:260},{x:1560,type:'icepenguin',range:40},{x:1800,type:'penguin'},{x:2560,type:'skipenguin',range:280},{x:2800,type:'normal'},{x:3100,type:'icepenguin',range:40},{x:3620,type:'netter',range:30},{x:3900,type:'penguin'},{x:4200,type:'icepenguin',range:40},{x:4500,type:'penguin'}]),
-    fish:buildFish(140,248,60,52),candies:[{x:2500,y:230,w:12,h:12,bob:0,collected:false}],outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
+    fish:buildFish(140,248,60,52),candies:[{x:2500,y:230,w:12,h:12,bob:0,collected:false}],outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',biome:'palace',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
 
   '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins! Battle through Magnus\'s patrols and net-hunters along the rocky coast, then reach the far cliffs to press inland.',
     platforms:[
@@ -2045,7 +2232,7 @@ var STAGE_DATA={
       {x:3700,y:358,w:700,h:42,type:'ground'},{x:3820,y:258,w:100,h:18,type:'rock'},{x:4020,y:280,w:90,h:18,type:'ice'}
     ],
     enemies:buildMixed([{x:340,type:'normal'},{x:560,type:'netter',range:30},{x:850,type:'penguin'},{x:1040,type:'normal'},{x:1450,type:'netter',range:30},{x:2000,type:'penguin'},{x:2100,type:'normal'},{x:2550,type:'netter',range:30},{x:3100,type:'penguin'},{x:3300,type:'normal'},{x:3550,type:'netter',range:30},{x:3850,type:'penguin'}]),
-    fish:buildFish(160,248,52,52),outfits:[],end:'reach',width:4400,bgTint:'#080010',blizzard:false,maxFish:52},
+    fish:buildFish(160,248,52,52),outfits:[],end:'reach',biome:'fortress',width:4400,bgTint:'#080010',blizzard:false,maxFish:52},
 
   '3-3':{name:'3-3  THE FORTRESS OF FURY',desc:'GOAL: Storm Magnus\'s stronghold. Smash through the heaviest defences yet and reach the prison cage at the heart of the keep to free Eric!',
     platforms:[
@@ -2069,7 +2256,7 @@ var STAGE_DATA={
       {x:4280,y:358,w:600,h:42,type:'ground'},{x:4400,y:262,w:90,h:18,type:'rock'}
     ],
     enemies:buildMixed([{x:320,type:'big'},{x:540,type:'netter',range:30},{x:760,type:'penguin'},{x:1480,type:'big'},{x:1700,type:'netter',range:30},{x:2440,type:'big'},{x:2660,type:'penguin'},{x:2900,type:'netter',range:30},{x:3500,type:'big'},{x:3750,type:'penguin'},{x:4000,type:'netter',range:30},{x:4300,type:'big'}]),
-    fish:buildFish(150,250,54,52),outfits:[],goal:{x:4640,y:292,w:55,h:68,rescued:false},end:'rescue',width:4880,bgTint:'#080010',blizzard:false,maxFish:54},
+    fish:buildFish(150,250,54,52),outfits:[],goal:{x:4640,y:292,w:55,h:68,rescued:false},end:'rescue',biome:'fortress',width:4880,bgTint:'#080010',blizzard:false,maxFish:54},
 
   '3-4':{name:'3-4  MAGNUS THE MERCILESS',desc:'GOAL: The final battle! Dodge Magnus\'s clubs, charge your Tail-Spin on the fish between his platforms, and strike him until the tyrant falls. For Eric!',
     platforms:[
@@ -2082,7 +2269,7 @@ var STAGE_DATA={
     enemies:buildMixed([{x:300,type:'penguin'},{x:700,type:'penguin'},{x:1100,type:'penguin'},{x:1500,type:'penguin'},{x:1900,type:'penguin'},{x:2300,type:'penguin'}]),
     fish:buildFish(120,210,30,80),outfits:[],
     boss:{x:1400,y:200,w:78,h:150,vx:1.3,hp:12,maxHp:12,alive:true,facingRight:false,frame:0,frameTick:0,hurtTimer:0,phase:1,clubTimer:80,jumpTimer:150,vy:0,onGround:true},
-    end:'boss',width:2800,bgTint:'#0a0008',blizzard:false,maxFish:30}
+    end:'boss',biome:'fortress',width:2800,bgTint:'#0a0008',blizzard:false,maxFish:30}
 };
 var STAGE_ORDER=['1-1','1-2','2-1','2-2','2-3','3-1','3-2','3-3','3-4'];
 
@@ -2742,7 +2929,7 @@ function hurtPlayer(dmg){
 function render(){
   var g=game; setCtx(mainCtx); mainCtx.clearRect(0,0,640,400);
   var scroll=g.camera.x|0;
-  drawBackground(scroll,g.lvl.bgTint,g.lvl.blizzard);
+  drawBackground(scroll,g.lvl.bgTint,g.lvl.blizzard,g.lvl.biome);
   for(var i=0;i<g.platforms.length;i++) drawPlatform(g.platforms[i],scroll);
 
   for(var i=0;i<g.collectibles.length;i++){ var c=g.collectibles[i]; if(!c.collected) drawTofuFish(c.x-scroll/PS|0,c.y,c.bob); }
@@ -2912,33 +3099,53 @@ function drawGoal(gx,gy,rescued){
   if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIK!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
   else{ r(gx+18,gy-60,4,64,'#a0a0a0'); mainCtx.fillStyle=ENV.gndD; mainCtx.fillRect(gx+22,gy-58,28,18); mainCtx.fillStyle='#fff'; mainCtx.font='6px monospace'; mainCtx.fillText('FREE!',gx+24,gy-46); }
 }
+
+// Shared detailed penguin body. tint: 'normal'|'ice'. Returns nothing; draws at local origin.
+function penguinBody(c,tick,waddle,backA,backB,bellyA,bellyB,eyeCol){
+  // feet
+  var footCol=eyeCol==='#1080e0'?'#3aa0d8':'#e87010';
+  c.fillStyle=footCol;
+  c.save(); c.translate(16+waddle,84); c.beginPath(); c.ellipse(0,0,7,4,0,0,Math.PI*2); c.fill();
+  c.fillStyle='rgba(0,0,0,0.2)'; c.fillRect(-5,-1,4,1); c.restore();
+  c.fillStyle=footCol;
+  c.save(); c.translate(32-waddle,84); c.beginPath(); c.ellipse(0,0,7,4,0,0,Math.PI*2); c.fill(); c.restore();
+  // egg-shaped body with soft radial shading
+  var bg=c.createRadialGradient(18,40,4,24,50,34); bg.addColorStop(0,backA); bg.addColorStop(0.65,backB); bg.addColorStop(1,backB);
+  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,18,33,0,0,Math.PI*2); c.fill();
+  // back sheen
+  c.globalAlpha=0.25; c.fillStyle='#ffffff'; c.beginPath(); c.ellipse(15,34,5,12,-0.3,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // white belly (teardrop)
+  var blg=c.createRadialGradient(22,46,3,24,54,24); blg.addColorStop(0,bellyA); blg.addColorStop(1,bellyB);
+  c.fillStyle=blg; c.beginPath(); c.ellipse(24,55,12.5,24,0,0,Math.PI*2); c.fill();
+  // flippers (animated)
+  c.save(); c.translate(7,46); c.rotate(-0.3+waddle*0.05);
+  var flg=c.createLinearGradient(0,-16,0,16); flg.addColorStop(0,backA); flg.addColorStop(1,backB);
+  c.fillStyle=flg; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
+  c.save(); c.translate(41,46); c.rotate(0.3-waddle*0.05);
+  c.fillStyle=flg; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
+  // head (round, shaded)
+  var hg=c.createRadialGradient(19,13,2,24,18,16); hg.addColorStop(0,backA); hg.addColorStop(1,backB);
+  c.fillStyle=hg; c.beginPath(); c.ellipse(24,18,15,15,0,0,Math.PI*2); c.fill();
+}
+
 function drawPenguin(cx,cy,facingRight,frame){
   var c=ctx, tick=Date.now(); var waddle=Math.sin(tick/120)*2;
-  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.12,1.12);
   if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
   c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,86,14,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
-  // feet
-  c.fillStyle='#e87010'; c.beginPath(); c.ellipse(16+waddle,84,7,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(32-waddle,84,7,4,0,0,Math.PI*2); c.fill();
-  // body (black back)
-  var bg=c.createLinearGradient(8,16,40,80); bg.addColorStop(0,'#34344e'); bg.addColorStop(0.6,'#1a1a28'); bg.addColorStop(1,'#0a0a14');
-  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,18,32,0,0,Math.PI*2); c.fill();
-  // white belly
-  vBlob(c,24,54,12,24,'#ffffff','#e0e0f0');
-  // flippers (angry, flared)
-  c.save(); c.translate(7,46); c.rotate(-0.3+waddle*0.05); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
-  c.save(); c.translate(41,46); c.rotate(0.3-waddle*0.05); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
-  // head
-  vBlob(c,24,18,15,15,'#26263a','#0a0a14');
+  penguinBody(c,tick,waddle,'#3a3a52','#0c0c16','#ffffff','#dadae8','#e02000');
   // furious brows
   c.strokeStyle='#000'; c.lineWidth=2.5; c.lineCap='round';
-  c.beginPath(); c.moveTo(15,12); c.lineTo(23,16); c.stroke();
-  c.beginPath(); c.moveTo(33,12); c.lineTo(25,16); c.stroke();
-  // angry red eyes
-  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.5,3,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(29,18,3.5,3,0,0,Math.PI*2); c.fill();
-  c.fillStyle='#e02000'; c.beginPath(); c.arc(20,19,1.8,0,7); c.fill(); c.beginPath(); c.arc(28,19,1.8,0,7); c.fill();
-  // orange beak (open, squawking)
-  c.fillStyle='#f08000'; c.beginPath(); c.moveTo(20,22); c.lineTo(34,24); c.lineTo(20,27); c.closePath(); c.fill();
-  c.fillStyle='#c05000'; c.beginPath(); c.moveTo(20,25); c.lineTo(32,26); c.lineTo(20,28); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(15,11); c.lineTo(23,15); c.stroke();
+  c.beginPath(); c.moveTo(33,11); c.lineTo(25,15); c.stroke();
+  // angry eyes (red glow)
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.6,3.1,0,0,7); c.fill(); c.beginPath(); c.ellipse(29,18,3.6,3.1,0,0,7); c.fill();
+  c.fillStyle='#e02000'; c.beginPath(); c.arc(20,19,1.9,0,7); c.fill(); c.beginPath(); c.arc(28,19,1.9,0,7); c.fill();
+  c.fillStyle='#ff8060'; c.beginPath(); c.arc(19.4,18.4,0.7,0,7); c.fill(); c.beginPath(); c.arc(27.4,18.4,0.7,0,7); c.fill();
+  // beak (open, squawking) with shading
+  c.fillStyle='#f59a10'; c.beginPath(); c.moveTo(20,22); c.lineTo(35,24); c.lineTo(20,27); c.closePath(); c.fill();
+  c.fillStyle='#c86800'; c.beginPath(); c.moveTo(20,25); c.lineTo(33,26); c.lineTo(20,28.5); c.closePath(); c.fill();
+  c.fillStyle='#5a1800'; c.beginPath(); c.moveTo(24,25); c.lineTo(31,25.6); c.lineTo(24,26.6); c.closePath(); c.fill();
   c.restore();
 }
 
@@ -2957,73 +3164,76 @@ function drawIce(ic){
 
 function drawIcePenguin(cx,cy,facingRight,frame){
   var c=ctx, tick=Date.now(); var waddle=Math.sin(tick/120)*2;
-  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.12,1.12);
   if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
   c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,86,14,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
-  // feet
-  c.fillStyle='#3aa0d8'; c.beginPath(); c.ellipse(16+waddle,84,7,4,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(32-waddle,84,7,4,0,0,Math.PI*2); c.fill();
-  // body (icy blue-black back)
-  var bg=c.createLinearGradient(8,16,40,80); bg.addColorStop(0,'#3a5a7e'); bg.addColorStop(0.6,'#1a2e4a'); bg.addColorStop(1,'#0a1828');
-  c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,18,32,0,0,Math.PI*2); c.fill();
-  // frosty belly
-  vBlob(c,24,54,12,24,'#e8f8ff','#bfe0f4');
-  // flippers
-  c.save(); c.translate(7,46); c.rotate(-0.3); c.fillStyle='#1a2e4a'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
-  c.save(); c.translate(41,46); c.rotate(0.3); c.fillStyle='#1a2e4a'; c.beginPath(); c.ellipse(0,0,5,16,0,0,Math.PI*2); c.fill(); c.restore();
-  // head
-  vBlob(c,24,18,15,15,'#28405e','#0a1828');
-  // frost crown / icy tufts
-  c.fillStyle='#cfeaff'; c.beginPath(); c.moveTo(14,6); c.lineTo(18,-2); c.lineTo(22,6); c.lineTo(26,-2); c.lineTo(30,6); c.closePath(); c.fill();
-  // cold blue eyes
-  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.5,3,0,0,Math.PI*2); c.fill(); c.beginPath(); c.ellipse(29,18,3.5,3,0,0,Math.PI*2); c.fill();
-  c.fillStyle='#1080e0'; c.beginPath(); c.arc(19,18,1.8,0,7); c.fill(); c.beginPath(); c.arc(29,18,1.8,0,7); c.fill();
-  // determined brows
-  c.strokeStyle='#0a1828'; c.lineWidth=2; c.lineCap='round';
-  c.beginPath(); c.moveTo(15,13); c.lineTo(22,15); c.stroke(); c.beginPath(); c.moveTo(33,13); c.lineTo(26,15); c.stroke();
-  // orange beak
-  c.fillStyle='#f0a020'; c.beginPath(); c.moveTo(20,22); c.lineTo(32,23); c.lineTo(20,26); c.closePath(); c.fill();
-  // holding an ice ball in flipper
-  vBlob(c,44,46,5,5,'#dff4ff','#8ac8f0');
+  penguinBody(c,tick,waddle,'#436a92','#0a1828','#eafaff','#c4e4f6','#1080e0');
+  // frost crown (icy tufts with highlights)
+  c.fillStyle='#cfeaff'; c.beginPath(); c.moveTo(13,7); c.lineTo(17,-3); c.lineTo(21,6); c.lineTo(24,-5); c.lineTo(27,6); c.lineTo(31,-3); c.lineTo(35,7); c.closePath(); c.fill();
+  c.fillStyle='rgba(255,255,255,0.6)'; c.beginPath(); c.moveTo(24,-5); c.lineTo(25,4); c.lineTo(23,4); c.closePath(); c.fill();
+  // cold determined eyes
+  c.strokeStyle='#0a1828'; c.lineWidth=2.2; c.lineCap='round';
+  c.beginPath(); c.moveTo(15,12); c.lineTo(22,15); c.stroke(); c.beginPath(); c.moveTo(33,12); c.lineTo(26,15); c.stroke();
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(19,18,3.5,3,0,0,7); c.fill(); c.beginPath(); c.ellipse(29,18,3.5,3,0,0,7); c.fill();
+  var ig=c.createRadialGradient(19,18,0.3,19,18,3); ig.addColorStop(0,'#60d0ff'); ig.addColorStop(1,'#0a60c0'); c.fillStyle=ig; c.beginPath(); c.arc(19,18,1.9,0,7); c.fill();
+  var ig2=c.createRadialGradient(29,18,0.3,29,18,3); ig2.addColorStop(0,'#60d0ff'); ig2.addColorStop(1,'#0a60c0'); c.fillStyle=ig2; c.beginPath(); c.arc(29,18,1.9,0,7); c.fill();
+  // beak
+  c.fillStyle='#f0a020'; c.beginPath(); c.moveTo(20,22); c.lineTo(33,23); c.lineTo(20,26); c.closePath(); c.fill();
+  c.fillStyle='#c07810'; c.beginPath(); c.moveTo(20,24.5); c.lineTo(31,24.8); c.lineTo(20,27); c.closePath(); c.fill();
+  // ice ball ready in flipper
+  var bg2=c.createRadialGradient(43,44,1,45,46,6); bg2.addColorStop(0,'#fff'); bg2.addColorStop(1,'#7ac0ec');
+  c.fillStyle=bg2; c.beginPath(); c.arc(45,46,5.5,0,7); c.fill();
+  c.globalAlpha=0.3+Math.sin(tick/300)*0.2; c.fillStyle='#bfe8ff'; c.beginPath(); c.arc(45,46,8,0,7); c.fill(); c.globalAlpha=1;
   c.restore();
 }
 
 function drawSkiPenguin(cx,cy,facingRight,frame){
-  var c=ctx, tick=Date.now(); var lean=Math.sin(tick/200)*0.06;
-  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.1,1.1);
+  var c=ctx, tick=Date.now(); var lean=Math.sin(tick/200)*0.05;
+  c.save(); c.translate(cx*PS,cy*PS); c.scale(1.12,1.12);
   if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
   c.rotate(lean);
-  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,90,16,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
-  // skis
-  c.fillStyle='#d02020'; c.fillRect(2,86,44,4); c.fillStyle='#ff5030'; c.fillRect(2,86,44,1.5);
-  c.beginPath(); c.moveTo(46,86); c.quadraticCurveTo(54,84,52,82); c.lineTo(46,84); c.closePath(); c.fill();
-  // legs slightly bent
-  c.fillStyle='#1a1a28'; c.fillRect(16,76,5,10); c.fillRect(28,76,5,10);
-  // body leaning forward (speed pose)
-  var bg=c.createLinearGradient(8,18,40,78); bg.addColorStop(0,'#34344e'); bg.addColorStop(0.6,'#1a1a28'); bg.addColorStop(1,'#0a0a14');
+  c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(24,90,17,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
+  // skis (with upturned tips + bindings)
+  var skg=c.createLinearGradient(0,86,0,92); skg.addColorStop(0,'#ff5030'); skg.addColorStop(1,'#a01818');
+  c.fillStyle=skg; c.fillRect(0,87,46,4);
+  c.beginPath(); c.moveTo(46,87); c.quadraticCurveTo(56,84,53,81); c.lineTo(46,84); c.closePath(); c.fill();
+  c.fillStyle='#ffb0a0'; c.fillRect(0,87,46,1);
+  c.fillStyle='#222'; c.fillRect(16,84,4,4); c.fillRect(28,84,4,4); // bindings
+  // legs bent (speed crouch)
+  c.fillStyle='#16161f'; c.fillRect(16,74,5,11); c.fillRect(28,74,5,11);
+  // body leaning into the wind (egg, dark)
+  var bg=c.createRadialGradient(18,40,4,24,50,32); bg.addColorStop(0,'#3a3a52'); bg.addColorStop(0.7,'#12121d'); bg.addColorStop(1,'#0a0a14');
   c.fillStyle=bg; c.beginPath(); c.ellipse(24,48,17,30,0,0,Math.PI*2); c.fill();
-  vBlob(c,24,54,11,22,'#ffffff','#e0e0f0');
-  // flippers back (aerodynamic)
-  c.save(); c.translate(8,44); c.rotate(0.6); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
-  c.save(); c.translate(40,44); c.rotate(0.6); c.fillStyle='#1a1a28'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
+  vBlob(c,24,54,11,22,'#ffffff','#dadae8');
+  // flippers swept back (aerodynamic)
+  c.save(); c.translate(9,44); c.rotate(0.7); c.fillStyle='#14141e'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
+  c.save(); c.translate(40,44); c.rotate(0.7); c.fillStyle='#14141e'; c.beginPath(); c.ellipse(0,0,5,14,0,0,Math.PI*2); c.fill(); c.restore();
   // head
-  vBlob(c,26,18,14,14,'#26263a','#0a0a14');
-  // ski goggles
-  c.fillStyle='#222'; c.fillRect(18,15,18,6);
-  c.fillStyle='#60d0ff'; c.fillRect(20,16,6,4); c.fillRect(28,16,6,4);
-  c.fillStyle='rgba(255,255,255,0.6)'; c.fillRect(21,16,2,2); c.fillRect(29,16,2,2);
+  var hg=c.createRadialGradient(21,13,2,26,18,16); hg.addColorStop(0,'#3a3a52'); hg.addColorStop(1,'#0a0a14');
+  c.fillStyle=hg; c.beginPath(); c.ellipse(26,18,14,14,0,0,Math.PI*2); c.fill();
+  // ski goggles (reflective)
+  c.fillStyle='#181820'; c.fillRect(17,14,19,7);
+  var gg=c.createLinearGradient(19,15,35,20); gg.addColorStop(0,'#80e0ff'); gg.addColorStop(0.5,'#3090d0'); gg.addColorStop(1,'#80e0ff');
+  c.fillStyle=gg; c.fillRect(19,15,7,5); c.fillRect(28,15,7,5);
+  c.fillStyle='rgba(255,255,255,0.8)'; c.fillRect(20,15.5,2,2); c.fillRect(29,15.5,2,2);
+  c.strokeStyle='#000'; c.lineWidth=1; c.strokeRect(17,14,19,7);
   // red bobble beanie
-  c.fillStyle='#d02020'; c.beginPath(); c.arc(26,10,9,Math.PI,0); c.fill();
-  c.fillStyle='#ff4030'; c.beginPath(); c.arc(26,10,9,Math.PI*1.1,Math.PI*1.9); c.fill();
-  c.fillStyle='#fff'; c.fillRect(17,10,18,3); c.beginPath(); c.arc(26,2,3,0,7); c.fill();
-  // orange beak
+  var bng=c.createLinearGradient(0,0,0,12); bng.addColorStop(0,'#ff4030'); bng.addColorStop(1,'#a01818');
+  c.fillStyle=bng; c.beginPath(); c.arc(26,10,9,Math.PI,0); c.fill();
+  c.fillStyle='#fff'; c.fillRect(16,10,20,3.5);
+  c.beginPath(); c.arc(26,1,3.5,0,7); c.fill();
+  // beak
   c.fillStyle='#f08000'; c.beginPath(); c.moveTo(34,20); c.lineTo(44,22); c.lineTo(34,25); c.closePath(); c.fill();
-  // scarf trailing in the wind
-  c.fillStyle='#40b060'; c.beginPath(); c.moveTo(16,24); c.lineTo(2,22); c.lineTo(0,26); c.lineTo(16,28); c.closePath(); c.fill();
-  c.fillStyle='#50c878'; c.fillRect(14,23,4,5);
+  c.fillStyle='#c05800'; c.beginPath(); c.moveTo(34,23); c.lineTo(42,23.6); c.lineTo(34,25.5); c.closePath(); c.fill();
+  // scarf streaming in the wind
+  var scg=c.createLinearGradient(16,24,-4,22); scg.addColorStop(0,'#50c878'); scg.addColorStop(1,'#2d8a4e');
+  c.fillStyle=scg; c.beginPath(); c.moveTo(18,22); c.lineTo(2,20+Math.sin(tick/100)*2); c.lineTo(-2,25+Math.sin(tick/100)*2); c.lineTo(18,28); c.closePath(); c.fill();
+  c.fillStyle='#3a9a5a'; c.fillRect(14,22,5,7);
   // speed lines
   c.strokeStyle='rgba(255,255,255,0.5)'; c.lineWidth=1.5; c.lineCap='round';
-  c.beginPath(); c.moveTo(2,40); c.lineTo(-8,40); c.stroke();
-  c.beginPath(); c.moveTo(4,52); c.lineTo(-6,52); c.stroke();
+  c.beginPath(); c.moveTo(2,40); c.lineTo(-10,40); c.stroke();
+  c.beginPath(); c.moveTo(4,52); c.lineTo(-8,52); c.stroke();
+  c.beginPath(); c.moveTo(0,46); c.lineTo(-12,46); c.stroke();
   c.restore();
 }
 
