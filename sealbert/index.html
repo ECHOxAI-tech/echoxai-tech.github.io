@@ -391,6 +391,16 @@ function drawSealbert(cx,cy,facingRight,state,hurtTimer,spinTimer,frame){
   // local box ~ 84w x 60h (matches old w:60 h:54 collision near enough)
   if(!facingRight){ c.translate(84,0); c.scale(-1,1); }
   if(spinTimer>0){ drawSealSpinV(c,tick,H); c.restore(); return; }
+  if(state==='slide'){
+    // FEET-FIRST SLIDE: flip body so tail/flippers lead, recline low, slight tilt
+    c.translate(42,40); c.rotate(-0.12); c.scale(1.06,0.82);
+    c.translate(84,0); c.scale(-1,1);   // mirror so the tail end points forward
+    c.translate(-42,-40);
+    drawSealBodyV(c,tick,state,frame,H);
+    // motion whoosh lines behind
+    c.restore();
+    return;
+  }
   drawSealBodyV(c,tick,state,frame,H);
   c.restore();
 }
@@ -2060,30 +2070,27 @@ function buildMixed(spec){
   });
 }
 var STAGE_DATA={
-  '1-1':{name:'1-1  FIRST DANCE ON THE ICE',desc:'GOAL: Gather tofu fish to charge your Tail-Spin, then perform it close to Captain Eric on his ship to win his heart. Watch for grumpy penguins!',
+  '1-1':{name:'1-1  FIRST DANCE ON THE ICE',desc:'GOAL: A gentle first stroll! Collect tofu fish (they heal you) and the sweet candy, then reach the checkered FLAG by Eric\'s ship to finish. Tap C near Eric for a bonus!',
     platforms:[
-      {x:0,y:338,w:1400,h:42,type:'ground'},
-      {x:160,y:288,w:100,h:14,type:'ice'},{x:330,y:262,w:90,h:14,type:'ice'},
-      {x:480,y:288,w:100,h:14,type:'ice'},{x:660,y:256,w:90,h:14,type:'ice'},
-      {x:820,y:290,w:100,h:14,type:'ice'},{x:1000,y:262,w:90,h:14,type:'ice'},
-      {x:1180,y:288,w:100,h:14,type:'ice'},
-      {x:1400,y:338,w:240,h:42,type:'water'},
-      {x:1480,y:296,w:80,h:16,type:'crack'},
-      {x:1640,y:338,w:1500,h:42,type:'ground'},
-      {x:1760,y:286,w:90,h:14,type:'ice'},{x:1940,y:262,w:90,h:14,type:'ice'},
-      {x:2120,y:290,w:100,h:14,type:'crack'},{x:2320,y:262,w:90,h:14,type:'ice'},
-      {x:2500,y:288,w:100,h:14,type:'ice'},{x:2700,y:262,w:90,h:14,type:'ice'},
-      {x:2900,y:290,w:100,h:14,type:'ice'},
-      {x:3140,y:338,w:200,h:42,type:'water'},
-      {x:3220,y:300,w:80,h:16,type:'crack'},
-      {x:3340,y:338,w:1400,h:42,type:'ground'},
-      {x:3460,y:286,w:90,h:14,type:'ice'},{x:3640,y:262,w:90,h:14,type:'ice'},
-      {x:3840,y:288,w:100,h:14,type:'ice'},{x:4040,y:262,w:90,h:14,type:'ice'},
-      {x:4240,y:290,w:100,h:14,type:'ice'},
-      {x:4740,y:338,w:560,h:42,type:'ship'}
+      {x:0,y:338,w:1700,h:42,type:'ground'},
+      {x:240,y:292,w:110,h:16,type:'ice'},{x:430,y:268,w:100,h:16,type:'ice'},
+      {x:620,y:292,w:110,h:16,type:'ice'},{x:900,y:280,w:110,h:16,type:'ice'},
+      {x:1180,y:268,w:100,h:16,type:'ice'},
+      {x:1700,y:338,w:180,h:42,type:'water'},
+      {x:1730,y:312,w:50,h:14,type:'ice'},{x:1810,y:312,w:50,h:14,type:'ice'},
+      {x:1880,y:338,w:1600,h:42,type:'ground'},
+      {x:2050,y:288,w:110,h:16,type:'ice'},{x:2260,y:266,w:100,h:16,type:'ice'},
+      {x:2480,y:290,w:110,h:16,type:'ice'},{x:2720,y:268,w:100,h:16,type:'ice'},
+      {x:2980,y:290,w:110,h:16,type:'ice'},{x:3220,y:268,w:100,h:16,type:'ice'},
+      {x:3480,y:338,w:160,h:42,type:'water'},
+      {x:3500,y:312,w:50,h:14,type:'ice'},{x:3580,y:312,w:50,h:14,type:'ice'},
+      {x:3640,y:338,w:1680,h:42,type:'ground'},
+      {x:3820,y:288,w:110,h:16,type:'ice'},{x:4040,y:266,w:100,h:16,type:'ice'},
+      {x:4280,y:290,w:110,h:16,type:'ice'},
+      {x:4760,y:338,w:560,h:42,type:'ship'}
     ],
-    enemies:buildMixed([{x:400,type:'penguin'},{x:700,type:'normal'},{x:1000,type:'penguin'},{x:1850,type:'normal'},{x:2200,type:'penguin'},{x:2600,type:'penguin'},{x:2900,type:'normal'},{x:3550,type:'penguin'},{x:3900,type:'normal'},{x:4200,type:'penguin'}]),
-    fish:buildFish(80,278,46,55),outfits:[],erikPos:{x:5000,y:70,type:'pirate'},end:'spin',width:5320,bgTint:null,blizzard:false,maxFish:46},
+    enemies:buildMixed([{x:520,type:'penguin'},{x:1050,type:'penguin'},{x:2150,type:'penguin'},{x:2700,type:'normal'},{x:3300,type:'penguin'},{x:4100,type:'penguin'}]),
+    fish:buildFish(280,250,28,150),candies:[{x:1300,y:250,w:14,h:14,bob:0,collected:false},{x:3050,y:248,w:14,h:14,bob:1,collected:false}],outfits:[],erikPos:{x:5040,y:70,type:'pirate'},end:'spin',width:5320,flagX:4600,slowMul:0.86,bgTint:null,blizzard:false,maxFish:30},
 
   '1-2':{name:'1-2  ACROSS THE FLOES',desc:'GOAL: Cross the breaking sea-ice, leap the open water, and reach Eric\'s fleet. The ice cracks under your weight - keep moving!',
     platforms:[
@@ -2108,7 +2115,7 @@ var STAGE_DATA={
       {x:4440,y:338,w:560,h:42,type:'ship'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'penguin'},{x:760,type:'penguin'},{x:1500,type:'normal'},{x:1700,type:'netter',range:30},{x:2400,type:'penguin'},{x:2600,type:'normal'},{x:2900,type:'penguin'},{x:3450,type:'netter',range:30},{x:3700,type:'penguin'},{x:3950,type:'normal'},{x:4100,type:'penguin'}]),
-    fish:buildFish(100,262,52,52),candies:[{x:2400,y:250,w:12,h:12,bob:0,collected:false}],outfits:[],erikPos:{x:4720,y:70,type:'pirate'},end:'spin',width:5000,bgTint:null,blizzard:false,maxFish:52},
+    fish:buildFish(280,255,30,150),candies:[{x:2400,y:250,w:12,h:12,bob:0,collected:false}],outfits:[],erikPos:{x:4720,y:70,type:'pirate'},end:'spin',width:5000,flagX:4300,bgTint:null,blizzard:false,maxFish:52},
 
   '2-1':{name:'2-1  THE FROZEN TUNDRA',desc:'GOAL: Eric shivers in his underwear! Brave the blizzard, dodge net-hunters and penguins, and recover his lost SHAMAN COAT at the far end.',
     platforms:[
@@ -2134,7 +2141,7 @@ var STAGE_DATA={
       {x:4720,y:284,w:90,h:14,type:'ice'},{x:4920,y:256,w:200,h:14,type:'snow'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'skipenguin',range:260},{x:1100,type:'skipenguin',range:300},{x:1500,type:'icepenguin',range:40},{x:1900,type:'skipenguin',range:280},{x:2300,type:'penguin'},{x:2700,type:'skipenguin',range:300},{x:3000,type:'icepenguin',range:40},{x:3400,type:'skipenguin',range:280},{x:3900,type:'penguin'},{x:4300,type:'skipenguin',range:300},{x:4700,type:'icepenguin',range:40}]),
-    fish:buildFish(120,264,56,55),candies:[{x:1600,y:230,w:12,h:12,bob:0,collected:false},{x:3300,y:230,w:12,h:12,bob:1,collected:false}],outfits:[{x:5040,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',width:5300,bgTint:'#0a0020',blizzard:true,maxFish:56},
+    fish:buildFish(280,250,30,160),candies:[{x:1600,y:230,w:12,h:12,bob:0,collected:false},{x:3300,y:230,w:12,h:12,bob:1,collected:false}],outfits:[{x:5040,y:222,type:'coat',w:36,h:48,bob:0,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',reqObjective:'outfit',width:5300,bgTint:'#0a0020',blizzard:true,maxFish:56},
 
   '2-2':{name:'2-2  THE ICE CAVES',desc:'GOAL: Descend into the glacier. Two sacred relics wait deep inside - the FEATHERS midway, the STAFF at the end. Cracking ledges everywhere!',
     platforms:[
@@ -2161,7 +2168,7 @@ var STAGE_DATA={
       {x:4600,y:268,w:120,h:14,type:'ice'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:560,type:'icepenguin',range:40},{x:760,type:'penguin'},{x:1400,type:'icepenguin',range:40},{x:1640,type:'penguin'},{x:2240,type:'normal'},{x:2440,type:'icepenguin',range:40},{x:2700,type:'netter',range:30},{x:3240,type:'icepenguin',range:40},{x:3500,type:'normal'},{x:4200,type:'icepenguin',range:40},{x:4400,type:'netter',range:30}]),
-    fish:buildFish(120,255,58,52),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',biome:'cave',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
+    fish:buildFish(260,250,28,160),outfits:[{x:2080,y:222,type:'feathers',w:30,h:36,bob:0.5,collected:false},{x:4680,y:230,type:'staff',w:24,h:60,bob:1.2,collected:false}],erikFollows:true,erikType:'underwear',end:'outfit',reqObjective:'outfit',biome:'cave',width:4900,bgTint:'#050020',blizzard:true,maxFish:58},
 
   '2-3':{name:'2-3  THE ICE BEAR PALACE',desc:'GOAL: Climb to King Bjorn\'s throne. Claim the final relic - the sacred GEM - then prove your heart in the King\'s trial to awaken the Whisperer.',
     platforms:[
@@ -2186,7 +2193,7 @@ var STAGE_DATA={
       {x:4520,y:256,w:90,h:14,type:'ice'},{x:4720,y:236,w:200,h:14,type:'snow'},{x:4900,y:282,w:120,h:14,type:'ice'}
     ],
     enemies:buildMixed([{x:320,type:'penguin'},{x:560,type:'icepenguin',range:40},{x:780,type:'skipenguin',range:260},{x:1560,type:'icepenguin',range:40},{x:1800,type:'penguin'},{x:2560,type:'skipenguin',range:280},{x:2800,type:'normal'},{x:3100,type:'icepenguin',range:40},{x:3620,type:'netter',range:30},{x:3900,type:'penguin'},{x:4200,type:'icepenguin',range:40},{x:4500,type:'penguin'}]),
-    fish:buildFish(140,248,60,52),candies:[{x:2500,y:230,w:12,h:12,bob:0,collected:false}],outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',biome:'palace',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
+    fish:buildFish(280,245,30,160),candies:[{x:2500,y:230,w:12,h:12,bob:0,collected:false}],outfits:[{x:4960,y:208,type:'gem',w:24,h:30,bob:2,collected:false}],erikFollows:true,erikType:'underwear',iceBearKingPos:{x:4850,y:46},end:'outfit',reqObjective:'outfit',biome:'palace',width:5100,bgTint:'#00001a',blizzard:false,maxFish:60},
 
   '3-1':{name:'3-1  MAGNUS\'S COASTLINE',desc:'GOAL: The rescue begins! Battle through Magnus\'s patrols and net-hunters along the rocky coast, then reach the far cliffs to press inland.',
     platforms:[
@@ -2210,7 +2217,7 @@ var STAGE_DATA={
       {x:4420,y:358,w:600,h:42,type:'ground'},{x:4540,y:280,w:100,h:18,type:'rock'}
     ],
     enemies:buildMixed([{x:320,type:'normal'},{x:540,type:'netter',range:30},{x:760,type:'penguin'},{x:1560,type:'normal'},{x:1760,type:'netter',range:30},{x:2560,type:'penguin'},{x:2760,type:'normal'},{x:3000,type:'netter',range:30},{x:3640,type:'penguin'},{x:3840,type:'normal'},{x:4100,type:'netter',range:30},{x:4400,type:'penguin'}]),
-    fish:buildFish(150,255,52,52),outfits:[],end:'reach',width:5020,bgTint:null,blizzard:false,maxFish:52},
+    fish:buildFish(280,250,30,155),outfits:[],end:'reach',width:5020,bgTint:null,blizzard:false,maxFish:52},
 
   '3-2':{name:'3-2  THE FROZEN FLEET',desc:'GOAL: Board Magnus\'s anchored warships. Leap deck to deck across the freezing harbour - mind the cracking ice floes - and reach the fortress gates.',
     platforms:[
@@ -2232,7 +2239,7 @@ var STAGE_DATA={
       {x:3700,y:358,w:700,h:42,type:'ground'},{x:3820,y:258,w:100,h:18,type:'rock'},{x:4020,y:280,w:90,h:18,type:'ice'}
     ],
     enemies:buildMixed([{x:340,type:'normal'},{x:560,type:'netter',range:30},{x:850,type:'penguin'},{x:1040,type:'normal'},{x:1450,type:'netter',range:30},{x:2000,type:'penguin'},{x:2100,type:'normal'},{x:2550,type:'netter',range:30},{x:3100,type:'penguin'},{x:3300,type:'normal'},{x:3550,type:'netter',range:30},{x:3850,type:'penguin'}]),
-    fish:buildFish(160,248,52,52),outfits:[],end:'reach',biome:'fortress',width:4400,bgTint:'#080010',blizzard:false,maxFish:52},
+    fish:buildFish(260,248,26,155),outfits:[],end:'reach',biome:'fortress',width:4400,bgTint:'#080010',blizzard:false,maxFish:52},
 
   '3-3':{name:'3-3  THE FORTRESS OF FURY',desc:'GOAL: Storm Magnus\'s stronghold. Smash through the heaviest defences yet and reach the prison cage at the heart of the keep to free Eric!',
     platforms:[
@@ -2256,7 +2263,7 @@ var STAGE_DATA={
       {x:4280,y:358,w:600,h:42,type:'ground'},{x:4400,y:262,w:90,h:18,type:'rock'}
     ],
     enemies:buildMixed([{x:320,type:'big'},{x:540,type:'netter',range:30},{x:760,type:'penguin'},{x:1480,type:'big'},{x:1700,type:'netter',range:30},{x:2440,type:'big'},{x:2660,type:'penguin'},{x:2900,type:'netter',range:30},{x:3500,type:'big'},{x:3750,type:'penguin'},{x:4000,type:'netter',range:30},{x:4300,type:'big'}]),
-    fish:buildFish(150,250,54,52),outfits:[],goal:{x:4640,y:292,w:55,h:68,rescued:false},end:'rescue',biome:'fortress',width:4880,bgTint:'#080010',blizzard:false,maxFish:54},
+    fish:buildFish(280,250,28,160),outfits:[],goal:{x:4640,y:292,w:55,h:68,rescued:false},end:'rescue',biome:'fortress',width:4880,bgTint:'#080010',blizzard:false,maxFish:54},
 
   '3-4':{name:'3-4  MAGNUS THE MERCILESS',desc:'GOAL: The final battle! Dodge Magnus\'s clubs, charge your Tail-Spin on the fish between his platforms, and strike him until the tyrant falls. For Eric!',
     platforms:[
@@ -2267,7 +2274,7 @@ var STAGE_DATA={
       {x:2340,y:258,w:240,h:18,type:'rock'}
     ],
     enemies:buildMixed([{x:300,type:'penguin'},{x:700,type:'penguin'},{x:1100,type:'penguin'},{x:1500,type:'penguin'},{x:1900,type:'penguin'},{x:2300,type:'penguin'}]),
-    fish:buildFish(120,210,30,80),outfits:[],
+    fish:buildFish(300,210,18,140),outfits:[],
     boss:{x:1400,y:200,w:78,h:150,vx:1.3,hp:12,maxHp:12,alive:true,facingRight:false,frame:0,frameTick:0,hurtTimer:0,phase:1,clubTimer:80,jumpTimer:150,vy:0,onGround:true},
     end:'boss',biome:'fortress',width:2800,bgTint:'#0a0008',blizzard:false,maxFish:30}
 };
@@ -2361,7 +2368,11 @@ function initStage(key){
   var lvl=JSON.parse(JSON.stringify(lvlTemplate));
   var diff=currentDiff;
   // Apply difficulty to fish count
-  lvl.fish=buildFish(lvlTemplate.fish[0]?lvlTemplate.fish[0].x:120,lvlTemplate.fish[0]?lvlTemplate.fish[0].y:262,lvlTemplate.maxFish,52,diff.fishMult);
+  // Keep the authored fish (already spread across the level); just scale count by difficulty.
+  var baseFish=lvlTemplate.fish||[];
+  var keepN=Math.max(6,Math.round(baseFish.length*(diff.fishMult||1)));
+  if(keepN>=baseFish.length){ lvl.fish=baseFish.map(function(f){ return {x:f.x,y:f.y,w:f.w,h:f.h,collected:false,bob:f.bob}; }); }
+  else { lvl.fish=[]; var stepF=baseFish.length/keepN; for(var fk=0;fk<keepN;fk++){ var sf=baseFish[Math.floor(fk*stepF)]; lvl.fish.push({x:sf.x,y:sf.y,w:sf.w,h:sf.h,collected:false,bob:sf.bob}); } }
   // Apply difficulty to enemies
   lvl.enemies.forEach(function(e){ e.vx*=diff.enemySpeed; e.patrolLeft=e.x-90; e.patrolRight=e.x+90; });
   if(lvl.boss) lvl.boss.hp=lvl.boss.maxHp=diff.magnusHP;
@@ -2378,14 +2389,14 @@ function initStage(key){
     companionRescued:false,companion:null,
     outfitsCollected:0,spinDoneNearEric:false,spinHintShown:false,
     quizPassed:false,
-    stageTimer:0,deaths:0,bannerTimer:0,flagActive:false,flagRaised:false,flagX:(lvl.width-120),
+    stageTimer:0,deaths:0,bannerTimer:0,flagActive:(lvl.end!=='boss'),flagRaised:false,flagX:(lvl.flagX||(lvl.width-160)),
     platforms:lvl.platforms,enemies:lvl.enemies,
     collectibles:lvl.fish,candies:lvl.candies||[],outfits:lvl.outfits||[],
     goal:lvl.goal||null,boss:lvl.boss||null,
     camera:{x:0}
   };
   // Init player
-  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,slideCooldown:0,slidePressed:false,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0,netted:0,netEscapeSpins:0,hp:100,maxHp:100,superSpin:0};
+  game.player={x:80,y:250,w:60,h:54,vx:0,vy:0,onGround:false,facingRight:true,state:'idle',hurtTimer:0,jumpPressed:false,slideTimer:0,slideCooldown:0,slidePressed:false,slideDir:1,spinTimer:0,spinCooldown:0,spinCharge:60,frame:0,frameTick:0,netted:0,netEscapeSpins:0,hp:100,maxHp:100,superSpin:0};
 
   document.getElementById('hud').style.display='flex';
   document.getElementById('game-wrapper').style.display='block';
@@ -2521,7 +2532,7 @@ function update(){
     spawnParts(p.x+30,p.y+27,SB.tail,14,6); spawnParts(p.x+30,p.y+27,'#ffe040',10,5);
     if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric){
       var erikWX=g.lvl.erikPos.x*PS;
-      if(Math.abs(p.x-erikWX)<300){ g.spinDoneNearEric=true; g.flagActive=true; showNotif('★ Eric is charmed! Reach the FLAG to finish!'); }
+      if(Math.abs(p.x-erikWX)<300){ g.spinDoneNearEric=true; showNotif('★ Eric is charmed! \u2665'); }
     }
   }
   if(p.spinTimer>0) p.spinTimer--;
@@ -2531,25 +2542,33 @@ function update(){
   if(p.superSpin>0) spinRate*=4; // super-spin charges fast
   if(p.spinCharge<100&&p.spinTimer<=0) p.spinCharge=Math.min(100,p.spinCharge+spinRate);
 
-  if(p.netted>0){ p.vx=0; } else
-  if(p.hurtTimer<=0&&p.spinTimer<=0){
-    var spd=p.slideTimer>0?6.8:3.6;
+  var moveMul=(g.lvl.slowMul||1);
+  if(p.netted>0){ p.vx=0; }
+  else if(p.slideTimer>0){
+    // SLIDING: velocity is LOCKED in the slide direction (feet-first dash), no override
+    p.vx=p.slideDir*8.4*moveMul;
+  }
+  else if(p.hurtTimer<=0&&p.spinTimer<=0){
+    var spd=3.6*moveMul;
     if(left){ p.vx=Math.max(p.vx-0.58,-spd); p.facingRight=false; }
     if(right){ p.vx=Math.min(p.vx+0.58,spd); p.facingRight=true; }
     if(!left&&!right) p.vx*=0.7;
   } else if(p.spinTimer>0&&p.hurtTimer<=0){
-    // steerable spin: reduced control, can still drift sideways
-    var sspd=4.2;
+    var sspd=4.2*moveMul;
     if(left){ p.vx=Math.max(p.vx-0.4,-sspd); p.facingRight=false; }
     else if(right){ p.vx=Math.min(p.vx+0.4,sspd); p.facingRight=true; }
     else p.vx*=0.92;
   }
 
-  if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
+  if(jumpK&&!p.jumpPressed&&p.onGround&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0&&p.slideTimer<=0){ p.vy=-10.5; p.onGround=false; spawnParts(p.x+30,p.y+54,ENV.icA,5); }
   p.jumpPressed=jumpK;
-  // Slide requires a FRESH key press (no auto-repeat while held) + a real cooldown
+  // Slide: fresh key press, dashes feet-first in the direction the seal faces (or held arrow)
   if(slideK&&!p.slidePressed&&p.onGround&&p.slideTimer<=0&&p.slideCooldown<=0&&p.hurtTimer<=0&&p.spinTimer<=0&&p.netted<=0){
-    p.slideTimer=20; p.slideCooldown=90; p.vx=p.facingRight?8:-8; spawnParts(p.x+30,p.y+54,ENV.snwA,7);
+    // choose direction: held arrow wins, else current facing
+    if(left){ p.facingRight=false; } else if(right){ p.facingRight=true; }
+    p.slideDir=p.facingRight?1:-1;
+    p.slideTimer=24; p.slideCooldown=80; p.vx=p.slideDir*8.4*moveMul;
+    spawnParts(p.x+30,p.y+54,ENV.snwA,9);
   }
   p.slidePressed=slideK;
   if(p.slideTimer>0) p.slideTimer--;
@@ -2766,12 +2785,12 @@ function update(){
     var c=g.collectibles[fi];
     if(c.collected) continue;
     c.bob+=0.065;
-    if(rectsOverlap(p,{x:c.x*PS,y:c.y*PS,w:c.w*PS,h:c.h*PS})){
+    if(rectsOverlap(p,{x:c.x,y:c.y,w:c.w*PS,h:c.h*PS})){
       c.collected=true; g.tofu++; g.score+=50;
       // every tofu: heal 12 and nudge max HP up (cap 200)
       p.maxHp=Math.min(200,p.maxHp+4);
       p.hp=Math.min(p.maxHp,p.hp+12);
-      spawnParts(c.x*PS+27,c.y*PS+21,'#ff80a0',6);
+      spawnParts(c.x+27,c.y+21,'#ff80a0',6);
       showNotif('🐟 Tofu! +HP');
     }
   }
@@ -2783,11 +2802,11 @@ function update(){
       var cy3=g.candies[ci3];
       if(cy3.collected) continue;
       cy3.bob+=0.07;
-      if(rectsOverlap(p,{x:cy3.x*PS,y:cy3.y*PS,w:cy3.w*PS,h:cy3.h*PS})){
+      if(rectsOverlap(p,{x:cy3.x,y:cy3.y,w:cy3.w*PS,h:cy3.h*PS})){
         cy3.collected=true; g.candy=(g.candy||0)+1; g.score+=120;
         p.superSpin=600; // ~10 seconds of super-spin
         p.spinCharge=100;
-        spawnParts(cy3.x*PS+18,cy3.y*PS+18,'#ff60c0',16); spawnParts(cy3.x*PS+18,cy3.y*PS+18,'#ffe040',12);
+        spawnParts(cy3.x+18,cy3.y+18,'#ff60c0',16); spawnParts(cy3.x+18,cy3.y+18,'#ffe040',12);
         showNotif('🍬 SUPER-SPIN! 10s of unstoppable power!');
       }
     }
@@ -2798,11 +2817,11 @@ function update(){
     var o=g.outfits[oi];
     if(o.collected) continue;
     o.bob+=0.06;
-    if(rectsOverlap(p,{x:o.x*PS,y:o.y*PS,w:o.w*PS,h:o.h*PS})){
+    if(rectsOverlap(p,{x:o.x,y:o.y,w:o.w*PS,h:o.h*PS})){
       o.collected=true; g.outfitsCollected++; g.score+=500;
       showNotif('✦ '+o.type.toUpperCase()+' obtained! +500pts');
-      spawnParts(o.x*PS+15,o.y*PS+24,EK.gem,18); spawnParts(o.x*PS+15,o.y*PS+24,'#ffe040',12);
-      if(g.lvl.end==='outfit'&&g.outfitsCollected>=g.lvl.outfits.length){ g.flagActive=true; showNotif('★ All relics found! Reach the FLAG to finish!'); }
+      spawnParts(o.x+15,o.y+24,EK.gem,18); spawnParts(o.x+15,o.y+24,'#ffe040',12);
+      if(g.lvl.end==='outfit'&&g.outfitsCollected>=g.lvl.outfits.length){ showNotif('★ All relics found!'); }
     }
   }
 
@@ -2813,19 +2832,35 @@ function update(){
     spawnParts(gl.x+28,gl.y+34,ENV.gndD,22); spawnParts(gl.x+28,gl.y+34,'#ffe040',14);
     showNotif('★ ERIK RESCUED! ★');
     g.companion={x:gl.x-60,y:gl.y-28,frame:0,frameTick:0};
-    if(g.lvl.end==='rescue'){ g.flagActive=true; showNotif('★ Eric is free! Reach the FLAG to finish!'); }
+    if(g.lvl.end==='rescue'){ showNotif('★ Eric is free! Reach the FLAG!'); }
   }
   if(g.companion){ g.companion.frameTick++; if(g.companion.frameTick>8){ g.companion.frame++; g.companion.frameTick=0; } g.companion.x+=(p.x-65-g.companion.x)*0.07; g.companion.y=p.y-8; }
 
   // Reach levels: flag is the destination, active immediately
   if(g.lvl.end==='reach') g.flagActive=true;
 
+  // ── REQUIRED OBJECTIVE GATE ──
+  // Some narrative-crucial objectives must be completed before the flag will accept you.
+  // 'reqObjective' on the level: 'spin' (charm Eric), 'outfit' (all relics), 'rescue' (free Eric).
+  // If absent, the level's objectives are OPTIONAL (bonus points only) and the flag always works.
+  var objMet=true;
+  if(g.lvl.reqObjective==='spin') objMet=g.spinDoneNearEric;
+  else if(g.lvl.reqObjective==='outfit') objMet=(g.outfitsCollected>=(g.lvl.outfits?g.lvl.outfits.length:0));
+  else if(g.lvl.reqObjective==='rescue') objMet=g.companionRescued;
+
   // ── FINISH FLAG ── touch the raised flag to complete the level
   if(g.flagActive){
     if(!g.flagRaised){ g.flagRaised=true; }
     var fx=g.flagX;
     if(p.x+p.w>fx-10 && p.x<fx+30 && !g.stageComplete){
-      triggerStageComplete();
+      if(objMet){ triggerStageComplete(); }
+      else if(!g.objWarnShown || g.objWarnShown<g.stageTimer-90){
+        g.objWarnShown=g.stageTimer;
+        var msg=g.lvl.reqObjective==='spin'?'Charm Eric first! Tail-spin near his ship.':
+                g.lvl.reqObjective==='outfit'?'Find all the sacred relics first!':
+                'Free Eric from the cage first!';
+        showNotif('\u2715 '+msg);
+      }
     }
   }
 
@@ -2932,9 +2967,9 @@ function render(){
   drawBackground(scroll,g.lvl.bgTint,g.lvl.blizzard,g.lvl.biome);
   for(var i=0;i<g.platforms.length;i++) drawPlatform(g.platforms[i],scroll);
 
-  for(var i=0;i<g.collectibles.length;i++){ var c=g.collectibles[i]; if(!c.collected) drawTofuFish(c.x-scroll/PS|0,c.y,c.bob); }
-  for(var i=0;i<g.outfits.length;i++){ var o=g.outfits[i]; if(!o.collected) drawOutfitPickup((o.x*PS-scroll)/PS|0,o.y,o.type,o.bob); }
-  if(g.candies){ for(var i=0;i<g.candies.length;i++){ var cyy=g.candies[i]; if(!cyy.collected) drawCandy((cyy.x*PS-scroll)/PS|0,cyy.y,cyy.bob); } }
+  for(var i=0;i<g.collectibles.length;i++){ var c=g.collectibles[i]; if(!c.collected) drawTofuFish((c.x-scroll)/PS|0,c.y/PS,c.bob); }
+  for(var i=0;i<g.outfits.length;i++){ var o=g.outfits[i]; if(!o.collected) drawOutfitPickup((o.x-scroll)/PS|0,o.y/PS,o.type,o.bob); }
+  if(g.candies){ for(var i=0;i<g.candies.length;i++){ var cyy=g.candies[i]; if(!cyy.collected) drawCandy((cyy.x-scroll)/PS|0,cyy.y/PS,cyy.bob); } }
 
   if(g.goal){ var gl=g.goal; drawGoal(gl.x-scroll,gl.y-72,gl.rescued); }
   if(g.flagActive) drawFinishFlag(g.flagX-scroll, g);
