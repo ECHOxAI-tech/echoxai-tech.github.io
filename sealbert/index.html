@@ -143,6 +143,8 @@ var DIFFICULTIES = [
     clubFreq: 0,
     clubThrow: false,
     clubSpeed: 1.0,
+    netCharge: 0.45,
+    fishPerLife: 8,
     unlocked: true
   },
   {
@@ -159,6 +161,8 @@ var DIFFICULTIES = [
     clubFreq: 0.7,
     clubThrow: true,
     clubSpeed: 1.0,
+    netCharge: 0.7,
+    fishPerLife: 10,
     unlocked: false
   },
   {
@@ -175,6 +179,8 @@ var DIFFICULTIES = [
     clubFreq: 1.5,
     clubThrow: true,
     clubSpeed: 1.35,
+    netCharge: 1.0,
+    fishPerLife: 13,
     unlocked: false
   },
   {
@@ -191,6 +197,8 @@ var DIFFICULTIES = [
     clubFreq: 2.5,
     clubThrow: true,
     clubSpeed: 1.7,
+    netCharge: 1.3,
+    fishPerLife: 16,
     unlocked: false
   }
 ];
@@ -790,8 +798,8 @@ function drawEricPirate(cx,cy,frame){
   c.fillStyle='#e0b078'; c.fillRect(25,40,10,8);
   // ---- handsome bearded head, hat style ----
   drawEricHead(c, 30, 30, 'pirate', false, false);
-  // ---- NAPOLEON BICORNE HAT (sits high on the head) ----
-  c.save(); c.translate(30,9);
+  // ---- NAPOLEON BICORNE HAT (resting on the head, slight natural tilt) ----
+  c.save(); c.translate(30,15); c.rotate(-0.08);
   var hatg=c.createLinearGradient(0,-10,0,2); hatg.addColorStop(0,'#1c2840'); hatg.addColorStop(1,'#0a1020');
   c.fillStyle=hatg;
   // classic wide bicorne: two tall peaks fore & aft, low curved brim between
@@ -803,6 +811,13 @@ function drawEricPirate(cx,cy,frame){
   c.quadraticCurveTo(13,4,0,4);           // brim underside
   c.quadraticCurveTo(-13,4,-26,0);
   c.closePath(); c.fill();
+  // feather plume tucked behind the left peak
+  c.save(); c.translate(-20,-8); c.rotate(-0.5);
+  var fg=c.createLinearGradient(0,0,-4,-22); fg.addColorStop(0,'#e8e0d0'); fg.addColorStop(1,'#b8b0a0');
+  c.fillStyle=fg;
+  c.beginPath(); c.moveTo(0,0); c.quadraticCurveTo(-7,-12,-3,-24); c.quadraticCurveTo(2,-12,0,0); c.closePath(); c.fill();
+  c.strokeStyle='#9a9080'; c.lineWidth=0.7; c.beginPath(); c.moveTo(-1,-2); c.quadraticCurveTo(-3,-13,-3,-22); c.stroke();
+  c.restore();
   // gold rope trim along the upper edge
   c.strokeStyle='#d4b048'; c.lineWidth=1.6;
   c.beginPath(); c.moveTo(-25,-1); c.quadraticCurveTo(-19,-14,-9,-8); c.quadraticCurveTo(0,-5,9,-8); c.quadraticCurveTo(19,-14,25,-1); c.stroke();
@@ -1232,27 +1247,42 @@ function drawMagnus(boss){
   c.restore();
 }
 function drawTofuFish(cx,cy,bob){
-var by=Math.sin(bob)*3, tick=Date.now();
-ctx.save(); ctx.translate(cx*PS,(cy+by)*PS);
-ctx.globalAlpha=0.22+Math.sin(tick/350+bob)*0.12;
-ctx.fillStyle='#80f8ff'; ctx.beginPath(); ctx.ellipse(7*PS,5*PS,11*PS,8*PS,0,0,Math.PI*2); ctx.fill();
-ctx.globalAlpha=1;
-// tail
-pr(12,1,4,3,'#80c8e8'); pr(13,0,3,5,'#a0e0f8'); pr(14,0,2,5,'#c0f0ff');
-// tofu-cube body (cream white)
-pr(1,2,11,7,'#d0ecf4'); pr(2,1,9,9,'#e8f8ff'); pr(2,2,10,7,'#f4ffff');
-pr(3,3,6,4,'#ffffff');
-// tofu grid lines
-pr(4,3,1,5,'#a0c8d4'); pr(7,3,1,5,'#a0c8d4'); pr(2,5,9,1,'#a0c8d4');
-// fins (golden)
-pr(6,0,4,3,'#80b8c8'); pr(5,7,3,2,'#80b8c8');
-// eye
-pr(2,3,2,2,'#102030'); pr(2,3,1,1,'#fff');
-// sparkles
-var sp=Math.floor(tick/200)%3;
-if(sp===0){ pr(-1,0,1,1,'#fff'); pr(0,-1,2,2,'#ffe080'); }
-if(sp===1){ pr(13,-2,2,2,'#fff'); }
-ctx.restore();
+  var c=ctx, by=Math.sin(bob)*3, tick=Date.now();
+  c.save(); c.translate(cx*PS,(cy+by)*PS);
+  // soft glow
+  c.globalAlpha=0.18+Math.sin(tick/350+bob)*0.1;
+  c.fillStyle='#bff4e0'; c.beginPath(); c.ellipse(20,18,18,14,0,0,Math.PI*2); c.fill();
+  c.globalAlpha=1;
+  // ---- TOFU BLOCK cut into a fish shape ----
+  c.save(); c.translate(20,18);
+  // drop shadow under the block (gives it solid depth)
+  c.fillStyle='rgba(120,150,150,0.35)';
+  c.beginPath(); c.moveTo(-13,8); c.lineTo(9,8); c.lineTo(15,11); c.lineTo(11,11); c.lineTo(-13,11); c.closePath(); c.fill();
+  // body — a chunky rounded-rect block (tofu cube) with the back-corner bevel
+  var tg=c.createLinearGradient(-14,-9,12,9);
+  tg.addColorStop(0,'#ffffff'); tg.addColorStop(0.5,'#f0fbff'); tg.addColorStop(1,'#cfe6ea');
+  c.fillStyle=tg;
+  c.beginPath();
+  c.moveTo(-13,-7); c.lineTo(7,-7); c.quadraticCurveTo(11,-7,12,-3);   // top
+  c.lineTo(12,3); c.quadraticCurveTo(11,7,7,7); c.lineTo(-13,7);
+  c.quadraticCurveTo(-15,0,-13,-7); c.closePath(); c.fill();
+  // tail — a triangular notched block cut from the same tofu
+  c.beginPath(); c.moveTo(11,-1); c.lineTo(20,-7); c.lineTo(18,0); c.lineTo(20,7); c.lineTo(11,1); c.closePath(); c.fill();
+  // top fin (small cut block)
+  c.beginPath(); c.moveTo(-4,-7); c.lineTo(0,-12); c.lineTo(3,-7); c.closePath(); c.fill();
+  // bevel highlight (top-left lit edge of the cube)
+  c.strokeStyle='rgba(255,255,255,0.9)'; c.lineWidth=1.4;
+  c.beginPath(); c.moveTo(-12,-6); c.lineTo(6,-6); c.stroke();
+  // soft cut-grid lines pressed into the tofu
+  c.strokeStyle='rgba(150,185,190,0.6)'; c.lineWidth=0.8;
+  c.beginPath(); c.moveTo(-5,-6); c.lineTo(-5,6); c.moveTo(2,-6); c.lineTo(2,6); c.moveTo(-12,0); c.lineTo(10,0); c.stroke();
+  // shaded right cut-face (depth)
+  c.fillStyle='rgba(150,185,190,0.3)';
+  c.beginPath(); c.moveTo(7,-7); c.quadraticCurveTo(11,-7,12,-3); c.lineTo(12,3); c.quadraticCurveTo(11,7,7,7); c.closePath(); c.fill();
+  // tiny eye dot pressed in
+  c.fillStyle='#5a7a80'; c.beginPath(); c.arc(-8,-2,1.4,0,7); c.fill();
+  c.restore();
+  c.restore();
 }
 function drawOutfitPickup(cx,cy,type,bob){
 var by=Math.sin(bob)*3.5, tick=Date.now();
@@ -1275,27 +1305,33 @@ function drawCandy(cx,cy,bob){
   var by=Math.sin(bob)*3.5;
   c.save(); c.translate(cx*PS,(cy+by)*PS);
   // glow halo (rainbow shimmer)
-  c.globalAlpha=0.3+Math.sin(tick/250)*0.18;
-  var hue=(tick/12)%360;
-  c.fillStyle='hsl('+hue+',90%,65%)';
-  c.beginPath(); c.arc(18,18,16,0,Math.PI*2); c.fill();
-  c.globalAlpha=1;
+  c.globalAlpha=0.28+Math.sin(tick/250)*0.16;
+  var hue=(tick/12)%360; c.fillStyle='hsl('+hue+',90%,65%)';
+  c.beginPath(); c.arc(18,18,17,0,Math.PI*2); c.fill(); c.globalAlpha=1;
   // orbiting sparkles
-  for(var i=0;i<4;i++){ var a=tick/280+i*1.57; c.fillStyle=i%2?'#fff':'#ffe040'; c.fillRect(18+Math.cos(a)*16-2,18+Math.sin(a)*16-2,3,3); }
-  c.save(); c.translate(18,18); c.rotate(Math.sin(tick/400)*0.2);
-  // left wrapper twist
-  c.fillStyle='#ff70b0'; c.beginPath(); c.moveTo(-14,0); c.lineTo(-7,-5); c.lineTo(-7,5); c.closePath(); c.fill();
-  c.fillStyle='#ff90c8'; c.beginPath(); c.moveTo(-13,-1); c.lineTo(-8,-4); c.lineTo(-8,1); c.closePath(); c.fill();
-  // right wrapper twist
-  c.fillStyle='#ff70b0'; c.beginPath(); c.moveTo(14,0); c.lineTo(7,-5); c.lineTo(7,5); c.closePath(); c.fill();
-  c.fillStyle='#ff90c8'; c.beginPath(); c.moveTo(13,-1); c.lineTo(8,-4); c.lineTo(8,1); c.closePath(); c.fill();
-  // candy body (glossy bonbon)
-  var g=c.createRadialGradient(-3,-3,1,0,0,9);
-  g.addColorStop(0,'#fff0a0'); g.addColorStop(0.5,'#ff80c0'); g.addColorStop(1,'#d02080');
-  c.fillStyle=g; c.beginPath(); c.ellipse(0,0,8,7,0,0,Math.PI*2); c.fill();
-  // candy stripe + shine
-  c.strokeStyle='rgba(255,255,255,0.7)'; c.lineWidth=1.5; c.beginPath(); c.arc(0,0,5,-0.6,1.0); c.stroke();
-  c.fillStyle='rgba(255,255,255,0.85)'; c.beginPath(); c.ellipse(-3,-3,2,1.5,0,0,Math.PI*2); c.fill();
+  for(var i=0;i<4;i++){ var a=tick/280+i*1.57; c.fillStyle=i%2?'#fff':'#ffe040'; c.fillRect(18+Math.cos(a)*17-1.5,18+Math.sin(a)*17-1.5,3,3); }
+  c.save(); c.translate(18,18); c.rotate(Math.sin(tick/400)*0.15);
+  // ── pointed twist wrappers ">  <" both sides (clearly a wrapped candy) ──
+  // left twist: two pointed cones meeting at the body (the ">" )
+  c.fillStyle='#ff5ba8';
+  c.beginPath(); c.moveTo(-9,-1); c.lineTo(-18,-7); c.lineTo(-15,0); c.lineTo(-18,7); c.lineTo(-9,1); c.closePath(); c.fill();
+  // wrapper pinch lines
+  c.strokeStyle='#d0247a'; c.lineWidth=0.8;
+  c.beginPath(); c.moveTo(-9,0); c.lineTo(-17,-6); c.moveTo(-9,0); c.lineTo(-17,6); c.moveTo(-9,0); c.lineTo(-15,0); c.stroke();
+  // right twist (the "<")
+  c.fillStyle='#ff5ba8';
+  c.beginPath(); c.moveTo(9,-1); c.lineTo(18,-7); c.lineTo(15,0); c.lineTo(18,7); c.lineTo(9,1); c.closePath(); c.fill();
+  c.strokeStyle='#d0247a'; c.lineWidth=0.8;
+  c.beginPath(); c.moveTo(9,0); c.lineTo(17,-6); c.moveTo(9,0); c.lineTo(17,6); c.moveTo(9,0); c.lineTo(15,0); c.stroke();
+  // candy body (glossy bonbon, the "0")
+  var g=c.createRadialGradient(-3,-3,1,0,0,10);
+  g.addColorStop(0,'#fff4c0'); g.addColorStop(0.5,'#ff86c4'); g.addColorStop(1,'#cc2078');
+  c.fillStyle=g; c.beginPath(); c.ellipse(0,0,9,8,0,0,Math.PI*2); c.fill();
+  // wrapper seam highlights + shine
+  c.strokeStyle='rgba(255,255,255,0.65)'; c.lineWidth=1.4; c.beginPath(); c.arc(0,0,5.5,-0.7,1.0); c.stroke();
+  c.fillStyle='rgba(255,255,255,0.9)'; c.beginPath(); c.ellipse(-3,-3,2.2,1.5,0,0,Math.PI*2); c.fill();
+  // little crinkle dots on body
+  c.fillStyle='rgba(255,255,255,0.4)'; c.beginPath(); c.arc(3,3,1,0,7); c.fill();
   c.restore();
   c.restore();
 }
@@ -1698,6 +1734,10 @@ function csSpeech(ax, ay, lines, opts){
   if(side==='up'){
     bx=ax-bw/2; by=ay-bh-26;
     tailToX=ax; tailToY=ay-6;
+  } else if(side==='up-right'){
+    // bubble up and to the left; tail comes from the bubble's RIGHT side down to the face
+    bx=ax-bw+10; by=ay-bh-26;
+    tailToX=ax; tailToY=ay-6;
   } else if(side==='right'){
     bx=ax+22; by=ay-bh-8;
     tailToX=ax+4; tailToY=ay-2;
@@ -1764,78 +1804,136 @@ function csShip(c, ox, oy, scale, flag, crew){
   c.strokeStyle='#3a2410'; c.lineWidth=6; c.lineCap='round';
   c.beginPath(); c.moveTo(-15,8); c.lineTo(-50,-12); c.stroke();
 
-  // ── CLUBBER CREW peeking up on the LEFT of the mast (heads only, bobbing) ──
+  // ── CLUBBER CREW clustered on the LEFT, huddled close (heads only, may overlap) ──
   if(crew!==false){
-    var crewX=[44,84,124];
-    for(var k=0;k<crewX.length;k++){
-      var cxh=crewX[k], bob=Math.sin(tick/420+k*1.3)*3, ch=-2+bob;
+    // back-to-front order so front ones overlap the back ones; each looks different
+    var crewDef=[
+      {x:64, style:'bandana'},  // back, pirate-cloth tied over head
+      {x:42, style:'ushanka'},  // middle
+      {x:86, style:'tricorne'}  // front, has a hat
+    ];
+    for(var k=0;k<crewDef.length;k++){
+      var cd=crewDef[k], cxh=cd.x, bob=Math.sin(tick/420+k*1.6)*2.5, ch=0+bob;
       c.save(); c.translate(cxh,ch);
+      // raised arm(s) waving/brandishing up over the rail (behind the head)
+      // goon k===1 raises the LEFT arm, others the right, so they vary
+      c.strokeStyle=['#a8702e','#9a6428','#a06a2c'][k]; c.lineWidth=4.5; c.lineCap='round';
+      var armSw=Math.sin(tick/300+k*2)*0.3;
+      var side=(k===1)?-1:1;
+      c.save(); c.rotate(armSw*side);
+      c.beginPath(); c.moveTo(7*side,2); c.lineTo(13*side,-14); c.stroke();      // raised fist arm
+      c.fillStyle=['#e8b878','#d8a868','#e0b070'][k]; c.beginPath(); c.arc(13*side,-15,3,0,7); c.fill();
+      c.restore();
+      // a club in some hands
+      if(k!==1){ c.save(); c.translate(13*side,-15); c.rotate(0.4+armSw);
+        c.strokeStyle='#7a4a1c'; c.lineWidth=3; c.beginPath(); c.moveTo(0,0); c.lineTo(0,-12); c.stroke();
+        c.fillStyle='#9a6a34'; c.beginPath(); c.arc(0,-13,3,0,7); c.fill(); c.restore(); }
       // head
-      var fg=c.createLinearGradient(0,-14,0,4); fg.addColorStop(0,'#e8b878'); fg.addColorStop(1,'#a8702e');
+      var fg=c.createLinearGradient(0,-14,0,4);
+      var skin=['#e8b878','#d8a868','#e0b070'][k];
+      fg.addColorStop(0,skin); fg.addColorStop(1,'#a8702e');
       c.fillStyle=fg; c.beginPath(); c.ellipse(0,-6,9,10,0,0,Math.PI*2); c.fill();
-      // fur ushanka
-      var hgc=c.createLinearGradient(0,-20,0,-8); hgc.addColorStop(0,'#3a3220'); hgc.addColorStop(1,'#1c1810');
-      c.fillStyle=hgc; c.beginPath(); c.ellipse(0,-14,10,6,0,Math.PI,0); c.fill();
-      c.fillStyle='#2a2418'; c.fillRect(-10,-15,20,3);
-      c.fillStyle='#332b1c'; c.fillRect(-10,-14,3,5); c.fillRect(7,-14,3,5);
-      // red star
-      c.fillStyle='#d02020'; c.beginPath();
-      for(var s=0;s<5;s++){ var a=-Math.PI/2+s*2*Math.PI/5; c.lineTo(Math.cos(a)*2.4,-16+Math.sin(a)*2.4); var a2=a+Math.PI/5; c.lineTo(Math.cos(a2)*1,-16+Math.sin(a2)*1); }
-      c.closePath(); c.fill();
-      // eyes (mean squint)
+      // eyes
       c.fillStyle='#fff'; c.beginPath(); c.ellipse(-3,-6,2,1.7,0,0,7); c.fill(); c.beginPath(); c.ellipse(3,-6,2,1.7,0,0,7); c.fill();
       c.fillStyle='#3a2008'; c.beginPath(); c.arc(-3,-6,1,0,7); c.fill(); c.beginPath(); c.arc(3,-6,1,0,7); c.fill();
       c.strokeStyle='#3a2410'; c.lineWidth=1.4; c.lineCap='round';
-      c.beginPath(); c.moveTo(-6,-9); c.lineTo(-1,-7.5); c.stroke(); c.beginPath(); c.moveTo(6,-9); c.lineTo(1,-7.5); c.stroke();
-      // snarl
-      c.beginPath(); c.moveTo(-3,-1); c.quadraticCurveTo(0,-2.5,3,-1); c.stroke();
+      // headgear per style
+      if(cd.style==='ushanka'){
+        var hgc=c.createLinearGradient(0,-20,0,-8); hgc.addColorStop(0,'#3a3220'); hgc.addColorStop(1,'#1c1810');
+        c.fillStyle=hgc; c.beginPath(); c.ellipse(0,-14,10,6,0,Math.PI,0); c.fill();
+        c.fillStyle='#2a2418'; c.fillRect(-10,-15,20,3);
+        c.fillStyle='#332b1c'; c.fillRect(-10,-14,3,5); c.fillRect(7,-14,3,5);
+        c.fillStyle='#d02020'; c.beginPath();
+        for(var s=0;s<5;s++){ var a=-Math.PI/2+s*2*Math.PI/5; c.lineTo(Math.cos(a)*2.4,-16+Math.sin(a)*2.4); var a2=a+Math.PI/5; c.lineTo(Math.cos(a2)*1,-16+Math.sin(a2)*1); }
+        c.closePath(); c.fill();
+        // brows + snarl (grumpy)
+        c.strokeStyle='#3a2410'; c.lineWidth=1.4;
+        c.beginPath(); c.moveTo(-6,-9); c.lineTo(-1,-7.5); c.stroke(); c.beginPath(); c.moveTo(6,-9); c.lineTo(1,-7.5); c.stroke();
+        c.beginPath(); c.moveTo(-3,-1); c.quadraticCurveTo(0,-2.5,3,-1); c.stroke();
+      } else if(cd.style==='bandana'){
+        // pirate cloth tied over the head with a knot + tails
+        var bg2=c.createLinearGradient(0,-18,0,-6); bg2.addColorStop(0,'#a83030'); bg2.addColorStop(1,'#6a1818');
+        c.fillStyle=bg2; c.beginPath(); c.ellipse(0,-12,10,6,0,Math.PI,0); c.fill();
+        c.fillRect(-10,-12,20,3);
+        // knot + tails on the side
+        c.fillStyle='#7a2020'; c.beginPath(); c.arc(9,-11,2.5,0,7); c.fill();
+        c.beginPath(); c.moveTo(10,-11); c.lineTo(17,-14); c.lineTo(16,-9); c.closePath(); c.fill();
+        c.beginPath(); c.moveTo(10,-10); c.lineTo(16,-5); c.lineTo(12,-7); c.closePath(); c.fill();
+        // bandana fold lines
+        c.strokeStyle='rgba(0,0,0,0.25)'; c.lineWidth=0.8; c.beginPath(); c.moveTo(-7,-12); c.lineTo(-5,-9); c.stroke();
+        // one raised brow + smirk
+        c.strokeStyle='#3a2410'; c.lineWidth=1.4;
+        c.beginPath(); c.moveTo(-6,-9); c.lineTo(-1,-8); c.stroke(); c.beginPath(); c.moveTo(2,-8.5); c.lineTo(6,-9.5); c.stroke();
+        c.beginPath(); c.moveTo(-3,-1.5); c.quadraticCurveTo(1,-0.5,4,-2); c.stroke();
+      } else { // tricorne hat
+        c.fillStyle='#241810'; c.beginPath();
+        c.moveTo(-12,-12); c.quadraticCurveTo(0,-26,12,-12); c.quadraticCurveTo(0,-17,-12,-12); c.closePath(); c.fill();
+        c.beginPath(); c.ellipse(0,-12,13,4,0,0,Math.PI*2); c.fill();
+        c.fillStyle='#3a2818'; c.beginPath(); c.ellipse(0,-12,13,3,0,0,Math.PI*2); c.fill();
+        c.fillStyle='#c8a040'; c.fillRect(-12,-13,24,1.5);
+        // stubble + flat angry brows + grimace
+        c.strokeStyle='#3a2410'; c.lineWidth=1.6;
+        c.beginPath(); c.moveTo(-6,-8.5); c.lineTo(-1,-8.5); c.stroke(); c.beginPath(); c.moveTo(6,-8.5); c.lineTo(1,-8.5); c.stroke();
+        c.beginPath(); c.moveTo(-3,-1); c.lineTo(3,-1); c.stroke();
+        c.globalAlpha=0.3; c.fillStyle='#2a1c0e'; c.fillRect(-5,1,10,2); c.globalAlpha=1;
+      }
       c.restore();
     }
   }
 
-  // mast (taller)
-  c.fillStyle='#3a2410'; c.fillRect(168,-122,10,128);
-  c.fillStyle='#4a3018'; c.fillRect(168,-122,4,128);
+  // mast (centered on the deck, taller)
+  c.fillStyle='#3a2410'; c.fillRect(135,-122,10,128);
+  c.fillStyle='#4a3018'; c.fillRect(135,-122,4,128);
   // crossbeam
-  c.fillStyle='#2e1c0c'; c.fillRect(120,-104,108,6);
-  // sail (torn black, pirate)
+  c.fillStyle='#2e1c0c'; c.fillRect(88,-104,104,6);
+  // sail (torn black, pirate) — centered around mast
   if(flag!==false){
-    var sg=c.createLinearGradient(112,-100,210,-28);
+    var sg=c.createLinearGradient(94,-100,186,-28);
     sg.addColorStop(0,'#2e2e34'); sg.addColorStop(1,'#17171a');
     c.fillStyle=sg;
     c.beginPath();
-    c.moveTo(120,-100); c.lineTo(208,-100);
-    c.lineTo(212,-36); c.quadraticCurveTo(182,-28,194,-44);
-    c.quadraticCurveTo(164,-32,176,-48); c.quadraticCurveTo(140,-30,152,-46);
-    c.lineTo(120,-38); c.closePath(); c.fill();
+    c.moveTo(94,-100); c.lineTo(182,-100);
+    c.lineTo(186,-36); c.quadraticCurveTo(156,-28,168,-44);
+    c.quadraticCurveTo(138,-32,150,-48); c.quadraticCurveTo(114,-30,126,-46);
+    c.lineTo(94,-38); c.closePath(); c.fill();
     // ── EMBLEM: cute lil' seal beneath two crossed clubs (threatening) ──
-    c.save(); c.translate(165,-66);
-    // crossed clubs above the seal
-    c.strokeStyle='#d8cdb4'; c.lineWidth=4; c.lineCap='round';
-    c.beginPath(); c.moveTo(-15,-20); c.lineTo(13,-4); c.stroke();
-    c.beginPath(); c.moveTo(15,-20); c.lineTo(-13,-4); c.stroke();
+    c.save(); c.translate(139,-66);
+    // crossed clubs above the seal — pale heads on top, long brown wooden handles extending down
+    // handles (brown wood) — full length, prolonged below the crossing point
+    c.strokeStyle='#7a4a1c'; c.lineWidth=4; c.lineCap='round';
+    c.beginPath(); c.moveTo(-15,-20); c.lineTo(20,2); c.stroke();
+    c.beginPath(); c.moveTo(15,-20); c.lineTo(-20,2); c.stroke();
+    // wood grain highlight
+    c.strokeStyle='#9a6a34'; c.lineWidth=1.2;
+    c.beginPath(); c.moveTo(-14,-19); c.lineTo(19,1); c.stroke();
+    c.beginPath(); c.moveTo(14,-19); c.lineTo(-19,1); c.stroke();
     // club heads (fatter ends)
     c.fillStyle='#e6dcc4';
     c.beginPath(); c.arc(-15,-20,4,0,7); c.fill(); c.beginPath(); c.arc(15,-20,4,0,7); c.fill();
-    // cute seal below, looking up worried
+    // cute seal below, KNOCKED OUT (slumped, tilted)
+    c.save(); c.rotate(0.18);
     c.fillStyle='#cfe0ee'; c.beginPath(); c.ellipse(0,8,11,8,0,0,Math.PI*2); c.fill();      // body
     c.fillStyle='#eaf4fb'; c.beginPath(); c.ellipse(0,9,7,5,0,0,Math.PI*2); c.fill();        // belly
     c.fillStyle='#cfe0ee'; c.beginPath(); c.ellipse(0,2,7,6,0,0,Math.PI*2); c.fill();        // head
-    // flippers
-    c.beginPath(); c.ellipse(-10,11,4,2,-0.5,0,7); c.fill(); c.beginPath(); c.ellipse(10,11,4,2,0.5,0,7); c.fill();
+    // flippers (limp)
+    c.beginPath(); c.ellipse(-10,12,4,2,0.2,0,7); c.fill(); c.beginPath(); c.ellipse(10,12,4,2,0.4,0,7); c.fill();
     // tail
     c.beginPath(); c.moveTo(10,8); c.lineTo(16,4); c.lineTo(16,11); c.closePath(); c.fill();
-    // worried eyes (big, looking up)
-    c.fillStyle='#fff'; c.beginPath(); c.arc(-2.6,1,1.8,0,7); c.fill(); c.beginPath(); c.arc(2.6,1,1.8,0,7); c.fill();
-    c.fillStyle='#16263a'; c.beginPath(); c.arc(-2.6,0.3,1,0,7); c.fill(); c.beginPath(); c.arc(2.6,0.3,1,0,7); c.fill();
-    // tiny nose + worried mouth
-    c.fillStyle='#16263a'; c.beginPath(); c.arc(0,3.5,1,0,7); c.fill();
-    c.strokeStyle='#16263a'; c.lineWidth=0.8; c.beginPath(); c.arc(0,7,2,3.5,6,true); c.stroke();
+    // X-X knocked-out eyes
+    c.strokeStyle='#16263a'; c.lineWidth=1; c.lineCap='round';
+    c.beginPath(); c.moveTo(-4,-0.5); c.lineTo(-1.5,2); c.moveTo(-1.5,-0.5); c.lineTo(-4,2); c.stroke();
+    c.beginPath(); c.moveTo(1.5,-0.5); c.lineTo(4,2); c.moveTo(4,-0.5); c.lineTo(1.5,2); c.stroke();
+    // open dazed mouth
+    c.fillStyle='#16263a'; c.beginPath(); c.ellipse(0,5,1.6,1.2,0,0,Math.PI*2); c.fill();
+    // dizzy stars circling the head
+    c.fillStyle='#ffe040';
+    for(var ds=0;ds<3;ds++){ var da=tick/300+ds*2.1; c.beginPath(); c.arc(Math.cos(da)*9,-7+Math.sin(da)*3,1.2,0,7); c.fill(); }
+    c.restore();
     c.restore();
   }
   // little pennant flag at masthead
   c.fillStyle='#b01818';
-  c.beginPath(); c.moveTo(173,-122); c.lineTo(202,-117); c.lineTo(173,-112); c.closePath(); c.fill();
+  c.beginPath(); c.moveTo(140,-122); c.lineTo(169,-117); c.lineTo(140,-112); c.closePath(); c.fill();
   c.restore();
 }
 
@@ -1850,10 +1948,17 @@ function makeIntroCutscene(){
         // lantern glow
         var fl=0.5+Math.sin(t/8)*0.3; csCtx.globalAlpha=fl; csCtx.fillStyle='#ffb030'; csCtx.beginPath(); csCtx.arc(72,248,4,0,7); csCtx.fill(); csCtx.beginPath(); csCtx.arc(266,248,4,0,7); csCtx.fill(); csCtx.globalAlpha=1;
         // Eric standing on deck
-        drawEricPirate(82,26,Math.floor(t/20));
+        // Eric stands aft (right), in a deck recess so his feet are hidden behind the rail
+        csCtx.save();
+        csCtx.beginPath(); csCtx.rect(230,0,200,248); csCtx.clip();
+        drawEricPirate(84,26,Math.floor(t/20));
+        csCtx.restore();
         csVignette();
         csTitle('THE ARCTIC SEAS  -  LONG AGO','#90c0ff');
-        if(t>30){ csCtx.globalAlpha=Math.min(1,(t-30)/30); csCtx.fillStyle='#e8c060'; csCtx.font='9px "Press Start 2P",monospace'; csCtx.textAlign='center'; csCtx.fillText('CAPTAIN ERIC BEARCLAW',300,300); csCtx.font='7px "Press Start 2P",monospace'; csCtx.fillStyle='#b09040'; csCtx.fillText('Seal-Clubbing Tyrant',300,318); csCtx.textAlign='left'; csCtx.globalAlpha=1; }
+        if(t>30){ csCtx.globalAlpha=Math.min(1,(t-30)/30); csCtx.textAlign='center';
+          csCtx.fillStyle='#e8c060'; csCtx.font='9px "Press Start 2P",monospace'; csCtx.fillText('CAPTAIN ERIC BEARCLAW',478,70);
+          csCtx.font='7px "Press Start 2P",monospace'; csCtx.fillStyle='#b09040'; csCtx.fillText('Seal-Clubbing Tyrant',478,88);
+          csCtx.textAlign='left'; csCtx.globalAlpha=1; }
       }
     },
     { text:"But out on the drifting ice, a small seal danced alone -\nasking nothing of the world, simply spinning for joy.",
@@ -1871,10 +1976,16 @@ function makeIntroCutscene(){
         setCtx(csCtx); csBackdrop('ice',t); r(0,310,640,90,'#90c0e0'); r(0,310,640,3,'#d8f4ff');
         // ship prow on the left
         csShip(csCtx, -150, 250, 1.0, true);
-        drawEricPirate(16,26,0);
+        csCtx.save(); csCtx.beginPath(); csCtx.rect(0,0,150,248); csCtx.clip();
+        drawEricPirate(16,26,0); csCtx.restore();
         drawSealbert(190,92,true,'idle',0,t>30?60:0,Math.floor(t/8));
-        // heart rising from Eric
-        if(t>70){ var hy=120-Math.sin((t-70)/12)*30; csCtx.globalAlpha=Math.min(1,(t-70)/40); csCtx.font='22px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',150,hy); csCtx.globalAlpha=1; }
+        // two hearts dancing in the air rising from Eric
+        if(t>70){ var prog=Math.min(1,(t-70)/40); csCtx.globalAlpha=prog;
+          var hy=120-Math.sin((t-70)/12)*30, hx=150+Math.cos((t-70)/14)*6;
+          csCtx.font='24px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',hx,hy);
+          var hy2=104-Math.sin((t-70)/12+1.2)*26, hx2=176+Math.cos((t-70)/13+0.8)*5;
+          csCtx.font='16px serif'; csCtx.fillStyle='#ff9ec0'; csCtx.fillText('\u2665',hx2,hy2);
+          csCtx.globalAlpha=1; }
         csVignette();
         csTitle('A FEELING HE HAD NEVER KNOWN','#ffb0d0');
       }
@@ -1892,7 +2003,7 @@ function makeIntroCutscene(){
         if(t>10){ csCtx.save(); csCtx.translate(270+t*1.6,150-t*0.5); csCtx.rotate(t*0.05); csCtx.fillStyle='#181208'; csCtx.beginPath(); csCtx.ellipse(0,0,14,5,0,0,Math.PI*2); csCtx.fill(); csCtx.beginPath(); csCtx.arc(0,-2,7,Math.PI,0); csCtx.fill(); csCtx.restore(); }
         drawSealbert(78,87,false,'idle',0,0,Math.floor(t/20));
         // speech emerges from Eric's mouth (~ x183, y128 in his local frame)
-        if(t>75) csSpeech(440, 196, ['I RENOUNCE','IT ALL!'], {side:'up'});
+        if(t>75) csSpeech(440, 196, ['I RENOUNCE','IT ALL!'], {side:'up-right'});
         csVignette();
         csTitle('THE VOW','#ffd0a0');
       }
@@ -1900,9 +2011,16 @@ function makeIntroCutscene(){
     { text:"Sealbert looked at the shivering human - not with fear, but recognition.\nHere stood someone who had chosen the harder, kinder path.",
       draw:function(t){
         setCtx(csCtx); csBackdrop('blizzard',t); r(0,318,640,82,'#5a6e84'); r(0,318,640,3,'#b8d8f0');
-        drawEricUnderwear(120,59,Math.floor(t/8),true);
-        drawSealbert(95,87,false,'idle',0,0,Math.floor(t/18));
-        if(t>50){ csCtx.globalAlpha=0.16+Math.sin(t/16)*0.08; csCtx.fillStyle='#ffe6a0'; csCtx.beginPath(); csCtx.ellipse(380,310,90,40,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1; }
+        // Eric on the left; seal to his right, turned TOWARD him and rising up in recognition
+        drawEricUnderwear(96,59,Math.floor(t/8),true);
+        var rise=t>40?Math.min(14,(t-40)*0.5):0;     // seal lifts up toward him
+        drawSealbert(150,90-rise/3,false,'idle',0,0,Math.floor(t/18));
+        // golden bond glow around the pair
+        if(t>50){ csCtx.globalAlpha=0.16+Math.sin(t/16)*0.08; csCtx.fillStyle='#ffe6a0'; csCtx.beginPath(); csCtx.ellipse(420,300,110,46,0,0,Math.PI*2); csCtx.fill(); csCtx.globalAlpha=1; }
+        // dancing heart between them
+        if(t>55){ var hp=Math.min(1,(t-55)/30); csCtx.globalAlpha=hp;
+          var hhy=250-Math.abs(Math.sin((t-55)/10))*14;
+          csCtx.font='20px serif'; csCtx.fillStyle='#ff6f9c'; csCtx.fillText('\u2665',396,hhy); csCtx.globalAlpha=1; }
         csVignette();
         csTitle('TWO SOULS, ONE SHORE','#cfe0ff');
       },
@@ -2506,14 +2624,14 @@ function doStageCompleteDisplay(){
   var stars=calcStars(game.tofu,game.lvl.maxFish||20,game.deaths,game.stageTimer);
   saveStars(game.stageKey,game.diff.id,stars);
   var msgs={
-    '1-1':['ERIK IS AMAZED!','He has never seen a tail-spin like that.\nHis cold heart cracks wide open.\n"I must follow this seal."'],
-    '1-2':['ERIK THROWS IT ALL AWAY!','His coat. His hat. His club. Into the sea.\n"I RENOUNCE SEAL-CLUBBING!\nI AM VEGAN NOW!"'],
+    '1-1':['ERIC IS AMAZED!','He has never seen a tail-spin like that.\nHis cold heart cracks wide open.\n"I must follow this seal."'],
+    '1-2':['ERIC THROWS IT ALL AWAY!','His coat. His hat. His club. Into the sea.\n"I RENOUNCE SEAL-CLUBBING!\nI AM VEGAN NOW!"'],
     '2-1':['COAT FOUND!','Eric grabs it from the snow.\n"Finally. Some dignity."\n(He is still very cold.)'],
     '2-2':['FEATHERS AND STAFF!','The ancient relics hum with power.\nEric feels something awakening.\n"The ice speaks to me..."'],
     '2-3':['THE SACRED GEM!','The final relic. It all clicks.\nBjorn nods slowly.\n"It is time."'],
     '3-1':['COAST CLEARED!','Magnus\'s outer patrols defeated.\nDeeper into enemy territory...'],
     '3-2':['FLEET DESTROYED!','The warships scatter.\nThe fortress looms ahead.\nEric is inside.'],
-    '3-3':['ERIK RESCUED!','Sealbert smashes the cage!\nEric bursts free in full shaman glory.\n"I knew you\'d come for me, little one."'],
+    '3-3':['ERIC RESCUED!','Sealbert smashes the cage!\nEric bursts free in full shaman glory.\n"I knew you\'d come for me, little one."'],
     '3-4':['MAGNUS DEFEATED!','The Seal-Clubbing Empire crumbles.\nEric and Sealbert swim free.\n"...For now."  -  The Arctic']
   };
   var m=msgs[game.stageKey]||['STAGE COMPLETE!','Well done.'];
@@ -2559,14 +2677,15 @@ function update(){
   var slideK=keys['x']||keys['X'];
   var spinK=keys['c']||keys['C'];
 
-  // NETTED: spinning struggles free (no charge needed); 2 spins escapes
+  // NETTED: spinning struggles free (no charge needed); 2 spins, or 1 in super-spin mode
   if(p.netted>0){
     p.vx=0;
     if(spinK&&p.spinCooldown<=0&&p.spinTimer<=0){
       p.spinTimer=30; p.spinCooldown=14;
       p.netEscapeSpins++;
       spawnParts(p.x+30,p.y+27,'#c0b070',12); spawnParts(p.x+30,p.y+27,'#ffe040',8);
-      if(p.netEscapeSpins>=2){
+      var needSpins=p.superSpin>0?1:2;
+      if(p.netEscapeSpins>=needSpins){
         p.netted=0; p.netEscapeSpins=0;
         spawnParts(p.x+30,p.y+27,'#ffe040',20);
         showNotif('FREE! Keep moving!');
@@ -2703,9 +2822,10 @@ function update(){
     // ── NETTER: throws nets; charges in to gloat when player is caught ──
     else if(e.type==='netter'){
       if(p.netted>0&&e.charging){
-        // rush the trapped seal
+        // rush the trapped seal — slower on easy, faster on harder difficulties
         var nd=p.x-e.x;
-        e.x+=nd>0?2.2:-2.2;
+        var rush=g.diff?(g.diff.netCharge||1.0):1.0;
+        e.x+=(nd>0?2.2:-2.2)*rush;
         e.facingRight=nd>0;
       } else {
         e.charging=false;
@@ -2847,7 +2967,16 @@ function update(){
       p.maxHp=Math.min(200,p.maxHp+4);
       p.hp=Math.min(p.maxHp,p.hp+12);
       spawnParts(c.x+27,c.y+21,'#ff80a0',6);
-      showNotif('🐟 Tofu! +HP');
+      // ── every Nth tofu = an extra life (threshold rises with difficulty) ──
+      var lifeThresh=(g.diff&&g.diff.fishPerLife)?g.diff.fishPerLife:10;
+      g.fishToLife=(g.fishToLife||0)+1;
+      if(g.fishToLife>=lifeThresh){
+        g.fishToLife=0; g.lives++;
+        spawnParts(c.x+27,c.y+21,'#ff4060',22); spawnParts(c.x+27,c.y+21,'#ffe040',16);
+        showNotif('🐟×'+lifeThresh+'  ❤ EXTRA LIFE!');
+      } else {
+        showNotif('🐟 Tofu! +HP  ('+g.fishToLife+'/'+lifeThresh+')');
+      }
     }
   }
   if(p.spinCharge>=100&&!g.spinHintShown&&g.lvl.end==='spin'){ g.spinHintShown=true; showNotif('★ Press C to TAIL-SPIN near Eric!'); }
@@ -2860,7 +2989,7 @@ function update(){
       cy3.bob+=0.07;
       if(rectsOverlap(p,{x:cy3.x,y:cy3.y,w:cy3.w*PS,h:cy3.h*PS})){
         cy3.collected=true; g.candy=(g.candy||0)+1; g.score+=120;
-        p.superSpin=600; // ~10 seconds of super-spin
+        p.superSpin=800; // ~13 seconds of super-spin
         p.spinCharge=100;
         spawnParts(cy3.x+18,cy3.y+18,'#ff60c0',16); spawnParts(cy3.x+18,cy3.y+18,'#ffe040',12);
         showNotif('🍬 SUPER-SPIN! 10s of unstoppable power!');
@@ -2886,7 +3015,7 @@ function update(){
   if(gl&&!gl.rescued&&rectsOverlap(p,gl)){
     gl.rescued=true; g.companionRescued=true; g.score+=1500;
     spawnParts(gl.x+28,gl.y+34,ENV.gndD,22); spawnParts(gl.x+28,gl.y+34,'#ffe040',14);
-    showNotif('★ ERIK RESCUED! ★');
+    showNotif('★ ERIC RESCUED! ★');
     g.companion={x:gl.x-60,y:gl.y-28,frame:0,frameTick:0};
     if(g.lvl.end==='rescue'){ showNotif('★ Eric is free! Reach the FLAG!'); }
   }
@@ -2909,7 +3038,11 @@ function update(){
     if(!g.flagRaised){ g.flagRaised=true; }
     var fx=g.flagX;
     if(p.x+p.w>fx-10 && p.x<fx+30 && !g.stageComplete){
-      if(objMet){ triggerStageComplete(); }
+      if(g.stageKey==='1-1'){
+        if(p.spinTimer>0){ triggerStageComplete(); }
+        else if(!g.objWarnShown || g.objWarnShown<g.stageTimer-90){ g.objWarnShown=g.stageTimer; showNotif('\u2715 Press C to SPIN into the flag!'); }
+      }
+      else if(objMet){ triggerStageComplete(); }
       else if(!g.objWarnShown || g.objWarnShown<g.stageTimer-90){
         g.objWarnShown=g.stageTimer;
         var msg=g.lvl.reqObjective==='spin'?'Charm Eric first! Tail-spin near his ship.':
@@ -2980,7 +3113,7 @@ function bossDead(){
   document.getElementById('boss-hp-wrap').style.display='none';
   for(var i=0;i<5;i++){ (function(ii){ setTimeout(function(){ spawnParts(b.x+33,b.y+60,'#ffe040',20); spawnParts(b.x+33,b.y+60,MG.cp3,16); },ii*220); })(i); }
   setTimeout(function(){
-    document.getElementById('win-title').textContent='MAGNUS FALLS!\nERIK IS FREE!';
+    document.getElementById('win-title').textContent='MAGNUS FALLS!\nERIC IS FREE!';
     document.getElementById('win-msg').textContent='Score: '+g.score+' · Tofu: '+g.tofu+'\n\nEric and Sealbert swim out into the open sea.\nNo words. Just the two of them.\nAnd the sound of the waves.\n\n"...For now."  -  The Arctic';
     document.getElementById('win-screen').style.display='flex';
     playTrack('ending');
@@ -3028,7 +3161,38 @@ function render(){
   if(g.candies){ for(var i=0;i<g.candies.length;i++){ var cyy=g.candies[i]; if(!cyy.collected) drawCandy((cyy.x-scroll)/PS|0,cyy.y/PS,cyy.bob); } }
 
   if(g.goal){ var gl=g.goal; drawGoal(gl.x-scroll,gl.y-72,gl.rescued); }
-  if(g.flagActive) drawFinishFlag(g.flagX-scroll, g);
+  if(g.flagActive) drawFinishFlag(g.flagX-scroll, g, g.stageKey==='1-1');
+  // Level 2-3 finale: Eric's ship in the ocean far behind, Eric watching the seal through a binocular
+  if(g.stageKey==='2-3' && g.flagActive){
+    var spx=(g.flagX-scroll)-40;
+    if(spx>-260&&spx<720){
+      var cM=mainCtx, tk=Date.now();
+      cM.save(); cM.globalAlpha=0.92;
+      // small distant ship on the horizon
+      csShip(cM, spx-60, 150, 0.42, true, false);
+      // tiny Eric on deck with a binocular toward the player
+      cM.save(); cM.translate(spx+18,150); cM.scale(0.5,0.5);
+      cM.fillStyle='#1e4690'; cM.fillRect(-5,-30,10,22);            // coat
+      cM.fillStyle='#f0d0a0'; cM.beginPath(); cM.arc(0,-36,6,0,7); cM.fill(); // head
+      cM.fillStyle='#1c2840'; cM.beginPath(); cM.ellipse(0,-42,9,3,0,0,7); cM.fill(); // bicorne
+      cM.fillStyle='#2a2a30'; cM.fillRect(4,-38,12,4);             // binocular barrel
+      cM.fillStyle='#101018'; cM.fillRect(15,-39,3,6);
+      cM.restore();
+      cM.globalAlpha=1; cM.restore();
+    }
+  }
+  // Level 1: instruction in the sky to the left of the ship
+  if(g.stageKey==='1-1'){
+    var ipx=(g.flagX-scroll)+90;
+    if(ipx>-200&&ipx<700){
+      mainCtx.save(); mainCtx.textAlign='center';
+      mainCtx.fillStyle='rgba(10,20,40,0.55)'; rrect(mainCtx,ipx-92,40,184,34,6); mainCtx.fill();
+      mainCtx.fillStyle='#ffe040'; mainCtx.font='8px "Press Start 2P",monospace';
+      mainCtx.fillText('CAPTURE THE FLAG',ipx,56);
+      mainCtx.fillStyle='#90d0ff'; mainCtx.fillText('BY SPINNING INTO IT!',ipx,68);
+      mainCtx.textAlign='left'; mainCtx.restore();
+    }
+  }
   for(var i=0;i<g.enemies.length;i++){
     var e=g.enemies[i]; if(!e.alive) continue;
     var ex=(e.x-scroll)/PS|0, ey=e.y/PS|0;
@@ -3064,33 +3228,65 @@ function render(){
   // Companion
   if(g.companion) drawEric((g.companion.x-scroll)/PS|0,(g.companion.y)/PS|0,g.companion.frame,true);
 
-  // Super-spin aura
-  if(g.player.superSpin>0){ var sa=(g.player.x-scroll+30), sb=g.player.y+27; mainCtx.save(); mainCtx.globalAlpha=0.25+Math.sin(Date.now()/120)*0.15; var hue=(Date.now()/8)%360; mainCtx.fillStyle='hsl('+hue+',90%,60%)'; mainCtx.beginPath(); mainCtx.arc(sa,sb,38,0,Math.PI*2); mainCtx.fill(); mainCtx.restore(); }
+  // Super-spin aura — energetic power effect: pulsing rainbow ring, orbiting energy bolts, sparks
+  if(g.player.superSpin>0){
+    var sa=(g.player.x-scroll+30), sb=g.player.y+27, tk=Date.now();
+    var fade=g.player.superSpin<60?g.player.superSpin/60:1;   // fade out near the end
+    mainCtx.save();
+    // outer glow halo
+    var pulse=1+Math.sin(tk/100)*0.12;
+    var gr=mainCtx.createRadialGradient(sa,sb,6,sa,sb,46*pulse);
+    var hue=(tk/4)%360;
+    gr.addColorStop(0,'hsla('+hue+',95%,70%,'+(0.5*fade)+')');
+    gr.addColorStop(0.6,'hsla('+((hue+60)%360)+',95%,60%,'+(0.22*fade)+')');
+    gr.addColorStop(1,'hsla('+hue+',95%,60%,0)');
+    mainCtx.fillStyle=gr; mainCtx.beginPath(); mainCtx.arc(sa,sb,46*pulse,0,Math.PI*2); mainCtx.fill();
+    // spinning energy ring
+    mainCtx.globalAlpha=0.8*fade; mainCtx.strokeStyle='hsl('+((hue+180)%360)+',95%,72%)'; mainCtx.lineWidth=2.5;
+    mainCtx.beginPath(); mainCtx.arc(sa,sb,34,(tk/120)%6.28,(tk/120)%6.28+4.5); mainCtx.stroke();
+    // orbiting energy bolts
+    for(var o=0;o<4;o++){
+      var oa=tk/90+o*1.57, ox=sa+Math.cos(oa)*36, oy=sb+Math.sin(oa)*30;
+      mainCtx.fillStyle='hsl('+((hue+o*40)%360)+',95%,72%)';
+      mainCtx.beginPath();
+      for(var pt=0;pt<5;pt++){ var pa=pt*1.2566-1.57; var rr=pt%2?2:5; mainCtx.lineTo(ox+Math.cos(pa)*rr,oy+Math.sin(pa)*rr); }
+      mainCtx.closePath(); mainCtx.fill();
+    }
+    // rising sparks
+    mainCtx.globalAlpha=0.7*fade; mainCtx.fillStyle='#fff';
+    for(var s=0;s<3;s++){ var sy2=sb+20-((tk/8+s*40)%56); mainCtx.fillRect(sa-20+s*18+Math.sin(tk/100+s)*4,sy2,2,4); }
+    mainCtx.restore();
+  }
   // Player
   var p=g.player;
   drawSealbert((p.x-scroll)/PS|0,p.y/PS|0,p.facingRight,p.state,p.hurtTimer,p.spinTimer,p.frame);
-  // Net cage overlay when captured
+  // Draped NET overlay when captured (rounded mesh bag, not a square cage)
   if(p.netted>0){
     var nx=p.x-scroll, ny=p.y;
     var jitter=p.spinTimer>0?(Math.random()-0.5)*4:0;
-    mainCtx.save(); mainCtx.translate(jitter,0);
-    // rope mesh over the seal
-    mainCtx.strokeStyle='rgba(216,200,136,0.95)'; mainCtx.lineWidth=2;
-    mainCtx.strokeRect(nx+2,ny+2,p.w-4,p.h-4);
-    mainCtx.lineWidth=1.4; mainCtx.strokeStyle='rgba(200,180,110,0.9)';
-    for(var gi=1;gi<5;gi++){
-      mainCtx.beginPath(); mainCtx.moveTo(nx+2+gi*(p.w-4)/5,ny+2); mainCtx.lineTo(nx+2+gi*(p.w-4)/5,ny+p.h-2); mainCtx.stroke();
-      mainCtx.beginPath(); mainCtx.moveTo(nx+2,ny+2+gi*(p.h-4)/5); mainCtx.lineTo(nx+p.w-2,ny+2+gi*(p.h-4)/5); mainCtx.stroke();
-    }
-    // weighted corner knots
+    var cxN=nx+p.w/2+jitter, cyN=ny+p.h/2, rxN=p.w*0.62, ryN=p.h*0.62;
+    mainCtx.save();
+    // sagging net bag — ellipse outline + draping curved mesh
+    mainCtx.strokeStyle='rgba(220,212,180,0.95)'; mainCtx.lineWidth=2;
+    mainCtx.beginPath(); mainCtx.ellipse(cxN,cyN,rxN,ryN,0,0,Math.PI*2); mainCtx.stroke();
+    mainCtx.lineWidth=1; mainCtx.strokeStyle='rgba(205,196,160,0.85)';
+    // vertical drape lines (bowed outward)
+    for(var gi=-2;gi<=2;gi++){ var ox=gi*rxN/3;
+      mainCtx.beginPath(); mainCtx.moveTo(cxN+ox,cyN-ryN); mainCtx.quadraticCurveTo(cxN+ox*1.5,cyN,cxN+ox,cyN+ryN); mainCtx.stroke(); }
+    // horizontal mesh arcs
+    for(var hj=-2;hj<=2;hj++){ var oy=hj*ryN/3;
+      mainCtx.beginPath(); mainCtx.moveTo(cxN-rxN,cyN+oy); mainCtx.quadraticCurveTo(cxN,cyN+oy*1.4,cxN+rxN,cyN+oy); mainCtx.stroke(); }
+    // gather knot at top + drawstring
+    mainCtx.fillStyle='#8a6a34'; mainCtx.beginPath(); mainCtx.arc(cxN,cyN-ryN,4,0,Math.PI*2); mainCtx.fill();
+    // weighted beads around rim
     mainCtx.fillStyle='#806030';
-    mainCtx.fillRect(nx,ny,5,5); mainCtx.fillRect(nx+p.w-5,ny,5,5);
-    mainCtx.fillRect(nx,ny+p.h-5,5,5); mainCtx.fillRect(nx+p.w-5,ny+p.h-5,5,5);
+    for(var b=0;b<8;b++){ var a=b*Math.PI/4; mainCtx.beginPath(); mainCtx.arc(cxN+Math.cos(a)*rxN,cyN+Math.sin(a)*ryN,2.2,0,Math.PI*2); mainCtx.fill(); }
     mainCtx.restore();
-    // escape prompt + progress
+    // escape prompt + progress (1 spin if super-spin, else 2)
+    var need=p.superSpin>0?1:2;
     mainCtx.fillStyle='rgba(10,5,0,0.85)'; rrect(mainCtx,nx-6,ny-26,p.w+12,20,5); mainCtx.fill();
     mainCtx.fillStyle='#ffe040'; mainCtx.font='9px "Press Start 2P",monospace'; mainCtx.textAlign='center';
-    mainCtx.fillText('SPIN! '+p.netEscapeSpins+'/2',nx+p.w/2,ny-12); mainCtx.textAlign='left';
+    mainCtx.fillText('SPIN! '+p.netEscapeSpins+'/'+need,nx+p.w/2,ny-12); mainCtx.textAlign='left';
   }
 
   // Particles (upgraded: stars + glowing squares + spin)
@@ -3120,8 +3316,8 @@ function render(){
   }
   mainCtx.globalAlpha=1;
 
-  // Spin ready speech bubble (bigger, animated)
-  if(p.spinCharge>=100&&p.spinTimer<=0&&p.spinCooldown<=0){
+  // Spin ready speech bubble (bigger, animated) — hidden on level 1 (instruction in sky instead)
+  if(p.spinCharge>=100&&p.spinTimer<=0&&p.spinCooldown<=0&&g.stageKey!=='1-1'){
     var ix=(p.x-scroll+33)|0, iy=(p.y-30)|0;
     var puff=Math.sin(Date.now()/200)*2;
     // bubble body
@@ -3144,12 +3340,25 @@ function render(){
   // Stage 1 hint arrow
   if(g.lvl.end==='spin'&&g.lvl.erikPos&&!g.spinDoneNearEric&&p.spinCharge>=100){
     var ex3=g.lvl.erikPos.x*PS-scroll;
-    if(ex3>0&&ex3<640){ mainCtx.fillStyle='#ffe040'; mainCtx.font='10px "Press Start 2P",monospace'; mainCtx.fillText('SPIN NEAR ERIK!',Math.min(ex3-130,490),285); }
+    if(ex3>0&&ex3<640){ mainCtx.fillStyle='#ffe040'; mainCtx.font='10px "Press Start 2P",monospace'; mainCtx.fillText('SPIN NEAR ERIC!',Math.min(ex3-130,490),285); }
   }
   if(g.over) r(0,0,640,400,'rgba(0,0,0,.5)');
 }
 
-function drawFinishFlag(fx, g){
+function drawFinishFlag(fx, g, iceBase){
+  if(fx>-40&&fx<700&&iceBase){
+    // big shelf of ice the flag stands on (story coherence: the seal's dancing ice)
+    var c0=mainCtx, gy0=360;
+    var ig=c0.createLinearGradient(0,gy0-24,0,gy0+30);
+    ig.addColorStop(0,'#eafaff'); ig.addColorStop(0.4,'#a8d4ee'); ig.addColorStop(1,'#5a92c0');
+    c0.fillStyle=ig; c0.beginPath();
+    c0.moveTo(fx-70,gy0); c0.lineTo(fx-54,gy0-22); c0.lineTo(fx+60,gy0-22);
+    c0.lineTo(fx+78,gy0); c0.lineTo(fx+66,gy0+26); c0.lineTo(fx-58,gy0+26); c0.closePath(); c0.fill();
+    // frosty top + facets
+    c0.fillStyle='#f4fdff'; c0.fillRect(fx-54,gy0-22,114,4);
+    c0.strokeStyle='rgba(180,225,250,0.5)'; c0.lineWidth=1;
+    c0.beginPath(); c0.moveTo(fx-30,gy0-20); c0.lineTo(fx-18,gy0+20); c0.moveTo(fx+24,gy0-20); c0.lineTo(fx+34,gy0+18); c0.stroke();
+  }
   if(fx<-40||fx>700) {
     // off-screen arrow hint pointing toward the flag
     var c=mainCtx; c.save();
@@ -3187,7 +3396,7 @@ function drawFinishFlag(fx, g){
 }
 
 function drawGoal(gx,gy,rescued){
-  if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIK!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
+  if(!rescued){ r(gx,gy,44,64,'#00000040'); for(var i=0;i<5;i++) r(gx+i*9,gy,5,64,'#707070'); r(gx,gy,44,6,'#505050'); r(gx,gy+58,44,6,'#505050'); mainCtx.fillStyle='#e01818'; mainCtx.fillRect(gx-12,gy-20,68,16); mainCtx.fillStyle='#fff8e0'; mainCtx.font='6px monospace'; mainCtx.fillText('HELP! ERIC!',gx-8,gy-8); r(gx+10,gy+8,24,48,EK.coat+'aa'); }
   else{ r(gx+18,gy-60,4,64,'#a0a0a0'); mainCtx.fillStyle=ENV.gndD; mainCtx.fillRect(gx+22,gy-58,28,18); mainCtx.fillStyle='#fff'; mainCtx.font='6px monospace'; mainCtx.fillText('FREE!',gx+24,gy-46); }
 }
 
@@ -3335,58 +3544,75 @@ function drawNetter(cx,cy,facingRight,frame){
   if(!facingRight){ c.translate(48,0); c.scale(-1,1); }
   c.globalAlpha=0.22; c.fillStyle='#000'; c.beginPath(); c.ellipse(22,100,15,4,0,0,Math.PI*2); c.fill(); c.globalAlpha=1;
   // legs/boots
-  vLimb(c,17,72,15,98,9,'#10403a','#0a2824'); vLimb(c,29,72,33,98,9,'#10403a','#0a2824');
-  vBlob(c,14,100,7,5,'#3a2818','#1a1008'); vBlob(c,33,100,7,5,'#3a2818','#1a1008');
-  // teal waders
-  var bg=c.createLinearGradient(6,30,40,74); bg.addColorStop(0,'#288078'); bg.addColorStop(0.6,'#185850'); bg.addColorStop(1,'#0c322c');
+  vLimb(c,17,72,15,98,9,'#185a52','#0c322c'); vLimb(c,29,72,33,98,9,'#185a52','#0c322c');
+  vBlob(c,14,100,7,5,'#2a1c10','#160e06'); vBlob(c,33,100,7,5,'#2a1c10','#160e06');
+  // teal waders (rounded torso)
+  var bg=c.createLinearGradient(6,30,40,74); bg.addColorStop(0,'#3aa090'); bg.addColorStop(0.55,'#1d6a5e'); bg.addColorStop(1,'#0c3a32');
   c.fillStyle=bg; c.beginPath();
-  c.moveTo(8,38); c.bezierCurveTo(2,54,4,70,12,74); c.lineTo(34,74); c.bezierCurveTo(42,70,44,54,38,38);
-  c.bezierCurveTo(32,30,14,30,8,38); c.closePath(); c.fill();
-  // straps
-  c.strokeStyle='#0c322c'; c.lineWidth=3; c.beginPath(); c.moveTo(16,32); c.lineTo(14,52); c.moveTo(30,32); c.lineTo(32,52); c.stroke();
-  // arms
-  vLimb(c,9,40,3,68,7,'#206e64','#10403a'); vLimb(c,37,38,46,30+bob,7,'#206e64','#10403a');
-  vBlob(c,3,70,4.5,4.5,'#d0a060','#a87838'); vBlob(c,47,30+bob,5,5,'#d0a060','#a87838');
-  // coiled net in raised hand
-  c.save(); c.translate(48,28+bob);
-  c.strokeStyle='#c0b070'; c.lineWidth=1.4;
-  c.beginPath(); c.arc(0,0,7,0,Math.PI*2); c.stroke();
-  for(var i=0;i<3;i++){ c.beginPath(); c.moveTo(-7,-3+i*3); c.lineTo(7,-3+i*3); c.stroke(); c.beginPath(); c.moveTo(-3+i*3,-7); c.lineTo(-3+i*3,7); c.stroke(); }
+  c.moveTo(9,40); c.bezierCurveTo(2,54,4,70,12,74); c.lineTo(34,74); c.bezierCurveTo(42,70,44,54,37,40);
+  c.bezierCurveTo(40,33,32,30,23,30); c.bezierCurveTo(14,30,6,33,9,40); c.closePath(); c.fill();
+  // shoulder straps + buckle
+  c.fillStyle='#0c3a32'; c.fillRect(14,32,4,18); c.fillRect(28,32,4,18);
+  c.fillStyle='#c8b860'; c.fillRect(14,46,4,3); c.fillRect(28,46,4,3);
+  // chest pocket
+  c.fillStyle='#0e463c'; c.fillRect(18,52,12,10); c.fillStyle='#1d6a5e'; c.fillRect(19,53,10,4);
+  // back arm holding the net pole
+  vLimb(c,12,42,2,30,6,'#2a8478','#185a52');
+  // front arm
+  vLimb(c,34,42,44,52+bob,6,'#2a8478','#185a52'); vBlob(c,44,53+bob,4.5,4.5,'#e0b888','#b07e44');
+  // ---- NET on a hoop pole (real net: hoop + drooping mesh bag) ----
+  c.save(); c.translate(2,30); c.rotate(-0.5);
+  c.strokeStyle='#8a5a28'; c.lineWidth=3; c.lineCap='round';
+  c.beginPath(); c.moveTo(0,8); c.lineTo(0,-30); c.stroke();             // pole
+  // hoop
+  c.strokeStyle='#b0b8c0'; c.lineWidth=2.4; c.beginPath(); c.arc(0,-38,9,0,Math.PI*2); c.stroke();
+  // drooping mesh bag
+  c.strokeStyle='rgba(220,225,210,0.7)'; c.lineWidth=0.8;
+  for(var i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*4,-32); c.quadraticCurveTo(i*3,-20,0,-16); c.stroke(); }
+  for(var j=0;j<3;j++){ var yy=-34+j*6; c.beginPath(); c.moveTo(-8+j*1.5,yy); c.quadraticCurveTo(0,yy+5,8-j*1.5,yy); c.stroke(); }
   c.restore();
-  // head
-  vBlob(c,22,22,11,10,'#d8a868','#a87838');
-  // waterproof hood
-  var hg=c.createLinearGradient(0,4,0,20); hg.addColorStop(0,'#1c5048'); hg.addColorStop(1,'#0a2824');
-  c.fillStyle=hg; c.beginPath(); c.arc(22,18,12,Math.PI,0); c.lineTo(34,22); c.lineTo(10,22); c.closePath(); c.fill();
-  // squinting hunter eyes
-  c.strokeStyle='#100808'; c.lineWidth=2; c.lineCap='round';
-  c.beginPath(); c.moveTo(15,20); c.lineTo(20,20); c.stroke();
-  c.beginPath(); c.moveTo(25,20); c.lineTo(30,20); c.stroke();
-  // grim mouth
-  c.lineWidth=1.6; c.beginPath(); c.moveTo(18,27); c.lineTo(27,27); c.stroke();
+  // ---- HEAD with structure ----
+  c.save(); c.translate(22,20);
+  c.fillStyle='#b88a52'; c.fillRect(-4,8,8,5);
+  var fg=c.createLinearGradient(0,-11,0,12); fg.addColorStop(0,'#e8b878'); fg.addColorStop(1,'#a8702e');
+  c.fillStyle=fg; c.beginPath();
+  c.moveTo(-10,-4); c.bezierCurveTo(-11,-12,11,-12,10,-4);
+  c.bezierCurveTo(10,2,8,7,4,11); c.bezierCurveTo(2,13,-2,13,-4,11);
+  c.bezierCurveTo(-8,7,-10,2,-10,-4); c.closePath(); c.fill();
+  // eyes (focused, not ugly squint)
+  c.fillStyle='#fff'; c.beginPath(); c.ellipse(-4,-3,2.4,2,0,0,7); c.fill(); c.beginPath(); c.ellipse(4,-3,2.4,2,0,0,7); c.fill();
+  c.fillStyle='#2a3a2a'; c.beginPath(); c.arc(-4,-3,1.1,0,7); c.fill(); c.beginPath(); c.arc(4,-3,1.1,0,7); c.fill();
+  c.strokeStyle='#6a4828'; c.lineWidth=1.3; c.lineCap='round';
+  c.beginPath(); c.moveTo(-7,-6); c.lineTo(-1.5,-5); c.stroke(); c.beginPath(); c.moveTo(7,-6); c.lineTo(1.5,-5); c.stroke();
+  c.fillStyle='#a8702e'; c.beginPath(); c.moveTo(0,-2); c.lineTo(-1.5,3); c.lineTo(1.5,3); c.closePath(); c.fill();
+  c.strokeStyle='#5a3818'; c.lineWidth=1.2; c.beginPath(); c.moveTo(-3,7); c.lineTo(3,7); c.stroke();
+  // sou'wester rain hat (rounded, with back brim)
+  var hg=c.createLinearGradient(0,-16,0,-4); hg.addColorStop(0,'#1d6a5e'); hg.addColorStop(1,'#0c3a32');
+  c.fillStyle=hg; c.beginPath(); c.arc(0,-7,11,Math.PI,0); c.fill();
+  c.fillStyle='#0e463c'; c.beginPath(); c.ellipse(0,-7,13,3.5,0,0,Math.PI*2); c.fill();
+  c.fillStyle='#2a8478'; c.beginPath(); c.ellipse(2,-12,5,3,0,0,Math.PI*2); c.fill();
+  c.restore();
   c.restore();
 }
 
 function drawNet(nt){
   var sx=nt.x-game.camera.x, sy=nt.y;
-  var sz=10+nt.grow*8;
-  mainCtx.save(); mainCtx.translate(sx,sy); mainCtx.rotate(nt.spin);
+  var R=8+nt.grow*12;
+  var c=mainCtx; c.save(); c.translate(sx,sy); c.rotate(nt.spin);
   // motion trail
-  mainCtx.globalAlpha=0.2; mainCtx.fillStyle='#c0b070';
-  mainCtx.fillRect(-nt.vx*2-sz/2,-nt.vy*2-sz/2,sz,sz); mainCtx.globalAlpha=1;
-  // net mesh
-  mainCtx.strokeStyle='#d8c888'; mainCtx.lineWidth=1.5;
-  mainCtx.strokeRect(-sz/2,-sz/2,sz,sz);
-  mainCtx.lineWidth=1; mainCtx.strokeStyle='#b0a060';
-  for(var i=1;i<4;i++){
-    mainCtx.beginPath(); mainCtx.moveTo(-sz/2+i*sz/4,-sz/2); mainCtx.lineTo(-sz/2+i*sz/4,sz/2); mainCtx.stroke();
-    mainCtx.beginPath(); mainCtx.moveTo(-sz/2,-sz/2+i*sz/4); mainCtx.lineTo(sz/2,-sz/2+i*sz/4); mainCtx.stroke();
-  }
-  // weighted corners
-  mainCtx.fillStyle='#806030';
-  mainCtx.fillRect(-sz/2-2,-sz/2-2,4,4); mainCtx.fillRect(sz/2-2,-sz/2-2,4,4);
-  mainCtx.fillRect(-sz/2-2,sz/2-2,4,4); mainCtx.fillRect(sz/2-2,sz/2-2,4,4);
-  mainCtx.restore();
+  c.globalAlpha=0.18; c.strokeStyle='#d8d2bc'; c.lineWidth=1.2;
+  c.beginPath(); c.arc(-nt.vx,-nt.vy,R,0,Math.PI*2); c.stroke(); c.globalAlpha=1;
+  // outer rope ring
+  c.strokeStyle='#cfc6a0'; c.lineWidth=2; c.beginPath(); c.arc(0,0,R,0,Math.PI*2); c.stroke();
+  // radial spokes
+  c.strokeStyle='rgba(210,205,170,0.85)'; c.lineWidth=1;
+  for(var i=0;i<8;i++){ var a=i*Math.PI/4; c.beginPath(); c.moveTo(0,0); c.lineTo(Math.cos(a)*R,Math.sin(a)*R); c.stroke(); }
+  // concentric mesh rings
+  for(var r=R*0.4;r<R;r+=R*0.3){ c.beginPath(); c.arc(0,0,r,0,Math.PI*2); c.stroke(); }
+  // weighted beads around the rim
+  c.fillStyle='#8a6a34';
+  for(var i=0;i<8;i++){ var a=i*Math.PI/4; c.beginPath(); c.arc(Math.cos(a)*R,Math.sin(a)*R,2,0,Math.PI*2); c.fill(); }
+  c.restore();
 }
 
 function drawClub(cl){
