@@ -17,6 +17,19 @@
   background: var(--muted);
 }
 
+/* Shared display scale: page titles remain prominent without dominating the page. */
+.page-title {
+  font-size: clamp(2rem, 4.6vw, 3rem) !important;
+}
+
+body > .hero h1 {
+  font-size: clamp(2.5rem, 6.5vw, 4.4rem) !important;
+}
+
+.project h2 {
+  font-size: clamp(2rem, 4.2vw, 3rem) !important;
+}
+
 @media (max-width: 760px) {
   .nav-toggle { display: flex; }
 
