@@ -7,11 +7,11 @@
   const nodes = [];
   while (walker.nextNode()) {
     const node = walker.currentNode;
-    if (/ECHOx/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg')) nodes.push(node);
+    if (/ECHOx(?=[A-Z0-9])/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg')) nodes.push(node);
   }
 
   nodes.forEach(node => {
-    const parts = node.nodeValue.split(/(ECHOx)/g);
+    const parts = node.nodeValue.split(/(ECHOx(?=[A-Z0-9]))/g);
     const fragment = document.createDocumentFragment();
     parts.forEach(part => {
       if (part === 'ECHOx') {
