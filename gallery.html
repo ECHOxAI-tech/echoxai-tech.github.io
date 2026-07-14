@@ -78,6 +78,7 @@
     .footer-copy{font-family:'Inconsolata',monospace;font-size:.74rem;color:#2a2a26;width:100%}
     @media(max-width:700px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
   </style>
+  <link rel="stylesheet" href="site-nav.css"/>
 </head>
 <body>
 
@@ -93,16 +94,17 @@
 
 <nav>
   <a href="index.html" class="nav-logo">ECHOx</a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="about.html">About</a></li>
     <li><a href="manuscripts.html">Manuscripts</a></li>
     <li><a href="gallery.html" class="active">Photography</a></li>
     <li><a href="lyrics.html">Music</a></li>
     <li><a href="development.html">Development</a></li>
-    <li><a href="terms.html">Terms</a></li>
+    <li><a href="method.html">Method</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
 </nav>
 
 <div class="page-header">
@@ -421,5 +423,6 @@ function shiftLightbox(dir){current=(current+dir+photos.length)%photos.length;do
 document.getElementById('lightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();if(e.key==='ArrowRight')shiftLightbox(1);if(e.key==='ArrowLeft')shiftLightbox(-1)});
 </script>
+<script src="site-nav.js"></script>
 </body>
 </html>

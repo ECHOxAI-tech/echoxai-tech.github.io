@@ -20,9 +20,23 @@
     .disclaimer{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--rule);font-size:.88rem;line-height:1.6;color:var(--muted);font-style:italic}footer{border-top:1px solid var(--rule);padding:2rem 2.5rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}.footer-logo{font-family:'IM Fell English',serif;color:var(--gold-dim)}.footer-copy{font-family:'Inconsolata',monospace;font-size:.8rem;color:#3b3933}
     @media(max-width:760px){html{font-size:20px}.nav-links{display:none}.project-head{grid-template-columns:1fr}.tool-grid,.architecture{grid-template-columns:1fr}.hero{padding-top:4rem}}
   </style>
+  <link rel="stylesheet" href="site-nav.css"/>
 </head>
 <body>
-  <nav><a href="index.html" class="nav-logo">ECHOx</a><ul class="nav-links"><li><a href="about.html">About</a></li><li><a href="manuscripts.html">Manuscripts</a></li><li><a href="gallery.html">Photography</a></li><li><a href="lyrics.html">Music</a></li><li><a href="development.html" class="active">Development</a></li><li><a href="method.html">Method</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+  <nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="development.html" class="active">Development</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+</nav>
   <header class="hero"><p class="label">Development</p><h1>Ideas made operational.</h1><p class="lead">The development work is not separate from the writing. It is where an argument becomes a system someone can enter, use, question, save, combine, and return to.</p></header>
   <main class="wrapper">
     <section class="project">
@@ -41,5 +55,6 @@
     </section>
   </main>
   <footer><span class="footer-logo">ECHOx</span><p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p></footer>
+<script src="site-nav.js"></script>
 </body>
 </html>

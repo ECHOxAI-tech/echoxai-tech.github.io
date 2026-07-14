@@ -201,7 +201,7 @@
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
 
     /* Mobile nav */
     .nav-toggle {
@@ -342,6 +342,18 @@
       letter-spacing: 0.25em;
     }
 
+    .contact-invitation {
+      margin-top: 3rem;
+      padding: 2.2rem 0 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .contact-invitation p { color: var(--bone); font-size: 1.05rem; line-height: 1.7; }
+    .contact-invitation a { color: var(--gold); text-decoration: none; font-family: 'Inconsolata', monospace; font-size: .9rem; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; }
+
     /* ─── FOOTER ───────────────────────────────────── */
     footer {
       border-top: 1px solid var(--rule);
@@ -404,6 +416,7 @@
       }
       .nav-links.open a { font-size: 1rem; letter-spacing: 0.2em; }
       section { padding: 4rem 1.5rem; }
+      .contact-invitation { align-items: flex-start; flex-direction: column; gap: 1rem; }
       footer { flex-direction: column; align-items: flex-start; padding: 2.5rem 1.5rem; }
     }
   </style>
@@ -414,15 +427,13 @@
   <nav id="nav">
     <a href="/" class="nav-logo">ECHOx</a>
     <ul class="nav-links" id="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
       <li><a href="about.html">About</a></li>
-      <li><a href="#work">Work</a></li>
       <li><a href="manuscripts.html">Manuscripts</a></li>
       <li><a href="gallery.html">Photography</a></li>
       <li><a href="lyrics.html">Music</a></li>
       <li><a href="development.html">Development</a></li>
       <li><a href="method.html">Method</a></li>
-      <li><a href="terms.html">Terms</a></li>
-      <li><a href="https://github.com/ECHOxAI-tech" target="_blank" rel="noopener">GitHub</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
@@ -475,8 +486,8 @@
 
   <!-- WORK -->
   <section id="work">
-    <p class="section-label">Work &amp; Method</p>
-    <h2 class="section-title">Work &amp; Method</h2>
+    <p class="section-label">Explore</p>
+    <h2 class="section-title">The work</h2>
     <div class="section-rule"></div>
 
     <div class="work-grid">
@@ -490,7 +501,7 @@
       <a href="manuscripts.html" class="work-item">
         <p class="work-item-num">01 — Writing</p>
         <h3 class="work-item-title">Manuscripts</h3>
-        <p class="work-item-desc">Fiction, poetry, theater, philosophy. Five works across genre, form, and the limits of language.</p>
+        <p class="work-item-desc">Fiction, poetry, theater, philosophy. Six works across genre, form, and the limits of language.</p>
         <span class="work-item-arrow">View →</span>
       </a>
 
@@ -522,12 +533,11 @@
         <span class="work-item-arrow">Read →</span>
       </a>
 
-      <a href="https://github.com/ECHOxAI-tech" target="_blank" rel="noopener" class="work-item">
-        <p class="work-item-num">06 — Code</p>
-        <h3 class="work-item-title">GitHub</h3>
-        <p class="work-item-desc">Open repositories. Tools, experiments, the infrastructure behind the practice.</p>
-        <span class="work-item-arrow">Explore →</span>
-      </a>
+    </div>
+
+    <div class="contact-invitation">
+      <p>For publishing, exhibition, production, development, and collaboration inquiries.</p>
+      <a href="contact.html">Contact ECHOx →</a>
     </div>
   </section>
 
@@ -535,6 +545,7 @@
   <footer>
     <span class="footer-logo">ECHOx</span>
     <ul class="footer-links">
+      <li><a href="about.html">About</a></li>
       <li><a href="manuscripts.html">Manuscripts</a></li>
       <li><a href="gallery.html">Photography</a></li>
       <li><a href="lyrics.html">Music</a></li>

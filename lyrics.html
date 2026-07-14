@@ -295,20 +295,24 @@
       .lyrics-col { padding:2rem 1.5rem; }
     }
   </style>
+  <link rel="stylesheet" href="site-nav.css"/>
 </head>
 <body>
 
   <nav>
-    <a href="index.html" class="nav-logo">ECHOx</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="manuscripts.html">Manuscripts</a></li>
-      <li><a href="gallery.html">Photography</a></li>
-      <li><a href="lyrics.html" class="active">Music</a></li>
-      <li><a href="development.html">Development</a></li>
-      <li><a href="terms.html">Terms</a></li>
-    </ul>
-  </nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html" class="active">Music</a></li>
+    <li><a href="development.html">Development</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+</nav>
 
   <div class="page-header">
     <p class="page-label">Music</p>
@@ -1192,5 +1196,6 @@
     </ul>
     <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
   </footer>
+<script src="site-nav.js"></script>
 </body>
 </html>

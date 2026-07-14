@@ -62,13 +62,15 @@
     .footer-links a:hover{color:var(--gold)}
     .footer-copy{font-family:'Inconsolata',monospace;font-size:0.9rem;color:#2a2a26;width:100%}
   </style>
+  <link rel="stylesheet" href="site-nav.css"/>
 </head>
 <body>
 
 <nav>
   <a href="index.html" class="nav-logo">ECHOx</a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
     <li><a href="manuscripts.html">Manuscripts</a></li>
     <li><a href="gallery.html">Photography</a></li>
     <li><a href="lyrics.html">Music</a></li>
@@ -76,6 +78,7 @@
     <li><a href="method.html" class="active">Method</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
 </nav>
 
 <div class="page-header">
@@ -151,7 +154,7 @@
     <div class="prose">
       <p>The work began with portraiture — the specific problem of capturing a person without the mechanical precision of modern autofocus systems. Automatic cameras have always left something out: the negotiation between the photographer and the subject, the decision made in real time about which truth to record. Going back to fully manual tools was a way of insisting on that negotiation rather than delegating it to a machine.</p>
 
-      <p>Berlin is the recurring subject not by choice but by proximity. The city's surface is unusually legible — its scars are carried forward rather than concealed, its contrasts unresolved rather than smoothed. Faces against facades: the human surface beside the architectural one, both marked by time and use, both refusing the suggestion that they should look better than they do. The double exposures in <em>Faces and Facades</em> place these two kinds of surface against each other — the face embodies intimacy and individuality; the facade carries collective memory and the anonymity of the metropolis. When they merge, something in between becomes visible that neither contains alone.</p>
+      <p>Berlin is the recurring subject not by choice but by proximity. The city's surface is unusually legible — its scars are carried forward rather than concealed, its contrasts unresolved rather than smoothed. Faces against facades: the human surface beside the architectural one, both marked by time and use, both refusing the suggestion that they should look better than they do. The double exposures in <em>Faces &amp; Facades</em> place these two kinds of surface against each other — the face embodies intimacy and individuality; the facade carries collective memory and the anonymity of the metropolis. When they merge, something in between becomes visible that neither contains alone.</p>
     </div>
 
     <div class="detail-list">
@@ -247,5 +250,6 @@
   <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
 </footer>
 
+<script src="site-nav.js"></script>
 </body>
 </html>

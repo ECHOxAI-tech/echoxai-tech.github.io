@@ -193,22 +193,24 @@
       .inquiry-list li { grid-template-columns:1fr; gap:0.3rem; }
     }
   </style>
+  <link rel="stylesheet" href="site-nav.css"/>
 </head>
 <body>
 
   <nav>
-    <a href="index.html" class="nav-logo">ECHOx</a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="about.html">About</a></li>
-      <li><a href="manuscripts.html">Manuscripts</a></li>
-      <li><a href="gallery.html">Photography</a></li>
-      <li><a href="lyrics.html">Music</a></li>
-      <li><a href="development.html">Development</a></li>
-      <li><a href="terms.html">Terms</a></li>
-      <li><a href="contact.html" class="active">Contact</a></li>
-    </ul>
-  </nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="development.html">Development</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+</nav>
 
   <div class="page-header">
     <p class="page-label">Get in touch</p>
@@ -237,7 +239,7 @@
 
       <a href="https://github.com/ECHOxAI-tech" target="_blank" rel="noopener" class="contact-block">
         <span class="cb-label">GitHub</span>
-        <span class="cb-value">echox-se</span>
+        <span class="cb-value">ECHOxAI-tech</span>
         <span class="cb-desc">Open repositories, site source, code projects.</span>
         <span class="cb-arrow">Explore →</span>
       </a>
@@ -264,14 +266,14 @@
         <li>
           <span class="inquiry-type">Manuscripts</span>
           <div>
-            <p class="inquiry-desc">Access requests for full manuscripts, agent or publisher inquiries, rights and permissions for <em>The Alexander Cipher</em>, <em>The Dark Hierarchy</em>, or <em>[Untitled Dramatic Work]</em>.</p>
+            <p class="inquiry-desc">Access requests for full manuscripts, agent or publisher inquiries, rights and permissions for <em>The Alexander Cipher</em>, <em>The Dark Hierarchy</em>, or the dramatic work currently presented as <em>Title withheld</em>.</p>
             <p class="inquiry-email" style="margin-top:0.4rem;">→ <a href="/cdn-cgi/l/email-protection#9cf5f2fef3e4dcf9fff4f3e4efe8e9f8f5f3efb2fdeee8" class="__cf_email__" data-cfemail="c2abaca0adba82a7a1aaadbab1b6b7a6abadb1eca3b0b6">[email&#160;protected]</a></p>
           </div>
         </li>
         <li>
           <span class="inquiry-type">Theater</span>
           <div>
-            <p class="inquiry-desc">Performance rights and production inquiries for <em>[Untitled Dramatic Work]</em>. All performances require prior written permission.</p>
+            <p class="inquiry-desc">Performance rights and production inquiries for the dramatic work currently presented as <em>Title withheld</em>. All performances require prior written permission.</p>
             <p class="inquiry-email" style="margin-top:0.4rem;">→ <a href="/cdn-cgi/l/email-protection#70191e121f08301513181f0803040514191f035e110204" class="__cf_email__" data-cfemail="d1b8bfb3bea991b4b2b9bea9a2a5a4b5b8bea2ffb0a3a5">[email&#160;protected]</a></p>
           </div>
         </li>
@@ -286,4 +288,23 @@
           <span class="inquiry-type">Press</span>
           <div>
             <p class="inquiry-desc">Interview requests, editorial features, exhibition inquiries. Please include publication name and intended use.</p>
-            <p class="inquiry-email" style
+            <p class="inquiry-email" style="margin-top:0.4rem;">→ <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a></p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-logo">ECHOx</span>
+    <ul class="footer-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="terms.html">Terms</a></li>
+      <li><a href="privacy.html">Privacy</a></li>
+      <li><a href="https://github.com/ECHOxAI-tech" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+    <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>
+  </footer>
+  <script src="site-nav.js"></script>
+</body>
+</html>
