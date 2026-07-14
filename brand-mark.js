@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-mark-x{display:inline-block;font-size:.78em;line-height:1;position:static;vertical-align:baseline;margin:0 .025em}';
+  style.textContent = '.echox-mark-x{display:inline-block;font-size:.65em;line-height:1;position:static;vertical-align:baseline;margin:0 .02em}';
   document.head.appendChild(style);
 
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -18,7 +18,7 @@
         fragment.append('ECHO');
         const mark = document.createElement('span');
         mark.className = 'echox-mark-x';
-        mark.textContent = '×';
+        mark.textContent = 'x';
         fragment.append(mark);
       } else if (part) {
         fragment.append(part);
