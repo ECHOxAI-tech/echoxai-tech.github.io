@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-label="ECHOxVAULT logo">
+  <rect width="1200" height="420" fill="#070707"/>
+  <g transform="translate(35 28) scale(.7)" fill="none" stroke="#B7891F" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="70" cy="85" r="62"/><circle cx="70" cy="85" r="26"/><path d="M114 129 L470 485"/>
+    <path d="M385.86 429.14 L414.14 400.86 M414.49 470.51 L455.51 429.49"/>
+    <rect x="156" y="206" width="200" height="174" rx="24" fill="#070707"/><path d="M206 206 V150 A50 50 0 0 1 306 150 V206"/>
+    <circle cx="256" cy="282" r="22" fill="#B7891F"/><path d="M256 302 V336" stroke-width="20"/>
+    <path d="M356 174 V150 M378.63 183.37 L406.91 155.09 M388 206 H412"/>
+  </g>
+  <text x="380" y="205" fill="#E7E8E9" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="142" letter-spacing="6">ECHOx</text>
+  <path d="M380 230 H1130" stroke="#B7891F" stroke-width="4"/>
+  <text x="388" y="310" fill="#B7891F" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="64" letter-spacing="24">VAULT</text>
+</svg>

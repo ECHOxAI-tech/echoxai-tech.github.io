@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-label="ECHOxLUMINA logo">
+  <rect width="1200" height="420" fill="#070707"/>
+  <defs><clipPath id="left"><rect x="92" y="92" width="220" height="330" rx="24" transform="rotate(-10 202 257)"/></clipPath><clipPath id="right"><rect x="200" y="92" width="220" height="330" rx="24" transform="rotate(10 310 257)"/></clipPath></defs>
+  <g transform="translate(38 40) scale(.62)">
+    <rect x="92" y="92" width="220" height="330" rx="24" transform="rotate(-10 202 257)" fill="#070707" stroke="#B7891F" stroke-width="16"/>
+    <g clip-path="url(#left)" transform="rotate(-10 202 257)" fill="none" stroke="#B7891F" stroke-width="8" stroke-linecap="round"><path d="M202 132 V382 M126 257 H278 M140 178 L264 336 M264 178 L140 336"/><path d="M202 217 L212 247 L242 257 L212 267 L202 297 L192 267 L162 257 L192 247 Z" fill="#B7891F" stroke="none"/></g>
+    <rect x="200" y="92" width="220" height="330" rx="24" transform="rotate(10 310 257)" fill="#070707" stroke="#B7891F" stroke-width="16"/>
+    <g clip-path="url(#right)" transform="rotate(10 310 257)" fill="none" stroke="#B7891F" stroke-width="8" stroke-linecap="round"><path d="M310 132 V382 M234 257 H386 M248 178 L372 336 M372 178 L248 336"/><path d="M310 217 L320 247 L350 257 L320 267 L310 297 L300 267 L270 257 L300 247 Z" fill="#B7891F" stroke="none"/></g>
+  </g>
+  <text x="380" y="205" fill="#E7E8E9" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="142" letter-spacing="6">ECHOx</text><path d="M380 230 H1130" stroke="#B7891F" stroke-width="4"/><text x="388" y="310" fill="#B7891F" font-family="Avenir Next, Helvetica, Arial, sans-serif" font-size="64" letter-spacing="24">LUMINA</text>
+</svg>
