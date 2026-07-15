@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-mark-x{display:inline-block;font-size:.62em;line-height:1;position:static;vertical-align:middle;margin:0 .015em}';
+  style.textContent = '.echox-mark-x{display:inline-block;width:.44em;height:.44em;position:relative;vertical-align:.13em;margin:0 .025em;overflow:hidden;text-indent:-9999px;white-space:nowrap;line-height:1;letter-spacing:0;text-transform:none}.echox-mark-x::before,.echox-mark-x::after{content:"";position:absolute;left:50%;top:50%;width:100%;height:.08em;min-height:1px;background:currentColor;transform-origin:center}.echox-mark-x::before{transform:translate(-50%,-50%) rotate(45deg)}.echox-mark-x::after{transform:translate(-50%,-50%) rotate(-45deg)}';
   document.head.appendChild(style);
 
   const applyMarks = root => {
@@ -19,6 +19,7 @@
           fragment.append('ECHO');
           const mark = document.createElement('span');
           mark.className = 'echox-mark-x';
+          mark.setAttribute('aria-label', 'x');
           mark.textContent = 'x';
           fragment.append(mark);
         } else if (part) {
