@@ -33,7 +33,11 @@
     .page-title{font-family:'IM Fell English',serif;font-size:clamp(2.2rem,6vw,4rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
     .page-sub{font-size:1.05rem;color:var(--muted);font-style:italic;max-width:480px;margin:0 auto;line-height:1.7}
 
-    .wrapper{max-width:720px;margin:0 auto;padding:5rem 2rem 8rem}
+    .wrapper{max-width:720px;margin:0 auto;padding:2.5rem 2rem 8rem}
+
+    .method-index{display:flex;justify-content:center;gap:.65rem 1.4rem;flex-wrap:wrap;padding-bottom:2.5rem;margin-bottom:4rem;border-bottom:1px solid var(--rule)}
+    .method-index a{font-family:'Inconsolata',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .method-index a:hover,.method-index a:focus-visible{color:var(--gold)}
 
     /* SECTIONS */
     .method-section{padding-bottom:4rem;margin-bottom:4rem;border-bottom:1px solid var(--rule)}
@@ -93,8 +97,14 @@
 
 <div class="wrapper">
 
+  <nav class="method-index" aria-label="Method sections">
+    <a href="#writing">Writing</a>
+    <a href="#photography">Photography</a>
+    <a href="#connection">The connection</a>
+  </nav>
+
   <!-- WRITING -->
-  <div class="method-section">
+  <div class="method-section" id="writing">
     <span class="section-label">01 — Writing</span>
     <h2 class="section-title">Language as architecture</h2>
 
@@ -141,7 +151,7 @@
   </div>
 
   <!-- PHOTOGRAPHY -->
-  <div class="method-section">
+  <div class="method-section" id="photography">
     <span class="section-label">02 — Photography</span>
     <h2 class="section-title">The irreversible frame</h2>
 
@@ -190,7 +200,7 @@
   </div>
 
   <!-- CROSS-DISCIPLINE -->
-  <div class="method-section">
+  <div class="method-section" id="connection">
     <span class="section-label">03 — The connection</span>
     <h2 class="section-title">Irreversibility as discipline</h2>
 
