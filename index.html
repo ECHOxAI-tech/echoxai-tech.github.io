@@ -5,7 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ECHOx — Swedish Multidisciplinary Artist in Berlin</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="preload" as="image" href="assets/images/heropic.jpeg" fetchpriority="high"/>
   <meta name="description" content="ECHOx — Swedish multidisciplinary artist based in Berlin. Fiction, poetry, theater, photography, and music."/>
+  <link rel="canonical" href="https://echoxstudios.art/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="ECHOx"/>
+  <meta property="og:title" content="ECHOx — Swedish Multidisciplinary Artist in Berlin"/>
+  <meta property="og:description" content="Writing, photography, theater, music, and interactive development shaped by precision, irreversibility, and Berlin."/>
+  <meta property="og:url" content="https://echoxstudios.art/"/>
+  <meta property="og:image" content="https://echoxstudios.art/assets/images/heropic.jpeg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="ECHOx — Swedish Multidisciplinary Artist in Berlin"/>
+  <meta name="twitter:description" content="Writing, photography, theater, music, and interactive development shaped by precision, irreversibility, and Berlin."/>
+  <meta name="twitter:image" content="https://echoxstudios.art/assets/images/heropic.jpeg"/>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"ECHOx","alternateName":"Eko Svenningsson","url":"https://echoxstudios.art/","image":"https://echoxstudios.art/assets/images/heropic.jpeg","jobTitle":"Multidisciplinary artist","homeLocation":{"@type":"Place","name":"Berlin, Germany"},"sameAs":["https://instagram.com/berlinechoes","https://github.com/ECHOxAI-tech"]}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
@@ -439,7 +452,7 @@
       <li><a href="method.html">Method</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
       <span></span><span></span><span></span>
     </button>
   </nav>
@@ -452,7 +465,7 @@
     <div class="hero-content">
       <span class="hero-sigil">Artistic identity</span>
       <h1 class="hero-name">ECHOx</h1>
-      <p class="hero-sub">Berlin · Writer · Photographer · Artist</p>
+      <p class="hero-sub">Berlin · Writing · Photography · Music · Development</p>
       <div class="hero-rule"></div>
       <p class="hero-tagline">
         Writing people into permanence.<br/>
@@ -468,7 +481,7 @@
   <!-- ABOUT -->
   <section id="about">
     <p class="section-label">About</p>
-    <h2 class="section-title">Multimedia artist,<br/>writer, photographer</h2>
+    <h2 class="section-title">Multidisciplinary artist,<br/>writer, photographer</h2>
     <div class="section-rule"></div>
     <div class="about-text">
       <p>
@@ -497,7 +510,7 @@
       <a href="about.html" class="work-item">
         <p class="work-item-num">00 — Identity</p>
         <h3 class="work-item-title">About</h3>
-        <p class="work-item-desc">Swedish artist based in Berlin. Mathematics, religious science, theater production. The practice and what connects it.</p>
+        <p class="work-item-desc">The identity, formation, and central question connecting a Berlin practice across several disciplines.</p>
         <span class="work-item-arrow">Read →</span>
       </a>
 
@@ -518,14 +531,14 @@
       <a href="lyrics.html" class="work-item">
         <p class="work-item-num">03 — Music</p>
         <h3 class="work-item-title">Lyrics &amp; Production</h3>
-        <p class="work-item-desc">Tech-house and independent production. Berlin–Barcelona axis. Words as architectural proposals.</p>
-        <span class="work-item-arrow">Read Lyrics →</span>
+        <p class="work-item-desc">Released collaborations, independent work, demos, lyrics, and projects currently held private during submission.</p>
+        <span class="work-item-arrow">Listen &amp; explore →</span>
       </a>
 
       <a href="development.html" class="work-item">
         <p class="work-item-num">04 — Development</p>
         <h3 class="work-item-title">Development</h3>
-        <p class="work-item-desc">Interactive systems and digital products developed under ECHOx, including the six-part system connected to <em>The Dark Hierarchy</em>.</p>
+        <p class="work-item-desc">Narrative products and interactive systems where artistic ideas become usable, testable experiences.</p>
         <span class="work-item-arrow">View Development →</span>
       </a>
 
@@ -568,17 +581,9 @@
       nav.classList.toggle('scrolled', window.scrollY > 60);
     });
 
-    // Mobile menu
-    const toggle = document.getElementById('nav-toggle');
-    const links = document.getElementById('nav-links');
-    toggle.addEventListener('click', () => {
-      links.classList.toggle('open');
-    });
-    links.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => links.classList.remove('open'));
-    });
   </script>
 
+<script src="site-nav.js"></script>
 <script src="brand-mark.js"></script>
 <script src="site-footer.js?v=20260715b"></script>
 </body>

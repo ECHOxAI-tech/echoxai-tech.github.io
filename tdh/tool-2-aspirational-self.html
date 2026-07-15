@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aspirational Sexual Self Profile — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="privacy-choice.css?v=20260715">
+<script src="privacy-choice.js?v=20260715"></script>
 <meta name="description" content="Explore the aspirational sexual self through a structured profile connected to The Dark Hierarchy."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1486,16 +1488,6 @@ document.getElementById('btn-start').addEventListener('click', () => {
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
     } catch(e) {}
-    // Anonymized stats — the 8 axis values + demographics
-    try {
-      if (result && Object.keys(result).length) {
-        var demo = window.__demo || {};
-        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ tool: 't2', data: result, gender: demo.gender, age: demo.age })
-        }).catch(function(){});
-      }
-    } catch(e) {}
   }
 
   (function attachSend() {
@@ -1507,7 +1499,6 @@ document.getElementById('btn-start').addEventListener('click', () => {
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      _saveAndShow();
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;

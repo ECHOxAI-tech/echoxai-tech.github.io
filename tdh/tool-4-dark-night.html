@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dark Night Diagnostic — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="privacy-choice.css?v=20260715">
+<script src="privacy-choice.js?v=20260715"></script>
 <meta name="description" content="A structured reflection tool for locating a dark-night experience within The Dark Hierarchy framework."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -942,17 +944,6 @@ function genCode() {
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
     } catch(e) {}
-    // Anonymized stats — scores + category
-    try {
-      if (result && result.failureScore !== undefined) {
-        var demo = window.__demo || {};
-        var catMap = { system_failure:4, system_failure_early:3, both:2, dark_night:1, unclear:0 };
-        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ tool: 't4', data: { failure: result.failureScore, erosion: result.erosionScore, faith: result.faithScore, category: (catMap[result.primary] !== undefined ? catMap[result.primary] : 0) }, gender: demo.gender, age: demo.age })
-        }).catch(function(){});
-      }
-    } catch(e) {}
   }
 
   (function attachSend() {
@@ -964,7 +955,6 @@ function genCode() {
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      _saveAndShow();
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;

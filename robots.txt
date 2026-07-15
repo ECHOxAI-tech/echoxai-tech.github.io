@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /tdh/profile.html
+Disallow: /tdh/result.html
+Disallow: /synopsis-
+
+Sitemap: https://echoxstudios.art/sitemap.xml

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attachment Confirmation Profile — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="privacy-choice.css?v=20260715">
+<script src="privacy-choice.js?v=20260715"></script>
 <meta name="description" content="Explore sensitivity, direction, history, and specificity of confirmation through The Dark Hierarchy interactive system."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1155,16 +1157,6 @@ window.__demo = { gender: null, age: null };
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
     } catch(e) {}
-    // Anonymized stats — fire-and-forget
-    try {
-      if (result && result.A !== undefined) {
-        var demo = window.__demo || {};
-        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ tool: 't3', data: { A: result.A, B: result.B, C: result.C, D: result.D }, gender: demo.gender, age: demo.age })
-        }).catch(function(){});
-      }
-    } catch(e) {}
   }
 
   (function attachSend() {
@@ -1176,7 +1168,6 @@ window.__demo = { gender: null, age: null };
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      _saveAndShow();
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;

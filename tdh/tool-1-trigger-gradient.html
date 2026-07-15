@@ -6,6 +6,8 @@
 <title>Trigger Gradient Profiler — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <meta name="description" content="Map trigger intensity across contexts with the Trigger Gradient Profiler from The Dark Hierarchy interactive system."/>
+<link rel="stylesheet" href="privacy-choice.css?v=20260715">
+<script src="privacy-choice.js?v=20260715"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
@@ -471,7 +473,7 @@
 
   <button class="btn-primary" id="btn-start">Begin</button>
 
-  <p class="disclaimer">This tool is an instrument for personal reflection only. It does not constitute psychological, therapeutic, or clinical advice, and no professional relationship is formed by using it. No data you enter is transmitted anywhere — all computation happens on your device.</p>
+  <p class="disclaimer">This tool is an instrument for personal reflection only. It does not constitute psychological, therapeutic, or clinical advice, and no professional relationship is formed by using it. Results remain in this browser unless you explicitly enable cross-device storage or request email delivery.</p>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -1323,16 +1325,6 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       var u = new URL(window.location.href);
       u.searchParams.set('code', code);
       history.replaceState(null, '', u.toString());
-    } catch(e) {}
-    // Anonymized stats — fire-and-forget, no personal data
-    try {
-      if (result && result.V !== undefined) {
-        var demo = window.__demo || {};
-        fetch('https://tdh-email.inbox-fde.workers.dev/stats', {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ tool: 't1', data: { V: result.V, E: result.E, T: result.T, I: result.I }, gender: demo.gender, age: demo.age })
-        }).catch(function(){});
-      }
     } catch(e) {}
   }
 

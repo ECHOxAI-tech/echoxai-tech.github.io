@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex,nofollow"/>
   <title>The Alexander Cipher — Synopsis — ECHOx</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <meta name="description" content="Professional synopsis and manuscript-request page for The Alexander Cipher by Eko Svenningsson."/>
@@ -226,11 +227,7 @@
     const fn = document.getElementById('req-function').value;
     const who = document.getElementById('req-who').value.trim();
     const subject = encodeURIComponent('Access request: The Alexander Cipher');
-    const body = encodeURIComponent('Work requested: The Alexander Cipher
-Role / function: ' + fn + '
-Applicant email: ' + email + '
-
-' + who);
+    const body = encodeURIComponent('Work requested: The Alexander Cipher\nRole / function: ' + fn + '\nApplicant email: ' + email + '\n\n' + who);
     window.location.href = 'mailto:inbox@echoxstudios.art?subject=' + subject + '&body=' + body;
     document.getElementById('modal-form').style.display = 'none';
     document.getElementById('form-sent').style.display = 'block';
@@ -238,6 +235,6 @@ Applicant email: ' + email + '
   }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
 </script>
-<script src="brand-mark.js"></script>
+<script src="site-nav.js"></script><script src="brand-mark.js"></script><script src="site-footer.js?v=20260715b"></script>
 </body>
 </html>

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocol Designer — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="privacy-choice.css?v=20260715">
+<script src="privacy-choice.js?v=20260715"></script>
 <meta name="description" content="Design a personal practice protocol using The Dark Hierarchy interactive framework."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1120,7 +1122,6 @@ document.getElementById('btn-retake').addEventListener('click', () => {
       if (!emailVal || emailVal.indexOf('@') < 0 || emailVal.indexOf('.') < 0) {
         fb.textContent = 'Enter a valid email address.'; fb.className = 'send-feedback err'; return;
       }
-      _saveAndShow();
       _saveAndShow();
 
       var btn = this; btn.textContent = 'Sending\u2026'; btn.disabled = true;
