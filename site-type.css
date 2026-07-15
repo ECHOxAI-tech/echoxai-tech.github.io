@@ -129,6 +129,10 @@ h3,
   font-size: var(--type-label) !important;
 }
 
+.footer-links {
+  flex-wrap: wrap;
+}
+
 .footer-copy {
   font-size: .7rem !important;
 }
@@ -142,5 +146,16 @@ h3,
 
   html {
     font-size: 16px !important;
+  }
+
+  body > footer {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-links {
+    width: 100%;
+    justify-content: center;
+    gap: .8rem 1.2rem !important;
   }
 }

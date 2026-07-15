@@ -14,5 +14,5 @@
       <li><a href="contact.html">Contact</a></li>
       <li><a href="https://github.com/ECHOxAI-tech" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
-    <p class="footer-copy">© Eko Svenningsson — echoxstudios.art — Berlin — All rights reserved</p>`;
+    <p class="footer-copy">© ECHOx — echoxstudios.art — Berlin — All rights reserved</p>`;
 })();
