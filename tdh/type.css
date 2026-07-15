@@ -1,0 +1,2 @@
+html { font-size:18px !important; }
+@media (max-width:600px) { html { font-size:17px !important; } }

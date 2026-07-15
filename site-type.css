@@ -1,0 +1,33 @@
+html {
+  font-size: 16px !important;
+}
+
+.nav-logo {
+  font-size: 1.05rem !important;
+}
+
+.nav-links a,
+.nav-back {
+  font-size: .78rem !important;
+}
+
+.page-label,
+.section-label,
+.access-badge,
+.label,
+.eyebrow {
+  font-size: .72rem !important;
+}
+
+.page-title,
+.page-header h1 {
+  font-size: clamp(2.1rem, 4.5vw, 3rem) !important;
+}
+
+.footer-links a {
+  font-size: .72rem !important;
+}
+
+.footer-copy {
+  font-size: .7rem !important;
+}

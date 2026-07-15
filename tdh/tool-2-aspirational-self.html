@@ -397,6 +397,7 @@
   .btn-copy:hover { background: var(--gold-dim); color: var(--black); }
   .btn-copy.copied { border-color: var(--gold); color: var(--gold); }
 </style>
+  <link rel="stylesheet" href="type.css"/>
 </head>
 <body>
 
@@ -1327,7 +1328,7 @@ async function generateShareCard() {
   // ── Footer ──
   ctx.textAlign = 'center';
   ctx.fillStyle = '#a09890'; ctx.font = '300 20px Inconsolata, monospace';
-  ctx.fillText('echoxstudios.art/tdh/  \u00b7  ECHO\u00d7STUDIOS \u00b7 Berlin', W/2, H - 70);
+  ctx.fillText('echoxstudios.art/tdh/  \u00b7  ECHOxSTUDIOS \u00b7 Berlin', W/2, H - 70);
 
   // Show inline (mobile-safe) + download on desktop
   var dataURL = canvas.toDataURL('image/png');
@@ -1528,7 +1529,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
         + '<p style="font-family:monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d4a93e;margin:0 0 4px">The Dark Hierarchy</p>'
         + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:8px 0 20px">' + body
         + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:20px 0 8px">'
-        + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ \u2014 ECHO\u00d7STUDIOS \u00b7 Berlin</p></div>';
+        + '<p style="font-family:monospace;font-size:11px;color:#a09890">echoxstudios.art/tdh/ \u2014 ECHOxSTUDIOS \u00b7 Berlin</p></div>';
 
       try {
         var res = await fetch('https://tdh-email.inbox-fde.workers.dev', {
