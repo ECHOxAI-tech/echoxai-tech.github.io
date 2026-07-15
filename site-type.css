@@ -1,33 +1,146 @@
-html {
-  font-size: 16px !important;
+:root {
+  --type-label: .72rem;
+  --type-small: .78rem;
+  --type-body: 1rem;
+  --type-lead: 1.12rem;
+  --type-card: 1.35rem;
+  --type-section: clamp(1.9rem, 3.5vw, 2.35rem);
+  --type-page: clamp(2.25rem, 4.8vw, 3.15rem);
+  --type-hero: clamp(2.8rem, 6.5vw, 4.25rem);
 }
 
-.nav-logo {
+html {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size: var(--type-body) !important;
+}
+
+/* Display hierarchy */
+h1,
+.page-title,
+.page-header h1 {
+  font-size: var(--type-page) !important;
+  line-height: 1.08 !important;
+}
+
+body > .hero h1,
+.hero-title {
+  font-size: var(--type-hero) !important;
+  line-height: 1 !important;
+}
+
+h2,
+.section-title,
+.project h2 {
+  font-size: var(--type-section) !important;
+  line-height: 1.12 !important;
+}
+
+h3,
+.work-title,
+.track-title,
+.project-title,
+.tool h3,
+.modal h2 {
+  font-size: var(--type-card) !important;
+  line-height: 1.2 !important;
+}
+
+/* Reading text */
+.lead,
+.hero-sub,
+.work-type {
+  font-size: var(--type-lead) !important;
+  line-height: 1.7 !important;
+}
+
+.page-sub,
+.section-desc,
+.project-copy,
+.project-copy p,
+.synopsis-text p,
+.spoiler-block p,
+.work-hook,
+.project-desc,
+.statement p,
+.projects-intro p,
+.sample-note p {
+  font-size: var(--type-body) !important;
+  line-height: 1.78 !important;
+}
+
+/* Functional text */
+.nav-logo,
+.footer-logo {
   font-size: 1.05rem !important;
 }
 
 .nav-links a,
-.nav-back {
-  font-size: .78rem !important;
+.nav-back,
+.button,
+.action,
+.btn-dl,
+.btn-req,
+.btn-submit,
+.btn-cancel,
+.contact,
+.project-inquiry {
+  font-size: var(--type-small) !important;
 }
 
 .page-label,
 .section-label,
+.section-heading,
 .access-badge,
 .label,
-.eyebrow {
-  font-size: .72rem !important;
-}
-
-.page-title,
-.page-header h1 {
-  font-size: clamp(2.1rem, 4.5vw, 3rem) !important;
+.eyebrow,
+.work-number,
+.work-meta,
+.work-links a,
+.track-num,
+.tag,
+.project-status,
+.project-medium,
+.sample-count,
+.process-note,
+.tool-num,
+.architecture h3,
+.book-connection span,
+.status strong,
+.meta-row,
+.synopsis-label,
+.toggle-label,
+.toggle-btn,
+.modal-label,
+.form-field label,
+.credit,
+.lb-caption,
+.lb-close,
+.lb-arrow,
+.cell-text {
+  font-size: var(--type-label) !important;
 }
 
 .footer-links a {
-  font-size: .72rem !important;
+  font-size: var(--type-label) !important;
 }
 
 .footer-copy {
   font-size: .7rem !important;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --type-page: clamp(2.1rem, 11vw, 2.75rem);
+    --type-hero: clamp(2.5rem, 13vw, 3.4rem);
+    --type-section: clamp(1.75rem, 8vw, 2.15rem);
+  }
+
+  html {
+    font-size: 16px !important;
+  }
 }

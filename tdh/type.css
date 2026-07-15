@@ -1,2 +1,68 @@
-html { font-size:18px !important; }
-@media (max-width:600px) { html { font-size:17px !important; } }
+:root {
+  --tdh-label: .62rem;
+  --tdh-small: .72rem;
+  --tdh-body: .9rem;
+  --tdh-card: 1rem;
+  --tdh-title: clamp(1.55rem, 4vw, 2rem);
+}
+
+html {
+  font-size: 17px !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size: var(--tdh-body);
+}
+
+.page-header h1,
+.masthead h1,
+.hero h1 {
+  font-size: var(--tdh-title) !important;
+  line-height: 1.1 !important;
+}
+
+.body-text,
+.intro-body,
+.gate-lead,
+.demo-lead,
+.lead p,
+.about-text p,
+.tool-desc {
+  font-size: var(--tdh-body) !important;
+  line-height: 1.75 !important;
+}
+
+.tool-title,
+.tool-name,
+.modal h2 {
+  font-size: var(--tdh-card) !important;
+  line-height: 1.25 !important;
+}
+
+.tool-label,
+.back-link,
+.meta-item,
+.progress-label,
+.demo-label,
+.gate-label,
+.code-hint,
+.disclaimer,
+.footer,
+.studio {
+  font-size: var(--tdh-label) !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: var(--tdh-small);
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 16px !important;
+  }
+}
