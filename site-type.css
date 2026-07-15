@@ -162,7 +162,18 @@ h3,
 }
 
 .footer-links a {
+  font-family: 'Inconsolata', monospace;
   font-size: var(--type-label) !important;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: var(--gold);
 }
 
 .footer-links {
