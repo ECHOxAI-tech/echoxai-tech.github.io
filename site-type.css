@@ -83,6 +83,7 @@ h3,
 .tool h3,
 .modal h2 {
   font-size: var(--type-card) !important;
+  font-weight: 400 !important;
   line-height: 1.2 !important;
 }
 
