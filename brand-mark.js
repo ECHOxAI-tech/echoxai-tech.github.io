@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-mark-x{display:inline-block;width:.5em;height:.5em;position:relative;vertical-align:.1em;margin:0 .035em;overflow:hidden;text-indent:-9999px;white-space:nowrap;line-height:1;letter-spacing:0;text-transform:none}.echox-mark-x::before,.echox-mark-x::after{content:"";position:absolute;left:50%;top:50%;width:100%;height:max(1px,.065em);background:currentColor;transform-origin:center}.echox-mark-x::before{transform:translate(-50%,-50%) rotate(45deg)}.echox-mark-x::after{transform:translate(-50%,-50%) rotate(-45deg)}';
+  style.textContent = '.echox-plain-x{text-transform:none}.echox-mark-x{display:inline-block;width:.5em;height:.5em;position:relative;vertical-align:.1em;margin:0 .035em;overflow:hidden;text-indent:-9999px;white-space:nowrap;line-height:1;letter-spacing:0;text-transform:none}.echox-mark-x::before,.echox-mark-x::after{content:"";position:absolute;left:50%;top:50%;width:100%;height:max(1px,.065em);background:currentColor;transform-origin:center}.echox-mark-x::before{transform:translate(-50%,-50%) rotate(45deg)}.echox-mark-x::after{transform:translate(-50%,-50%) rotate(-45deg)}';
   document.head.appendChild(style);
 
   const applyMarks = root => {
@@ -8,17 +8,18 @@
     const nodes = [];
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      if (/ECHOx(?=[A-Za-z0-9])/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg, .echox-mark-x')) nodes.push(node);
+      if (/ECHOx/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg, .echox-mark-x, .echox-plain-x')) nodes.push(node);
     }
 
     nodes.forEach(node => {
-      const parts = node.nodeValue.split(/(ECHOx(?=[A-Za-z0-9]))/g);
+      const parts = node.nodeValue.split(/(ECHOx)/g);
       const fragment = document.createDocumentFragment();
-      parts.forEach(part => {
+      parts.forEach((part, index) => {
         if (part === 'ECHOx') {
           fragment.append('ECHO');
           const mark = document.createElement('span');
-          mark.className = 'echox-mark-x';
+          const compound = /^[A-Za-z0-9]/.test(parts[index + 1] || '');
+          mark.className = compound ? 'echox-mark-x' : 'echox-plain-x';
           mark.setAttribute('aria-label', 'x');
           mark.textContent = 'x';
           fragment.append(mark);
