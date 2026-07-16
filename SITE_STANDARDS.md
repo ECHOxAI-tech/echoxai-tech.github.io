@@ -75,6 +75,7 @@ Compounded names are written without spaces: `ECHOxPRODUCTION`, `ECHOxINSTANT`, 
 
 - The connector x is smaller, thin, and centred on the writing line—not superscript and not a multiplication sign.
 - Use `brand-mark.js`; do not substitute unicode x-like characters or manually styled alternatives.
+- Its geometry is optically clamped in the shared implementation so it remains the same restrained mark in labels, body copy, and display text rather than becoming oversized or heavy with the parent font.
 - It must remain visible on the black site background, including small tags and metadata.
 - `Tofinns Journey` is the explicit exception and is not prefixed.
 
@@ -105,3 +106,4 @@ Compounded names are written without spaces: `ECHOxPRODUCTION`, `ECHOxINSTANT`, 
 Keep the durable rules above current. Add concise dated entries only when a rule itself changes.
 
 - 2026-07-16: Established the site-wide propagation rule; normalised card-heading weight; protected baseline `ECHOx` and the shared compound connector mark.
+- 2026-07-16: Clamped compound-connector geometry and stroke weight for consistent rendering across label, body, and display contexts.
