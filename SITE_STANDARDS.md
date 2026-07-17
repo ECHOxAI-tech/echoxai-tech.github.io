@@ -83,7 +83,7 @@ Compounded names are written without spaces: `ECHOxPRODUCTION`, `ECHOxINSTANT`, 
 
 - ECHOx is the public artistic identity.
 - Eko Svenningsson is the book byline, except for *The Dark Hierarchy*, which is written as Echo Kronborg, its distinct authorial construct and carrier of Decho.
-- Do not foreground ECHOx in public artistic copy.
+- Do not include the legal name, its spelling variants, or home-address details in public artistic copy, metadata, deployment files, or public repository history.
 - ECHOxSTUDIOS is a studio identity / business in formation until registered; never present it as an already registered company.
 
 ## Content and information architecture
@@ -108,3 +108,4 @@ Keep the durable rules above current. Add concise dated entries only when a rule
 - 2026-07-16: Established the site-wide propagation rule; normalised card-heading weight; protected baseline `ECHOx` and the shared compound connector mark.
 - 2026-07-16: Clamped compound-connector geometry and stroke weight for consistent rendering across label, body, and display contexts.
 - 2026-07-16: Recorded the distinct Echo Kronborg byline for *The Dark Hierarchy*; do not collapse it into the Eko Svenningsson book credit.
+- 2026-07-17: Public-name privacy rule added: exclude legal-name variants and home-address details from deployable files and public history; keep legal-page indexing disabled.
