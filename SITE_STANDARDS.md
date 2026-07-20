@@ -110,3 +110,4 @@ Keep the durable rules above current. Add concise dated entries only when a rule
 - 2026-07-16: Recorded the distinct Echo Kronborg byline for *The Dark Hierarchy*; do not collapse it into the Eko Svenningsson book credit.
 - 2026-07-17: Public-name privacy rule added: exclude legal-name variants and home-address details from deployable files and public history; keep legal-page indexing disabled.
 - 2026-07-20: Replaced the compound connector’s fractional CSS strokes with a shared inline SVG mark so its thin geometry renders consistently in every card, label, and metadata context.
+- 2026-07-20: Transparent logo exports keep their outer canvas clear while retaining opaque graphic interiors; overlapping symbols must never show through one another.
