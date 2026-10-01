@@ -1514,8 +1514,9 @@ document.getElementById('btn-start').addEventListener('click', () => {
         + '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:0 0 14px">Keep this code. Enter it on the profile page to revisit this result, or alongside your other codes to build a combined profile or compare with a partner.</p>'
         + '<p style="font-family:monospace;color:#c8c3bb;font-size:12px;margin:0 0 4px">Direct link to this profile:</p>'
         + '<p style="margin:0 0 4px;word-break:break-all"><a href="' + shareURL + '" style="color:#d4a93e;font-size:13px">' + shareURL + '</a></p>';
+      var docEl = document.getElementById('profile-doc');
+      var resultPart = docEl ? ('<div style="font-size:15px;line-height:1.7;color:#e2ddd2">' + docEl.innerHTML + '</div>') : '<p>Your Aspirational Sexual Self Profile</p>';
       var body = resultPart
-        + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + placements
         + '<hr style="border:none;border-top:1px solid rgba(212,169,62,.2);margin:1.5rem 0">' + codePart;
 
       var html = '<div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#080806;color:#e2ddd2;padding:2rem">'
