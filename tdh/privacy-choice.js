@@ -127,7 +127,7 @@
   }
 
   function init() {
-    var isTool = /tool-[1-6]-/.test(location.pathname);
+    var isTool = /tool-[1-7]-/.test(location.pathname);
     var requiresChoice = isTool || /\/profile\.html$/.test(location.pathname);
     var settings = document.createElement('button');
     settings.type = 'button';
