@@ -6,8 +6,8 @@
 <title>Trigger Gradient Profiler — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <meta name="description" content="Map trigger intensity across contexts with the Trigger Gradient Profiler from The Dark Hierarchy interactive system."/>
-<link rel="stylesheet" href="privacy-choice.css?v=20260715">
-<script src="privacy-choice.js?v=20260715"></script>
+<link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<script src="privacy-choice.js?v=20261002"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
@@ -509,28 +509,7 @@
       <span class="ornament">✦</span>
     </div>
     <hr class="rule">
-    <p class="gate-lead">This test is free. In exchange, two quick questions — stored <em>completely anonymously</em>, used only for aggregate research into how desire actually distributes across people. No personal data, no tracking, no way to trace an answer back to you. Both answers are required to see your result.</p>
-
-    <div class="gate-field">
-      <span class="gate-label">Gender</span>
-      <div class="gate-opts" id="gate-gender">
-        <button class="gate-opt" data-v="f">Woman</button>
-        <button class="gate-opt" data-v="m">Man</button>
-        <button class="gate-opt" data-v="nb">Non-binary</button>
-        <button class="gate-opt" data-v="o">Other</button>
-      </div>
-    </div>
-
-    <div class="gate-field">
-      <span class="gate-label">Age</span>
-      <div class="gate-opts" id="gate-age">
-        <button class="gate-opt" data-v="u25">Under 25</button>
-        <button class="gate-opt" data-v="25-34">25–34</button>
-        <button class="gate-opt" data-v="35-44">35–44</button>
-        <button class="gate-opt" data-v="45-54">45–54</button>
-        <button class="gate-opt" data-v="55p">55+</button>
-      </div>
-    </div>
+    <p class="gate-lead">This reflection is private. Your answers are used only to calculate this result in your browser; no result statistics are sent for analytics. You may choose local-only storage or optional cross-device retrieval separately.</p>
 
     <button class="btn-reveal" id="btn-reveal">Reveal my result →</button>
     <p class="send-feedback" id="gate-feedback"></p>
@@ -555,8 +534,8 @@
       <!-- axes + rings drawn by JS -->
     </svg>
     <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.6rem">
-      <button id="btn-toggle-cohort" type="button" style="font-family:'Inconsolata',monospace;font-size:0.52rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-dim);background:rgba(212,169,62,0.06);border:1px solid var(--rule);padding:0.35rem 0.75rem;cursor:pointer;border-radius:2px;transition:all 0.2s">Show Practitioner Cohort Overlay</button>
-      <span id="cohort-badge" style="display:none;font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase">Cohort: I30 · E25 · T24 · V20</span>
+      <button id="btn-toggle-cohort" type="button" style="font-family:'Inconsolata',monospace;font-size:0.52rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-dim);background:rgba(212,169,62,0.06);border:1px solid var(--rule);padding:0.35rem 0.75rem;cursor:pointer;border-radius:2px;transition:all 0.2s">Show Framework Reference Overlay</button>
+      <span id="cohort-badge" style="display:none;font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase">Reference: I30 · E25 · T24 · V20</span>
     </div>
   </div>
 
@@ -851,12 +830,12 @@ function buildComparison(pct) {
   const biggest = diffs.reduce((a,b) => a.d >= b.d ? a : b);
   const dir = pct[biggest.ch] > CULTURAL_AVG[biggest.ch] ? 'higher than' : 'lower than';
   
-  // Benchmark against practitioner cohort averages: Visual 22%, Emotional 26%, Tactile 23%, Intellectual 29%
+  // Provisional framework reference: not a population baseline or clinical norm.
   const COHORT_AVG = { V:22, E:26, T:23, I:29 };
   const cohortDiff = Math.abs(pct[biggest.ch] - COHORT_AVG[biggest.ch]);
-  const cohortDir = pct[biggest.ch] >= COHORT_AVG[biggest.ch] ? 'aligns strongly with or exceeds' : 'sits slightly below';
+  const cohortDir = pct[biggest.ch] >= COHORT_AVG[biggest.ch] ? 'sits at or above' : 'sits below';
 
-  return `<p>The cultural baseline heavily overweights the Visual channel (60%) while compressing the interior senses. Your distribution diverges most markedly in the <strong>${CH_NAME[biggest.ch]}</strong> channel (${dir} conventional cultural norms by ${biggest.d} points). In contrast, among practitioners in our active research cohort, the distribution shifts toward relational and interior weight (Intellectual 29%, Emotional 26%, Tactile 23%, Visual 22%). Your profile ${cohortDir} the active practitioner baseline by ${cohortDiff} points, demonstrating that your desire operates through structural confirmation rather than consumer aesthetics.</p>`;
+  return `<p>Your distribution gives you a starting point for reflection in the <strong>${CH_NAME[biggest.ch]}</strong> channel. The book also offers a provisional framework reference (Intellectual 29%, Emotional 26%, Tactile 23%, Visual 22%): your profile ${cohortDir} that reference by ${cohortDiff} points. This is not a population baseline, a clinical norm, or a diagnosis; it is a prompt to return to the book's account of what recognition means for you.</p>`;
 }
 
 function buildRecs(pct) {
@@ -904,7 +883,7 @@ function renderQuestion(idx) {
 // ══════════════════════════════════════════════
 
 var showCohortOverlay = false;
-var cohortAverages = { V: 20, E: 25, T: 24, I: 30 }; // Active empirical baseline
+var cohortAverages = { V: 20, E: 25, T: 24, I: 30 }; // Provisional framework reference
 
 function drawPetal(pct) {
   var svg = document.getElementById('petal-svg');
@@ -1319,30 +1298,11 @@ document.getElementById('btn-next').addEventListener('click', () => {
 });
 
 // ── DEMOGRAPHIC GATE ──
-window.__demo = { gender: null, age: null };
-function wireGateGroup(id, key) {
-  document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(b) {
-    b.addEventListener('click', function() {
-      document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(x){ x.classList.remove('sel'); });
-      b.classList.add('sel');
-      window.__demo[key] = b.getAttribute('data-v');
-    });
-  });
-}
-wireGateGroup('gate-gender', 'gender');
-wireGateGroup('gate-age', 'age');
-
 function revealResult() {
   document.getElementById('view-gate').style.display = 'none';
   showResults(window.__pendingPct);
 }
 document.getElementById('btn-reveal').addEventListener('click', function() {
-  if (!window.__demo.gender || !window.__demo.age) {
-    var fb = document.getElementById('gate-feedback');
-    fb.textContent = 'Please answer both questions to continue.';
-    fb.className = 'send-feedback err';
-    return;
-  }
   revealResult();
 });
 
@@ -1390,7 +1350,7 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
     if (!btn) return;
     btn.addEventListener('click', function() {
       showCohortOverlay = !showCohortOverlay;
-      btn.textContent = showCohortOverlay ? 'Hide Cohort Overlay' : 'Show Practitioner Cohort Overlay';
+      btn.textContent = showCohortOverlay ? 'Hide Framework Reference Overlay' : 'Show Framework Reference Overlay';
       btn.style.color = showCohortOverlay ? 'var(--gold)' : 'var(--gold-dim)';
       btn.style.borderColor = showCohortOverlay ? 'var(--gold)' : 'var(--rule)';
       if (badge) badge.style.display = showCohortOverlay ? 'inline' : 'none';
@@ -1399,18 +1359,6 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       }
     });
 
-    // Attempt to refresh live averages from server silently if available
-    try {
-      fetch('https://tdh-email.inbox-fde.workers.dev/stats')
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          if (data && data.averages && data.averages.I) {
-            cohortAverages = data.averages;
-            if (badge) badge.textContent = 'Cohort: I' + data.averages.I + ' · E' + data.averages.E + ' · T' + data.averages.T + ' · V' + data.averages.V;
-            if (showCohortOverlay && currentGradient) drawPetal(currentGradient);
-          }
-        }).catch(function(){});
-    } catch(e) {}
   })();
 
   (function attachSend() {

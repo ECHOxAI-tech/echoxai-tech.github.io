@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dark Night Diagnostic — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-<link rel="stylesheet" href="privacy-choice.css?v=20260715">
-<script src="privacy-choice.js?v=20260715"></script>
+<link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<script src="privacy-choice.js?v=20261002"></script>
 <meta name="description" content="A structured reflection tool for locating a dark-night experience within The Dark Hierarchy framework."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -424,26 +424,7 @@
       <span class="ornament">✦</span>
     </div>
     <hr class="rule">
-    <p class="demo-lead">Two quick questions before your diagnosis — stored <em>completely anonymously</em>, used only to understand how these states distribute across people. No personal data, no tracking, no way to trace an answer to you. Both required.</p>
-    <div class="demo-field">
-      <span class="demo-label">Gender</span>
-      <div class="demo-opts" id="demo-gender">
-        <button class="demo-opt" data-v="f">Woman</button>
-        <button class="demo-opt" data-v="m">Man</button>
-        <button class="demo-opt" data-v="nb">Non-binary</button>
-        <button class="demo-opt" data-v="o">Other</button>
-      </div>
-    </div>
-    <div class="demo-field">
-      <span class="demo-label">Age</span>
-      <div class="demo-opts" id="demo-age">
-        <button class="demo-opt" data-v="u25">Under 25</button>
-        <button class="demo-opt" data-v="25-34">25–34</button>
-        <button class="demo-opt" data-v="35-44">35–44</button>
-        <button class="demo-opt" data-v="45-54">45–54</button>
-        <button class="demo-opt" data-v="55p">55+</button>
-      </div>
-    </div>
+    <p class="demo-lead">Before your reflective reading: your answers are used only to calculate this result in your browser. No result statistics are sent for analytics. Local-only storage and optional cross-device retrieval are separate choices.</p>
     <button class="btn-reveal" id="btn-reveal">See my result →</button>
     <p class="send-feedback" id="demo-feedback"></p>
   </div>
@@ -465,7 +446,7 @@
 
   <hr class="rule">
 
-  <p class="section-lbl">Provisional diagnosis</p>
+  <p class="section-lbl">Provisional reading</p>
   <div class="diagnosis-block" id="diagnosis-text"></div>
 
   <p class="section-lbl" id="flagged-lbl" style="display:none">Conditions that flagged</p>
@@ -719,20 +700,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
 // ── DEMOGRAPHIC GATE ──
 window.__demo = { gender: null, age: null };
 (function() {
-  function wire(id, key) {
-    document.querySelectorAll('#' + id + ' .demo-opt').forEach(function(b) {
-      b.addEventListener('click', function() {
-        document.querySelectorAll('#' + id + ' .demo-opt').forEach(function(x){ x.classList.remove('sel'); });
-        b.classList.add('sel'); window.__demo[key] = b.getAttribute('data-v');
-      });
-    });
-  }
-  wire('demo-gender','gender'); wire('demo-age','age');
   document.getElementById('btn-reveal').addEventListener('click', function() {
-    if (!window.__demo.gender || !window.__demo.age) {
-      var fb = document.getElementById('demo-feedback');
-      fb.textContent = 'Please answer both questions to continue.'; fb.className = 'send-feedback err'; return;
-    }
     document.getElementById('view-demo').style.display = 'none';
     showResults(window.__pendingDiag);
   });

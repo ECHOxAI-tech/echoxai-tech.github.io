@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attachment Confirmation Profile — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-<link rel="stylesheet" href="privacy-choice.css?v=20260715">
-<script src="privacy-choice.js?v=20260715"></script>
+<link rel="stylesheet" href="privacy-choice.js?v=20261002">
+<script src="privacy-choice.js?v=20261002"></script>
 <meta name="description" content="Explore sensitivity, direction, history, and specificity of confirmation through The Dark Hierarchy interactive system."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -427,26 +427,7 @@
       <span class="ornament">✦</span>
     </div>
     <hr class="rule">
-    <p class="gate-lead">This assessment is free. In exchange, two quick questions — stored <em>completely anonymously</em>, used only for aggregate research into how attachment and confirmation patterns distribute across people. No personal data, no tracking, no way to trace an answer back to you. Both answers are required to see your result.</p>
-    <div class="gate-field">
-      <span class="gate-label">Gender</span>
-      <div class="gate-opts" id="gate-gender">
-        <button class="gate-opt" data-v="f">Woman</button>
-        <button class="gate-opt" data-v="m">Man</button>
-        <button class="gate-opt" data-v="nb">Non-binary</button>
-        <button class="gate-opt" data-v="o">Other</button>
-      </div>
-    </div>
-    <div class="gate-field">
-      <span class="gate-label">Age</span>
-      <div class="gate-opts" id="gate-age">
-        <button class="gate-opt" data-v="u25">Under 25</button>
-        <button class="gate-opt" data-v="25-34">25–34</button>
-        <button class="gate-opt" data-v="35-44">35–44</button>
-        <button class="gate-opt" data-v="45-54">45–54</button>
-        <button class="gate-opt" data-v="55p">55+</button>
-      </div>
-    </div>
+    <p class="gate-lead">This reflection is private. Your answers are used only to calculate this result in your browser; no result statistics are sent for analytics. Local-only storage and optional cross-device retrieval are separate choices.</p>
     <button class="btn-reveal" id="btn-reveal">Reveal my result →</button>
     <p class="send-feedback" id="gate-feedback"></p>
   </div>
@@ -1086,22 +1067,8 @@ document.getElementById('btn-next').addEventListener('click', () => {
 });
 
 // ── DEMOGRAPHIC GATE ──
-window.__demo = { gender: null, age: null };
 (function() {
-  function wire(id, key) {
-    document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(b) {
-      b.addEventListener('click', function() {
-        document.querySelectorAll('#' + id + ' .gate-opt').forEach(function(x){ x.classList.remove('sel'); });
-        b.classList.add('sel'); window.__demo[key] = b.getAttribute('data-v');
-      });
-    });
-  }
-  wire('gate-gender', 'gender'); wire('gate-age', 'age');
   document.getElementById('btn-reveal').addEventListener('click', function() {
-    if (!window.__demo.gender || !window.__demo.age) {
-      var fb = document.getElementById('gate-feedback');
-      fb.textContent = 'Please answer both questions to continue.'; fb.className = 'send-feedback err'; return;
-    }
     document.getElementById('view-gate').style.display = 'none';
     showResults(window.__pendingSc);
   });
