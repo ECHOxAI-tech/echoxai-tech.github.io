@@ -160,6 +160,7 @@ const TESTS = [
   { key:'tdh_t2_', title:'Aspirational Sexual Self',   path:'./tool-2-aspirational-self.html',     render:renderT2 },
   { key:'tdh_t3_', title:'Attachment Confirmation',    path:'./tool-3-attachment-confirmation.html', render:renderT3 },
   { key:'tdh_t4_', title:'Dark Night Diagnostic',      path:'./tool-4-dark-night.html',            render:renderT4 },
+  { key:'tdh_t5_', title:'Protocol Designer',          path:'./tool-5-protocol-designer.html',     render:renderT5 },
   { key:'tdh_t6_', title:'Threshold',                  path:'./tool-6-threshold.html',             render:renderT6 },
   { key:'tdh_t7_', title:'Dynamic Liturgy Matrix',     path:'./tool-7-liturgy-matrix.html',        render:renderT7 },
 ];
@@ -226,6 +227,16 @@ function renderT4(d) {
   }
   return '<p class="cat-line"><strong>' + l + '</strong></p>'
     + (detail ? '<p class="cat-line" style="font-size:0.8rem;color:var(--muted);margin-top:0.4rem">' + detail + '</p>' : '');
+}
+
+function renderT5(d) {
+  var r = d.result || d.data || d;
+  if (!r) return '';
+  var out = '<p class="cat-line"><strong>Living Practice Protocol</strong></p>';
+  if (r.dailyRitual) out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.3rem">Daily: ' + escapeHTML(r.dailyRitual) + '</p>';
+  else if (r.plan && r.plan.title) out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.3rem">Structure: ' + escapeHTML(r.plan.title) + '</p>';
+  else out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.3rem">Protocol active and recorded</p>';
+  return out;
 }
 
 function renderT6(d) {
