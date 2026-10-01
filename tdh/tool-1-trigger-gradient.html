@@ -611,7 +611,12 @@
     <span class="share-url-text" id="share-url-text">&nbsp;</span>
     <button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button>
   </div>
-  <button class="btn-copy" style="width:100%;margin-top:0.6rem" onclick="downloadCard()">Download result image (for social media)</button>
+
+  <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
+    <button class="btn-copy" id="btn-share-native" style="flex:1" onclick="shareWithFriend()">Invite / Compare with a Friend</button>
+    <button class="btn-copy" style="flex:1" onclick="downloadCard()">Download Card (Image)</button>
+  </div>
+  <p class="code-hint" style="color:var(--muted);font-size:0.52rem;margin-top:0.5rem">Strict Anonymous Policy: No identity, IP, or personal metadata is ever coupled with your desire gradient. Codes are anonymous, randomized alphanumeric hashes.</p>
 
   <p class="result-disclaimer">This result is an instrument for personal reflection, not a clinical or diagnostic assessment. It does not constitute psychological or therapeutic advice. No professional relationship is formed by using this tool. If you are experiencing distress, please seek support from a qualified professional.</p>
 
@@ -1226,6 +1231,21 @@ function makeShareURL(pct) {
   } catch(e) { return ''; }
 }
 
+function shareWithFriend() {
+  const url = document.getElementById('share-url-text').textContent.trim();
+  const text = "I mapped my Trigger Gradient on The Dark Hierarchy. Map yours and let's compare our distributions:";
+  if (navigator.share) {
+    navigator.share({
+      title: 'The Dark Hierarchy — Trigger Gradient',
+      text: text,
+      url: url || window.location.href
+    }).catch(function(){});
+  } else {
+    copyShareURL();
+    alert("Anonymous link copied to clipboard. Send it to a friend to compare distributions on the profile page!");
+  }
+}
+
 function copyShareURL() {
   const url = document.getElementById('share-url-text').textContent.trim();
   if (!url) return;
@@ -1421,12 +1441,12 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       function emailBar(label, val) {
         var w = Math.max(2, Math.round(val));
         return '<tr>'
-          + '<td style="font-family:monospace;font-size:12px;letter-spacing:1px;color:#c8c3bb;text-transform:uppercase;padding:7px 14px 7px 0;white-space:nowrap">' + label + '</td>'
-          + '<td style="width:100%;padding:7px 0"><table cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>'
-          + '<td style="background:#d4a93e;height:11px;width:' + w + '%;font-size:0;line-height:0">&nbsp;</td>'
-          + '<td style="background:rgba(212,169,62,0.12);height:11px;font-size:0;line-height:0">&nbsp;</td>'
+          + '<td style="font-family:monospace;font-size:12px;letter-spacing:1.5px;color:#c8c3bb;text-transform:uppercase;padding:10px 28px 10px 0;white-space:nowrap">' + label + '</td>'
+          + '<td style="width:100%;padding:10px 0"><table cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse"><tr>'
+          + '<td style="background:#d4a93e;height:9px;width:' + w + '%;font-size:0;line-height:0">&nbsp;</td>'
+          + '<td style="background:rgba(212,169,62,0.12);height:9px;font-size:0;line-height:0">&nbsp;</td>'
           + '</tr></table></td>'
-          + '<td style="font-family:monospace;font-size:13px;color:#d4a93e;padding:7px 0 7px 14px;text-align:right">' + val + '%</td>'
+          + '<td style="font-family:monospace;font-size:13px;color:#d4a93e;padding:10px 0 10px 24px;text-align:right">' + val + '%</td>'
           + '</tr>';
       }
       var barsTable = '<table cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin:10px 0 4px">'
