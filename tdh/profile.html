@@ -157,10 +157,11 @@ const MAX_PERSONS = 4;
 
 const TESTS = [
   { key:'tdh_t1_', title:'Trigger Gradient',           path:'./tool-1-trigger-gradient.html',      render:renderT1 },
-  { key:'tdh_t2_', title:'Aspirational Sexual Self',           path:'./tool-2-aspirational-self.html',     render:renderT2 },
-  { key:'tdh_t3_', title:'Attachment Confirmation',     path:'./tool-3-attachment-confirmation.html', render:renderT3 },
-  { key:'tdh_t4_', title:'Dark Night Diagnostic',       path:'./tool-4-dark-night.html',            render:renderT4 },
-  { key:'tdh_t6_', title:'Threshold',                   path:'./tool-6-threshold.html',             render:renderT6 },
+  { key:'tdh_t2_', title:'Aspirational Sexual Self',   path:'./tool-2-aspirational-self.html',     render:renderT2 },
+  { key:'tdh_t3_', title:'Attachment Confirmation',    path:'./tool-3-attachment-confirmation.html', render:renderT3 },
+  { key:'tdh_t4_', title:'Dark Night Diagnostic',      path:'./tool-4-dark-night.html',            render:renderT4 },
+  { key:'tdh_t6_', title:'Threshold',                  path:'./tool-6-threshold.html',             render:renderT6 },
+  { key:'tdh_t7_', title:'Dynamic Liturgy Matrix',     path:'./tool-7-liturgy-matrix.html',        render:renderT7 },
 ];
 
 function fmtDate(ts) {
@@ -235,6 +236,21 @@ function renderT6(d) {
   var out = '';
   if (thr.primary) out += '<p class="cat-line"><strong>' + (threshLabels[thr.primary] || thr.primary) + '</strong></p>';
   if (arch) out += '<p class="cat-line" style="font-size:0.85rem;color:var(--muted);margin-top:0.4rem">Architecture: ' + (archLabels[arch] || arch) + '</p>';
+  return out;
+}
+
+function renderT7(d) {
+  var r = d.result || d.data || d;
+  var chosen = r.chosen || [];
+  if (!chosen.length) return '<p class="cat-line">Covenant recorded</p>';
+  var out = '<div style="margin-top:0.4rem">';
+  chosen.slice(0, 4).forEach(function(item) {
+    out += '<p class="cat-line" style="font-size:0.82rem;line-height:1.5;margin-bottom:0.35rem"><strong>' + escapeHTML(item.title) + ':</strong> ' + escapeHTML(item.text) + '</p>';
+  });
+  if (chosen.length > 4) {
+    out += '<p class="cat-line" style="font-size:0.75rem;color:var(--muted);font-style:italic">+' + (chosen.length - 4) + ' additional household protocols active</p>';
+  }
+  out += '</div>';
   return out;
 }
 

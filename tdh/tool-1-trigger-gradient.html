@@ -550,10 +550,14 @@
   <!-- Gradient bars -->
   <p class="section-lbl">Your desire gradient</p>
 
-  <div style="display:flex;justify-content:center;margin:0.5rem 0 1.5rem">
+  <div style="display:flex;flex-direction:column;align-items:center;margin:0.5rem 0 1.5rem">
     <svg id="petal-svg" viewBox="-72 0 452 320" width="320" height="280" style="max-width:100%">
       <!-- axes + rings drawn by JS -->
     </svg>
+    <div style="margin-top:0.75rem;display:flex;align-items:center;gap:0.6rem">
+      <button id="btn-toggle-cohort" type="button" style="font-family:'Inconsolata',monospace;font-size:0.52rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-dim);background:rgba(212,169,62,0.06);border:1px solid var(--rule);padding:0.35rem 0.75rem;cursor:pointer;border-radius:2px;transition:all 0.2s">Show Practitioner Cohort Overlay</button>
+      <span id="cohort-badge" style="display:none;font-family:'Inconsolata',monospace;font-size:0.48rem;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase">Cohort: I30 · E25 · T24 · V20</span>
+    </div>
   </div>
 
   <div class="bar-row"><span class="bar-lbl">Visual</span><div class="bar-track"><div class="bar-fill" id="bar-V"></div></div><span class="bar-pct" id="pct-V"></span></div>
@@ -894,6 +898,9 @@ function renderQuestion(idx) {
 // RESULTS RENDER
 // ══════════════════════════════════════════════
 
+var showCohortOverlay = false;
+var cohortAverages = { V: 20, E: 25, T: 24, I: 30 }; // Active empirical baseline
+
 function drawPetal(pct) {
   var svg = document.getElementById('petal-svg');
   if (!svg) return;
@@ -941,9 +948,32 @@ function drawPetal(pct) {
     t.textContent = ax.label.toUpperCase();
     svg.appendChild(t);
   });
+
+  var maxVal = Math.max(pct.V, pct.E, pct.T, pct.I, showCohortOverlay ? Math.max(cohortAverages.V, cohortAverages.E, cohortAverages.T, cohortAverages.I) : 0, 1);
+  var scale = R / Math.max(maxVal, 50);
+
+  // Optional Cohort Ghost Polygon
+  if (showCohortOverlay) {
+    var cohortPts = axes.map(function(ax){ var p = pt(ax.ang, cohortAverages[ax.k] * scale); return p[0]+','+p[1]; }).join(' ');
+    var cohortPoly = document.createElementNS(svgNS, 'polygon');
+    cohortPoly.setAttribute('points', cohortPts);
+    cohortPoly.setAttribute('fill', 'rgba(184,150,62,0.12)');
+    cohortPoly.setAttribute('stroke', 'rgba(184,150,62,0.6)');
+    cohortPoly.setAttribute('stroke-width', '1.5');
+    cohortPoly.setAttribute('stroke-dasharray', '4,3');
+    cohortPoly.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(cohortPoly);
+
+    axes.forEach(function(ax) {
+      var p = pt(ax.ang, cohortAverages[ax.k] * scale);
+      var c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('cx', p[0]); c.setAttribute('cy', p[1]); c.setAttribute('r', '2.5');
+      c.setAttribute('fill', 'rgba(184,150,62,0.8)');
+      svg.appendChild(c);
+    });
+  }
+
   // Data polygon — scale so the largest value reaches ~edge; use value/100 of R but min visible
-  var maxV = Math.max(pct.V, pct.E, pct.T, pct.I, 1);
-  var scale = R / Math.max(maxV, 50); // keep proportions readable
   var dataPts = axes.map(function(ax){ var p = pt(ax.ang, pct[ax.k] * scale); return p[0]+','+p[1]; }).join(' ');
   var poly = document.createElementNS(svgNS, 'polygon');
   poly.setAttribute('points', dataPts);
@@ -1333,6 +1363,35 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
       history.replaceState(null, '', u.toString());
     } catch(e) {}
   }
+
+  (function attachCohortToggle() {
+    var btn = document.getElementById('btn-toggle-cohort');
+    var badge = document.getElementById('cohort-badge');
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      showCohortOverlay = !showCohortOverlay;
+      btn.textContent = showCohortOverlay ? 'Hide Cohort Overlay' : 'Show Practitioner Cohort Overlay';
+      btn.style.color = showCohortOverlay ? 'var(--gold)' : 'var(--gold-dim)';
+      btn.style.borderColor = showCohortOverlay ? 'var(--gold)' : 'var(--rule)';
+      if (badge) badge.style.display = showCohortOverlay ? 'inline' : 'none';
+      if (typeof currentGradient !== 'undefined' && currentGradient) {
+        drawPetal(currentGradient);
+      }
+    });
+
+    // Attempt to refresh live averages from server silently if available
+    try {
+      fetch('https://tdh-email.inbox-fde.workers.dev/stats')
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (data && data.averages && data.averages.I) {
+            cohortAverages = data.averages;
+            if (badge) badge.textContent = 'Cohort: I' + data.averages.I + ' · E' + data.averages.E + ' · T' + data.averages.T + ' · V' + data.averages.V;
+            if (showCohortOverlay && currentGradient) drawPetal(currentGradient);
+          }
+        }).catch(function(){});
+    } catch(e) {}
+  })();
 
   (function attachSend() {
     var sendBtn = document.getElementById('btn-email-send');
