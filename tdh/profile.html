@@ -734,7 +734,7 @@ function renderComparison(resolved, persons) {
       out += '</div>';
       if (pe.length === 2) { sharedQuant.push('t7'); out += interpretT7Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name); }
     }
-    // ---- T4 / T6: individual diagnostics, side by side + framing ----
+    // ---- T4 / T6: individual readings, side by side + framing ----
     else {
       out += '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
       persons.forEach(function(p){
@@ -744,7 +744,7 @@ function renderComparison(resolved, persons) {
         out += '</div>';
       });
       out += '</div>';
-      out += '<p class="matrix-note" style="text-align:left;margin-top:0.6rem">This is an individual diagnostic, not a compatibility measure — shown side by side for context, not scored against each other.</p>';
+      out += '<p class="matrix-note" style="text-align:left;margin-top:0.6rem">This is an individual reading, not a compatibility measure — shown side by side for context, not scored against each other.</p>';
     }
     out += '</div>';
   });
