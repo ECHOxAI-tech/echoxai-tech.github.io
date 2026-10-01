@@ -458,6 +458,38 @@ function interpretT3Pair(a, b, nameA, nameB) {
   return '<div class="reading"><span class="tag">Reading — sensitivity to confirmation</span>'+paras.map(function(x){return '<p>'+x+'</p>';}).join('')+'</div>';
 }
 
+function interpretT7Pair(a, b, nameA, nameB) {
+  var dataA = a.result || a.data || a, dataB = b.result || b.data || b;
+  var listA = (dataA.chosen || []).map(function(x){ return x.id; });
+  var listB = (dataB.chosen || []).map(function(x){ return x.id; });
+  var shared = listA.filter(function(id){ return listB.indexOf(id) >= 0; });
+  var onlyA = listA.filter(function(id){ return listB.indexOf(id) < 0; });
+  var onlyB = listB.filter(function(id){ return listA.indexOf(id) < 0; });
+
+  var paras = [];
+  if (shared.length > 0) {
+    paras.push('You share <strong>' + shared.length + ' liturgical protocols</strong> in common across your domestic covenants. The household spine is aligned on these specific practices — they will not require negotiation because both of you already regard them as natural.');
+  } else {
+    paras.push('You currently have <strong>zero overlapping liturgical protocols</strong>. You are operating from different domestic grammars — one partner expects silence where the other expects verbal inquiry, or one seeks immediate custody at the threshold while the other needs unburdening space. To live together harmoniously, you must actively compose a unified covenant rather than relying on unspoken intuition.');
+  }
+
+  // Friction point analysis
+  var frictions = [];
+  if (listA.indexOf('S2') >= 0 && listB.indexOf('S2') < 0) frictions.push('Speech register: ' + escapeHTML(nameA) + ' requires dedicated silence windows during twilight/meals, while ' + escapeHTML(nameB) + ' communicates conversationally.');
+  if (listB.indexOf('S2') >= 0 && listA.indexOf('S2') < 0) frictions.push('Speech register: ' + escapeHTML(nameB) + ' requires dedicated silence windows during twilight/meals, while ' + escapeHTML(nameA) + ' communicates conversationally.');
+  if (listA.indexOf('T1') >= 0 && listB.indexOf('T1') < 0) frictions.push('Threshold custody: ' + escapeHTML(nameA) + ' observes the strict Boots-at-the-Door protocol immediately at entry; ' + escapeHTML(nameB) + ' treats arrival more informally.');
+  if (listB.indexOf('T1') >= 0 && listA.indexOf('T1') < 0) frictions.push('Threshold custody: ' + escapeHTML(nameB) + ' observes the strict Boots-at-the-Door protocol immediately at entry; ' + escapeHTML(nameA) + ' treats arrival more informally.');
+  if (listA.indexOf('F1') >= 0 || listB.indexOf('F1') >= 0) {
+    paras.push('<strong>Order and Humor:</strong> The Bergman Clause is invoked in your shared space. When escalation threatens, both parties have permission to call upon the Second Neighbor to break the posture of defensive pride before injury occurs.');
+  }
+
+  if (frictions.length > 0) {
+    paras.push('<strong>Primary friction points to watch:</strong><br>' + frictions.join('<br>'));
+  }
+
+  return '<div class="reading"><span class="tag">Friction-Point Analysis — Domestic Governance</span>' + paras.map(function(x){ return '<p>' + x + '</p>'; }).join('') + '</div>';
+}
+
 function overallPairNote(shared, nameA, nameB) {
   if (!shared.length) return '';
   return '<div class="reading" style="border-left-color:var(--bone)"><span class="tag" style="color:var(--bone)">In sum</span>'
@@ -678,6 +710,18 @@ function renderComparison(resolved, persons) {
       });
       out += '</div>';
       if (pe.length === 2 && pe[0].data.A !== undefined) { sharedQuant.push('t3'); out += interpretT3Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name); }
+    }
+    // ---- T7: liturgy matrix comparison + friction analysis ----
+    else if (tk === 't7') {
+      out += '<div class="cmp-cols" style="grid-template-columns:' + gridCols + '">';
+      persons.forEach(function(p){
+        out += '<div class="cmp-col"><p class="cmp-col-name">' + escapeHTML(personName(p)) + '</p>';
+        var d = resolved[ri][p];
+        out += d === undefined ? '<p class="cmp-col-empty">— no code —</p>' : (!d ? '<p class="cmp-col-empty">not found</p>' : (t.render(d) || '<p class="cmp-col-empty">unreadable</p>'));
+        out += '</div>';
+      });
+      out += '</div>';
+      if (pe.length === 2) { sharedQuant.push('t7'); out += interpretT7Pair(pe[0].data, pe[1].data, pe[0].name, pe[1].name); }
     }
     // ---- T4 / T6: individual diagnostics, side by side + framing ----
     else {
