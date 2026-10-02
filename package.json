@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "test:a11y": "node tests/a11y.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.10.2"
+  }
+}

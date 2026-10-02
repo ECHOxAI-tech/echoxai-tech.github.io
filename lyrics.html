@@ -128,8 +128,7 @@
     .track-header {
       padding:1.5rem 2rem;
       display:flex; align-items:center; justify-content:space-between;
-      cursor:pointer; transition:background 0.2s; gap:1rem;
-      user-select:none;
+      transition:background 0.2s; gap:1rem;
     }
     .track-header:hover { background:#121210; }
 
@@ -158,8 +157,9 @@
       font-family:'Inconsolata',monospace; font-size:0.85rem;
       letter-spacing:0.15em; color:var(--muted); text-transform:uppercase;
       transition:color 0.2s; white-space:nowrap; flex-shrink:0;
+      border:0; background:transparent; padding:.4rem; cursor:pointer;
     }
-    .track-header:hover .track-toggle { color:var(--gold); }
+    .track-toggle:hover { color:var(--gold); }
 
     /* LYRICS BODY */
     .track-body {
@@ -389,7 +389,7 @@
     </div>
 
     <div class="track-card" id="fafo">
-      <div class="track-header" onclick="toggleTrack('t2')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">Tech-House &#183; Explicit</p>
           <h3 class="track-title">Fuck Around Find Out</h3>
@@ -400,7 +400,7 @@
             <span class="tag">Explicit</span>
           </div>
         </div>
-        <span class="track-toggle" id="t2-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t2-toggle" type="button" aria-controls="t2" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t2" class="track-body">
         <div class="lyrics-layout">
@@ -511,7 +511,7 @@
     </div>
 
     <div class="track-card" id="barcelona">
-      <div class="track-header" onclick="toggleTrack('t4')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">Tech-House &#183; 126 BPM</p>
           <h3 class="track-title">Ghetto Blaster 2.0 (Barcelona Refix)</h3>
@@ -522,7 +522,7 @@
             <span class="tag">Peak-time</span>
           </div>
         </div>
-        <span class="track-toggle" id="t4-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t4-toggle" type="button" aria-controls="t4" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t4" class="track-body">
         <div class="lyrics-layout">
@@ -630,7 +630,7 @@
 
 
     <div class="track-card" id="ilostit">
-      <div class="track-header" onclick="toggleTrack('t6')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">ECHOxPRODUCTION</p>
           <h3 class="track-title">I Lost It</h3>
@@ -639,7 +639,7 @@
             <span class="tag" style="border-color:rgba(184,150,62,0.3); color:var(--gold-dim);">Available &#8212; <a href="mailto:inbox@echoxstudios.art">inbox@echoxstudios.art</a></span>
           </div>
         </div>
-        <span class="track-toggle" id="t6-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t6-toggle" type="button" aria-controls="t6" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t6" class="track-body">
         <div class="lyrics-layout">
@@ -826,7 +826,7 @@
     </div>
 
     <div class="track-card" id="blodsommar">
-      <div class="track-header" onclick="toggleTrack('t7')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">Gothic Metal &#183; Swedish</p>
           <h3 class="track-title">Blodsommar</h3>
@@ -837,7 +837,7 @@
             <span class="tag">Gothic &#183; Choral</span>
           </div>
         </div>
-        <span class="track-toggle" id="t7-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t7-toggle" type="button" aria-controls="t7" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t7" class="track-body">
       <div class="lyrics-layout">
@@ -957,7 +957,7 @@
     </div>
 
     <div class="track-card" id="ghetto">
-      <div class="track-header" onclick="toggleTrack('t3')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">Tech-House &#183; Original</p>
           <h3 class="track-title">Ghetto Blaster</h3>
@@ -967,7 +967,7 @@
             <span class="tag">Berlin &#183; 2025</span>
           </div>
         </div>
-        <span class="track-toggle" id="t3-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t3-toggle" type="button" aria-controls="t3" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t3" class="track-body">
         <div class="lyrics-layout">
@@ -1069,7 +1069,7 @@
     </div>
 
     <div class="track-card" id="zurück">
-      <div class="track-header" onclick="toggleTrack('t1')">
+      <div class="track-header">
         <div class="track-header-left">
           <p class="track-num">Tech-House &#183; U-Bahn</p>
           <h3 class="track-title">Zurück Steigen Bitte</h3>
@@ -1080,7 +1080,7 @@
             <span class="tag">U-Bahn</span>
           </div>
         </div>
-        <span class="track-toggle" id="t1-toggle">Read lyrics &#8595;</span>
+        <button class="track-toggle" id="t1-toggle" type="button" aria-controls="t1" aria-expanded="false">Read lyrics &#8595;</button>
       </div>
       <div id="t1" class="track-body">
         <div class="lyrics-layout">
@@ -1218,5 +1218,15 @@
 <script src="brand-signature.js?v=20261005"></script>
 <script src="tdh/a11y.js?v=20261002"></script>
 <script src="assets/landmarks.js?v=20261006"></script>
+<script>
+  document.querySelectorAll('.track-toggle').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var body = document.getElementById(button.getAttribute('aria-controls'));
+      var open = body.classList.toggle('open');
+      button.setAttribute('aria-expanded', String(open));
+      button.textContent = open ? 'Hide lyrics ↑' : 'Read lyrics ↓';
+    });
+  });
+</script>
 </body>
 </html>

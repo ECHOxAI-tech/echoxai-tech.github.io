@@ -3,6 +3,12 @@
 .tdh-skip:focus{left:.5rem;top:.5rem}
 a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid #d4a93e;outline-offset:3px}
 main:focus{outline:none}
+/* Shared readable-text and footer rules, applied after each page's local styles. */
+footer{background:#080806!important}
+footer .footer-copy,footer .footer-links a{color:#d4cfc4!important}
+main :is(p,li) a{ text-decoration:underline; text-decoration-thickness:.08em; text-underline-offset:.14em; }
+.inquiry-desc a,.section-desc a,.statement a{ text-decoration:underline!important; text-decoration-thickness:.08em!important; text-underline-offset:.14em; }
+.disclaimer{color:#8f8a82!important;opacity:1!important}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }

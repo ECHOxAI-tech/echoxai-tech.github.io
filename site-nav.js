@@ -43,27 +43,4 @@
     });
   });
 
-  window.toggleTrack = function toggleTrack(id) {
-    const body = document.getElementById(id);
-    const toggle = document.getElementById(`${id}-toggle`);
-    if (!body) return;
-    const open = body.classList.toggle('open');
-    const header = body.previousElementSibling;
-    if (header) header.setAttribute('aria-expanded', String(open));
-    if (toggle) toggle.textContent = open ? 'Close lyrics ↑' : 'Read lyrics ↓';
-  };
-
-  document.querySelectorAll('.track-header').forEach(header => {
-    const body = header.nextElementSibling;
-    header.tabIndex = 0;
-    header.setAttribute('role', 'button');
-    header.setAttribute('aria-expanded', body && body.classList.contains('open') ? 'true' : 'false');
-    if (body && body.id) header.setAttribute('aria-controls', body.id);
-    header.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        header.click();
-      }
-    });
-  });
 })();

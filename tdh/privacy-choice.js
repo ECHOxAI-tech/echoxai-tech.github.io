@@ -115,11 +115,17 @@
       if (!payload) return Promise.resolve(false);
       var sentKey = 'tdh_research_sent_t' + tool, month = new Date().toISOString().slice(0, 7);
       if (localStorage.getItem(sentKey) === month) return Promise.resolve(false); /* one per tool per device per month */
-      localStorage.setItem(sentKey, month);
       return originalFetch(RESEARCH_ENDPOINT.replace(/\/$/, '') + '/research', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
         credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: true
-      }).then(function (r) { return r.ok; }, function () { return false; });
+      }).then(function (r) {
+        /* A network or service failure must remain retryable; only an acknowledged
+           contribution consumes this tool's once-per-month allowance. */
+        if (r.ok) {
+          try { localStorage.setItem(sentKey, month); } catch (error) { /* storage unavailable: retry is safer than silence */ }
+        }
+        return r.ok;
+      }, function () { return false; });
     } catch (error) { return Promise.resolve(false); }
   }
 

@@ -129,6 +129,14 @@
 @media (max-width: 600px) {
   .tdh-choice-grid { grid-template-columns: 1fr; }
   .tdh-privacy-panel { padding: 1.25rem; }
+  /* Keep this persistent control clear of the home indicator and as unobtrusive
+     as possible over narrow result and information pages. */
+  .tdh-privacy-settings {
+    right: max(0.5rem, env(safe-area-inset-right));
+    bottom: max(0.5rem, env(safe-area-inset-bottom));
+    padding: 0.4rem 0.55rem;
+    font-size: 0.44rem;
+  }
 }
 
 .tdh-choice-link{background:none;border:0;padding:0;font:inherit;color:var(--tdh-choice-gold);text-decoration:underline;cursor:pointer}
