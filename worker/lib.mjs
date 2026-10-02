@@ -4,7 +4,7 @@ export const ORIGINS = ['https://echoxstudios.art', 'https://www.echoxstudios.ar
 
 // 6 = legacy codes still in circulation; 12 = current generation (unambiguous 32-char alphabet).
 export const CODE_RE = /^(?:[A-HJ-NP-Z2-9]{6}|[A-HJ-NP-Z2-9]{12})$/;
-export const TOOL_RE = /^tdh_t[1-7]_$/;
+export const TOOL_RE = /^t[1-7]$/;
 
 export function cors(req, extra = {}) {
   const origin = req.headers.get('Origin');

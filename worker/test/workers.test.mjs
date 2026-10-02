@@ -34,34 +34,34 @@ const PROFILES = kv();
 const penv = { PROFILES };
 const consent = { consentAt: '2026-10-02T10:00:00Z', consentVersion: '2026-07-15' };
 await t('profile: rejects bad code, bad tool, missing consent', async () => {
-  for (const b of [{ code: 'abc', tool: 'tdh_t1_', data: {}, privacy: consent }, { code: 'ABCD23', tool: 'x', data: {}, privacy: consent }, { code: 'ABCD23', tool: 'tdh_t1_', data: {} }]) {
+  for (const b of [{ code: 'abc', tool: 't1', data: {}, privacy: consent }, { code: 'ABCD23', tool: 'x', data: {}, privacy: consent }, { code: 'ABCD23', tool: 't1', data: {} }]) {
     const r = await profile.fetch(req('/profile', 'POST', b), penv); assert.ok([400, 403].includes(r.status));
   }
 });
 await t('profile: legacy 6-char and new 12-char codes round-trip', async () => {
   for (const code of ['ABCD23', 'ABCDEFGH2345']) {
-    assert.equal((await profile.fetch(req('/profile', 'POST', { code, tool: 'tdh_t1_', data: { a: 1 }, privacy: consent }), penv)).status, 200);
-    const g = await (await profile.fetch(req(`/profile?code=${code}&tool=tdh_t1_`), penv)).json();
+    assert.equal((await profile.fetch(req('/profile', 'POST', { code, tool: 't1', data: { a: 1 }, privacy: consent }), penv)).status, 200);
+    const g = await (await profile.fetch(req(`/profile?code=${code}&tool=t1`), penv)).json();
     assert.deepEqual(g.data, { a: 1 });
   }
 });
 await t('profile: ambiguous characters (0 O 1 I) are invalid', async () => {
-  const r = await profile.fetch(req('/profile?code=ABCD0O&tool=tdh_t1_'), penv); assert.equal(r.status, 404);
+  const r = await profile.fetch(req('/profile?code=ABCD0O&tool=t1'), penv); assert.equal(r.status, 404);
 });
 await t('profile: DELETE removes the record', async () => {
-  assert.equal((await profile.fetch(req('/profile?code=ABCD23&tool=tdh_t1_', 'DELETE'), penv)).status, 200);
-  assert.equal((await profile.fetch(req('/profile?code=ABCD23&tool=tdh_t1_'), penv)).status, 404);
+  assert.equal((await profile.fetch(req('/profile?code=ABCD23&tool=t1', 'DELETE'), penv)).status, 200);
+  assert.equal((await profile.fetch(req('/profile?code=ABCD23&tool=t1'), penv)).status, 404);
 });
 await t('profile: oversized payload rejected', async () => {
-  const r = await profile.fetch(req('/profile', 'POST', { code: 'ABCD23', tool: 'tdh_t1_', data: { x: 'a'.repeat(40000) }, privacy: consent }), penv);
+  const r = await profile.fetch(req('/profile', 'POST', { code: 'ABCD23', tool: 't1', data: { x: 'a'.repeat(40000) }, privacy: consent }), penv);
   assert.equal(r.status, 413);
 });
 await t('profile: rate limiter is honoured', async () => {
-  const r = await profile.fetch(req('/profile?code=ABCD23&tool=tdh_t1_'), { ...penv, PROFILE_READ_LIMITER: { limit: async () => ({ success: false }) } });
+  const r = await profile.fetch(req('/profile?code=ABCD23&tool=t1'), { ...penv, PROFILE_READ_LIMITER: { limit: async () => ({ success: false }) } });
   assert.equal(r.status, 429);
 });
 await t('profile: CORS never reflects foreign origins', async () => {
-  const r = await profile.fetch(req('/profile?code=ABCD23&tool=tdh_t1_', 'GET', undefined, { Origin: 'https://evil.example' }), penv);
+  const r = await profile.fetch(req('/profile?code=ABCD23&tool=t1', 'GET', undefined, { Origin: 'https://evil.example' }), penv);
   assert.equal(r.headers.get('Access-Control-Allow-Origin'), ORIGIN);
 });
 

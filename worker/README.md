@@ -1,4 +1,4 @@
-# TDH workers (reference implementations, not yet deployed)
+# TDH workers (profile service deployed 2026-10-02; research service not deployed)
 
 Two small Cloudflare Workers that replace and extend the current profile service.
 

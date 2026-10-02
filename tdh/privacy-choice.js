@@ -2,14 +2,16 @@
   'use strict';
 
   var WORKER = 'https://tdh-email.inbox-fde.workers.dev';
+  /* Profile storage lives in its own hardened service; the original service is only read for legacy 6-character codes. */
+  var PROFILE_SERVICE = 'https://tdh-profile.inbox-fde.workers.dev';
   var MODE_KEY = 'tdh_storage_mode';
   var AGE_KEY = 'tdh_adult_confirmed';
   var CONSENT_KEY = 'tdh_remote_consent_at';
   var CONSENT_VERSION = '2026-07-15';
   var originalFetch = window.fetch.bind(window);
 
-  /* Retrieval-code length. Keep at 6 until worker/profile.mjs (12-char support) is deployed, then set to 12. */
-  var CODE_LENGTH = 6;
+  /* Retrieval-code length. Generation uses 12 characters (worker/profile.mjs deployed); 6-character legacy codes remain readable. */
+  var CODE_LENGTH = 12;
 
   /* Optional anonymous research contribution (docs/RESEARCH_PROTOCOL.md). Disabled until BOTH values are set,
      which happens only after ethics approval and deployment of worker/research.mjs. */
@@ -58,6 +60,14 @@
           /* Preserve the original request if its body is not JSON. */
         }
       }
+    }
+
+    if (url.indexOf(WORKER + '/profile') === 0) {
+      var target = PROFILE_SERVICE + url.slice(WORKER.length);
+      var legacy = method === 'GET' && /[?&]code=[A-Za-z0-9]{6}(&|$)/.test(url);
+      var next = originalFetch(target, options);
+      if (!legacy) return next;
+      return next.then(function (res) { return res.ok ? res : originalFetch(input, options); }, function () { return originalFetch(input, options); });
     }
 
     return originalFetch(input, options);
