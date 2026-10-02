@@ -131,14 +131,14 @@ await t('email: origin, configuration, delivery and daily cap', async () => {
   globalThis.fetch = async (u, o) => { sentBody = JSON.parse(o.body); return new Response('{}', { status: 201 }); };
   try {
     const mreq = (body, headers) => req('/', 'POST', body, headers);
-    const env = { BREVO_API_KEY: 'k', SENDER_EMAIL: 'inbox@echoxstudios.art', EMAIL_DAILY: kv() };
+    const env = { BREVO_API_KEY: 'k', SENDER_EMAIL: 'tdh@echoxstudios.art', EMAIL_DAILY: kv() };
     assert.equal((await email.fetch(mreq(mail(), { Origin: 'https://evil.example' }), env)).status, 403);
     assert.equal((await email.fetch(mreq(mail()), {})).status, 503);
     assert.equal((await email.fetch(mreq(mail({ subject: 'x' })), env)).status, 400);
     assert.equal((await email.fetch(req('/stats'), env)).status, 404);
     assert.equal((await email.fetch(mreq(mail()), env)).status, 200);
     assert.equal(sentBody.to[0].email, 'reader@example.org');
-    assert.equal(sentBody.sender.email, 'inbox@echoxstudios.art');
+    assert.equal(sentBody.sender.email, 'tdh@echoxstudios.art');
     const stuffed = { ...env, EMAIL_DAILY: kv() }; await stuffed.EMAIL_DAILY.put('n' + new Date().toISOString().slice(0, 10), '300');
     assert.equal((await email.fetch(mreq(mail()), stuffed)).status, 429);
   } finally { globalThis.fetch = real; }
