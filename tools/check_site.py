@@ -133,6 +133,9 @@ for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
 for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
     if re.search(r"fonts\.(googleapis|gstatic)\.com", read(path)):
         errors.append(f"{path}: loads fonts from a third party; use assets/fonts/fonts.css")
+for _pg in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    if "fonts.css" in open(_pg, encoding="utf-8").read() and "a11y.css" not in open(_pg, encoding="utf-8").read():
+        errors.append(f"{_pg}: missing assets/a11y.css (focus and reduced motion)")
 if not os.path.exists("assets/fonts/fonts.css"):
     errors.append("missing assets/fonts/fonts.css")
 
