@@ -6,7 +6,7 @@
   var PROFILE_SERVICE = 'https://tdh-profile.inbox-fde.workers.dev';
   /* E-mail delivery: the hardened service (worker/email.mjs). Set only after its Brevo secret is configured; until then
      the original service keeps delivering. */
-  var EMAIL_SERVICE = '';
+  var EMAIL_SERVICE = 'https://tdh-mail.inbox-fde.workers.dev';
   var MODE_KEY = 'tdh_storage_mode';
   var AGE_KEY = 'tdh_adult_confirmed';
   var CONSENT_KEY = 'tdh_remote_consent_at';

@@ -23,7 +23,7 @@ await win.fetch(OLD + '/profile?code=ABCD23&tool=t1');
 assert.equal(calls.length, n + 2, 'legacy 6-character read falls back to the old service');
 assert.ok(calls.at(-1)[0].startsWith(OLD + '/profile'));
 await win.fetch(OLD, { method: 'POST', body: '{}' });
-assert.equal(calls.at(-1)[0], OLD, 'e-mail endpoint is untouched');
+assert.equal(calls.at(-1)[0], 'https://tdh-mail.inbox-fde.workers.dev', 'e-mail goes to the hardened service');
 // research counters: sent once per tool per month, only after the terms are accepted, never by automation
 const RES = 'https://tdh-research.inbox-fde.workers.dev/research';
 const sent = () => calls.filter(c => c[0] === RES).length;
