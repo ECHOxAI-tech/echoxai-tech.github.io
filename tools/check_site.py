@@ -99,14 +99,18 @@ elif endpoint.group(1):
     for tp in glob.glob("tdh/tool-*.html"):
         if endpoint.group(1).replace("https://", "") not in read(tp) and "tool-5" not in tp and "tool-7" not in tp:
             errors.append(f"{tp}: CSP connect-src is missing the research endpoint")
-if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
-    errors.append("worker tests fail")
-if subprocess.run(["node", "tests/scoring.test.mjs"], capture_output=True).returncode:
-    errors.append("tool scoring tests fail (node tests/scoring.test.mjs)")
-if subprocess.run(["node", "tests/routing.test.mjs"], capture_output=True).returncode:
-    errors.append("profile routing tests fail (node tests/routing.test.mjs)")
-if subprocess.run(["node", "tests/smoke.mjs"], capture_output=True).returncode:
-    errors.append("browser smoke test fails (node tests/smoke.mjs)")
+# The runtime suites are run (and reported) individually by tests/run-all.mjs; TDH_STATIC_ONLY=1 skips them here.
+if not os.environ.get("TDH_STATIC_ONLY"):
+    if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
+        errors.append("worker tests fail")
+    if subprocess.run(["node", "tests/scoring.test.mjs"], capture_output=True).returncode:
+        errors.append("tool scoring tests fail (node tests/scoring.test.mjs)")
+    if subprocess.run(["node", "tests/routing.test.mjs"], capture_output=True).returncode:
+        errors.append("profile routing tests fail (node tests/routing.test.mjs)")
+    if subprocess.run(["node", "tests/smoke.mjs"], capture_output=True).returncode:
+        errors.append("browser smoke test fails (node tests/smoke.mjs)")
+    if subprocess.run(["node", "tests/e2e-research.mjs"], capture_output=True).returncode:
+        errors.append("research end-to-end test fails (node tests/e2e-research.mjs)")
 for required in ["tdh/research.html", "tdh/system.html", "tdh/info-sheet.html", "docs/DPIA.md", "docs/RESEARCH_PROTOCOL.md",
                  ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf", "aniara-the-doors-to-the-stars.html", "assets/pdfs/Aniara_The_Doors_to_the_Stars_sample.pdf", "assets/brand/aniara-emblem.png", "assets/brand/echox-artist-mark.svg", "assets/brand/echox-artist-mark-onblack.svg", "about-echoxstudios.html"]:
     if not os.path.exists(required):

@@ -8,7 +8,7 @@ import path from 'node:path';
 import os from 'node:os';
 import axe from 'axe-core';
 
-const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(p => fs.existsSync(p));
+const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/opt/pw-browsers/chromium'].find(p => fs.existsSync(p));
 if (!CHROME) { console.log('a11y test skipped: Chrome not found'); process.exit(0); }
 
 const root = path.resolve(decodeURIComponent(new URL('..', import.meta.url).pathname));
@@ -22,7 +22,7 @@ const server = http.createServer((q, r) => {
 
 const port = server.address().port;
 const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tdh-axe-'));
-const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--remote-debugging-port=0', `--user-data-dir=${profileDir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--remote-debugging-port=0', `--user-data-dir=${profileDir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
 const wsUrl = await new Promise(resolve => {
   let buffer = '';
   chrome.stderr.on('data', data => { buffer += data; const found = buffer.match(/ws:\/\/\S+/); if (found) resolve(found[0]); });

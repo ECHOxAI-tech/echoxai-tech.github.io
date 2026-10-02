@@ -517,6 +517,12 @@
   <div class="distinction" id="distinction-text"></div>
 
   <hr class="rule">
+  <p class="section-lbl">Your retrieval code</p>
+  <div class="code-box" id="code-box" role="status" aria-label="Your retrieval code"></div>
+  <p class="code-hint">Keep this code. Enter it on the profile page to reopen this result, build a combined profile or compare with a partner.</p>
+
+
+  <hr class="rule">
   <p class="section-lbl">Email my result</p>
   <p class="code-hint">Enter your email to receive your full profile and a link back to this page.</p>
   <div class="send-row">
@@ -648,6 +654,11 @@ async function saveToProfile(code, tool, obj) {
 }
 
 function genCode() {
+  // Reopening a stored result by its code (this device, or fetched by result.html) keeps that code; no new copy is minted.
+  try {
+    var urlCode = (new URLSearchParams(location.search).get('code') || '').toUpperCase();
+    if ((urlCode.length === 6 || urlCode.length === 12) && localStorage.getItem('tdh_t3_' + urlCode)) { localStorage.setItem('tdh_code_t3', urlCode); return urlCode; }
+  } catch(e) {}
   // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
     var existing = localStorage.getItem('tdh_code_t3');
@@ -1025,6 +1036,7 @@ function loadFromURLParams() {
     const a = parseInt(p.get('a')), b = parseInt(p.get('b')),
           cc = parseInt(p.get('c')), d = parseInt(p.get('d'));
     if ([a,b,cc,d].every(n => !isNaN(n) && n >= 0 && n <= 100)) {
+      window.__tdhSharedView = true; /* a friend's result opened from a link is never contributed to research */
       return { A:a, B:b, C:cc, D:d };
     }
   } catch(x) {}

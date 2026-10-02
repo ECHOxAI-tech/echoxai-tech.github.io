@@ -34,8 +34,8 @@
 <p class="msg" id="msg">Looking up your result&hellip;</p>
 <p class="code-display" id="code-el"></p>
 <p class="err" id="err" style="display:none">
-  No result found for this code on this device.<br>
-  Results are stored locally — they can only be retrieved on the device that saved them.<br><br>
+  No result found for this code.<br>
+  Results are kept on the device that saved them, and are retrievable from other devices only if cross-device storage was chosen when the result was saved. Check the code and try again.<br><br>
   <a href="./index.html">&larr; Return to the tool suite</a>
 </p>
 <script>
@@ -62,16 +62,35 @@ const TOOLS = [
 
   try {
     for (const tool of TOOLS) {
-      if (localStorage.getItem(tool.prefix + norm)) {
+      const raw = localStorage.getItem(tool.prefix + norm);
+      if (raw) {
         document.getElementById('msg').textContent = 'Result found. Redirecting\u2026';
         window.location.replace(tool.path + '?code=' + norm);
         return;
       }
     }
-  } catch(e) {}
+  } catch(e) { /* storage blocked: fall through to the remote lookup */ }
 
-  document.getElementById('msg').textContent = 'Code not found on this device.';
-  document.getElementById('err').style.display = '';
+  // Not on this device: look the code up in the profile service (possession of the code is the credential).
+  // A found record is cached locally so the tool page can open it; a record that is not valid JSON is ignored.
+  document.getElementById('msg').textContent = 'Looking for this code\u2026';
+  const SERVICE = 'https://tdh-profile.inbox-fde.workers.dev/profile';
+  Promise.all(TOOLS.map(function (tool, index) {
+    return fetch(SERVICE + '?code=' + encodeURIComponent(norm) + '&tool=t' + (index + 1))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (body) { return body && body.found && body.data && typeof body.data === 'object' ? { tool: tool, data: body.data } : null; })
+      .catch(function () { return null; });
+  })).then(function (hits) {
+    const hit = hits.find(Boolean);
+    if (hit) {
+      try { localStorage.setItem(hit.tool.prefix + norm, JSON.stringify(hit.data)); } catch (e) { /* the tool page will say storage is blocked */ }
+      document.getElementById('msg').textContent = 'Result found. Redirecting\u2026';
+      window.location.replace(hit.tool.path + '?code=' + norm);
+      return;
+    }
+    document.getElementById('msg').textContent = 'Code not found.';
+    document.getElementById('err').style.display = '';
+  });
 })();
 </script>
 <script src="../brand-mark.js?v=20261002t"></script>

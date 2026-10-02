@@ -3,7 +3,7 @@
 // Needs Chrome; skips with a notice when it is not installed. Run: node tests/smoke.mjs
 import { spawn } from 'node:child_process';
 import http from 'node:http'; import fs from 'node:fs'; import path from 'node:path'; import os from 'node:os';
-const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(p => fs.existsSync(p));
+const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/opt/pw-browsers/chromium'].find(p => fs.existsSync(p));
 if (!CHROME) { console.log('smoke test skipped: Chrome not found'); process.exit(0); }
 const root = path.resolve(decodeURIComponent(new URL('..', import.meta.url).pathname));
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png', '.json': 'application/json' };
@@ -14,7 +14,7 @@ const server = http.createServer((q, r) => {
 }).listen(0);
 const port = server.address().port;
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'smoke-'));
-const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--remote-debugging-port=0', `--user-data-dir=${dir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--remote-debugging-port=0', `--user-data-dir=${dir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
 const wsUrl = await new Promise(res => { let b = ''; chrome.stderr.on('data', d => { b += d; const m = b.match(/ws:\/\/\S+/); if (m) res(m[0]); }); });
 const browser = new WebSocket(wsUrl); await new Promise(r => (browser.onopen = r));
 let id = 0; const pend = new Map(); const listeners = [];

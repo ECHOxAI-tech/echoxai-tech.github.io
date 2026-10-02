@@ -204,6 +204,11 @@ var PROTOCOLS = [
 var selected = {};
 
 function genCode() {
+  // Reopening a stored result by its code (this device, or fetched by result.html) keeps that code; no new copy is minted.
+  try {
+    var urlCode = (new URLSearchParams(location.search).get('code') || '').toUpperCase();
+    if ((urlCode.length === 6 || urlCode.length === 12) && localStorage.getItem('tdh_t7_' + urlCode)) { localStorage.setItem('tdh_code_t7', urlCode); return urlCode; }
+  } catch(e) {}
   try {
     var existing = localStorage.getItem('tdh_code_t7');
     if (existing && (existing.length === 6 || existing.length === 12)) return existing;
@@ -258,40 +263,56 @@ document.getElementById('btn-generate').addEventListener('click', async function
   var code = genCode();
   window.savedCode = code;
 
-  // Render manifesto
-  var out = document.getElementById('manifesto-output');
-  out.innerHTML = '<h3>The Dark Hierarchy — Liturgical Matrix</h3>'
-    + '<p style="font-family:\'Inconsolata\',monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:1.2rem;text-transform:uppercase">Codex Protocol Reference: ' + code + '</p>';
-
   var chosenItems = [];
   PROTOCOLS.forEach(function(group) {
     group.items.forEach(function(item) {
-      if (selected[item.id]) {
-        chosenItems.push({ domain: group.domain, title: item.title, text: item.text, id: item.id });
-        out.innerHTML += '<div class="manifesto-rule">'
-          + '<span class="rule-domain">' + group.domain + ' · ' + item.title + '</span>'
-          + '<p class="rule-clause">' + item.text + '</p>'
-          + '</div>';
-      }
+      if (selected[item.id]) chosenItems.push({ domain: group.domain, title: item.title, text: item.text, id: item.id });
     });
   });
+  renderMatrix(code, chosenItems);
+  try { var u = new URL(window.location.href); u.searchParams.set('code', code); history.replaceState(null, '', u.toString()); } catch(e) {}
 
-  document.getElementById('res-code').textContent = code;
-  document.getElementById('view-builder').style.display = 'none';
-  document.getElementById('view-results').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // Store
-  var payload = { code: code, tool: 'tdh_t7_', data: { chosen: chosenItems, ts: Date.now() } };
-  try { localStorage.setItem('tdh_t7_' + code, JSON.stringify(payload)); } catch(e) {}
+  // Store. The remote service expects tool id "t7" and the record as {chosen, ts}.
+  var record = { chosen: chosenItems, ts: Date.now() };
+  try { localStorage.setItem('tdh_t7_' + code, JSON.stringify({ code: code, tool: 't7', data: record })); } catch(e) {}
   try {
     await fetch('https://tdh-email.inbox-fde.workers.dev/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ code: code, tool: 't7', data: record })
     });
   } catch(e) {}
 });
+
+function renderMatrix(code, chosenItems) {
+  var out = document.getElementById('manifesto-output');
+  out.innerHTML = '<h3>The Dark Hierarchy — Liturgical Matrix</h3>'
+    + '<p style="font-family:\'Inconsolata\',monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:1.2rem;text-transform:uppercase">Codex Protocol Reference: ' + code + '</p>';
+  chosenItems.forEach(function(item) {
+    out.innerHTML += '<div class="manifesto-rule">'
+      + '<span class="rule-domain">' + item.domain + ' · ' + item.title + '</span>'
+      + '<p class="rule-clause">' + item.text + '</p>'
+      + '</div>';
+  });
+  document.getElementById('res-code').textContent = code;
+  document.getElementById('view-intro').style.display = 'none';
+  document.getElementById('view-builder').style.display = 'none';
+  document.getElementById('view-results').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Reopen a stored matrix from ?code= (this device, or cached there by result.html). A damaged record is ignored.
+(function() {
+  try {
+    var code = (new URLSearchParams(window.location.search).get('code') || '').toUpperCase();
+    if (code.length !== 6 && code.length !== 12) return;
+    var stored = JSON.parse(localStorage.getItem('tdh_t7_' + code) || 'null');
+    var chosen = stored && (stored.data && stored.data.chosen || stored.chosen);
+    if (!Array.isArray(chosen) || !chosen.every(function(i) { return i && typeof i.title === 'string' && typeof i.text === 'string' && typeof i.domain === 'string'; })) return;
+    window.savedCode = code;
+    renderMatrix(code, chosen);
+  } catch(e) { /* corrupt or unavailable storage: stay on the intro */ }
+}());
 
 // Email handling
 (function attachSend() {

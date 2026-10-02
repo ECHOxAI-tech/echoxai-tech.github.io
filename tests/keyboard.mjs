@@ -7,7 +7,7 @@ import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
 
-const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium'].find(file => fs.existsSync(file));
+const CHROME = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/opt/pw-browsers/chromium'].find(file => fs.existsSync(file));
 if (!CHROME) { console.log('keyboard test skipped: Chrome not found'); process.exit(0); }
 const root = path.resolve(decodeURIComponent(new URL('..', import.meta.url).pathname));
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.png': 'image/png' };
@@ -18,7 +18,7 @@ const server = http.createServer((request, response) => {
 }).listen(0);
 const port = server.address().port;
 const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tdh-keyboard-'));
-const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--remote-debugging-port=0', `--user-data-dir=${profileDir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--remote-debugging-port=0', `--user-data-dir=${profileDir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
 const wsUrl = await new Promise(resolve => { let buffer = ''; chrome.stderr.on('data', data => { buffer += data; const found = buffer.match(/ws:\/\/\S+/); if (found) resolve(found[0]); }); });
 const browser = new WebSocket(wsUrl); await new Promise(resolve => { browser.onopen = resolve; });
 let id = 0; const pending = new Map();

@@ -1,4 +1,4 @@
-# TDH workers (profile service deployed 2026-10-02; research service not deployed)
+# TDH workers (profile, research and e-mail services all deployed and live)
 
 Two small Cloudflare Workers that replace and extend the current profile service.
 
@@ -19,14 +19,16 @@ The e-mail delivery endpoint (`POST /`) is **not** part of these files; it remai
 4. Set `CODE_LENGTH = 12` in `tdh/privacy-choice.js`. Existing 6-character codes continue to work and expire after 24 months from their last save.
 5. Update privacy page § 6 to state the 24-month expiry.
 
-## Deploy the research service (only after ethics approval)
+## Deploy the research service (live since 2026-10-03)
+
+Phase 1 collects anonymous counters only (see `docs/DATA_FACTS.md`). Item-level or linked collection would need ethics approval and is not part of this service.
 
 1. `wrangler d1 create tdh-research`; `wrangler d1 execute tdh-research --file worker/schema.sql`.
 2. Bind it as `RESEARCH_DB`; add a `RESEARCH_LIMITER` rate-limit binding.
-3. Set secrets/vars `ETHICS_APPROVAL_REF` and `RESEARCH_ENABLED=1`.
-4. In `tdh/privacy-choice.js` set `RESEARCH_ENDPOINT` and `ETHICS_APPROVAL_REF` to the same reference. The consent choice appears only when both are set.
+3. Set `RESEARCH_ENABLED=1` (`ETHICS_APPROVAL_REF` is needed only for item-level research).
+4. In `tdh/privacy-choice.js` set `RESEARCH_ENDPOINT`. The terms of use appear in the privacy panel whenever it is set.
 5. Add the research endpoint's origin to the `connect-src` directive of the Content-Security-Policy meta tag in `tdh/*.html`, or the browser will block the contribution.
-6. Update `tdh/research.html` and `privacy.html` from "switched off" to "active", and publish the data dictionary.
+6. Keep `tdh/research.html`, `privacy.html` and `docs/` in line with `docs/DATA_FACTS.md`; `tests/wording.test.mjs` fails on stale wording.
 
 Kill switch: unset `RESEARCH_ENABLED`; the endpoint returns 503.
 

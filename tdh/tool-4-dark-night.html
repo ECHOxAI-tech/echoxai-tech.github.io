@@ -464,6 +464,12 @@
   </div>
 
   <hr class="rule">
+  <p class="section-lbl">Your retrieval code</p>
+  <div class="code-box" id="code-box" role="status" aria-label="Your retrieval code"></div>
+  <p class="code-hint">Keep this code. Enter it on the profile page to reopen this result, build a combined profile or compare with a partner.</p>
+
+
+  <hr class="rule">
   <p class="section-lbl">Share your result</p>
   <p class="code-hint">This link opens your exact result on any device — share it anywhere.</p>
   <div class="share-url-box"><span class="share-url-text" id="share-url-text">&nbsp;</span><button class="btn-copy" id="btn-copy-url" onclick="copyShareURL()">Copy link</button></div>
@@ -802,10 +808,11 @@ function showResults(diag) {
   }
 
   window.scrollTo({ top: 0 });
-  document.getElementById('btn-retake').addEventListener('click', () => {
+  const retake = document.getElementById('btn-retake'); /* the result screen currently has no retake button */
+  if (retake) retake.addEventListener('click', () => {
     vr.style.display = 'none';
     responses = {}; savedCode = null; current = 0;
-    resetSaveUI();
+    if (typeof resetSaveUI === 'function') resetSaveUI();
     document.getElementById('view-gate').style.display = 'block';
     window.scrollTo({ top: 0 });
   });
@@ -860,6 +867,11 @@ function copyShareURL() {
 }
 
 function genCode() {
+  // Reopening a stored result by its code (this device, or fetched by result.html) keeps that code; no new copy is minted.
+  try {
+    var urlCode = (new URLSearchParams(location.search).get('code') || '').toUpperCase();
+    if ((urlCode.length === 6 || urlCode.length === 12) && localStorage.getItem('tdh_t4_' + urlCode)) { localStorage.setItem('tdh_code_t4', urlCode); return urlCode; }
+  } catch(e) {}
   // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
     var existing = localStorage.getItem('tdh_code_t4');

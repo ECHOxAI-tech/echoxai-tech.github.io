@@ -258,6 +258,12 @@
   </div>
 
   <hr class="rule">
+  <p class="section-lbl">Your retrieval code</p>
+  <div class="code-box" id="code-box" role="status" aria-label="Your retrieval code"></div>
+  <p class="code-hint">Keep this code. Enter it on the profile page to reopen this result, build a combined profile or compare with a partner.</p>
+
+
+  <hr class="rule">
   <p class="section-lbl">Email my result</p>
   <p class="code-hint">Enter your email to receive your full result and a link back to this page.</p>
   <div class="send-row">
@@ -1091,7 +1097,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
         requestAnimationFrame(()=>{
           document.getElementById('code-box').textContent=savedCode;
           document.getElementById('code-box').classList.add('show');
-  document.getElementById('email-section').style.display = 'block';
+  var _es = document.getElementById('email-section'); if (_es) _es.style.display = 'block'; /* legacy element; the e-mail form is always visible */
         });
         return;
       }

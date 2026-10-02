@@ -4,3 +4,4 @@ tmp/
 node_modules/
 
 .wrangler/
+test-results/
