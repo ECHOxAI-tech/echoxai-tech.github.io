@@ -24,7 +24,7 @@ Special-category data (sexual life) is plausible in results. Adults only (18+ co
 
 | Risk | Likelihood / severity | Mitigation | Residual |
 | :-- | :-- | :-- | :-- |
-| Guessing a retrieval code to read someone's result | Medium / high | 12-character codes from a crypto RNG (after worker deployment); rate limiting on reads; legacy 6-char codes expire; ambiguous characters excluded | Low once 12-char codes are live |
+| Guessing a retrieval code to read someone's result | Medium / high | 12-character codes from a crypto RNG (deployed 2026-10-02); rate limiting on reads; legacy 6-char codes expire; ambiguous characters excluded | Low once 12-char codes are live |
 | Re-identification from research counters | Very low / high | No per-submission rows; 10-point buckets; month granularity; suppression below 30 | Very low |
 | Skewed or self-selected sample misread as prevalence | High / medium | Mandatory "non-representative" labelling; no prevalence claims | Low |
 | Contributor cannot withdraw a past contribution | Certain / low | Disclosed in the consent text before ticking | Accepted, disclosed |
