@@ -1,0 +1,12 @@
+/* Shared accessibility layer for the TDH Echo-System. */
+.tdh-skip{position:absolute;left:-9999px;top:0;z-index:10001;padding:.6rem 1rem;background:#d4a93e;color:#080806;font:500 .85rem 'Inconsolata',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.tdh-skip:focus{left:.5rem;top:.5rem}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid #d4a93e;outline-offset:3px}
+main:focus{outline:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+@media (forced-colors:active){
+  button,.btn-primary,.btn-next,.btn-back,.btn-reveal,.lbtn{border:1px solid ButtonText}
+  .lbtn.sel,[aria-pressed="true"]{outline:2px solid Highlight}
+}

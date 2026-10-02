@@ -6,6 +6,7 @@
 <title>Dark Night Diagnostic — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<link rel="stylesheet" href="a11y.css?v=20261002">
 <script src="privacy-choice.js?v=20261002"></script>
 <meta name="description" content="A structured reflection tool for locating a dark-night experience within The Dark Hierarchy framework."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -864,7 +865,7 @@ function genCode() {
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t4', code); } catch(e) {}
   return code;
 }
@@ -976,6 +977,7 @@ function genCode() {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20260720a"></script>
+<script src="../brand-mark.js?v=20261002x"></script>
+<script src="a11y.js?v=20261002"></script>
 </body>
 </html>

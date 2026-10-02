@@ -6,6 +6,7 @@
 <title>Protocol Designer — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<link rel="stylesheet" href="a11y.css?v=20261002">
 <script src="privacy-choice.js?v=20261002"></script>
 <meta name="description" content="Design a personal practice protocol using The Dark Hierarchy interactive framework."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1060,7 +1061,7 @@ document.getElementById('btn-print').addEventListener('click', () => window.prin
 
 function genCode() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s='';
-  for (let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  for (let i=0;i<6;i++) s+=c[crypto.getRandomValues(new Uint8Array(1))[0]%c.length];
   return s;
 }
 
@@ -1174,6 +1175,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20260720a"></script>
+<script src="../brand-mark.js?v=20261002x"></script>
+<script src="a11y.js?v=20261002"></script>
 </body>
 </html>

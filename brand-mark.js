@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-plain-x{text-transform:none}.echox-mark-x{display:inline-block;width:clamp(6px,.5em,10px);height:clamp(6px,.5em,10px);vertical-align:1px;margin:0 .5px;overflow:visible;white-space:nowrap;line-height:1;letter-spacing:0;text-transform:none}.echox-mark-x svg{display:block;width:100%;height:100%;overflow:visible}.echox-mark-x line{stroke:currentColor;stroke-width:1.65;stroke-linecap:square;vector-effect:non-scaling-stroke}';
+  style.textContent = '.echox-plain-x,.echox-mark-x{text-transform:none;letter-spacing:0;font-weight:inherit;font-style:normal}.echox-mark-x{display:inline-block;margin:0 .04em;font-size:.92em;line-height:1;vertical-align:.02em}';
   document.head.appendChild(style);
 
   const applyMarks = root => {
@@ -21,20 +21,7 @@
           const compound = /^[A-Za-z0-9]/.test(parts[index + 1] || '');
           mark.className = compound ? 'echox-mark-x' : 'echox-plain-x';
           mark.setAttribute('aria-label', 'x');
-          if (compound) {
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('viewBox', '0 0 12 12');
-            svg.setAttribute('aria-hidden', 'true');
-            [[1.5, 1.5, 10.5, 10.5], [10.5, 1.5, 1.5, 10.5]].forEach(points => {
-              const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-              line.setAttribute('x1', points[0]); line.setAttribute('y1', points[1]);
-              line.setAttribute('x2', points[2]); line.setAttribute('y2', points[3]);
-              svg.append(line);
-            });
-            mark.append(svg);
-          } else {
-            mark.textContent = 'x';
-          }
+          mark.textContent = compound ? '\u00d7' : 'x';
           fragment.append(mark);
         } else if (part) {
           fragment.append(part);

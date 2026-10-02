@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Attachment Confirmation Profile — The Dark Hierarchy</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-<link rel="stylesheet" href="privacy-choice.js?v=20261002">
+<link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<link rel="stylesheet" href="a11y.css?v=20261002">
 <script src="privacy-choice.js?v=20261002"></script>
 <meta name="description" content="Explore sensitivity, direction, history, and specificity of confirmation through The Dark Hierarchy interactive system."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -652,7 +653,7 @@ function genCode() {
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t3', code); } catch(e) {}
   return code;
 }
@@ -1207,6 +1208,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20260720a"></script>
+<script src="../brand-mark.js?v=20261002x"></script>
+<script src="a11y.js?v=20261002"></script>
 </body>
 </html>

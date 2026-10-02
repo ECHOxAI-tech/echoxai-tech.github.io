@@ -3,93 +3,302 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Architecture of the Echo-System — The Dark Hierarchy</title>
+<title>The Dark Hierarchy — Acquisitions Briefing</title>
 <link rel="canonical" href="https://echoxstudios.art/tdh/system.html"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-<meta name="description" content="Why The Dark Hierarchy is built as an interactive system: bridging sacred philosophy, subcultural reality, and digital self-knowledge."/>
+<meta name="description" content="Acquisitions briefing for The Dark Hierarchy: a completed 381-page work of erotic philosophy and pastoral theology with a seven-instrument digital companion. For agents, editors, and programmers."/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="ECHOx"/><meta property="og:title" content="The Dark Hierarchy — Acquisitions Briefing"/><meta property="og:description" content="A completed work of erotic philosophy with a private, reader-directed digital companion. 381 pages, 67,310 words, seven instruments."/><meta property="og:url" content="https://echoxstudios.art/tdh/system.html"/>
 <link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<link rel="stylesheet" href="a11y.css?v=20261002">
 <script src="privacy-choice.js?v=20261002"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --black:#080806; --near:#0e0e0b; --off-white:#f0ece3; --bone:#d4cfc4;
+    --black:#080806; --near:#0e0e0b; --panel:#12110d; --off-white:#f0ece3; --bone:#d4cfc4;
     --gold:#d4a93e; --gold-dim:#b8963e; --text:#e2ddd2; --muted:#a09890;
-    --rule:rgba(184,150,62,0.2);
+    --rule:rgba(184,150,62,0.22); --rule-strong:rgba(212,169,62,0.5);
   }
   *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-  html { font-size:24px; background:var(--black); color:var(--text); }
-  body { font-family:'Cormorant Garamond', Georgia, serif; font-weight:300; line-height:1.75; min-height:100vh; max-width:38rem; margin:0 auto; padding:3rem 1.5rem 5rem; }
-  .back-link { font-family:'Inconsolata', monospace; font-size:0.52rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold-dim); text-decoration:none; display:inline-block; margin-bottom:2rem; }
+  html { font-size:24px; background:var(--black); color:var(--text); scroll-behavior:smooth; }
+  @media (max-width:640px) { html { font-size:22px; } }
+  body { font-family:'Cormorant Garamond', Georgia, serif; font-weight:300; line-height:1.7; min-height:100vh; }
+  .wrap { max-width:40rem; margin:0 auto; padding:0 1.5rem; }
+  .wide { max-width:60rem; margin:0 auto; padding:0 1.5rem; }
+  a { color:var(--gold); }
+
+  .back-link { display:inline-block; margin:2rem 0 0; font:400 .6rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-dim); text-decoration:none; }
   .back-link:hover { color:var(--gold); }
-  header { text-align:center; margin-bottom:2.5rem; }
-  .kicker { font-family:'Inconsolata', monospace; font-size:0.6rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); margin-bottom:0.5rem; }
-  h1 { font-family:'IM Fell English', Georgia, serif; font-size:1.8rem; color:var(--off-white); font-weight:400; line-height:1.2; }
-  .ornament { color:var(--gold); font-size:0.9rem; margin:0.6rem 0; display:block; }
-  .rule { border:none; border-top:1px solid var(--rule); margin:2.2rem 0; }
-  p { font-size:0.92rem; margin-bottom:1.4rem; color:var(--text); }
+
+  /* Hero */
+  .hero { text-align:center; padding:4rem 0 3rem; background:radial-gradient(ellipse at 50% 0%, rgba(212,169,62,.10), transparent 62%); border-bottom:1px solid var(--rule); }
+  .kicker { font:400 .6rem 'Inconsolata',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1.4rem; }
+  h1 { font:400 clamp(2.1rem,8vw,3.4rem)/1.08 'IM Fell English',Georgia,serif; letter-spacing:.06em; text-transform:uppercase; color:var(--off-white); }
+  .subtitle { font:italic 400 1.05rem/1.4 'Cormorant Garamond',Georgia,serif; color:var(--bone); margin:1rem auto 0; max-width:28rem; }
+  .byline { font:300 .6rem 'Inconsolata',monospace; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-top:1.4rem; }
+  .hero-cta { display:flex; flex-wrap:wrap; gap:.8rem; justify-content:center; margin-top:2.2rem; }
+  .btn { display:inline-block; font:500 .62rem 'Inconsolata',monospace; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; padding:.85rem 1.4rem; border:1px solid var(--gold); transition:background .2s,color .2s; cursor:pointer; background:transparent; color:var(--gold); }
+  .btn-solid { background:var(--gold); color:var(--black); }
+  .btn:hover { background:var(--off-white); border-color:var(--off-white); color:var(--black); }
+
+  /* Figures strip */
+  .figures { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--rule); }
+  @media (min-width:760px) { .figures { grid-template-columns:repeat(6,1fr); } }
+  .fig { padding:1.4rem .5rem; text-align:center; border-right:1px solid var(--rule); border-top:1px solid var(--rule); }
+  .fig:nth-child(3n) { border-right:0; }
+  @media (min-width:760px) { .fig { border-top:0; border-right:1px solid var(--rule); } .fig:nth-child(3n){ border-right:1px solid var(--rule);} .fig:last-child{ border-right:0; } }
+  .fig b { display:block; font:400 1.5rem/1.1 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .fig span { display:block; margin-top:.35rem; font:400 .55rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+
+  .stat-grid { display:grid; gap:.8rem; margin:1.2rem 0 0; }
+  @media (min-width:760px) { .stat-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat { border:1px solid var(--rule); background:var(--panel); padding:1.1rem 1rem; }
+  .stat b { display:block; font:400 1.7rem/1 'IM Fell English',Georgia,serif; color:var(--gold); }
+  .stat em { display:block; margin:.5rem 0 .35rem; font:400 .55rem 'Inconsolata',monospace; font-style:normal; letter-spacing:.14em; text-transform:uppercase; color:var(--off-white); }
+  .stat p { font-size:.78rem; line-height:1.5; margin:0; color:var(--bone); }
+  .stat sup, .note sup { font:400 .5rem 'Inconsolata',monospace; color:var(--gold-dim); }
+  .note { margin-top:1rem; font:300 .6rem/1.6 'Inconsolata',monospace; color:var(--muted); }
+  .note a { color:var(--gold-dim); }
+  .dl { display:flex; flex-wrap:wrap; gap:.8rem; align-items:center; margin-top:1.4rem; padding:1.2rem; border:1px solid var(--rule-strong); background:radial-gradient(ellipse at 0% 0%, rgba(212,169,62,.10), transparent 70%); }
+  .dl div { flex:1 1 14rem; }
+  .dl strong { display:block; font:400 1rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .dl span { font-size:.78rem; color:var(--muted); line-height:1.5; }
+
+  section { padding:3.2rem 0 0; }
+  .label { font:400 .6rem 'Inconsolata',monospace; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:.9rem; }
+  h2 { font:400 1.55rem/1.25 'IM Fell English',Georgia,serif; color:var(--off-white); margin-bottom:1.2rem; }
+  p { font-size:.92rem; margin-bottom:1.2rem; }
   p strong { color:var(--off-white); font-weight:500; }
-  p em { color:var(--bone); font-style:italic; }
-  .pitch-box { background:var(--near); border-left:3px solid var(--gold); padding:1.4rem 1.6rem; margin:2rem 0; }
-  .pitch-box h3 { font-family:'IM Fell English', Georgia, serif; font-size:1.15rem; color:var(--off-white); margin-bottom:0.6rem; }
-  .feature-grid { display:grid; gap:1.2rem; margin:2rem 0; }
-  .feature-card { border:1px solid var(--rule); padding:1.2rem; background:rgba(212,169,62,0.02); }
-  .feature-card h4 { font-family:'Inconsolata', monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:0.4rem; }
-  .feature-card p { font-size:0.85rem; margin-bottom:0; line-height:1.6; }
-  .btn-enter { display:block; text-align:center; font-family:'Inconsolata', monospace; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--black); background:var(--gold); text-decoration:none; padding:0.9rem 1.5rem; margin-top:2rem; transition:background 0.2s; }
-  .btn-enter:hover { background:var(--off-white); }
+  p em { color:var(--bone); }
+
+  .pull { margin:0; padding:2.6rem 0 0; text-align:center; }
+  .pull blockquote { font:italic 400 1.35rem/1.45 'IM Fell English',Georgia,serif; color:var(--off-white); max-width:34rem; margin:0 auto; }
+  .pull blockquote::before { content:"“"; display:block; color:var(--gold); font-size:2.4rem; line-height:1; margin-bottom:.3rem; }
+  .pull cite { display:block; margin-top:1.1rem; font:400 .58rem 'Inconsolata',monospace; font-style:normal; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+
+  .grid { display:grid; gap:1rem; margin-top:1.2rem; }
+  @media (min-width:760px) { .grid.three { grid-template-columns:repeat(3,1fr); } .grid.two { grid-template-columns:repeat(2,1fr); } }
+  .card { border:1px solid var(--rule); background:var(--panel); padding:1.3rem 1.2rem; transition:border-color .2s; }
+  .card:hover { border-color:var(--rule-strong); }
+  .card .num { font:400 .58rem 'Inconsolata',monospace; letter-spacing:.2em; color:var(--gold-dim); }
+  .card h3 { font:400 1.05rem/1.3 'IM Fell English',Georgia,serif; color:var(--off-white); margin:.4rem 0 .5rem; }
+  .card p { font-size:.8rem; line-height:1.6; margin:0; color:var(--bone); }
+
+  .comps { list-style:none; margin-top:1rem; }
+  .comps li { display:grid; gap:.2rem; padding:1rem 0; border-top:1px solid var(--rule); }
+  .comps li:last-child { border-bottom:1px solid var(--rule); }
+  .comps strong { font:400 1rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .comps span { font-size:.82rem; color:var(--bone); line-height:1.55; }
+  .houses { margin-top:1.4rem; font:400 .6rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+  .tools { list-style:none; margin-top:1rem; counter-reset:t; }
+  .tools a { display:grid; grid-template-columns:2.2rem 1fr auto; gap:.4rem .6rem; align-items:baseline; padding:.95rem 0; border-top:1px solid var(--rule); text-decoration:none; color:inherit; }
+  .tools li:last-child a { border-bottom:1px solid var(--rule); }
+  .tools .n { font:400 .6rem 'Inconsolata',monospace; color:var(--gold-dim); letter-spacing:.1em; }
+  .tools .t { font:400 .98rem 'IM Fell English',Georgia,serif; color:var(--bone); }
+  .tools .m { font:300 .55rem 'Inconsolata',monospace; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .tools a:hover .t { color:var(--off-white); }
+  .tools .d { grid-column:2 / 4; font-size:.8rem; line-height:1.5; color:var(--muted); }
+
+  .bound { border-left:3px solid var(--gold); background:var(--near); padding:1.3rem 1.5rem; margin-top:1.2rem; }
+  .bound ul { list-style:none; }
+  .bound li { font-size:.85rem; line-height:1.6; padding:.35rem 0 .35rem 1.2rem; position:relative; color:var(--bone); }
+  .bound li::before { content:"—"; position:absolute; left:0; color:var(--gold-dim); }
+
+  .package { list-style:none; margin-top:1rem; }
+  .package li { padding:.9rem 0; border-top:1px solid var(--rule); display:grid; gap:.15rem; }
+  .package li:last-child { border-bottom:1px solid var(--rule); }
+  .package strong { font:400 .98rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .package span { font-size:.8rem; color:var(--muted); line-height:1.5; }
+
+  .contact { margin-top:3.4rem; padding:2.6rem 1.5rem; text-align:center; border-top:1px solid var(--rule-strong); border-bottom:1px solid var(--rule); background:radial-gradient(ellipse at 50% 100%, rgba(212,169,62,.09), transparent 65%); }
+  .contact h2 { margin-bottom:.6rem; }
+  .contact p { max-width:28rem; margin:0 auto 1.4rem; font-size:.85rem; color:var(--bone); }
+  .addr { display:inline-block; font:400 .8rem 'Inconsolata',monospace; letter-spacing:.06em; color:var(--off-white); padding:.7rem 1rem; border:1px solid var(--rule-strong); user-select:all; }
+  .copy-note { display:block; margin-top:.7rem; font:300 .55rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); min-height:1em; }
+
+  footer { text-align:center; padding:2.4rem 1.5rem 4.5rem; font:300 .58rem 'Inconsolata',monospace; letter-spacing:.14em; color:var(--muted); }
+  footer a { color:var(--muted); }
 </style>
 </head>
 <body>
 
-<a href="./index.html" class="back-link">← Return to TDH Portal</a>
+<div class="wrap"><a href="./index.html" class="back-link">← The Echo-System</a></div>
 
-<header>
-  <p class="kicker">Curatorial &amp; Industry Briefing</p>
-  <h1>The Architecture of the Echo-System</h1>
-  <span class="ornament">✦</span>
-  <p style="font-family:'Inconsolata', monospace; font-size:0.62rem; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase;">Why The Dark Hierarchy is Built as a Dual Technology</p>
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Acquisitions Briefing · Edition v122</p>
+    <h1>The Dark Hierarchy</h1>
+    <p class="subtitle">A Metaphysics of Desire, Authority, and Bodily Custody</p>
+    <p class="byline">Echo Kronborg · Carrier of Decho</p>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#request">Request the package</a>
+      <a class="btn" href="../assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf" download>Download info sheet</a>
+    </div>
+  </div>
 </header>
 
-<div class="pitch-box">
-  <h3>The Echo-System Extends the Book into Private, Reader-Directed Reflection.</h3>
-  <p style="margin-bottom:0; font-size:0.88rem; font-style:italic; color:var(--bone);">“The book supplies the argument; the digital companion gives readers a deliberate way to return to its questions.”</p>
+<div class="figures" role="list" aria-label="The work in figures">
+  <div class="fig" role="listitem"><b>381</b><span>Pages</span></div>
+  <div class="fig" role="listitem"><b>67,310</b><span>Words</span></div>
+  <div class="fig" role="listitem"><b>5 + Coda</b><span>Books</span></div>
+  <div class="fig" role="listitem"><b>21</b><span>Movements</span></div>
+  <div class="fig" role="listitem"><b>37</b><span>Scholarly notes</span></div>
+  <div class="fig" role="listitem"><b>7</b><span>Instruments</span></div>
 </div>
 
-<p>The Echo-System begins where a fixed label ends: it gives readers a private, voluntary way to reflect on power, desire, and relational orientation through the concepts developed in <em>The Dark Hierarchy</em>.</p>
+<div class="wrap">
 
-<p>Its purpose is not to rank, type, or diagnose a person. Each instrument is a prompt for reflection inside a specific philosophical and pastoral framework; the reader remains the authority on their own experience.</p>
+  <div class="pull">
+    <blockquote>Desire is not only what you feel toward another person, but what you feel about yourself in their presence.</blockquote>
+    <cite>The book’s central claim</cite>
+  </div>
 
-<p><strong>The Dark Hierarchy</strong> fundamentally inverts this relationship:</p>
+  <section>
+    <p class="label">The book</p>
+    <h2>Complete, structured, and ready to read.</h2>
+    <p><em>The Dark Hierarchy</em> is a finished work of erotic philosophy, speculative theology, and field testimony. It challenges the Lacanian doctrine of <em>lack</em> from inside lived hierarchical practice, and argues that desire can be affirmative and structural rather than an eternal reach toward an absent object.</p>
+    <p>Written from inside the leather and hierarchical scenes of Berlin, Stockholm, and Amsterdam, it holds sustained argument, liturgy, testimony, and practical reflection in one deliberately authored structure. Its distinction is formal, not a claim to be the first serious book on its subject.</p>
+  </section>
 
-<div class="feature-grid">
-  <div class="feature-card">
-    <h4>1. Seven Connected Reflection Tools</h4>
-    <p>Seven instruments explore desire gradients, attachment, dark nights, and household practice. They are designed with local-first storage, private retrieval codes, no marketing tracking cookies, and an adult age gate. They do not claim clinical diagnosis.</p>
-  </div>
-  <div class="feature-card">
-    <h4>2. A Specific Reader Community</h4>
-    <p>The work speaks to readers in leather, kink, BDSM, and alternative relationship communities, as well as readers of philosophy, spirituality, and contemporary testimony. Its value is the unusual union of argument, liturgy, lived account, and practice.</p>
-  </div>
-  <div class="feature-card">
-    <h4>3. Reader-Directed Return Path</h4>
-    <p>Readers may reflect, keep a private result, request an email, or voluntarily share a comparison link with a partner. Each route returns to the 381-page work without treating personal reflection as a conversion metric.</p>
-  </div>
-  <div class="feature-card">
-    <h4>4. A Clear Research Boundary</h4>
-    <p>The public client does not send result statistics for analytics. Its reference overlay is a provisional framework device, not a census or research dataset. Any future empirical study would require separate consent, governance, sampling, and ethics review.</p>
+  <section>
+    <p class="label">The argument</p>
+    <h2>Four ideas an editor can hold on to.</h2>
+  </section>
+</div>
+
+<div class="wide">
+  <div class="grid two">
+    <div class="card"><span class="num">I</span><h3>The Aspirational Sexual Self</h3><p>Desire as recognition of the self one may become in another’s presence: an affirmative account set against lack.</p></div>
+    <div class="card"><span class="num">II</span><h3>The Trigger Gradient</h3><p>Four channels of response (visual, emotional, tactile, intellectual) offered as a reflective framework, not a diagnosis.</p></div>
+    <div class="card"><span class="num">III</span><h3>The Two Neighbors of God</h3><p>Bergman’s dictum extended: <em>Order and Humor</em>. Order gives a dynamic its spine; humor keeps it from curdling into tyranny.</p></div>
+    <div class="card"><span class="num">IV</span><h3>Voluntary, Revocable Custody</h3><p>Autonomy as the power to refuse and revise; exclusivity as one chosen, revocable form of belonging.</p></div>
   </div>
 </div>
 
-<p>Whether encountered as a printed trade volume or as a digital suite of reflective tools, <em>The Dark Hierarchy</em> offers sacred language, theological irony (<em>“God has two neighbors: Order and Humor”</em>), and a considered account of somatic dignity.</p>
+<div class="wrap">
+  <section>
+    <p class="label">The audience</p>
+    <h2>The subject is measurable, and large.</h2>
+    <p>Independent research and event data show that the book’s territory is not a fringe curiosity. The figures below are third-party market context, sourced at the foot of this section; they are not projections for this title.</p>
+    <div class="stat-grid">
+      <div class="stat"><b>46.8%</b><em>Of Belgian adults</em><p>had performed at least one BDSM-related activity; 12.5% do so regularly and 7.6% self-identify as practitioners.<sup>1</sup></p></div>
+      <div class="stat"><b>45.6%</b><em>Of Quebec adults</em><p>reported interest in at least one behaviour DSM-5 classes as atypical; 33% had experienced one (n&nbsp;=&nbsp;1,040).<sup>2</sup></p></div>
+      <div class="stat"><b>20,000+</b><em>Folsom Europe, Berlin</em><p>visitors expected at the 2025 edition, up from about 3,500 at the first, per the organiser.<sup>3</sup></p></div>
+      <div class="stat"><b>16,600</b><em>Darklands, Antwerp</em><p>admissions sold in presale for 2024, with 437 performers and 290 vendors.<sup>4</sup></p></div>
+      <div class="stat"><b>8–11M</b><em>FetLife accounts</em><p>estimated registered members worldwide; figures vary by source and are unaudited.<sup>5</sup></p></div>
+      <div class="stat"><b>165M+</b><em>Fifty Shades, copies</em><p>sold worldwide per its publisher: mass readership for the subject, in a very different register.<sup>6</sup></p></div>
+    </div>
+    <p class="note"><sup>1</sup> Holvoet et al., <em>J Sex Med</em>, 2017 · <sup>2</sup> Joyal &amp; Carpentier, <em>J Sex Res</em> 54(2), 2017 · <sup>3</sup> FolsomEurope e.V. via place2be.berlin · <sup>4</sup> Darklands 2024 report, tripbytrip.org · <sup>5</sup> third-party estimates, unaudited · <sup>6</sup> Penguin Random House series page. Accessed 2 October 2026.</p>
 
-<a href="./index.html" class="btn-enter">Enter the Echo-System →</a>
+    <h2 style="margin-top:2.4rem">Six readerships, one book.</h2>
+    <ul class="comps">
+      <li><strong>Leather, kink and BDSM communities</strong><span>The book is written from inside this world, and speaks to households practising hierarchy.</span></li>
+      <li><strong>Continental philosophy and critical-theory readers</strong><span>The Semiotext(e) and Repeater constituency: Lacan, Bataille, Bersani, Han, Weil, Foucault.</span></li>
+      <li><strong>Queer and gender-studies scholars and students</strong><span>A full apparatus and glossary, more than 25 named thinkers and traditions, and a 15-week seminar syllabus.</span></li>
+      <li><strong>BDSM-ethnography readers</strong><span>The apparatus engages Margot Weiss, Gayle Rubin, and Staci Newmahr directly.</span></li>
+      <li><strong>Spiritual and pastoral readers</strong><span>Liturgy, canticles, and dark-night material in conversation with Weil, Otto, Turner, Nouwen, and Loder.</span></li>
+      <li><strong>Cultural programming audiences</strong><span>Berlin and Northern Europe: festivals, galleries, reading series, and philosophy nights.</span></li>
+    </ul>
+  </section>
 
-<footer style="margin-top:3rem; text-align:center; font-family:'Inconsolata', monospace; font-size:0.55rem; letter-spacing:0.12em; color:var(--muted);">
-  ECHOxSTUDIOS · Berlin · inbox@echoxstudios.art
-</footer>
+  <section>
+    <p class="label">For press and programming</p>
+    <h2>Six story angles.</h2>
+    <ul class="comps">
+      <li><strong>“Against Lacan, from inside the dungeon.”</strong><span>A theory book that tests its argument against lived practice rather than the clinic.</span></li>
+      <li><strong>A book with a private companion.</strong><span>Seven instruments, local-first storage, no analytics, an 18+ gate: the opposite of a data-harvesting app.</span></li>
+      <li><strong>The author audits himself.</strong><span>The book is “not a confession; it is version control,” and its twentieth movement analyses the author’s own relationship record.</span></li>
+      <li><strong>“God has two neighbors: Order and Humor.”</strong><span>Bergman’s dictum as a household philosophy: quotable, funny, serious.</span></li>
+      <li><strong>Berlin as a leather capital.</strong><span>A natural partner for Folsom Europe week and the city’s fetish and queer cultural calendar.</span></li>
+      <li><strong>Consent as theology.</strong><span>Revocability and autonomy are stated as preconditions on page one.</span></li>
+    </ul>
+    <div class="dl">
+      <div><strong>One-page info sheet for your team</strong><span>Two A4 pages for a product team or publicist: figures, audience, angles, sources.</span></div>
+      <a class="btn btn-solid" href="../assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf" download>Download PDF</a>
+      <a class="btn" href="./info-sheet.html">View online</a>
+    </div>
+  </section>
 
-<script src="../brand-mark.js?v=20260720a"></script>
+  <section>
+    <p class="label">On the shelf</p>
+    <h2>In conversation with a defined lineage.</h2>
+    <ul class="comps">
+      <li><strong>Leo Bersani, <em>Homos</em></strong><span>Shares the refusal to domesticate queer sexuality into bourgeois egalitarianism.</span></li>
+      <li><strong>Byung-Chul Han, <em>The Agony of Eros</em></strong><span>Considers the flattening of eros, then moves into liturgical and bodily reconstruction.</span></li>
+      <li><strong>Georges Bataille, <em>The Accursed Share</em></strong><span>Echoes sacred transgression and excess, with a pastoral doctrine for avoiding ruin.</span></li>
+      <li><strong>Simone Weil, <em>Gravity and Grace</em></strong><span>Severe ascetic clarity: surrender as decreation, not defeat.</span></li>
+    </ul>
+    <p class="houses">Targeting Semiotext(e) and Repeater Books · course-ready as a 15-week seminar text</p>
+  </section>
+
+  <section>
+    <p class="label">The companion</p>
+    <h2>A book with a private way back in.</h2>
+    <p>Seven optional instruments let readers return to the book’s questions privately. Each gives a reflection inside the book’s framework; none ranks, types, or diagnoses. They are also the book’s event language: a reader-facing surface for reading series, philosophy nights, and seminars.</p>
+    <p><a class="btn" href="./tool-1-trigger-gradient.html">Try the first instrument</a></p>
+    <ol class="tools">
+      <li><a href="./tool-1-trigger-gradient.html"><span class="n">I</span><span class="t">Trigger Gradient Profiler</span><span class="m">24 q · 5 min</span><span class="d">Map a personal distribution of desire across four channels.</span></a></li>
+      <li><a href="./tool-2-aspirational-self.html"><span class="n">II</span><span class="t">Aspirational Sexual Self Profile</span><span class="m">15 prompts · 12 min</span><span class="d">Describe the version of yourself you most want to inhabit.</span></a></li>
+      <li><a href="./tool-3-attachment-confirmation.html"><span class="n">III</span><span class="t">Attachment Confirmation Index</span><span class="m">20 q · 7 min</span><span class="d">Attachment patterns as information, not pathology.</span></a></li>
+      <li><a href="./tool-4-dark-night.html"><span class="n">IV</span><span class="t">Dark Night Diagnostic</span><span class="m">18 q · 12 min</span><span class="d">For practitioners in difficulty: is the framework working?</span></a></li>
+      <li><a href="./tool-5-protocol-designer.html"><span class="n">V</span><span class="t">Protocol Designer</span><span class="m">10 q · 8 min</span><span class="d">Daily and weekly rituals suited to a living situation and dynamic.</span></a></li>
+      <li><a href="./tool-6-threshold.html"><span class="n">VI</span><span class="t">Threshold Self-Assessment</span><span class="m">12 q · 7 min</span><span class="d">For readers at an edge. Reflects without pushing.</span></a></li>
+      <li><a href="./tool-7-liturgy-matrix.html"><span class="n">VII</span><span class="t">Dynamic Liturgy Matrix</span><span class="m">16 domains · 8 min</span><span class="d">Domestic liturgies, custody rites, and friction protocols.</span></a></li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="label">Responsible by design</p>
+    <h2>The boundaries are stated, not implied.</h2>
+    <div class="bound">
+      <ul>
+        <li>Adults only: an 18+ confirmation gates every instrument.</li>
+        <li>Local-first: results stay in the reader’s browser unless they choose cross-device retrieval with a private code.</li>
+        <li>No analytics: the public client sends no result statistics, and sets no marketing tracking cookies.</li>
+        <li>Non-diagnostic: reflection inside a philosophical framework, never clinical measurement. No census or research claim is made.</li>
+        <li>Any future empirical project would need its own consent, governance, sampling, and ethics review.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">The submission package</p>
+    <h2>Everything an acquisitions desk asks for first.</h2>
+    <ul class="package">
+      <li><strong>Trade master manuscript</strong><span>Release edition v122 · 381 pp · 6 × 9 in · XeLaTeX typeset PDF.</span></li>
+      <li><strong>Publisher proposal &amp; 15-week seminar syllabus</strong><span>Editorial rationale, comparables, adoption path, evidence-bounded.</span></li>
+      <li><strong>Literary agency query letter</strong><span>Targeted at agents for transgressive and theoretical non-fiction.</span></li>
+      <li><strong>Pre-flight verification sheet</strong><span>Page count, word count, endnotes, and build checks, each with its method.</span></li>
+    </ul>
+  </section>
+</div>
+
+<div class="contact" id="request">
+  <h2>Request the package</h2>
+  <p>The full manuscript is not publicly hosted. Write from your agency or house address and the materials follow.</p>
+  <span class="addr" id="addr">inbox@echoxstudios.art</span>
+  <button type="button" class="btn" id="copy-addr" style="margin-left:.4rem">Copy address</button>
+  <span class="copy-note" id="copy-note" role="status" aria-live="polite"></span>
+  <div class="hero-cta"><a class="btn btn-solid" href="./index.html">Enter the Echo-System →</a></div>
+</div>
+
+<footer>ECHOxSTUDIOS · Berlin · The Dark Hierarchy, edition v122</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-addr'), note = document.getElementById('copy-note');
+    btn.addEventListener('click', function () {
+      var text = document.getElementById('addr').textContent;
+      var done = function (ok) { note.textContent = ok ? 'Address copied' : 'Select the address above to copy'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      else done(false);
+    });
+  })();
+</script>
+<script src="../brand-mark.js?v=20261002x"></script>
+<script src="a11y.js?v=20261002"></script>
 </body>
 </html>

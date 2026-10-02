@@ -111,3 +111,7 @@ Keep the durable rules above current. Add concise dated entries only when a rule
 - 2026-07-17: Public-name privacy rule added: exclude legal-name variants and home-address details from deployable files and public history; keep legal-page indexing disabled.
 - 2026-07-20: Replaced the compound connector’s fractional CSS strokes with a shared inline SVG mark so its thin geometry renders consistently in every card, label, and metadata context.
 - 2026-07-20: Transparent logo exports keep their outer canvas clear while retaining opaque graphic interiors; overlapping symbols must never show through one another.
+
+## Brand name rendering
+
+The ECHOx "x" (lowercase standalone, `×` U+00D7 in compounds) is governed by `BRAND_MARK_STYLE_GUIDE.md`. Never draw it with SVG, never uppercase it, and never reimplement it outside `brand-mark.js`.

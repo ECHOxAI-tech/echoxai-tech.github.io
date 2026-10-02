@@ -62,8 +62,32 @@
     }
   }
 
+  function localCodes() {
+    var codes = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        var m = /^tdh_code_t([1-7])$/.exec(key);
+        if (m) codes.push('Tool ' + m[1] + ': ' + localStorage.getItem(key));
+      }
+    } catch (error) { /* storage unavailable */ }
+    return codes.sort();
+  }
+
+  function deletionRequest() {
+    var codes = localCodes();
+    var body = 'Please delete the TDH profiles stored under these retrieval codes and confirm by reply.\n\n' +
+      (codes.length ? codes.join('\n') : '[add your retrieval codes here]') + '\n';
+    window.location.href = 'mailto:inbox@echoxstudios.art?subject=' + encodeURIComponent('TDH profile deletion') +
+      '&body=' + encodeURIComponent(body);
+  }
+
+  var returnFocus = null;
+
   function closePanel(backdrop) {
     backdrop.remove();
+    if (returnFocus && document.body.contains(returnFocus)) returnFocus.focus();
+    returnFocus = null;
     document.documentElement.classList.remove('tdh-privacy-lock');
   }
 
@@ -71,6 +95,7 @@
     var existing = document.querySelector('.tdh-privacy-backdrop');
     if (existing) return;
 
+    returnFocus = document.activeElement;
     var current = localStorage.getItem(MODE_KEY);
     var backdrop = document.createElement('div');
     backdrop.className = 'tdh-privacy-backdrop';
@@ -89,7 +114,7 @@
           '<button class="tdh-choice-button" data-mode="local" type="button">Use locally</button>' +
           '<button class="tdh-choice-button" data-mode="remote" type="button">Enable cross-device</button>' +
         '</div>' +
-        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'cross-device storage' : 'local-only storage') + '. Choosing local-only now withdraws consent for future remote storage. To erase previously stored profiles, email the retrieval codes to <a href="mailto:inbox@echoxstudios.art?subject=TDH%20profile%20deletion">inbox@echoxstudios.art</a>.</p>' : '') +
+        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'cross-device storage' : 'local-only storage') + '. Choosing local-only now withdraws consent for future remote storage. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
       '</section>';
 
     document.body.appendChild(backdrop);
@@ -102,6 +127,18 @@
     }
     check.addEventListener('change', sync);
     sync();
+
+    var del = backdrop.querySelector('#tdh-delete-request');
+    if (del) del.addEventListener('click', deletionRequest);
+
+    backdrop.addEventListener('keydown', function (event) {
+      if (event.key !== 'Tab') return;
+      var f = Array.prototype.slice.call(backdrop.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])'));
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
 
     buttons.forEach(function (button) {
       button.addEventListener('click', function () {
