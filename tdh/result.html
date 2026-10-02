@@ -53,7 +53,7 @@ const TOOLS = [
   const norm = code.toUpperCase().trim();
   document.getElementById('code-el').textContent = norm || '——';
 
-  if (!norm || norm.length !== 6) {
+  if (!norm || norm.length !== 6 && norm.length !== 12) {
     document.getElementById('msg').textContent = 'No code provided.';
     document.getElementById('err').style.display = '';
     return;

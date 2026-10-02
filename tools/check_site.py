@@ -136,6 +136,14 @@ for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
 for _pg in glob.glob("*.html") + glob.glob("tdh/*.html"):
     if "fonts.css" in open(_pg, encoding="utf-8").read() and "a11y.css" not in open(_pg, encoding="utf-8").read():
         errors.append(f"{_pg}: missing assets/a11y.css (focus and reduced motion)")
+for _pg in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    _t = open(_pg, encoding="utf-8").read()
+    if 'http-equiv="refresh"' in _t:
+        continue
+    if not re.search(r'<main|role="main"|landmarks\.js|a11y\.js', _t):
+        errors.append(f"{_pg}: no main landmark or skip link")
+if "norm.length !== 12" not in open("tdh/result.html", encoding="utf-8").read():
+    errors.append("tdh/result.html must accept 12-character codes")
 if not os.path.exists("assets/fonts/fonts.css"):
     errors.append("missing assets/fonts/fonts.css")
 

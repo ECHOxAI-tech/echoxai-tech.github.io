@@ -5,3 +5,6 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px soli
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 }
+.site-skip{position:absolute;left:-9999px;top:0;z-index:10001;padding:.6rem 1rem;background:#d4a93e;color:#080806;font:500 .85rem 'Inconsolata',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+.site-skip:focus{left:.5rem;top:.5rem}
+main:focus{outline:none}
