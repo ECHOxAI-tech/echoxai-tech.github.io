@@ -144,6 +144,11 @@ for _pg in glob.glob("*.html") + glob.glob("tdh/*.html"):
         errors.append(f"{_pg}: no main landmark or skip link")
 if "norm.length !== 12" not in open("tdh/result.html", encoding="utf-8").read():
     errors.append("tdh/result.html must accept 12-character codes")
+for _pg in glob.glob("*.html") + glob.glob("tdh/*.html") + glob.glob("*.css") + glob.glob("tdh/*.css"):
+    _t = open(_pg, encoding="utf-8").read().lower()
+    for _bad in ("#6e6a64", "#7a6128"):
+        if _bad in _t:
+            errors.append(f"{_pg}: {_bad} is below WCAG AA contrast on the dark ground; use #8f8a82 / #a08336")
 if not os.path.exists("assets/fonts/fonts.css"):
     errors.append("missing assets/fonts/fonts.css")
 
