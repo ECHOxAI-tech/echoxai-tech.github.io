@@ -54,3 +54,8 @@ body > .hero h1 {
     letter-spacing: .18em;
   }
 }
+
+/* Very narrow screens (320px, 400% zoom): track rows must reflow, never overflow (heading sizes: site-type.css). */
+@media (max-width: 480px) {
+  .track-header { flex-wrap: wrap; gap: .5rem; }
+}

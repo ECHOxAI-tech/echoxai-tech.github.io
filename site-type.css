@@ -240,3 +240,11 @@ body > footer .footer-copy {
     grid-column: 1;
   }
 }
+
+/* 320px and 400% zoom: the longest wordmark headings (ECHOxPRODUCTION, ECHOxSTUDIOS) must fit. */
+@media (max-width: 360px) {
+  :root {
+    --type-page: clamp(1.5rem, 7.4vw, 2.75rem);
+    --type-section: clamp(1.25rem, 6.6vw, 2.15rem);
+  }
+}

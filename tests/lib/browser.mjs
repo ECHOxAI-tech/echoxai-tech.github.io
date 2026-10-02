@@ -21,7 +21,7 @@ export async function launch() {
   }).listen(0);
   const port = server.address().port;
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tdh-e2e-'));
-  const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--remote-debugging-port=0', `--user-data-dir=${dir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
+  const chrome = spawn(CHROME, ['--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars', '--remote-debugging-port=0', `--user-data-dir=${dir}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise(res => { let b = ''; chrome.stderr.on('data', d => { b += d; const m = b.match(/ws:\/\/\S+/); if (m) res(m[0]); }); });
   const ws = new WebSocket(wsUrl); await new Promise(r => (ws.onopen = r));
   let id = 0; const pend = new Map(); const listeners = new Set();
@@ -83,7 +83,7 @@ export async function launch() {
       }
       for (const d of ['Runtime', 'Page']) await call(d + '.enable');
       await call('Fetch.enable', { patterns: [{ urlPattern: 'https://*.workers.dev/*' }] });
-      await call('Emulation.setDeviceMetricsOverride', { width: popts.width || opts.width || 1280, height: popts.height || 900, deviceScaleFactor: 1, mobile: (popts.width || opts.width || 1280) < 500 });
+      await call('Emulation.setDeviceMetricsOverride', { width: popts.width || opts.width || 1280, height: popts.height || 900, deviceScaleFactor: 1, mobile: popts.mobile !== undefined ? popts.mobile : (popts.width || opts.width || 1280) < 500 });
       const seed = { tdh_storage_mode: 'remote', tdh_remote_consent_at: '2026-10-02T10:00:00.000Z', tdh_adult_confirmed: 'yes', tdh_research_optin: '2026-10-03', ...(opts.seed || {}) };
       await call('Page.addScriptToEvaluateOnNewDocument', { source: `
         Object.defineProperty(navigator, 'webdriver', { get: () => ${opts.webdriver ? 'true' : 'false'} });

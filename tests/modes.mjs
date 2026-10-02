@@ -33,7 +33,7 @@ const failures = []; let checks = 0;
 for (const mode of MODES) {
   const c = await b.context({ width: mode.width });
   for (const pg of pages) {
-    const p = await c.page(null, { width: mode.width, height: 800 });
+    const p = await c.page(null, { width: mode.width, height: 800, mobile: false }); // desktop emulation: a mobile viewport would widen itself to fit overflowing content and hide it
     await p.call('Emulation.setEmulatedMedia', { features: mode.media });
     await p.goto(pg);
     await p.sleep(700);
