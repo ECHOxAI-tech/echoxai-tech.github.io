@@ -67,9 +67,8 @@ textarea {
   }
 }
 
-/* Desktop screens (1100px and up): a wider page, about 990px, with slightly larger text. Phones and tablets are unchanged. */
+/* Desktop screens (1100px and up): a wider page, about 990px. The text size is unchanged. Phones and tablets are unchanged. */
 @media (min-width: 1100px) {
-  html { font-size: 19px !important; }
-  body { max-width: 52rem !important; }
-  .wrap { max-width: 52rem !important; }
+  body { max-width: 58rem !important; }
+  .wrap { max-width: 58rem !important; }
 }
