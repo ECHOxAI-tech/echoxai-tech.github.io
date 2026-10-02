@@ -44,6 +44,7 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 ## 5. Consent and rights
 
 - Stated as a term of use, accepted together with the adult confirmation, shown in plain language before first use and re-asked when the terms version changes (`tdh_research_optin`). Declining means not using the tools.
+- Retention: the counters have no expiry, by design, so a study years from now can use them. Before first use a separate required checkbox records the participant's agreement that they may be stored without a time limit and used for scientific research and publication (version `2026-10-04` of the gate). That agreement is for transparency and for the participant's own decision; it is not the legal basis (see below), which is that the counters are anonymous.
 - Legal position: the stored counters are anonymous (no identifier, no per-person row, k = 30 publication floor), so they are not personal data (GDPR Recital 26) and no consent basis is needed for them. Because the position depends on the anonymisation holding, it is documented in `docs/DPIA.md` and should be confirmed by an independent data-protection adviser. Consent is **not** relied on for the research, since consent cannot be a condition of service (Art. 7(4)); any item-level study will use separate, freely given, explicit consent (Art. 6(1)(a), 9(2)(a)).
 - **Disclosed limit:** because contributions are stored only as anonymous counters, a contribution already made cannot be located or withdrawn.
 - Adults only (18+).

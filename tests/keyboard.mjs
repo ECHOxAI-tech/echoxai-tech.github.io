@@ -39,7 +39,7 @@ const open = async page => {
   const { result: { targetId } } = await send('Target.createTarget', { url: 'about:blank' });
   const { result: { sessionId } } = await send('Target.attachToTarget', { targetId, flatten: true });
   for (const domain of ['Runtime', 'Page']) await send(domain + '.enable', {}, sessionId);
-  await send('Page.addScriptToEvaluateOnNewDocument', { source: "localStorage.setItem('tdh_storage_mode','local');localStorage.setItem('tdh_adult_confirmed','yes');localStorage.setItem('tdh_research_optin','2026-10-03');" }, sessionId);
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: "localStorage.setItem('tdh_storage_mode','local');localStorage.setItem('tdh_adult_confirmed','yes');localStorage.setItem('tdh_research_optin','2026-10-04');" }, sessionId);
   await send('Page.navigate', { url: `http://localhost:${port}/${page}` }, sessionId);
   await new Promise(resolve => setTimeout(resolve, 300));
   return { targetId, sessionId };

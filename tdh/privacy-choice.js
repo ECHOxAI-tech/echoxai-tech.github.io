@@ -22,7 +22,7 @@
   var RESEARCH_ENDPOINT = 'https://tdh-research.inbox-fde.workers.dev';
   var ETHICS_APPROVAL_REF = '';
   var RESEARCH_KEY = 'tdh_research_optin';
-  var RESEARCH_VERSION = '2026-10-03';
+  var RESEARCH_VERSION = '2026-10-04';
   var RESEARCH_TOOLS = [1, 2, 3, 4, 6]; /* tools 5 and 7 produce free-text protocols and never contribute */
 
   /* Storage that never throws. When the browser blocks localStorage (some private modes, strict settings), values live
@@ -238,9 +238,10 @@
         '<p>The tools can generate intimate relationship and sexuality profiles. <strong>No analytics, and no individual result statistics, are sent.</strong></p>' +
         '<p><strong>Local only</strong> keeps results in this browser. <strong>Cross-device</strong> stores each generated result with its random retrieval code through the remote profile service, so it can be opened and compared on another device.</p>' +
         '<p>Cross-device storage is optional and requires explicit consent. Email delivery is a separate action you choose after receiving a result. Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
-        '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (store.get(AGE_KEY) === 'yes' && (!researchAvailable() || store.get(RESEARCH_KEY) === RESEARCH_VERSION) ? ' checked' : '') + '> <span>I confirm that I am 18 or older, understand that the tools may process sensitive personal reflections' + (researchAvailable() ? ', and accept the anonymous research counters described above' : '') + '.</span></label>' +
+        '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (store.get(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
         (researchAvailable()
-          ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Counts are published only in aggregate. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>'
+          ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Counts are published only in aggregate. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>' +
+            '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (store.get(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span>I agree that these anonymous, untraceable counters may be stored without a time limit and used for scientific research and publication. I understand they cannot be traced to me, so they cannot be located or withdrawn later.</span></label>'
           : '') +
         '<div class="tdh-choice-grid">' +
           '<button class="tdh-choice-button" data-mode="local" type="button">Use locally</button>' +
@@ -253,11 +254,14 @@
     document.documentElement.classList.add('tdh-privacy-lock');
 
     var check = backdrop.querySelector('#tdh-age-check');
+    var rcheck = backdrop.querySelector('#tdh-research-check');
     var buttons = Array.prototype.slice.call(backdrop.querySelectorAll('.tdh-choice-button'));
     function sync() {
-      buttons.forEach(function (button) { button.disabled = !check.checked; });
+      var ok = check.checked && (!rcheck || rcheck.checked);
+      buttons.forEach(function (button) { button.disabled = !ok; });
     }
     check.addEventListener('change', sync);
+    if (rcheck) rcheck.addEventListener('change', sync);
     sync();
 
     var del = backdrop.querySelector('#tdh-delete-request');
@@ -274,7 +278,7 @@
 
     buttons.forEach(function (button) {
       button.addEventListener('click', function () {
-        if (!check.checked) return;
+        if (!check.checked || (rcheck && !rcheck.checked)) return;
         setMode(button.getAttribute('data-mode'));
         store.set(RESEARCH_KEY, RESEARCH_VERSION);
         closePanel(backdrop);

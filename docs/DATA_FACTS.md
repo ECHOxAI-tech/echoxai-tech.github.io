@@ -9,9 +9,9 @@ repository's audit checks the sales material against the same table. Change this
 | Result storage | Local in the visitor's browser by default. Optional cross-device retrieval by a random 12-character code, only with explicit consent. | Live |
 | Research data | Anonymous aggregate counters only: tool, dimension, 10-point bucket, calendar month. No profile, e-mail, IP address, device identifier, free text, demographic or per-person record. | Live since 2026-10-03 |
 | Which tools contribute | Tools 1, 2, 3, 4 and 6. Tools 5 and 7 (free-text protocols) never contribute. A result opened from a link or a code never contributes. | Live |
-| Contribution rule | At most once per tool per device per month, as a stated term of use, shown before first use. Automated browsers never contribute. | Live |
+| Contribution rule | At most once per tool per device per month, as a stated term of use, shown before first use, with a separate required checkbox agreeing that the anonymous counters may be stored without a time limit and used for scientific research and publication. Automated browsers never contribute. | Live |
 | Public output | Suppressed for any tool with fewer than 30 contributions (k = 30). | Live |
-| Retention | Cross-device profiles expire automatically 24 months after the last save and can be deleted earlier by whoever holds the code. Research counters are aggregate and cannot be withdrawn individually (disclosed). | Live. **The 24-month period is the current implementation; the owner has not yet confirmed it as the final public policy.** |
+| Retention | Cross-device profiles expire automatically 24 months after the last save and can be deleted earlier by whoever holds the code. Research counters are a separate matter: they are anonymous aggregates, kept without a time limit for science and publication, agreed in their own checkbox before first use, and cannot be withdrawn individually (disclosed). | Live. **The 24-month period is the current implementation; the owner has not yet confirmed it as the final public policy.** |
 | E-mail | Sent only when the visitor asks; the address is used for that one delivery and is not stored. | Live |
 | Research status | "Active" is stated only while the live research worker is active (`RESEARCH_ENABLED=1`). If it is switched off, every page must say so on the same day. | Active |
 | Limits | Self-selected, non-representative contributions. Not clinical, not diagnostic, not a prevalence estimate. | Always |
@@ -33,6 +33,6 @@ an identifier or a count):
 
 ## Decisions that belong to the owner
 
-1. Final public retention period for profile-code records (currently 24 months).
+1. Final public retention period for profile-code records (currently 24 months). Research counters have no expiry by design.
 2. Whether aggregate data may ever be shared outside the site, and on what terms.
 3. When an imprint with legal identity details becomes necessary.
