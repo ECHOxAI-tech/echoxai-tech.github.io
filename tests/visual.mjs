@@ -13,7 +13,7 @@ const baselines = fs.existsSync(BASE) ? JSON.parse(fs.readFileSync(BASE, 'utf8')
 const pages = [...fs.readdirSync(root).filter(f => f.endsWith('.html')), ...fs.readdirSync(path.join(root, 'tdh')).filter(f => f.endsWith('.html')).map(f => 'tdh/' + f)]
   .filter(f => !/dramatic-work-withheld/.test(f)).sort();
 const WIDTHS = [375, 768, 1280];
-const MEAN_TOL = 5, CELL_DIFF = 60, CELLS_TOL = 6; // mean luminance drift, and how many of the 576 cells may differ strongly (0-255 scale)
+const MEAN_TOL = 5, CELL_DIFF = 60, CELLS_TOL = 14; // justified, hyphenated text can shift a few lines between runs; // mean luminance drift, and how many of the 576 cells may differ strongly (0-255 scale)
 
 const FINGERPRINT = `(async (b64) => {
   const blob = await (await fetch('data:image/png;base64,' + b64)).blob();

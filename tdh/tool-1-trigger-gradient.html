@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-no-signature>
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://tdh-email.inbox-fde.workers.dev https://tdh-profile.inbox-fde.workers.dev https://tdh-research.inbox-fde.workers.dev https://tdh-mail.inbox-fde.workers.dev; base-uri 'self'; form-action 'self'; object-src 'none'">
@@ -193,6 +193,11 @@
   .btn-next { border: 1px solid var(--gold-dim); color: var(--gold-dim); margin-left: auto; }
   .btn-next:hover { border-color: var(--gold); color: var(--gold); }
 
+  .meaning-row { margin: 1.1rem 0 0; padding: 0.7rem 0.9rem; border: 1px solid var(--rule); }
+  .meaning-label { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.85rem; line-height: 1.5; color: var(--text); cursor: pointer; }
+  .meaning-label input { margin-top: 0.25rem; accent-color: var(--gold); flex: none; width: 1rem; height: 1rem; }
+  .meaning-hint { margin: 0.35rem 0 0 1.7rem; font-family: 'Inconsolata', monospace; font-size: 0.5rem; letter-spacing: 0.08em; color: var(--muted); }
+  .meaning-note { margin-top: 0.9rem; font-style: italic; color: var(--muted); }
   .req-msg {
     font-family: 'Inconsolata', monospace;
     font-size: 0.6rem; color: var(--gold-dim);
@@ -500,6 +505,10 @@
     <span>Strongly agree</span>
   </div>
   <div class="likert-row" id="likert-row"></div>
+  <div class="meaning-row" id="meaning-row" hidden>
+    <label class="meaning-label" for="meaning-check"><input type="checkbox" id="meaning-check"> <span id="meaning-text"></span></label>
+    <p class="meaning-hint">Optional. If ticked, this answer counts toward Intellectual.</p>
+  </div>
 
   <div class="survey-nav">
     <button class="btn-back" id="btn-back" disabled>Back</button>
@@ -710,7 +719,18 @@ const READING_RECS = {
 
 let shuffled   = [];
 let current    = 0;
+// Optional "matters for what it means" box. The book's own account (Book II, III "The Intellectual Framework as Ground"):
+// touch, a look and the tone between two people are instruments that can carry an intellectual framework, so the same
+// statement can reach a person through meaning. Offered only on non-reversed statements that name such an instrument
+// (a touch, a look, a connection). Ticking it counts that statement's points toward Intellectual.
+const MEANING_IDS = { T1:'touch', T2:'touch', T3:'touch', T5:'touch', T6:'touch', V1:'sight', V2:'sight', V3:'sight', V4:'sight', V6:'sight', E2:'connection', E4:'connection', E6:'connection' };
+const MEANING_TEXT = {
+  touch: 'What matters here is what the touch means to us, not the sensation itself.',
+  sight: 'What matters here is what the sight declares, not the look itself.',
+  connection: 'What matters here is what the connection means, not the feeling itself.'
+};
 let responses  = {};
+let meaning    = {};
 let savedCode  = null;
 
 // ══════════════════════════════════════════════
@@ -773,11 +793,14 @@ function hide(id)  { document.getElementById(id).style.display = 'none'; }
 // SCORING
 // ══════════════════════════════════════════════
 
-function computeGradient(resp) {
+function computeGradient(resp, meant) {
   const raw = { V:0, E:0, T:0, I:0 };
+  meant = meant || {};
   QUESTIONS.forEach(q => {
     const r = resp[q.id] || 4;
-    raw[q.ch] += q.rev ? (8 - r) : r;
+    // a statement marked as mattering for its meaning counts toward Intellectual (never a reversed one)
+    const ch = (meant[q.id] && !q.rev && MEANING_IDS[q.id]) ? 'I' : q.ch;
+    raw[ch] += q.rev ? (8 - r) : r;
   });
   const total = raw.V + raw.E + raw.T + raw.I;
   let pct = { V:0, E:0, T:0, I:0 };
@@ -897,6 +920,15 @@ function renderQuestion(idx) {
   }
 
   document.getElementById('req-msg').classList.remove('show');
+
+  const mrow = document.getElementById('meaning-row'), kind = MEANING_IDS[q.id];
+  mrow.hidden = !kind;
+  if (kind) {
+    document.getElementById('meaning-text').textContent = MEANING_TEXT[kind];
+    const box = document.getElementById('meaning-check');
+    box.checked = !!meaning[q.id];
+    box.onchange = () => { if (box.checked) meaning[q.id] = true; else delete meaning[q.id]; };
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -1022,6 +1054,12 @@ function showResults(pct) {
   });
 
   document.getElementById('interp-text').innerHTML  = buildInterpretation(pct);
+  var __mm = window.__t1Meaning || [];
+  if (__mm.length) {
+    document.getElementById('interp-text').innerHTML += '<p class="meaning-note">You marked ' + __mm.length + (__mm.length === 1 ? ' statement' : ' statements') +
+      ' as mattering mainly for what ' + (__mm.length === 1 ? 'it means' : 'they mean') + ', not for the sensation or the look itself. In the book\u2019s account the framework is the ground that touch, sight and feeling carry, so ' +
+      (__mm.length === 1 ? 'its points are' : 'their points are') + ' counted under Intellectual.</p>';
+  }
   document.getElementById('cmp-text').innerHTML     = buildComparison(pct);
   document.getElementById('reading-recs').innerHTML = buildRecs(pct);
 
@@ -1038,6 +1076,7 @@ function tryRetrieve(code) {
       const data = JSON.parse(stored);
       savedCode = code;
       hide('view-intro');
+      window.__t1Meaning = Array.isArray(data.meaning) ? data.meaning.filter(id => MEANING_IDS[id]) : [];
       showResults(data.pct || data.result);
       // Mark as already saved
       requestAnimationFrame(() => {
@@ -1292,6 +1331,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
   shuffled  = shuffle(QUESTIONS);
   current   = 0;
   responses = {};
+  meaning = {};
   renderQuestion(0);
   window.scrollTo({ top: 0 });
 });
@@ -1312,7 +1352,8 @@ document.getElementById('btn-next').addEventListener('click', () => {
     window.scrollTo({ top: 0 });
   } else {
     // Final question — show demographic gate before result
-    window.__pendingPct = computeGradient(responses);
+    window.__pendingPct = computeGradient(responses, meaning);
+    window.__t1Meaning = Object.keys(meaning).filter(id => meaning[id] && MEANING_IDS[id]);
     hide('view-survey');
     document.getElementById('view-gate').style.display = 'block';
     window.scrollTo({ top: 0 });
@@ -1355,7 +1396,7 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
     window.savedCode = code;
     var result = window.__lastResult || {};
     if (window.TDHResearch) TDHResearch.submit(1, result);
-    var _t1obj = { ts: Date.now(), result: result };
+    var _t1obj = { ts: Date.now(), result: result, meaning: window.__t1Meaning || [] };
     try { localStorage.setItem('tdh_t1_' + code, JSON.stringify(_t1obj)); } catch(e) {}
     try { await saveToProfile(code, 't1', _t1obj); } catch(e) {}
     var box = document.getElementById('code-box');
@@ -1425,7 +1466,8 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
         + '</table>';
 
       var resultPart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 2px">Your trigger gradient</p>'
-        + barsTable;
+        + barsTable
+        + ((window.__t1Meaning || []).length ? '<p style="font-family:Georgia,serif;font-size:13px;color:#a09890;margin:6px 0 0">' + (window.__t1Meaning || []).length + ' of your answers were marked as mattering mainly for what they mean, and are counted under Intellectual.</p>' : '');
 
       var _emailCode = window.savedCode || '';
       var codePart = '<p style="font-family:monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#d4a93e;margin:0 0 6px">Your code for this test</p>'

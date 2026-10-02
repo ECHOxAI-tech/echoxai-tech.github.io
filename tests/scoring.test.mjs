@@ -33,7 +33,7 @@ const test = (name, fn) => { fn(); passed++; console.log('ok  ' + name); };
 
 // ---------- Tool 1: trigger gradient ----------
 {
-  const { ctx, api } = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'function computeGradient(']);
+  const { ctx, api } = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'const MEANING_IDS = {', 'function computeGradient(']);
   const Q = api.QUESTIONS, chans = ['V', 'E', 'T', 'I'];
   test('tool 1: every channel has items and ids are unique', () => {
     chans.forEach(c => assert.ok(Q.filter(q => q.ch === c).length >= 3, c));
@@ -153,7 +153,7 @@ const test = (name, fn) => { fn(); passed++; console.log('ok  ' + name); };
 // ---------- Cross-cutting: monotonicity, invalid input, and a golden snapshot ----------
 import crypto from 'node:crypto';
 {
-  const t1 = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'function computeGradient(']).api;
+  const t1 = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'const MEANING_IDS = {', 'function computeGradient(']).api;
   const t3 = load('tool-3-attachment-confirmation.html', ['const QUESTIONS = [', 'function computeScores(']).api;
   const base1 = Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 4]));
   test('tool 1: raising an item that belongs to a channel never lowers that channel (monotonic)', () => {
@@ -207,6 +207,44 @@ import crypto from 'node:crypto';
     const file = new URL('./fixtures/scoring-golden.json', import.meta.url);
     if (process.env.UPDATE_GOLDEN || !fs.existsSync(file)) { fs.writeFileSync(file, JSON.stringify({ note: 'sha256 of tool 1 and tool 3 scores for 300 seeded answer sets', digest }, null, 2) + '\n'); return; }
     assert.equal(digest, JSON.parse(fs.readFileSync(file, 'utf8')).digest, 'scoring output changed; if deliberate, run UPDATE_GOLDEN=1 node tests/scoring.test.mjs');
+  });
+}
+
+// ---------- Tool 1: the optional "matters for what it means" box ----------
+{
+  const t1 = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'const MEANING_IDS = {', 'function computeGradient(']).api;
+  const base = Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 4]));
+  test('meaning box: only non-reversed touch, sight and connection statements offer it', () => {
+    const ids = Object.keys(t1.MEANING_IDS);
+    ids.forEach(id => {
+      const q = t1.QUESTIONS.find(x => x.id === id);
+      assert.ok(q && !q.rev && q.ch !== 'I', id + ' must be a non-reversed, non-Intellectual statement');
+    });
+    assert.equal(ids.length, 13);
+  });
+  test('meaning box: unticked scores are exactly the plain scores', () => {
+    const r = rng(5);
+    for (let n = 0; n < 200; n++) {
+      const resp = Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 1 + Math.floor(r() * 7)]));
+      assert.deepEqual(JSON.parse(JSON.stringify(t1.computeGradient(resp, {}))), JSON.parse(JSON.stringify(t1.computeGradient(resp))));
+    }
+  });
+  test('meaning box: a ticked touch statement moves its points from Tactile to Intellectual', () => {
+    const resp = { ...base, T3: 7 };
+    const plain = t1.computeGradient(resp), ticked = t1.computeGradient(resp, { T3: true });
+    assert.ok(ticked.I > plain.I, 'Intellectual rises');
+    assert.ok(ticked.T < plain.T, 'Tactile falls');
+    assert.equal(ticked.V + ticked.E + ticked.T + ticked.I, 100);
+  });
+  test('meaning box: ticking never lowers Intellectual, and reversed or unlisted statements ignore it', () => {
+    const r = rng(9);
+    for (let n = 0; n < 200; n++) {
+      const resp = Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 1 + Math.floor(r() * 7)]));
+      const all = Object.fromEntries(Object.keys(t1.MEANING_IDS).map(id => [id, true]));
+      assert.ok(t1.computeGradient(resp, all).I >= t1.computeGradient(resp).I);
+    }
+    const resp = { ...base, T4: 2, V5: 6, E3: 1, I1: 7, E1: 7, E5: 7 };
+    assert.deepEqual(JSON.parse(JSON.stringify(t1.computeGradient(resp, { T4: true, V5: true, E3: true, I1: true, E1: true, E5: true }))), JSON.parse(JSON.stringify(t1.computeGradient(resp))));
   });
 }
 

@@ -18,6 +18,9 @@ repository's audit checks the sales material against the same table. Change this
 | Legal position | The counters are anonymous and therefore not personal data (GDPR Recital 26); this is the author's analysis, not an independent legal review. Item-level or linked data would need a separate consented study under ethics approval and is not collected. | Always |
 | Ratings | No ratings, reader scores or review scores are published anywhere. | Always |
 
+## Scoring note (tool 1)
+From 2026-10-02 tool 1 offers an optional box on 13 statements ("what matters is what it means"). A ticked statement counts toward Intellectual. Unticked scoring is unchanged. The research counters carry the resulting channel percentages; the test row recorded on 2026-10-02 predates the box and used plain scoring.
+
 ## Receipt shown on the result screen
 
 After a contribution attempt the result screen shows one of these lines and nothing else (never the submitted values,
