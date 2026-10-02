@@ -861,11 +861,11 @@ function genCode() {
   // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
     var existing = localStorage.getItem('tdh_code_t4');
-    if (existing && existing.length === 6) return existing;
+    if (existing && (existing.length === 6 || existing.length === 12)) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
+  for (var i = 0; i < ((window.TDHPrivacy && TDHPrivacy.codeLength) || 6); i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t4', code); } catch(e) {}
   return code;
 }
@@ -874,7 +874,7 @@ function genCode() {
 (function() {
   try {
     const code = (new URLSearchParams(window.location.search)).get('code');
-    if (code && code.length === 6) {
+    if (code && (code.length === 6 || code.length === 12)) {
       const stored = localStorage.getItem('tdh_t4_' + code.toUpperCase());
       if (stored) {
         const data = JSON.parse(stored);
@@ -902,6 +902,7 @@ function genCode() {
     var code = genCode();
     window.savedCode = code;
     var result = window.__lastResult || {};
+    if (window.TDHResearch) TDHResearch.submit(4, result);
     var _t4obj = { ts: Date.now(), diag: result, result: result };
     try { localStorage.setItem('tdh_t4_' + code, JSON.stringify(_t4obj)); } catch(e) {}
     try { await saveToProfile(code, 't4', _t4obj); } catch(e) {}
@@ -977,7 +978,7 @@ function genCode() {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>

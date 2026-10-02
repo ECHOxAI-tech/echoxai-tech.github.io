@@ -1367,11 +1367,11 @@ function genCode() {
   // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
     var existing = localStorage.getItem('tdh_code_t2');
-    if (existing && existing.length === 6) return existing;
+    if (existing && (existing.length === 6 || existing.length === 12)) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
+  for (var i = 0; i < ((window.TDHPrivacy && TDHPrivacy.codeLength) || 6); i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t2', code); } catch(e) {}
   return code;
 }
@@ -1408,7 +1408,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
       if (nums.length === 8 && nums.every(function(n){ return !isNaN(n); })) {
         window.__axisVals = {};
         order.forEach(function(k, i){ window.__axisVals[k] = Math.max(0, Math.min(100, nums[i])); });
-        if (code.length === 6) {
+        if ((code.length === 6 || code.length === 12)) {
           savedCode = code;
           try { var st = localStorage.getItem('tdh_t2_' + code); if (st) answers = JSON.parse(st).answers || answers; } catch(e) {}
         }
@@ -1419,7 +1419,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
     }
 
     // 2. Stored result by code (this device)
-    if (code.length === 6) {
+    if ((code.length === 6 || code.length === 12)) {
       const stored = localStorage.getItem('tdh_t2_' + code);
       if (stored) {
         const data = JSON.parse(stored);
@@ -1445,6 +1445,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
     var code = genCode();
     window.savedCode = code;
     var result = window.__axisVals || {};
+    if (window.TDHResearch) TDHResearch.submit(2, result);
     var _t2obj = { ts: Date.now(), result: result, answers: (typeof answers!=='undefined'?answers:{}) };
     try { localStorage.setItem('tdh_t2_' + code, JSON.stringify(_t2obj)); } catch(e) {}
     try { await saveToProfile(code, 't2', _t2obj); } catch(e) {}
@@ -1513,7 +1514,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>

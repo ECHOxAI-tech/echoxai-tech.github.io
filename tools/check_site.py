@@ -9,6 +9,8 @@ read = lambda p: open(p, encoding="utf-8").read()
 bm = read("brand-mark.js")
 if "createElementNS" in bm or "<svg" in bm:
     errors.append("brand-mark.js must not draw the x with SVG")
+if ".echox-name{font-style:normal" not in bm or "echox-name" not in bm:
+    errors.append("brand-mark.js must wrap the whole name in an upright .echox-name span")
 if "\\u00d7" not in bm:
     errors.append("brand-mark.js must render compounds with U+00D7")
 for page in glob.glob("*.html"):
@@ -38,11 +40,39 @@ for page in glob.glob("*.html") + glob.glob("tdh/*.html"):
         target = os.path.normpath(os.path.join(base, ref.lstrip("/"))) if not ref.startswith("/") else ref.lstrip("/")
         if not os.path.exists(target):
             errors.append(f"{page}: broken local reference {ref}")
+        else:
+            # GitHub Pages is case-sensitive; macOS is not. Compare each path segment exactly.
+            walk = ""
+            for part in target.split("/"):
+                if part and part not in os.listdir(walk or "."):
+                    errors.append(f"{page}: case mismatch in reference {ref}")
+                    break
+                walk = os.path.join(walk, part) if walk else part
 
 # 4. JavaScript syntax
 for script in ["brand-mark.js", "site-nav.js", "site-footer.js"] + glob.glob("tdh/*.js"):
     if os.path.exists(script) and subprocess.run(["node", "--check", script], capture_output=True).returncode:
         errors.append(f"{script}: JavaScript syntax error")
+
+# 5. Research channel stays gated; workers pass their tests; sample and pages exist
+pc = read("tdh/privacy-choice.js")
+endpoint = re.search(r"var RESEARCH_ENDPOINT = '([^']*)'", pc)
+ref = re.search(r"var ETHICS_APPROVAL_REF = '([^']*)'", pc)
+if not endpoint or not ref:
+    errors.append("privacy-choice.js lost its research gate constants")
+elif bool(endpoint.group(1)) != bool(ref.group(1)):
+    errors.append("research endpoint and ethics approval reference must be set together")
+elif endpoint.group(1) and not os.path.exists("docs/RESEARCH_PROTOCOL.md"):
+    errors.append("research enabled without a protocol")
+if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
+    errors.append("worker tests fail")
+for required in ["tdh/research.html", "tdh/system.html", "tdh/info-sheet.html", "docs/DPIA.md", "docs/RESEARCH_PROTOCOL.md",
+                 ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf"]:
+    if not os.path.exists(required):
+        errors.append(f"missing {required}")
+if not endpoint or not endpoint.group(1):
+    if re.search(r"currently collecting|is collecting|now collecting", read("tdh/research.html"), re.I):
+        errors.append("research page claims collection while the channel is off")
 
 print("\n".join(f"FAIL {e}" for e in errors) if errors else "All site checks passed.")
 sys.exit(1 if errors else 0)

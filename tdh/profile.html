@@ -548,7 +548,7 @@ function buildMatrix() {
   TESTS.forEach(function(t, ri) {
     html += '<tr><td class="rowlbl">' + t.title + '</td>';
     persons.forEach(function(p) {
-      html += '<td><input class="code-cell" id="cell-' + ri + '-' + p + '" maxlength="6" placeholder="——————" autocomplete="off" spellcheck="false"></td>';
+      html += '<td><input class="code-cell" id="cell-' + ri + '-' + p + '" maxlength="12" placeholder="——————" autocomplete="off" spellcheck="false"></td>';
     });
     html += '</tr>';
   });
@@ -558,7 +558,7 @@ function buildMatrix() {
   // Uppercase + auto-advance behaviour
   document.querySelectorAll('.code-cell').forEach(function(inp) {
     inp.addEventListener('input', function() {
-      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
       this.classList.remove('ok','bad');
     });
   });
@@ -599,7 +599,7 @@ function readMatrix() {
     for (var p = 0; p < MAX_PERSONS; p++) {
       var c = document.getElementById('cell-' + ri + '-' + p);
       var code = c ? c.value.trim().toUpperCase() : '';
-      if (code.length === 6) {
+      if ((code.length === 6 || code.length === 12)) {
         if (!byRow[ri]) byRow[ri] = {};
         byRow[ri][p] = code;
         personsUsed[p] = true;
@@ -771,7 +771,7 @@ document.getElementById('btn-clear').addEventListener('click', function() {
 });
 
 // Prefill: if arrived with ?code=XYZ, drop it into Person 1's column (fills all rows)
-if (CODE && CODE.length === 6) {
+if (CODE && (CODE.length === 6 || CODE.length === 12)) {
   for (var _r = 0; _r < TESTS.length; _r++) {
     var _c = document.getElementById('cell-' + _r + '-0');
     if (_c) _c.value = CODE;
@@ -779,7 +779,7 @@ if (CODE && CODE.length === 6) {
   setNote('Code ' + CODE + ' loaded into Person 1. Press Analyse.');
 }
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>

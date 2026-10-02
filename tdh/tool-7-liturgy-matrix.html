@@ -204,11 +204,11 @@ var selected = {};
 function genCode() {
   try {
     var existing = localStorage.getItem('tdh_code_t7');
-    if (existing && existing.length === 6) return existing;
+    if (existing && (existing.length === 6 || existing.length === 12)) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
+  for (var i = 0; i < ((window.TDHPrivacy && TDHPrivacy.codeLength) || 6); i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t7', code); } catch(e) {}
   return code;
 }

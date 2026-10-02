@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-plain-x,.echox-mark-x{text-transform:none;letter-spacing:0;font-weight:inherit;font-style:normal}.echox-mark-x{display:inline-block;margin:0 .04em;font-size:.92em;line-height:1;vertical-align:.02em}';
+  style.textContent = '.echox-name{font-style:normal!important;font-synthesis:none;white-space:nowrap}.echox-plain-x,.echox-mark-x{text-transform:none;letter-spacing:0;font-weight:inherit;font-style:normal!important}.echox-mark-x{display:inline-block;margin:0 .02em;font-size:1.25em;line-height:1;vertical-align:-.02em}';
   document.head.appendChild(style);
 
   const applyMarks = root => {
@@ -8,21 +8,25 @@
     const nodes = [];
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      if (/ECHOx/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg, .echox-mark-x, .echox-plain-x')) nodes.push(node);
+      if (/ECHOx/.test(node.nodeValue) && !node.parentElement.closest('script, style, textarea, svg, .echox-name, .echox-mark-x, .echox-plain-x')) nodes.push(node);
     }
 
     nodes.forEach(node => {
-      const parts = node.nodeValue.split(/(ECHOx)/g);
+      const parts = node.nodeValue.split(/(ECHOx[A-Za-z0-9]*)/g);
       const fragment = document.createDocumentFragment();
-      parts.forEach((part, index) => {
-        if (part === 'ECHOx') {
-          fragment.append('ECHO');
+      parts.forEach(part => {
+        if (/^ECHOx/.test(part)) {
+          // The whole name (standalone or compound) is one upright unit, never italic.
+          const name = document.createElement('span');
+          name.className = 'echox-name';
+          const rest = part.slice(5);
           const mark = document.createElement('span');
-          const compound = /^[A-Za-z0-9]/.test(parts[index + 1] || '');
-          mark.className = compound ? 'echox-mark-x' : 'echox-plain-x';
+          mark.className = rest ? 'echox-mark-x' : 'echox-plain-x';
           mark.setAttribute('aria-label', 'x');
-          mark.textContent = compound ? '\u00d7' : 'x';
-          fragment.append(mark);
+          mark.textContent = rest ? '\u00d7' : 'x';
+          name.append('ECHO', mark);
+          if (rest) name.append(rest);
+          fragment.append(name);
         } else if (part) {
           fragment.append(part);
         }

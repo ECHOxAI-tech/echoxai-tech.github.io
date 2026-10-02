@@ -1061,7 +1061,7 @@ document.getElementById('btn-print').addEventListener('click', () => window.prin
 
 function genCode() {
   const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s='';
-  for (let i=0;i<6;i++) s+=c[crypto.getRandomValues(new Uint8Array(1))[0]%c.length];
+  for (let i=0;i<((window.TDHPrivacy && TDHPrivacy.codeLength) || 6);i++) s+=c[crypto.getRandomValues(new Uint8Array(1))[0]%c.length];
   return s;
 }
 
@@ -1079,7 +1079,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
 (function(){
   try {
     const code=(new URLSearchParams(window.location.search)).get('code');
-    if(code&&code.length===6){
+    if(code&&(code.length === 6 || code.length === 12)){
       const stored=localStorage.getItem('tdh_t5_'+code.toUpperCase());
       if(stored){
         const data=JSON.parse(stored);
@@ -1175,7 +1175,7 @@ document.getElementById('btn-retake').addEventListener('click', () => {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>

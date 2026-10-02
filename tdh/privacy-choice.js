@@ -8,6 +8,17 @@
   var CONSENT_VERSION = '2026-07-15';
   var originalFetch = window.fetch.bind(window);
 
+  /* Retrieval-code length. Keep at 6 until worker/profile.mjs (12-char support) is deployed, then set to 12. */
+  var CODE_LENGTH = 6;
+
+  /* Optional anonymous research contribution (docs/RESEARCH_PROTOCOL.md). Disabled until BOTH values are set,
+     which happens only after ethics approval and deployment of worker/research.mjs. */
+  var RESEARCH_ENDPOINT = '';
+  var ETHICS_APPROVAL_REF = '';
+  var RESEARCH_KEY = 'tdh_research_optin';
+  var RESEARCH_VERSION = '2026-10-02';
+  var RESEARCH_TOOLS = [1, 2, 3, 4, 6]; /* tools 5 and 7 produce free-text protocols and never contribute */
+
   function mode() {
     return localStorage.getItem(MODE_KEY) || 'local';
   }
@@ -51,6 +62,51 @@
 
     return originalFetch(input, options);
   };
+
+  function researchAvailable() { return !!(RESEARCH_ENDPOINT && ETHICS_APPROVAL_REF); }
+
+  function researchOptedIn() {
+    try { return researchAvailable() && localStorage.getItem(RESEARCH_KEY) === RESEARCH_VERSION && localStorage.getItem(AGE_KEY) === 'yes'; }
+    catch (error) { return false; }
+  }
+
+  /* Reduce a result to whitelisted, bucketed numbers. Nothing identifying, no free text. */
+  function researchPayload(tool, result) {
+    if (!result || RESEARCH_TOOLS.indexOf(tool) < 0) return null;
+    if (tool === 4) {
+      var labels = ['system_failure', 'system_failure_early', 'dark_night', 'both', 'unclear'];
+      return labels.indexOf(result.primary) < 0 ? null : { v: 1, tool: 4, label: result.primary };
+    }
+    var scores = {}, count = 0;
+    Object.keys(result).forEach(function (key) {
+      var value = result[key], dim = String(key).toLowerCase().replace(/[^a-z0-9_]/g, '_').slice(0, 24);
+      if (typeof value !== 'number' || !isFinite(value) || !/^[a-z]/.test(dim) || count >= 12) return;
+      if (tool === 6) {
+        if (['threshold', 'architecture', 'cost'].indexOf(dim) < 0) return;
+        scores[dim] = Math.round(value);
+      } else {
+        if (value < 0 || value > 100) return;
+        scores[dim] = Math.round(value);
+      }
+      count++;
+    });
+    return count ? { v: 1, tool: tool, scores: scores } : null;
+  }
+
+  function researchSubmit(tool, result) {
+    try {
+      if (!researchOptedIn()) return Promise.resolve(false);
+      var payload = researchPayload(tool, result);
+      if (!payload) return Promise.resolve(false);
+      var sentKey = 'tdh_research_sent_t' + tool, month = new Date().toISOString().slice(0, 7);
+      if (localStorage.getItem(sentKey) === month) return Promise.resolve(false); /* one per tool per device per month */
+      localStorage.setItem(sentKey, month);
+      return originalFetch(RESEARCH_ENDPOINT.replace(/\/$/, '') + '/research', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+        credentials: 'omit', referrerPolicy: 'no-referrer', keepalive: true
+      }).then(function (r) { return r.ok; }, function () { return false; });
+    } catch (error) { return Promise.resolve(false); }
+  }
 
   function setMode(nextMode) {
     localStorage.setItem(MODE_KEY, nextMode);
@@ -110,6 +166,9 @@
         '<p><strong>Local only</strong> keeps results in this browser. <strong>Cross-device</strong> stores each generated result with its random retrieval code through the remote profile service, so it can be opened and compared on another device.</p>' +
         '<p>Cross-device storage is optional and requires explicit consent. Email delivery is a separate action you choose after receiving a result. Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
         '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (localStorage.getItem(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
+        (researchAvailable()
+          ? '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (localStorage.getItem(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span><strong>Optional:</strong> also contribute a bucketed, anonymous summary of my result to research. No code, e-mail, IP address or free text is included, and nothing identifies me. Because it is anonymous, a contribution cannot be located or withdrawn later. <a href="/tdh/research.html" target="_blank" rel="noopener">How this works</a>.</span></label>'
+          : '<p class="tdh-choice-current">Anonymous research contribution is not active. <a href="/tdh/research.html" target="_blank" rel="noopener">Read the research roadmap</a>.</p>') +
         '<div class="tdh-choice-grid">' +
           '<button class="tdh-choice-button" data-mode="local" type="button">Use locally</button>' +
           '<button class="tdh-choice-button" data-mode="remote" type="button">Enable cross-device</button>' +
@@ -144,6 +203,11 @@
       button.addEventListener('click', function () {
         if (!check.checked) return;
         setMode(button.getAttribute('data-mode'));
+        var rc = backdrop.querySelector('#tdh-research-check');
+        try {
+          if (rc && rc.checked) localStorage.setItem(RESEARCH_KEY, RESEARCH_VERSION);
+          else localStorage.removeItem(RESEARCH_KEY);
+        } catch (error) { /* storage unavailable */ }
         closePanel(backdrop);
       });
     });
@@ -179,7 +243,8 @@
     }
   }
 
-  window.TDHPrivacy = { getMode: mode, open: function () { showPanel(false); } };
+  window.TDHPrivacy = { getMode: mode, codeLength: CODE_LENGTH, open: function () { showPanel(false); } };
+  window.TDHResearch = { available: researchAvailable, optedIn: researchOptedIn, submit: researchSubmit, payload: researchPayload };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 }());

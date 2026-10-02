@@ -568,7 +568,7 @@
   <div class="modal">
     <h2>Combine &amp; compare profiles</h2>
     <p>Each test gives its own six-character code. On the profile page you can enter one code to revisit a result, several codes to assemble one person's overlapping profile, or two people's codes to see how they meet. Codes work across devices only when cross-device storage was explicitly enabled. No account required.</p>
-    <input type="text" id="result-code-input" placeholder="AB1C2D" maxlength="6" autocomplete="off" autocorrect="off" spellcheck="false">
+    <input type="text" id="result-code-input" placeholder="AB1C2D" maxlength="12" autocomplete="off" autocorrect="off" spellcheck="false">
     <div class="modal-actions">
       <button class="modal-submit" id="code-submit">Open profile page</button>
       <button class="modal-cancel" id="close-code-modal">Cancel</button>
@@ -614,7 +614,7 @@
 
   submit.addEventListener('click', () => {
     const code = input.value.trim();
-    if (code.length === 6) {
+    if ((code.length === 6 || code.length === 12)) {
       window.location.href = `./profile.html?code=${code}`;
     } else {
       input.style.borderColor = 'rgba(184,150,62,0.6)';
@@ -627,7 +627,7 @@
     if (e.key === 'Enter') submit.click();
   });
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>

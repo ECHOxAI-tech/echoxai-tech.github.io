@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Thesis, Made Testable — The Dark Hierarchy</title>
+<link rel="canonical" href="https://echoxstudios.art/tdh/research.html"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<meta name="description" content="The Dark Hierarchy states claims that can be wrong. Six hypotheses, a three-phase validation roadmap, an anonymous-by-design data pipeline, and an open invitation to scientific institutions."/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="ECHOx"/><meta property="og:title" content="The Thesis, Made Testable — The Dark Hierarchy"/><meta property="og:description" content="Six falsifiable hypotheses, an anonymous-by-design pipeline, and a path to institutional co-projects."/><meta property="og:url" content="https://echoxstudios.art/tdh/research.html"/>
+<link rel="stylesheet" href="privacy-choice.css?v=20261002">
+<link rel="stylesheet" href="a11y.css?v=20261002">
+<script src="privacy-choice.js?v=20261002"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inconsolata:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:#080806; --near:#0e0e0b; --panel:#12110d; --off-white:#f0ece3; --bone:#d4cfc4;
+    --gold:#d4a93e; --gold-dim:#b8963e; --text:#e2ddd2; --muted:#a09890;
+    --rule:rgba(184,150,62,0.22); --rule-strong:rgba(212,169,62,0.5);
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { font-size:24px; background:var(--black); color:var(--text); scroll-behavior:smooth; }
+  @media (max-width:640px) { html { font-size:22px; } }
+  body { font-family:'Cormorant Garamond', Georgia, serif; font-weight:300; line-height:1.7; min-height:100vh; }
+  .wrap { max-width:40rem; margin:0 auto; padding:0 1.5rem; }
+  .wide { max-width:60rem; margin:0 auto; padding:0 1.5rem; }
+  a { color:var(--gold); }
+
+  .back-link { display:inline-block; margin:2rem 0 0; font:400 .6rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-dim); text-decoration:none; }
+  .back-link:hover { color:var(--gold); }
+
+  /* Hero */
+  .hero { text-align:center; padding:4rem 0 3rem; background:radial-gradient(ellipse at 50% 0%, rgba(212,169,62,.10), transparent 62%); border-bottom:1px solid var(--rule); }
+  .kicker { font:400 .6rem 'Inconsolata',monospace; letter-spacing:.3em; text-transform:uppercase; color:var(--gold); margin-bottom:1.4rem; }
+  h1 { font:400 clamp(2.1rem,8vw,3.4rem)/1.08 'IM Fell English',Georgia,serif; letter-spacing:.06em; text-transform:uppercase; color:var(--off-white); }
+  .subtitle { font:italic 400 1.05rem/1.4 'Cormorant Garamond',Georgia,serif; color:var(--bone); margin:1rem auto 0; max-width:28rem; }
+  .byline { font:300 .6rem 'Inconsolata',monospace; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-top:1.4rem; }
+  .hero-cta { display:flex; flex-wrap:wrap; gap:.8rem; justify-content:center; margin-top:2.2rem; }
+  .btn { display:inline-block; font:500 .62rem 'Inconsolata',monospace; letter-spacing:.18em; text-transform:uppercase; text-decoration:none; padding:.85rem 1.4rem; border:1px solid var(--gold); transition:background .2s,color .2s; cursor:pointer; background:transparent; color:var(--gold); }
+  .btn-solid { background:var(--gold); color:var(--black); }
+  .btn:hover { background:var(--off-white); border-color:var(--off-white); color:var(--black); }
+
+  /* Figures strip */
+  .figures { display:grid; grid-template-columns:repeat(3,1fr); border-bottom:1px solid var(--rule); }
+  @media (min-width:760px) { .figures { grid-template-columns:repeat(6,1fr); } }
+  .fig { padding:1.4rem .5rem; text-align:center; border-right:1px solid var(--rule); border-top:1px solid var(--rule); }
+  .fig:nth-child(3n) { border-right:0; }
+  @media (min-width:760px) { .fig { border-top:0; border-right:1px solid var(--rule); } .fig:nth-child(3n){ border-right:1px solid var(--rule);} .fig:last-child{ border-right:0; } }
+  .fig b { display:block; font:400 1.5rem/1.1 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .fig span { display:block; margin-top:.35rem; font:400 .55rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+
+  .stat-grid { display:grid; gap:.8rem; margin:1.2rem 0 0; }
+  @media (min-width:760px) { .stat-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat { border:1px solid var(--rule); background:var(--panel); padding:1.1rem 1rem; }
+  .stat b { display:block; font:400 1.7rem/1 'IM Fell English',Georgia,serif; color:var(--gold); }
+  .stat em { display:block; margin:.5rem 0 .35rem; font:400 .55rem 'Inconsolata',monospace; font-style:normal; letter-spacing:.14em; text-transform:uppercase; color:var(--off-white); }
+  .stat p { font-size:.78rem; line-height:1.5; margin:0; color:var(--bone); }
+  .stat sup, .note sup { font:400 .5rem 'Inconsolata',monospace; color:var(--gold-dim); }
+  .note { margin-top:1rem; font:300 .6rem/1.6 'Inconsolata',monospace; color:var(--muted); }
+  .note a { color:var(--gold-dim); }
+  .dl { display:flex; flex-wrap:wrap; gap:.8rem; align-items:center; margin-top:1.4rem; padding:1.2rem; border:1px solid var(--rule-strong); background:radial-gradient(ellipse at 0% 0%, rgba(212,169,62,.10), transparent 70%); }
+  .dl div { flex:1 1 14rem; }
+  .dl strong { display:block; font:400 1rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .dl span { font-size:.78rem; color:var(--muted); line-height:1.5; }
+
+  section { padding:3.2rem 0 0; }
+  .label { font:400 .6rem 'Inconsolata',monospace; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); margin-bottom:.9rem; }
+  h2 { font:400 1.55rem/1.25 'IM Fell English',Georgia,serif; color:var(--off-white); margin-bottom:1.2rem; }
+  p { font-size:.92rem; margin-bottom:1.2rem; }
+  p strong { color:var(--off-white); font-weight:500; }
+  p em { color:var(--bone); }
+
+  .pull { margin:0; padding:2.6rem 0 0; text-align:center; }
+  .pull blockquote { font:italic 400 1.35rem/1.45 'IM Fell English',Georgia,serif; color:var(--off-white); max-width:34rem; margin:0 auto; }
+  .pull blockquote::before { content:"“"; display:block; color:var(--gold); font-size:2.4rem; line-height:1; margin-bottom:.3rem; }
+  .pull cite { display:block; margin-top:1.1rem; font:400 .58rem 'Inconsolata',monospace; font-style:normal; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+
+  .grid { display:grid; gap:1rem; margin-top:1.2rem; }
+  @media (min-width:760px) { .grid.three { grid-template-columns:repeat(3,1fr); } .grid.two { grid-template-columns:repeat(2,1fr); } }
+  .card { border:1px solid var(--rule); background:var(--panel); padding:1.3rem 1.2rem; transition:border-color .2s; }
+  .card:hover { border-color:var(--rule-strong); }
+  .card .num { font:400 .58rem 'Inconsolata',monospace; letter-spacing:.2em; color:var(--gold-dim); }
+  .card h3 { font:400 1.05rem/1.3 'IM Fell English',Georgia,serif; color:var(--off-white); margin:.4rem 0 .5rem; }
+  .card p { font-size:.8rem; line-height:1.6; margin:0; color:var(--bone); }
+
+  .comps { list-style:none; margin-top:1rem; }
+  .comps li { display:grid; gap:.2rem; padding:1rem 0; border-top:1px solid var(--rule); }
+  .comps li:last-child { border-bottom:1px solid var(--rule); }
+  .comps strong { font:400 1rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .comps span { font-size:.82rem; color:var(--bone); line-height:1.55; }
+  .houses { margin-top:1.4rem; font:400 .6rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+
+  .tools { list-style:none; margin-top:1rem; counter-reset:t; }
+  .tools a { display:grid; grid-template-columns:2.2rem 1fr auto; gap:.4rem .6rem; align-items:baseline; padding:.95rem 0; border-top:1px solid var(--rule); text-decoration:none; color:inherit; }
+  .tools li:last-child a { border-bottom:1px solid var(--rule); }
+  .tools .n { font:400 .6rem 'Inconsolata',monospace; color:var(--gold-dim); letter-spacing:.1em; }
+  .tools .t { font:400 .98rem 'IM Fell English',Georgia,serif; color:var(--bone); }
+  .tools .m { font:300 .55rem 'Inconsolata',monospace; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .tools a:hover .t { color:var(--off-white); }
+  .tools .d { grid-column:2 / 4; font-size:.8rem; line-height:1.5; color:var(--muted); }
+
+  .bound { border-left:3px solid var(--gold); background:var(--near); padding:1.3rem 1.5rem; margin-top:1.2rem; }
+  .bound ul { list-style:none; }
+  .bound li { font-size:.85rem; line-height:1.6; padding:.35rem 0 .35rem 1.2rem; position:relative; color:var(--bone); }
+  .bound li::before { content:"—"; position:absolute; left:0; color:var(--gold-dim); }
+
+  .package { list-style:none; margin-top:1rem; }
+  .package li { padding:.9rem 0; border-top:1px solid var(--rule); display:grid; gap:.15rem; }
+  .package li:last-child { border-bottom:1px solid var(--rule); }
+  .package strong { font:400 .98rem 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .package span { font-size:.8rem; color:var(--muted); line-height:1.5; }
+
+  .contact { margin-top:3.4rem; padding:2.6rem 1.5rem; text-align:center; border-top:1px solid var(--rule-strong); border-bottom:1px solid var(--rule); background:radial-gradient(ellipse at 50% 100%, rgba(212,169,62,.09), transparent 65%); }
+  .contact h2 { margin-bottom:.6rem; }
+  .contact p { max-width:28rem; margin:0 auto 1.4rem; font-size:.85rem; color:var(--bone); }
+  .addr { display:inline-block; font:400 .8rem 'Inconsolata',monospace; letter-spacing:.06em; color:var(--off-white); padding:.7rem 1rem; border:1px solid var(--rule-strong); user-select:all; }
+  .copy-note { display:block; margin-top:.7rem; font:300 .55rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); min-height:1em; }
+
+  footer { text-align:center; padding:2.4rem 1.5rem 4.5rem; font:300 .58rem 'Inconsolata',monospace; letter-spacing:.14em; color:var(--muted); }
+  footer a { color:var(--muted); }
+
+  .hyp { width:100%; border-collapse:collapse; margin-top:1rem; }
+  .hyp th { font:400 .55rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); text-align:left; padding:.6rem .5rem; border-bottom:1px solid var(--rule-strong); }
+  .hyp td { font-size:.78rem; line-height:1.5; color:var(--bone); padding:.8rem .5rem; border-bottom:1px solid var(--rule); vertical-align:top; }
+  .hyp td:first-child { font:400 .8rem 'Inconsolata',monospace; color:var(--gold); white-space:nowrap; }
+  .hyp td b { color:var(--off-white); font-weight:500; }
+  @media (max-width:760px) { .hyp thead { display:none; } .hyp, .hyp tbody, .hyp tr, .hyp td { display:block; width:100%; } .hyp tr { border:1px solid var(--rule); background:var(--panel); padding:.8rem; margin-bottom:.8rem; } .hyp td { border:0; padding:.25rem 0; } .hyp td::before { content:attr(data-l); display:block; font:400 .5rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); } }
+  .phase { border-left:2px solid var(--rule-strong); padding:.2rem 0 .2rem 1.1rem; margin:0 0 1.4rem; }
+  .phase .tag { font:400 .55rem 'Inconsolata',monospace; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); }
+  .phase h3 { font:400 1.1rem 'IM Fell English',Georgia,serif; color:var(--off-white); margin:.2rem 0 .3rem; }
+  .phase p { font-size:.82rem; line-height:1.55; margin:0; color:var(--bone); }
+  .status { display:inline-block; font:500 .5rem 'Inconsolata',monospace; letter-spacing:.14em; text-transform:uppercase; padding:.15rem .45rem; border:1px solid var(--rule-strong); color:var(--gold); margin-left:.4rem; }
+  .status.off { color:var(--muted); border-color:var(--rule); }
+</style>
+</head>
+<body>
+
+<div class="wrap"><a href="./system.html" class="back-link">← Acquisitions briefing</a></div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Research &amp; Validation Roadmap</p>
+    <h1>The Thesis, Made Testable</h1>
+    <p class="subtitle">A theory of desire that states how it could be wrong, and a path for scientific institutions to check.</p>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#partner">Propose a co-project</a>
+      <a class="btn" href="./system.html">Back to the briefing</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <p class="label">The argument</p>
+    <h2>A book that can be tested, not only read.</h2>
+    <p><em>The Dark Hierarchy</em> is a theory of recognition-dependent desire. It does not stop at assertion. It says desire arrives through four channels, that those channels form a gradient and not a set of types, and that in every case it could examine the structure does not depend on the gender of the object. These are claims a research group can test, and the book says plainly that “no exception it could document” is not the same as “no exception”.</p>
+    <p>The seven reader instruments are built on that theory. They give a reader a private reflection today. They are also designed so that, with consent and ethics approval, they can become a validated measure tomorrow.</p>
+  </section>
+
+  <section>
+    <p class="label">Six hypotheses</p>
+    <h2>Each one says how it could fail.</h2>
+    <table class="hyp">
+      <thead><tr><th>ID</th><th>Claim in the book</th><th>Test</th><th>Weakened if</th></tr></thead>
+      <tbody>
+        <tr><td data-l="ID">H1</td><td data-l="Claim"><b>Four distinguishable channels</b> (visual, emotional, tactile, intellectual)</td><td data-l="Test">Confirmatory factor analysis against one- and two-factor alternatives</td><td data-l="Weakened if">A single factor, or another structure, fits better</td></tr>
+        <tr><td data-l="ID">H2</td><td data-l="Claim"><b>A gradient, not types</b></td><td data-l="Test">Dimensional versus latent-class and taxometric models</td><td data-l="Weakened if">Discrete classes fit clearly better than a continuum</td></tr>
+        <tr><td data-l="ID">H3</td><td data-l="Claim"><b>Stable over time</b></td><td data-l="Test">Test–retest reliability at 4 and 12 weeks</td><td data-l="Weakened if">Reliability falls below a pre-registered threshold</td></tr>
+        <tr><td data-l="ID">H4</td><td data-l="Claim"><b>Not gendered</b>: profile is not explained by the gender of the object of desire</td><td data-l="Test">Equivalence tests across gender and orientation groups</td><td data-l="Weakened if">A pre-registered effect exceeds the equivalence bound</td></tr>
+        <tr><td data-l="ID">H5</td><td data-l="Claim"><b>Attachment as confirmation history</b></td><td data-l="Test">Convergent and incremental validity against an established adult-attachment scale</td><td data-l="Weakened if">No distinct variance beyond the established scale</td></tr>
+        <tr><td data-l="ID">H6</td><td data-l="Claim"><b>Dark night is distinguishable from system failure</b></td><td data-l="Test">Prospective follow-up of classification against outcome</td><td data-l="Weakened if">Classification does not predict outcome</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <p class="label">The roadmap</p>
+    <h2>Three phases, each with a gate.</h2>
+    <div class="phase"><span class="tag">Phase 0 · now</span><h3>Reflective instruments <span class="status">Live</span></h3><p>Seven instruments with face validity. Local-first by default. No research claim is made.</p></div>
+    <div class="phase"><span class="tag">Phase 1</span><h3>Anonymous aggregate contribution <span class="status off">Built · switched off</span></h3><p>An optional, separate, default-off choice to contribute a bucketed summary of a result. It gives descriptive distributions and a feasibility signal for H2. It switches on only after documented ethics review.</p></div>
+    <div class="phase"><span class="tag">Phase 2</span><h3>Institutional co-project <span class="status off">Seeking partner</span></h3><p>A separately consented, pre-registered study under a university or research institute’s ethics approval, with item-level data and, where needed, pseudonymised retest linkage. This is where H1 and H3–H6 are tested.</p></div>
+    <div class="phase"><span class="tag">Phase 3</span><h3>Publication and replication</h3><p>Pre-registered results with open materials. Null and contrary findings are published.</p></div>
+  </section>
+
+  <section>
+    <p class="label">Anonymous by design</p>
+    <h2>What the research channel can and cannot hold.</h2>
+    <div class="bound">
+      <ul>
+        <li>It stores counters only: tool, dimension, a 10-point bucket and the calendar month. There is no row per person, so individual answers cannot be reconstructed.</li>
+        <li>It holds no retrieval code, e-mail, IP address, device identifier, cookie, free text or demographic.</li>
+        <li>Results from tools 5 and 7, which produce free-text protocols, never contribute.</li>
+        <li>Nothing is published for any tool with fewer than 30 contributions.</li>
+        <li>It is a separate, default-unticked choice, independent of storage and of age confirmation. Because the data are anonymous, a past contribution cannot be located or withdrawn, and the consent text says so.</li>
+        <li>Contributors are self-selected. Results are never presented as prevalence or as clinical measures.</li>
+      </ul>
+    </div>
+    <p class="note">Cloudflare processes IP addresses transiently at its edge to deliver requests; the service does not store them. Full protocol, hypotheses and governance gates are in <code>docs/RESEARCH_PROTOCOL.md</code> and the data-protection assessment in <code>docs/DPIA.md</code> in the site repository.</p>
+  </section>
+
+  <section id="partner">
+    <p class="label">For institutions</p>
+    <h2>What is offered, and what is asked.</h2>
+    <div class="grid two">
+      <div class="card"><span class="num">Offered</span><h3>A theory, a text and a pipeline</h3><p>A 381-page work with a full apparatus; seven instruments with documented item logic; a privacy-hardened data pipeline; a ready route to participants among readers; credit and co-authorship on terms agreed in advance.</p></div>
+      <div class="card"><span class="num">Asked</span><h3>Rigour and sponsorship</h3><p>An ethics sponsor, a methodological lead, access to established comparison measures, and a commitment to pre-registration and open reporting.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="contact" id="request">
+  <h2>Propose a co-project</h2>
+  <p>Departments of psychology, sexology, philosophy of psychology, gender studies and religious studies are all natural homes. Write with a short outline.</p>
+  <span class="addr" id="addr">inbox@echoxstudios.art</span>
+  <button type="button" class="btn" id="copy-addr" style="margin-left:.4rem">Copy address</button>
+  <span class="copy-note" id="copy-note" role="status" aria-live="polite"></span>
+</div>
+
+<footer>ECHOxSTUDIOS · Berlin · The Dark Hierarchy, edition v122</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copy-addr'), note = document.getElementById('copy-note');
+    btn.addEventListener('click', function () {
+      var text = document.getElementById('addr').textContent;
+      var done = function (ok) { note.textContent = ok ? 'Address copied' : 'Select the address above to copy'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      else done(false);
+    });
+  })();
+</script>
+<script src="../brand-mark.js?v=20261002z"></script>
+<script src="a11y.js?v=20261002"></script>
+</body>
+</html>

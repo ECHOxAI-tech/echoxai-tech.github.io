@@ -737,11 +737,11 @@ function genCode() {
   // Per-test code — stable for THIS test on this device (kept across retakes); each test has its own
   try {
     var existing = localStorage.getItem('tdh_code_t1');
-    if (existing && existing.length === 6) return existing;
+    if (existing && (existing.length === 6 || existing.length === 12)) return existing;
   } catch(e) {}
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   var code = '';
-  for (var i = 0; i < 6; i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
+  for (var i = 0; i < ((window.TDHPrivacy && TDHPrivacy.codeLength) || 6); i++) code += chars[crypto.getRandomValues(new Uint8Array(1))[0] % chars.length];
   try { localStorage.setItem('tdh_code_t1', code); } catch(e) {}
   return code;
 }
@@ -1320,7 +1320,7 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
   try {
     const params = new URLSearchParams(window.location.search);
     const code   = params.get('code');
-    if (code && code.length === 6) {
+    if (code && (code.length === 6 || code.length === 12)) {
       if (tryRetrieve(code.toUpperCase())) return;
     }
   } catch(e) {}
@@ -1333,6 +1333,7 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
     var code = genCode();
     window.savedCode = code;
     var result = window.__lastResult || {};
+    if (window.TDHResearch) TDHResearch.submit(1, result);
     var _t1obj = { ts: Date.now(), result: result };
     try { localStorage.setItem('tdh_t1_' + code, JSON.stringify(_t1obj)); } catch(e) {}
     try { await saveToProfile(code, 't1', _t1obj); } catch(e) {}
@@ -1441,7 +1442,7 @@ document.getElementById('btn-reveal').addEventListener('click', function() {
   })();
 
 </script>
-<script src="../brand-mark.js?v=20261002x"></script>
+<script src="../brand-mark.js?v=20261002z"></script>
 <script src="a11y.js?v=20261002"></script>
 </body>
 </html>
