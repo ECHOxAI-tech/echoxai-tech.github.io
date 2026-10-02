@@ -7,7 +7,8 @@
 import { CODE_RE, TOOL_RE, cors, json, readJson, limited } from './lib.mjs';
 
 const MAX_BYTES = 32 * 1024;
-const RETENTION_SECONDS = 60 * 60 * 24 * 730; // 24 months; renewed on each write
+const RETENTION_SECONDS = 60 * 60 * 24 * 730; // 24 months without use; renewed on each save and, at most weekly, on each open
+const RENEW_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
 const keyOf = (tool, code) => `${tool}${code}`;
 
@@ -29,7 +30,7 @@ export default {
         if (!privacy || typeof privacy.consentAt !== 'string' || typeof privacy.consentVersion !== 'string') {
           return json(req, { error: 'consent required' }, 403);
         }
-        const record = { data, consentAt: privacy.consentAt, consentVersion: privacy.consentVersion };
+        const record = { data, consentAt: privacy.consentAt, consentVersion: privacy.consentVersion, touchedAt: Date.now() };
         await env.PROFILES.put(keyOf(tool, code), JSON.stringify(record), { expirationTtl: RETENTION_SECONDS });
         return json(req, { saved: true });
       }
@@ -46,6 +47,11 @@ export default {
           return json(req, { deleted: true });
         }
         const record = JSON.parse(raw);
+        // Opening a result counts as use: restart the 24-month clock, but write at most once a week per record.
+        if (!record.touchedAt || Date.now() - record.touchedAt > RENEW_AFTER_MS) {
+          record.touchedAt = Date.now();
+          await env.PROFILES.put(keyOf(tool, code), JSON.stringify(record), { expirationTtl: RETENTION_SECONDS });
+        }
         return json(req, { found: true, data: record.data });
       }
 

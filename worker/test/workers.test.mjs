@@ -9,8 +9,8 @@ const req = (path, method = 'GET', body, headers = {}) =>
   new Request('https://w.example' + path, { method, headers: { Origin: ORIGIN, 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1', ...headers }, body: body ? JSON.stringify(body) : undefined });
 
 // ---------- in-memory KV ----------
-const kv = () => { const m = new Map(); return {
-  put: async (k, v) => { m.set(k, v); }, get: async (k) => m.get(k) ?? null, delete: async (k) => { m.delete(k); }, _m: m }; };
+const kv = () => { const m = new Map(); const o = { puts: [] }; return { _o: o,
+  put: async (k, v, opts) => { m.set(k, v); o.puts.push({ k, opts }); }, get: async (k) => m.get(k) ?? null, delete: async (k) => { m.delete(k); }, _m: m }; };
 
 // ---------- in-memory D1 (just enough for the two upserts and two selects used) ----------
 function d1() {
@@ -45,6 +45,21 @@ await t('profile: legacy 6-char and new 12-char codes round-trip', async () => {
     const g = await (await profile.fetch(req(`/profile?code=${code}&tool=t1`), penv)).json();
     assert.deepEqual(g.data, { a: 1 });
   }
+});
+await t('profile: opening a result renews the 24-month clock, at most weekly', async () => {
+  const code = 'RENEW2345ABC', key = 't1' + code, TTL = 60 * 60 * 24 * 730;
+  await profile.fetch(req('/profile', 'POST', { code, tool: 't1', data: { a: 1 }, privacy: consent }), penv);
+  assert.equal(PROFILES._o.puts.at(-1).opts.expirationTtl, TTL, 'save sets 24 months');
+  const n = () => PROFILES._o.puts.length;
+  let before = n();
+  await profile.fetch(req(`/profile?code=${code}&tool=t1`), penv);
+  assert.equal(n(), before, 'opened the same day: no extra write');
+  const rec = JSON.parse(PROFILES._m.get(key)); rec.touchedAt = Date.now() - 8 * 24 * 3600 * 1000; PROFILES._m.set(key, JSON.stringify(rec));
+  await profile.fetch(req(`/profile?code=${code}&tool=t1`), penv);
+  assert.equal(n(), before + 1, 'opened after a week: renewed');
+  assert.equal(PROFILES._o.puts.at(-1).opts.expirationTtl, TTL);
+  assert.ok(Date.now() - JSON.parse(PROFILES._m.get(key)).touchedAt < 5000, 'touchedAt refreshed');
+  await profile.fetch(req(`/profile?code=${code}&tool=t1`, 'DELETE'), penv);
 });
 await t('profile: ambiguous characters (0 O 1 I) are invalid', async () => {
   const r = await profile.fetch(req('/profile?code=ABCD0O&tool=t1'), penv); assert.equal(r.status, 404);

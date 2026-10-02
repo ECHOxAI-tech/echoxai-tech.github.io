@@ -16,7 +16,7 @@ The e-mail delivery endpoint (`POST /`) is **not** part of these files; it remai
 1. `wrangler kv namespace create PROFILES`; bind it as `PROFILES`.
 2. Add two rate-limit bindings (`PROFILE_READ_LIMITER`: e.g. 20 per minute; `PROFILE_WRITE_LIMITER`: 10 per minute).
 3. Deploy, then point `WORKER` in `privacy-choice.js` and the tools at it, **or** route `/profile` to it from the existing worker.
-4. Set `CODE_LENGTH = 12` in `tdh/privacy-choice.js`. Existing 6-character codes continue to work and expire after 24 months from their last save.
+4. Set `CODE_LENGTH = 12` in `tdh/privacy-choice.js`. Existing 6-character codes continue to work and expire after 24 months without use (a save or an open restarts the clock).
 5. Update privacy page § 6 to state the 24-month expiry.
 
 ## Deploy the research service (live since 2026-10-03)
