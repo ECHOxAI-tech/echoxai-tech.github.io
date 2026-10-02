@@ -127,6 +127,8 @@ if os.path.exists(".anonymity-patterns"):
     patterns += [ln.strip() for ln in open(".anonymity-patterns", encoding="utf-8") if ln.strip() and not ln.startswith("#")]
 LEGAL = re.compile("|".join(patterns), re.I)
 for path in glob.glob("*.html") + glob.glob("tdh/*.html") + glob.glob("*.md") + glob.glob("docs/*.md"):
+    if path == "imprint.html":
+        continue  # the one page that carries the provider's name and address (owner decision, 2026-10-04)
     if LEGAL.search(read(path)):
         errors.append(f"{path}: contains a legal name or personal contact detail")
 
