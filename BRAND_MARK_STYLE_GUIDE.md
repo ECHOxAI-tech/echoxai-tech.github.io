@@ -8,7 +8,7 @@ This is the single authority for how the "x" in ECHOx is written and rendered on
 |---|---|---|---|
 | Standalone brand | `ECHOx` | ECHO + lowercase **x** | Never `ECHOX`, never `ECHO×` on its own. |
 | Compound (product, studio, label) | `ECHOxSTUDIOS`, `ECHOxLUMINA`, `ECHOxVAULT`, `ECHOxINSTANT` | ECHO**×**STUDIOS, using the multiplication sign U+00D7 | The glyph is a real character in the page font. |
-| Email addresses, URLs, hostnames, file names, code identifiers | `inbox@echoxstudios.art`, `echoxstudios.art`, `echoxai-tech` | Unchanged, all lowercase, plain letters | The mark script never touches these (its pattern is case-sensitive `ECHOx`). |
+| Email addresses, URLs, hostnames, file names, code identifiers | `inbox@echoxstudios.art`, `echoxstudios.art`, `echoxstudios` | Unchanged, all lowercase, plain letters | The mark script never touches these (its pattern is case-sensitive `ECHOx`). |
 | Logo images | Use the masters from the private business repo | As designed | See `BRANDING.md`. |
 
 The compound form always has the multiplication sign. The standalone form always has the lowercase letter.
