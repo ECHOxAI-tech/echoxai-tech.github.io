@@ -75,5 +75,21 @@ await t('Nothing: a new window asks again', async () => {
   await c.dispose(); await c2.dispose();
 });
 
+await t('Nothing: offers to remove results already saved on this device, and removes them only when ticked', async () => {
+  const seed = { ...blank, tdh_code_t1: 'ABCDEFGH2345', tdh_t1_ABCDEFGH2345: '{"a":1}' };
+  for (const tick of [false, true]) {
+    const c = await b.context({ seed }); const p = await c.page(tool.file);
+    await p.waitFor(`!!document.querySelector('#tdh-wipe-check')`, 8000);
+    assert.match(await p.text('.tdh-wipe'), /Also remove the 1 result already saved on this device/);
+    await p.evaluate(`document.querySelector('#tdh-age-check').click(); document.querySelector('#tdh-research-check').click()`);
+    if (tick) await p.evaluate(`document.querySelector('#tdh-wipe-check').click()`);
+    await p.click('.tdh-choice-button[data-mode="none"]');
+    await p.waitFor(`!document.querySelector('.tdh-privacy-backdrop')`, 5000);
+    const left = await p.evaluate(`${REAL}.getItem('tdh_t1_ABCDEFGH2345') !== null`);
+    assert.equal(left, !tick, tick ? 'removed when ticked' : 'kept when not ticked');
+    await c.dispose();
+  }
+});
+
 await b.stop();
 console.log('storage choices: all checks passed');

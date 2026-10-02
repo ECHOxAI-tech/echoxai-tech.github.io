@@ -224,6 +224,19 @@
     return codes.sort();
   }
 
+  /* Removes the results this device already holds (not the research "already contributed" markers). */
+  function wipeLocalResults() {
+    try {
+      if (!realStorage) return;
+      var drop = [];
+      for (var i = 0; i < realStorage.length; i++) {
+        var k = realStorage.key(i);
+        if (/^tdh_t[1-7]_/.test(k) || /^tdh_code_t[1-7]$/.test(k)) drop.push(k);
+      }
+      drop.forEach(function (k) { realStorage.removeItem(k); });
+    } catch (error) { /* ignore */ }
+  }
+
   function deletionRequest() {
     var codes = localCodes();
     var body = 'Please delete the TDH profiles stored under these retrieval codes and confirm by reply.\n\n' +
@@ -268,7 +281,8 @@
           '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="local" type="button">Limited access: this device and browser only</button>' +
             '<p class="tdh-choice-note">Nothing is saved anywhere else, and your code only works in this browser on this device. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
           '<div class="tdh-choice-opt tdh-choice-wide"><button class="tdh-choice-button" data-mode="none" type="button">Nothing saved: most privacy</button>' +
-            '<p class="tdh-choice-note">Nothing is saved, not even on this device. There is no way to come back to this result after the window is closed. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
+            '<p class="tdh-choice-note">Nothing is saved, not even on this device. There is no way to come back to this result after the window is closed. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p>' +
+            (localCodes().length ? '<label class="tdh-wipe"><input type="checkbox" id="tdh-wipe-check"> <span>Also remove the ' + localCodes().length + (localCodes().length === 1 ? ' result' : ' results') + ' already saved on this device.</span></label>' : '') + '</div>' +
         '</div>' +
         (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'your code works on any device and browser' : current === 'none' ? 'nothing saved' : 'this device and browser only') + '. Choosing "this device and browser only" or "nothing saved" now withdraws consent for future saving of results. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
       '</section>';
@@ -302,6 +316,8 @@
     buttons.forEach(function (button) {
       button.addEventListener('click', function () {
         if (!check.checked || (rcheck && !rcheck.checked)) return;
+        var wipe = backdrop.querySelector('#tdh-wipe-check');
+        if (button.getAttribute('data-mode') === 'none' && wipe && wipe.checked) wipeLocalResults();
         setMode(button.getAttribute('data-mode'));
         codeWhereNote();
         store.set(RESEARCH_KEY, RESEARCH_VERSION);

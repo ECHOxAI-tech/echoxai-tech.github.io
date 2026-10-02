@@ -87,7 +87,7 @@ export async function launch() {
       const seed = { tdh_storage_mode: 'remote', tdh_remote_consent_at: '2026-10-02T10:00:00.000Z', tdh_adult_confirmed: 'yes', tdh_research_optin: '2026-10-04', ...(opts.seed || {}) };
       await call('Page.addScriptToEvaluateOnNewDocument', { source: `
         Object.defineProperty(navigator, 'webdriver', { get: () => ${opts.webdriver ? 'true' : 'false'} });
-        ${opts.blockStorage ? `Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('blocked', 'SecurityError'); } });` : `try { var s = ${JSON.stringify(seed)}; for (var k in s) if (localStorage.getItem(k) === null && !sessionStorage.getItem('tdh_seeded_off')) localStorage.setItem(k, s[k]); } catch (e) {}`}
+        ${opts.blockStorage ? `Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('blocked', 'SecurityError'); } });` : `try { if (window !== window.top) throw 0; var s = ${JSON.stringify(seed)}; for (var k in s) if (localStorage.getItem(k) === null && !sessionStorage.getItem('tdh_seeded_off')) localStorage.setItem(k, s[k]); } catch (e) {}`}
       ` });
       const evaluate = async expr => {
         const r = await call('Runtime.evaluate', { expression: expr, awaitPromise: true, returnByValue: true });
