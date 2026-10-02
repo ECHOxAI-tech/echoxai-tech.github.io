@@ -55,6 +55,20 @@ t('indexable pages have a unique title, a unique description, a canonical URL an
   must(problems);
 });
 
+t('every sharing image is a real raster file under 1 MB, and our own cards are 1200 x 630', () => {
+  const problems = [];
+  for (const p of indexable) {
+    const m = /property="og:image" content="https:\/\/echoxstudios\.art\/([^"]+)"/.exec(html[p]);
+    if (!m) continue;
+    const file = path.join(root, m[1].split('?')[0]);
+    if (/\.svg(\?|$)/i.test(m[1])) { problems.push(`${p}: og:image is an SVG; most networks cannot show it`); continue; }
+    if (!fs.existsSync(file)) { problems.push(`${p}: og:image ${m[1]} does not exist`); continue; }
+    if (fs.statSync(file).size > 1024 * 1024) problems.push(`${p}: sharing image over 1 MB`);
+    if (/^assets\/og\/.*\.png$/i.test(m[1])) { const b = fs.readFileSync(file); const w = b.readUInt32BE(16), h = b.readUInt32BE(20); if (w !== 1200 || h !== 630) problems.push(`${p}: ${m[1]} is ${w}x${h}, expected 1200x630`); }
+  }
+  must(problems);
+});
+
 t('sitemap lists exactly the indexable pages, all of which exist', () => {
   const xml = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
   const listed = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].replace(ORIGIN + '/', '') || 'index.html');
