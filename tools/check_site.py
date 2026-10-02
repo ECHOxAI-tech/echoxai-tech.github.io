@@ -92,6 +92,8 @@ elif endpoint.group(1) and not os.path.exists("docs/RESEARCH_PROTOCOL.md"):
     errors.append("research enabled without a protocol")
 if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
     errors.append("worker tests fail")
+if subprocess.run(["node", "tests/scoring.test.mjs"], capture_output=True).returncode:
+    errors.append("tool scoring tests fail (node tests/scoring.test.mjs)")
 for required in ["tdh/research.html", "tdh/system.html", "tdh/info-sheet.html", "docs/DPIA.md", "docs/RESEARCH_PROTOCOL.md",
                  ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf", "aniara-the-doors-to-the-stars.html", "assets/pdfs/Aniara_The_Doors_to_the_Stars_sample.pdf", "assets/brand/aniara-emblem.png", "assets/brand/echox-artist-mark.svg", "assets/brand/echox-artist-mark-onblack.svg", "about-echoxstudios.html"]:
     if not os.path.exists(required):
