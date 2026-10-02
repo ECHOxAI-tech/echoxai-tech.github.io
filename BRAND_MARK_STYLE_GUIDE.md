@@ -19,12 +19,11 @@ The compound form always has the multiplication sign. The standalone form always
 2. `brand-mark.js` (loaded on every page) finds each `ECHOx…` token and wraps the **whole name** in `<span class="echox-name">`, containing `ECHO`, the mark, and the rest of the word:
    - if an alphanumeric character follows, the mark is `<span class="echox-mark-x">×</span>`;
    - otherwise it is `<span class="echox-plain-x">x</span>`, which stays lowercase even inside `text-transform: uppercase`.
-3. The styling lives only in `brand-mark.js`:
-   - `.echox-name`: `font-style: normal !important; white-space: nowrap`. **The brand name, standalone or compound, is never italic**, even inside `<em>`, `<i>`, quotes, or italic card descriptions.
-   - the mark: `font-size: 1.25em; vertical-align: -.02em; margin: 0 .02em; line-height: 1; letter-spacing: 0; text-transform: none; font-weight: inherit`.
-   It inherits the surrounding typeface, so it matches IM Fell English, Cormorant Garamond, and Inconsolata automatically.
-   The 1.25em size was chosen by side-by-side rendering in all three faces: `.92em` reads too small and low in the light faces, and 1.4em with added weight reads as a bold cross in Inconsolata.
-4. Every page that shows the brand loads `brand-mark.js`. When the script changes, bump its `?v=` query on all pages in the same commit.
+3. The styling lives only in `brand-mark.js`, and is shielded with `!important` so no page rule (for example `.entry-point span`) can restyle the name:
+   - `.echox-name`: `font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; font-style: normal; white-space: nowrap`. The name keeps the typeface, size, colour and case of its surroundings, and **is never italic**, even inside `<em>`, `<i>`, quotes, or italic card descriptions.
+   - the compound `×`: **Inconsolata** (the site's label face), `font-size: .9em`, `font-weight: 400`, `color: var(--gold-dim, #b8963e)`, `letter-spacing: 0`, `text-transform: none`. It is a deliberate dim-gold accent between ECHO and the product word. `--gold-dim` resolves to each section's own dim gold (homepage `#7a6128`, TDH `#b8963e`), so the accent follows the site palette.
+   - the standalone lowercase `x` inherits everything from its surroundings.
+   This look was chosen from the Development page "ECHO×LUMINA" card, which the author approved. Sizes tried and rejected: `.92em` in the surrounding serif (too small and low), 1.4em with added weight (reads as a bold cross).
 
 ## Never do this
 
@@ -33,7 +32,7 @@ The compound form always has the multiplication sign. The standalone form always
 - **No letter `x` in compounds** (`ECHOxSTUDIOS` rendered with a plain letter, `ECHOXSTUDIOS`, `ECHO-STUDIOS`).
 - **No emoji or look-alike glyphs:** not `✕`, `✖`, `❌`, `⨉`, `Ⅹ`. Only U+00D7 `×`.
 - **No italics.** Never italicise the brand name or any compound (`ECHO×INSTANT`, `ECHO×STUDIOS`), and never rely on the surrounding text style. Do not add `font-style: italic` rules that target `.echox-name`.
-- **No bold, coloured, or letter-spaced x.** The mark keeps the weight and colour of its neighbours; only its size (1.25em) differs.
+- **No bold, bright, or letter-spaced ×.** It stays weight 400, in the dim-gold accent, with no letter-spacing. Do not recolour it per page.
 - **No second implementation.** Do not copy the mark logic into page `<style>` blocks or other scripts; fix `brand-mark.js` and every page inherits it (propagation rule).
 - **No `mailto:` link built from marked-up text.** Email addresses stay plain lowercase text.
 
@@ -47,10 +46,10 @@ The compound form always has the multiplication sign. The standalone form always
 1. `grep -rn "ECHOX" --include="*.html" .` finds no uppercase-X brand names (excluding unrelated words).
 2. `grep -rn "echox-mark" . | grep -v brand-mark.js` finds nothing: no page defines its own mark.
 3. `grep -rLn "brand-mark.js" --include="*.html" .` lists only pages that intentionally show no brand text.
-4. Open an italic context (for example the "Instant Film" card on the home page) and the footer of `tdh/system.html` on a 375px viewport: the whole name must be upright, and the mark must read as a clean, proportionate `×` between ECHO and STUDIOS, not a bold cross.
+4. Open an italic context (for example the "Instant Film" card on the home page) and the footer of `tdh/system.html` on a 375px viewport: the whole name must be upright, and the mark must read as a small dim-gold `×` between ECHO and STUDIOS, not a bold cross.
 5. The automated check (`tests/test_tdh_echosystem.py` in the writing repo) fails if `brand-mark.js` reintroduces SVG marks.
 
 ## History
 
 - 2026-10-02: replaced the drawn SVG cross with the `×` glyph after the heavy cross was reported on mobile; wrote this guide.
-- 2026-10-02: the whole brand name is now wrapped upright (compound words were italic inside italic text, with only the × upright); mark enlarged from .92em to 1.25em after side-by-side rendering.
+- 2026-10-02: the whole brand name is now wrapped upright (compound words were italic inside italic text, with only the × upright); after the author approved the Development card look, the × became a deliberate dim-gold Inconsolata accent at .9em, and the name is shielded from page CSS (a page rule had been turning the whole name gold mono).

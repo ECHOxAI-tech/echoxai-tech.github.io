@@ -9,8 +9,10 @@ read = lambda p: open(p, encoding="utf-8").read()
 bm = read("brand-mark.js")
 if "createElementNS" in bm or "<svg" in bm:
     errors.append("brand-mark.js must not draw the x with SVG")
-if ".echox-name{font-style:normal" not in bm or "echox-name" not in bm:
+if not re.search(r"\.echox-name\{[^}]*font-style:normal", bm):
     errors.append("brand-mark.js must wrap the whole name in an upright .echox-name span")
+if "Inconsolata" not in bm or "--gold-dim" not in bm or "!important" not in bm:
+    errors.append("brand-mark.js must keep the shielded dim-gold Inconsolata multiplication sign")
 if "\\u00d7" not in bm:
     errors.append("brand-mark.js must render compounds with U+00D7")
 for page in glob.glob("*.html"):
