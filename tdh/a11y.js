@@ -44,7 +44,7 @@
     main.tabIndex = -1;
     var keep = /^(SCRIPT|STYLE|LINK|NOSCRIPT|FOOTER|NAV)$/;
     var nodes = Array.prototype.slice.call(document.body.children).filter(function (node) {
-      return !(keep.test(node.tagName) || node.classList.contains('tdh-privacy-backdrop') || node.classList.contains('tdh-privacy-settings') || node.classList.contains('tdh-skip'));
+      return !(keep.test(node.tagName) || node.classList.contains('tdh-privacy-backdrop') || node.classList.contains('tdh-privacy-settings') || node.classList.contains('tdh-skip') || node.classList.contains('echox-signature'));
     });
     if (!nodes.length) return;
     document.body.insertBefore(main, nodes[0]);

@@ -25,7 +25,8 @@ The e-mail delivery endpoint (`POST /`) is **not** part of these files; it remai
 2. Bind it as `RESEARCH_DB`; add a `RESEARCH_LIMITER` rate-limit binding.
 3. Set secrets/vars `ETHICS_APPROVAL_REF` and `RESEARCH_ENABLED=1`.
 4. In `tdh/privacy-choice.js` set `RESEARCH_ENDPOINT` and `ETHICS_APPROVAL_REF` to the same reference. The consent choice appears only when both are set.
-5. Update `tdh/research.html` and `privacy.html` from "switched off" to "active", and publish the data dictionary.
+5. Add the research endpoint's origin to the `connect-src` directive of the Content-Security-Policy meta tag in `tdh/*.html`, or the browser will block the contribution.
+6. Update `tdh/research.html` and `privacy.html` from "switched off" to "active", and publish the data dictionary.
 
 Kill switch: unset `RESEARCH_ENABLED`; the endpoint returns 503.
 

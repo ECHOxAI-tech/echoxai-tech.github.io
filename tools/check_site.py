@@ -36,6 +36,14 @@ for page in glob.glob("*.html") + glob.glob("tdh/*.html"):
         if plain.endswith(".") and not plain.endswith("..."):
             errors.append(f"{page}: heading ends with a full stop: {plain[:50]}")
 
+# main-site accessibility layer on every normal root page
+for page in glob.glob("*.html"):
+    html = read(page)
+    if 'http-equiv="refresh"' in html:
+        continue
+    if "tdh/a11y.js" not in html or "tdh/a11y.css" not in html:
+        errors.append(f"{page}: missing the main-site accessibility layer")
+
 # 2. Echo-System hardening
 for tool in sorted(glob.glob("tdh/tool-*.html")):
     src = read(tool)
@@ -46,6 +54,10 @@ for tool in sorted(glob.glob("tdh/tool-*.html")):
         errors.append(f"{tool}: retrieval codes must use crypto.getRandomValues")
     if 'href="privacy-choice.css' not in src or "a11y.js" not in src or "a11y.css" not in src:
         errors.append(f"{tool}: missing privacy stylesheet or accessibility layer")
+
+for tool in glob.glob("tdh/*.html"):
+    if "Content-Security-Policy" not in read(tool):
+        errors.append(f"{tool}: missing the content-security policy")
 
 # 3. Local links and assets resolve
 for page in glob.glob("*.html") + glob.glob("tdh/*.html"):
