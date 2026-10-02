@@ -53,3 +53,9 @@ The compound form always has the multiplication sign. The standalone form always
 
 - 2026-10-02: replaced the drawn SVG cross with the `×` glyph after the heavy cross was reported on mobile; wrote this guide.
 - 2026-10-02: the whole brand name is now wrapped upright (compound words were italic inside italic text, with only the × upright); after the author approved the Development card look, the × became a deliberate dim-gold Inconsolata accent at .9em, and the name is shielded from page CSS (a page rule had been turning the whole name gold mono).
+
+## Artist logotype on the site
+
+- **Footer and signature:** where a footer shows the text logo (`.footer-logo`), `brand-signature.js` replaces it with the ECHOx artist logotype; on pages without one, the logotype closes the page as a quiet signature. It links to `about-echoxstudios.html`.
+- **On dark pages** the bone-lettered export `assets/brand/echox-artist-mark-onblack.png` is used (charcoal letters recoloured to bone, turquoise echo untouched) because the original charcoal vanishes on near-black. Light plates, as on the About ECHOxSTUDIOS page, use the original `echox-artist-mark.png`.
+- The masters live only in the private business repository (see `BRANDING.md`); these files are deployment copies.
