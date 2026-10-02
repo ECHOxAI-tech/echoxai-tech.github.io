@@ -106,6 +106,7 @@
   function researchSubmit(tool, result) {
     try {
       if (!researchOptedIn()) return Promise.resolve(false);
+      if (navigator.webdriver) return Promise.resolve(false); /* automated browsers never contribute */
       var payload = researchPayload(tool, result);
       if (!payload) return Promise.resolve(false);
       var sentKey = 'tdh_research_sent_t' + tool, month = new Date().toISOString().slice(0, 7);

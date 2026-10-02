@@ -5,7 +5,7 @@ import research, { validate, K } from '../research.mjs';
 
 const ORIGIN = 'https://echoxstudios.art';
 const req = (path, method = 'GET', body, headers = {}) =>
-  new Request('https://w.example' + path, { method, headers: { Origin: ORIGIN, ...headers }, body: body ? JSON.stringify(body) : undefined });
+  new Request('https://w.example' + path, { method, headers: { Origin: ORIGIN, 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1', ...headers }, body: body ? JSON.stringify(body) : undefined });
 
 // ---------- in-memory KV ----------
 const kv = () => { const m = new Map(); return {
@@ -102,6 +102,12 @@ await t('research: summary is suppressed below K and released at K', async () =>
 });
 await t('research: rejects non-allowlisted tools and oversize bodies', async () => {
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 5, scores: { a: 1 } }), on)).status, 400);
+  // automated runs are acknowledged but never counted
+  const before = (await (await research.fetch(req('/research/summary?tool=1'), on)).json()).n;
+  for (const h of [{ 'User-Agent': 'HeadlessChrome/124' }, { 'User-Agent': 'python-requests/2.31' }, { Origin: 'https://localhost:8765' }, { Origin: 'https://evil.example' }]) {
+    assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20, emotional: 50 } }, h), on)).status, 200);
+  }
+  assert.equal((await (await research.fetch(req('/research/summary?tool=1'), on)).json()).n, before, 'automated runs must not change the counters');
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 1 }, pad: 'x'.repeat(2000) }), on)).status, 413);
 });
 

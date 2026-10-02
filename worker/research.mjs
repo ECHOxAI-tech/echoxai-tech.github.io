@@ -8,7 +8,7 @@
 //  - Summary output is suppressed for any tool/month with fewer than K contributions.
 //
 // Bindings: RESEARCH_DB (D1), RESEARCH_LIMITER (rate limit, optional), RESEARCH_ENABLED, ETHICS_APPROVAL_REF.
-import { cors, json, readJson, limited } from './lib.mjs';
+import { cors, json, readJson, limited, ORIGINS } from './lib.mjs';
 
 export const K = 30;
 const MAX_BYTES = 1024;
@@ -52,6 +52,17 @@ export function validate(body) {
   return cells;
 }
 
+// Automated runs (our own test suites, headless browsers, scripts, crawlers) must never reach the counters.
+// Nothing about the visitor is stored: the check is evaluated and discarded.
+const AUTOMATED_UA = /headless|bot\b|crawl|spider|puppeteer|playwright|phantom|selenium|webdriver|lighthouse|curl|wget|python|node-fetch|undici|axios|httpclient|go-http/i;
+export function isAutomated(req) {
+  const origin = req.headers.get('Origin');
+  if (!origin || !ORIGINS.includes(origin)) return true;          // only the live site, from a browser
+  if (AUTOMATED_UA.test(req.headers.get('User-Agent') || '')) return true;
+  if (!req.headers.get('User-Agent')) return true;
+  return false;
+}
+
 const month = () => new Date().toISOString().slice(0, 7);
 
 export default {
@@ -64,6 +75,8 @@ export default {
       if (url.pathname === '/research' && req.method === 'POST') {
         if (!enabled) return json(req, { error: 'research contribution is not active' }, 503);
         if (await limited(env, 'RESEARCH_LIMITER', req)) return json(req, { error: 'slow down' }, 429);
+        // Acknowledged but discarded, so a test harness cannot tell and cannot skew the data.
+        if (isAutomated(req)) return json(req, { accepted: true });
         const body = await readJson(req, MAX_BYTES);
         const cells = validate(body);
         if (!cells) return json(req, { error: 'invalid payload' }, 400);
