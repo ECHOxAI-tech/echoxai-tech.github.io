@@ -18,10 +18,6 @@ assert.ok(calls.at(-1)[0].startsWith(NEW + '/profile'), 'POST goes to the new se
 assert.ok(JSON.parse(calls.at(-1)[1].body).privacy.consentAt, 'consent metadata is attached');
 await win.fetch(OLD + '/profile?code=ABCDEFGHJKMN&tool=t1');
 assert.ok(calls.at(-1)[0].startsWith(NEW), '12-character read goes only to the new service');
-const n = calls.length;
-await win.fetch(OLD + '/profile?code=ABCD23&tool=t1');
-assert.equal(calls.length, n + 2, 'legacy 6-character read falls back to the old service');
-assert.ok(calls.at(-1)[0].startsWith(OLD + '/profile'));
 await win.fetch(OLD, { method: 'POST', body: '{}' });
 assert.equal(calls.at(-1)[0], 'https://tdh-mail.inbox-fde.workers.dev', 'e-mail goes to the hardened service');
 // research counters: sent once per tool per month, only after the terms are accepted, never by automation
@@ -38,4 +34,4 @@ assert.deepEqual(Object.keys(body).sort(), ['scores', 'tool', 'v'], 'only whitel
 assert.equal(calls.at(-1)[1].credentials, 'omit');
 await win.TDHResearch.submit(1, { V: 40, E: 20, T: 20, I: 20 });
 assert.equal(sent(), 1, 'second submission in the same month is skipped');
-console.log('9 routing checks passed');
+console.log('7 routing checks passed');

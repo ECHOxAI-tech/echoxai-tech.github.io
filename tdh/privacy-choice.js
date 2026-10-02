@@ -2,7 +2,7 @@
   'use strict';
 
   var WORKER = 'https://tdh-email.inbox-fde.workers.dev';
-  /* Profile storage lives in its own hardened service; the original service is only read for legacy 6-character codes. */
+  /* Profile storage lives in its own hardened service. The original service has been retired. */
   var PROFILE_SERVICE = 'https://tdh-profile.inbox-fde.workers.dev';
   /* E-mail delivery: the hardened service (worker/email.mjs). Set only after its Brevo secret is configured; until then
      the original service keeps delivering. */
@@ -68,10 +68,7 @@
 
     if (url.indexOf(WORKER + '/profile') === 0) {
       var target = PROFILE_SERVICE + url.slice(WORKER.length);
-      var legacy = method === 'GET' && /[?&]code=[A-Za-z0-9]{6}(&|$)/.test(url);
-      var next = originalFetch(target, options);
-      if (!legacy) return next;
-      return next.then(function (res) { return res.ok ? res : originalFetch(input, options); }, function () { return originalFetch(input, options); });
+      return originalFetch(target, options);
     }
 
     if (EMAIL_SERVICE && url === WORKER && method === 'POST') return originalFetch(EMAIL_SERVICE, options);
