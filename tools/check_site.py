@@ -113,6 +113,11 @@ for path in glob.glob("*.html") + glob.glob("tdh/*.html") + glob.glob("*.md") + 
     if LEGAL.search(read(path)):
         errors.append(f"{path}: contains a legal name or personal contact detail")
 
+# 6b. The account handle contains "AI": it must not be linked from public pages.
+for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    if re.search(r"github\.com/ECHOxAI", read(path), re.I):
+        errors.append(f"{path}: links the GitHub handle; remove it until the account is renamed")
+
 # 7. Fonts are self-hosted: no page may call a third-party font host (privacy: no visitor IP leaks).
 for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
     if re.search(r"fonts\.(googleapis|gstatic)\.com", read(path)):
