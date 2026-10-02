@@ -13,6 +13,19 @@
   var CONSENT_VERSION = '2026-07-15';
   var originalFetch = window.fetch.bind(window);
 
+  /* "Nothing saved" mode: everything the tools would keep in the browser goes to this window's session storage instead,
+     which the browser wipes when the window closes. The choice itself lives only there, so a new window asks again. */
+  var realStorage = null;
+  try { realStorage = window.localStorage; } catch (error) { realStorage = null; }
+  function installNoneShim() {
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return window.sessionStorage; } }); } catch (error) { /* keep default */ }
+  }
+  function removeNoneShim() {
+    try { delete window.localStorage; } catch (error) { /* ignore */ }
+    try { window.sessionStorage.removeItem(MODE_KEY); } catch (error) { /* ignore */ }
+  }
+  try { if (window.sessionStorage.getItem(MODE_KEY) === 'none') installNoneShim(); } catch (error) { /* ignore */ }
+
   /* Retrieval-code length. Generation uses 12 characters (worker/profile.mjs deployed); 6-character legacy codes remain readable. */
   var CODE_LENGTH = 12;
 
@@ -182,6 +195,14 @@
   }
 
   function setMode(nextMode) {
+    if (nextMode === 'none') {
+      try { if (realStorage) { realStorage.removeItem(MODE_KEY); realStorage.removeItem(CONSENT_KEY); } } catch (error) { /* ignore */ }
+      try { window.sessionStorage.setItem(MODE_KEY, 'none'); } catch (error) { /* ignore */ }
+      installNoneShim();
+      store.set(AGE_KEY, 'yes');
+      return;
+    }
+    if (store.get(MODE_KEY) === 'none') removeNoneShim();
     store.set(MODE_KEY, nextMode);
     store.set(AGE_KEY, 'yes');
     if (nextMode === 'remote') {
@@ -234,7 +255,7 @@
     backdrop.innerHTML =
       '<section class="tdh-privacy-panel">' +
         '<p class="tdh-privacy-kicker">Adults only · Privacy choice</p>' +
-        '<h2 id="tdh-privacy-title">Should your code work on any device?</h2>' +
+        '<h2 id="tdh-privacy-title">Should your code work on any device and browser?</h2>' +
         '<p>The tools give you a personal result and a code. <strong>No analytics, and no individual result statistics, are sent.</strong> Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
         '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (store.get(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
         (researchAvailable()
@@ -242,12 +263,14 @@
             '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (store.get(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span>I agree that these anonymous, untraceable counters may be stored without a time limit and used for scientific research and publication. I understand they cannot be traced to me, so they cannot be located or withdrawn later.</span></label>'
           : '') +
         '<div class="tdh-choice-grid">' +
-          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="remote" type="button">Make my code work on any device (recommended)</button>' +
+          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="remote" type="button">Recommended: works on any device and browser</button>' +
             '<p class="tdh-choice-note">Your result is saved under your code and deleted after two years without use. You can delete it at any time. Choosing this is your consent to saving it.</p></div>' +
-          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="local" type="button">Keep it on this device only</button>' +
-            '<p class="tdh-choice-note">Nothing is saved anywhere else, and your code only works here. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
+          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="local" type="button">Limited access: this device and browser only</button>' +
+            '<p class="tdh-choice-note">Nothing is saved anywhere else, and your code only works in this browser on this device. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
+          '<div class="tdh-choice-opt tdh-choice-wide"><button class="tdh-choice-button" data-mode="none" type="button">Nothing saved: most privacy</button>' +
+            '<p class="tdh-choice-note">Nothing is saved, not even on this device. There is no way to come back to this result after the window is closed. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
         '</div>' +
-        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'your code works on any device' : 'this device only') + '. Choosing "this device only" now withdraws consent for future saving of results. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
+        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'your code works on any device and browser' : current === 'none' ? 'nothing saved' : 'this device and browser only') + '. Choosing "this device and browser only" or "nothing saved" now withdraws consent for future saving of results. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
       '</section>';
 
     document.body.appendChild(backdrop);
@@ -306,7 +329,7 @@
     if (!box || !box.parentNode) return;
     var n = document.getElementById('tdh-code-where');
     if (!n) { n = document.createElement('p'); n.id = 'tdh-code-where'; n.className = 'code-hint'; box.parentNode.insertBefore(n, box.nextSibling); }
-    n.textContent = mode() === 'remote' ? 'Your result is saved under this code, so the code works on any device.' : 'Your result is kept on this device only, so this code works only here. Write it down, and note that it will not work in another browser.';
+    n.textContent = mode() === 'none' ? 'Nothing is saved. This result is gone when you close this window and the code will not work later. Emailing yourself the result is the only way to keep it.' : mode() === 'remote' ? 'Your result is saved under this code, so the code works on any device and browser.' : 'Your result is kept on this device only, so this code works only in this browser on this device. It will not work in another browser or on another device.';
   }
 
   function init() {
