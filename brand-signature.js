@@ -7,7 +7,7 @@
   if (document.documentElement.hasAttribute('data-no-signature')) return;
 
   const style = document.createElement('style');
-  style.textContent = '.echox-signature{display:flex;justify-content:flex-end;padding:2.25rem 1.25rem 3.6rem;line-height:0}.echox-signature a,.footer-logo a.echox-mark-link{display:inline-block;line-height:0;opacity:.8;transition:opacity .25s}.echox-signature a:hover,.echox-signature a:focus-visible,.footer-logo a.echox-mark-link:hover,.footer-logo a.echox-mark-link:focus-visible{opacity:1}.echox-signature img{height:20px;width:auto;display:block}.footer-logo{line-height:0}.footer-logo img{height:20px;width:auto;display:block}@media print{.echox-signature{display:none}}';
+  style.textContent = '.echox-signature{align-self:stretch;box-sizing:border-box;display:flex;justify-content:flex-end;padding:2.25rem 1.25rem 3.6rem;line-height:0}.echox-signature a,.footer-logo a.echox-mark-link{display:inline-block;line-height:0;opacity:.8;transition:opacity .25s}.echox-signature a:hover,.echox-signature a:focus-visible,.footer-logo a.echox-mark-link:hover,.footer-logo a.echox-mark-link:focus-visible{opacity:1}.echox-signature img{height:20px;width:auto;display:block}.footer-logo{line-height:0}.footer-logo img{height:20px;width:auto;display:block}@media print{.echox-signature{display:none}}';
   document.head.appendChild(style);
 
   const makeLink = () => {
