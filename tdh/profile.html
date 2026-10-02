@@ -142,7 +142,7 @@
     <h1>Your Combined Profile</h1>
     <span class="ornament">✦</span>
   </div>
-  <p class="intro-lead" id="intro-lead">Every test gives a six-character code, shown with your result. Enter codes into the grid below — one column per person (up to four), one row per test. Fill a single column to assemble that person's overlapping profile; fill the same row across columns to compare people on that test. Use only the tests you want. No account required.</p>
+  <p class="intro-lead" id="intro-lead">Every test gives a twelve-character code, shown with your result (older six-character codes still work). Enter codes into the grid below — one column per person (up to four), one row per test. Fill a single column to assemble that person's overlapping profile; fill the same row across columns to compare people on that test. Use only the tests you want. No account required.</p>
 
   <div id="matrix-wrap"></div>
   <div class="matrix-actions">
@@ -618,7 +618,7 @@ function readMatrix() {
 
 async function analyse() {
   var m = readMatrix();
-  if (m.count === 0) { setNote('Enter at least one six-character code.', true); return; }
+  if (m.count === 0) { setNote('Enter at least one retrieval code.', true); return; }
   setNote('Gathering results…');
   document.getElementById('btn-analyse').disabled = true;
 

@@ -12,7 +12,7 @@ const t = (name, fn) => { fn(); passed++; console.log('ok  ', name); };
 
 const scope = [
   'privacy.html', 'terms.html', 'tdh/research.html', 'tdh/system.html', 'tdh/info-sheet.html', 'tdh/index.html',
-  'docs/DPIA.md', 'docs/RESEARCH_PROTOCOL.md', 'docs/DATA_FACTS.md', 'worker/README.md',
+  'docs/DPIA.md', 'docs/RESEARCH_PROTOCOL.md', 'docs/DATA_FACTS.md', 'worker/README.md', 'development.html', 'tdh/profile.html',
   ...fs.readdirSync(path.join(root, 'tdh')).filter(f => /^tool-.*\.html$/.test(f)).map(f => 'tdh/' + f),
 ];
 
@@ -24,6 +24,7 @@ const STALE = [
   [/required before research collection is enabled/i, 'says research is not yet enabled'],
   [/research (?:counters|channel|contribution)[^.]{0,60}\b(?:pending|not active|not yet active|coming soon)\b/i, 'says the research channel is pending'],
   [/explicit consent[^.|]{0,40}anonymous at source/i, 'claims consent for the anonymous counters (they are a term of use)'],
+  [/(?<!older |legacy )\bsix-character (?:retrieval )?code/i, 'says retrieval codes have six characters (new codes have twelve; six-character codes are legacy)'],
   [/\b(?:reader|review)\s+(?:score|rating)s?\b|\b\d(?:\.\d)?\s*\/\s*10\b|\b\d(?:\.\d)?\s*(?:out of 10|stars?)\b/i, 'shows a rating or score'],
 ];
 t('no stale or contradictory data wording in the public repository', () => {
