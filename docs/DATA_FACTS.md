@@ -6,7 +6,7 @@ repository's audit checks the sales material against the same table. Change this
 
 | Topic | Required public truth | Status |
 | :-- | :-- | :-- |
-| Result storage | Local in the visitor's browser by default. Optional cross-device retrieval by a random 12-character code, only with explicit consent. | Live |
+| Result storage | The visitor chooses at the gate, with no pre-ticked box: either the result is saved under a random 12-character code so the code works on any device (recommended; saving is the visitor's explicit consent), or it stays in the browser on this device only and the code works only there. | Live |
 | Research data | Anonymous aggregate counters only: tool, dimension, 10-point bucket, calendar month. No profile, e-mail, IP address, device identifier, free text, demographic or per-person record. | Live since 2026-10-03 |
 | Which tools contribute | Tools 1, 2, 3, 4 and 6. Tools 5 and 7 (free-text protocols) never contribute. A result opened from a link or a code never contributes. | Live |
 | Contribution rule | At most once per tool per device per month, as a stated term of use, shown before first use, with a separate required checkbox agreeing that the anonymous counters may be stored without a time limit and used for scientific research and publication. Automated browsers never contribute. | Live |

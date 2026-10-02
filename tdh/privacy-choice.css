@@ -78,6 +78,10 @@
   margin-top: 1rem;
 }
 
+.tdh-choice-opt { display: flex; flex-direction: column; gap: 0.5rem; }
+.tdh-choice-opt .tdh-choice-button { width: 100%; }
+.tdh-choice-note { margin: 0; font-size: 0.8rem; line-height: 1.5; opacity: 0.8; }
+
 .tdh-choice-button {
   min-height: 3.2rem;
   padding: 0.75rem 0.9rem;

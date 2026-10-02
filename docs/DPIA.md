@@ -15,7 +15,7 @@ Special-category data (sexual life) is plausible in results. Adults only (18+ co
 
 ## 2. Necessity and proportionality
 
-- Local-first by default; remote storage is a separate opt-in; the anonymous research counters are a stated condition of use (not personal data; see RESEARCH_PROTOCOL §5).
+- The visitor chooses at the gate between saving under a code (works on any device, recommended, explicit consent) and this device only; the anonymous research counters are a stated condition of use (not personal data; see RESEARCH_PROTOCOL §5).
 - Research stores no row per person and no identifier, so it cannot be linked back to an individual or to a stored profile.
 - Tools 5 and 7 (free text) are excluded from research.
 - Retention: remote profiles expire automatically after 24 months without use (a save or an open restarts the clock, renewed at most weekly) (`worker/profile.mjs`, privacy page § 6) and can be deleted earlier with the retrieval code. Research counters are aggregate, anonymous and kept without a time limit for scientific use and publication, agreed in a separate checkbox before first use; they cannot be withdrawn individually (disclosed).

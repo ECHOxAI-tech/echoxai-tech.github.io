@@ -234,20 +234,20 @@
     backdrop.innerHTML =
       '<section class="tdh-privacy-panel">' +
         '<p class="tdh-privacy-kicker">Adults only · Privacy choice</p>' +
-        '<h2 id="tdh-privacy-title">Choose how your results are stored</h2>' +
-        '<p>The tools can generate intimate relationship and sexuality profiles. <strong>No analytics, and no individual result statistics, are sent.</strong></p>' +
-        '<p><strong>Local only</strong> keeps results in this browser. <strong>Cross-device</strong> stores each generated result with its random retrieval code through the remote profile service, so it can be opened and compared on another device.</p>' +
-        '<p>Cross-device storage is optional and requires explicit consent. Email delivery is a separate action you choose after receiving a result. Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
+        '<h2 id="tdh-privacy-title">Should your code work on any device?</h2>' +
+        '<p>The tools give you a personal result and a code. <strong>No analytics, and no individual result statistics, are sent.</strong> Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
         '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (store.get(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
         (researchAvailable()
           ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Counts are published only in aggregate. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>' +
             '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (store.get(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span>I agree that these anonymous, untraceable counters may be stored without a time limit and used for scientific research and publication. I understand they cannot be traced to me, so they cannot be located or withdrawn later.</span></label>'
           : '') +
         '<div class="tdh-choice-grid">' +
-          '<button class="tdh-choice-button" data-mode="local" type="button">Use locally</button>' +
-          '<button class="tdh-choice-button" data-mode="remote" type="button">Enable cross-device</button>' +
+          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="remote" type="button">Make my code work on any device (recommended)</button>' +
+            '<p class="tdh-choice-note">Your result is saved under your code and deleted after two years without use. You can delete it at any time. Choosing this is your consent to saving it.</p></div>' +
+          '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="local" type="button">Keep it on this device only</button>' +
+            '<p class="tdh-choice-note">Nothing is saved anywhere else, and your code only works here. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
         '</div>' +
-        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'cross-device storage' : 'local-only storage') + '. Choosing local-only now withdraws consent for future remote storage. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
+        (current ? '<p class="tdh-choice-current">Current choice: ' + (current === 'remote' ? 'your code works on any device' : 'this device only') + '. Choosing "this device only" now withdraws consent for future saving of results. To erase previously stored profiles, <button type="button" class="tdh-choice-link" id="tdh-delete-request">prepare a deletion request with this device\'s retrieval codes</button> (opens your email app; nothing is sent until you send it).</p>' : '') +
       '</section>';
 
     document.body.appendChild(backdrop);
@@ -280,6 +280,7 @@
       button.addEventListener('click', function () {
         if (!check.checked || (rcheck && !rcheck.checked)) return;
         setMode(button.getAttribute('data-mode'));
+        codeWhereNote();
         store.set(RESEARCH_KEY, RESEARCH_VERSION);
         closePanel(backdrop);
       });
@@ -300,6 +301,14 @@
     setTimeout(function () { check.focus(); }, 0);
   }
 
+  function codeWhereNote() {
+    var box = document.getElementById('code-box') || document.getElementById('res-code');
+    if (!box || !box.parentNode) return;
+    var n = document.getElementById('tdh-code-where');
+    if (!n) { n = document.createElement('p'); n.id = 'tdh-code-where'; n.className = 'code-hint'; box.parentNode.insertBefore(n, box.nextSibling); }
+    n.textContent = mode() === 'remote' ? 'Your result is saved under this code, so the code works on any device.' : 'Your result is kept on this device only, so this code works only here. Write it down, and note that it will not work in another browser.';
+  }
+
   function init() {
     var isTool = /tool-[1-7]-/.test(location.pathname);
     var requiresChoice = isTool || /\/profile\.html$/.test(location.pathname);
@@ -311,6 +320,7 @@
     settings.addEventListener('click', function () { showPanel(false); });
     document.body.appendChild(settings);
 
+    codeWhereNote();
     store.get(MODE_KEY); /* probe: marks storage as blocked before the notice check below */
     if (isTool && storageBlocked) {
       var notice = document.createElement('p');
