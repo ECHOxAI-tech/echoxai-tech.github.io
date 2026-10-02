@@ -79,12 +79,15 @@ for (const tool of TOOLS) {
     assert.ok(mail.htmlContent.includes(code), 'e-mail contains the retrieval code');
   });
 
-  await t(`${label}: no sideways scrolling at 375, 768 and 1280`, async () => {
-    for (const width of [375, 768, 1280]) {
-      await p.call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 500 });
+  await t(`${label}: no sideways scrolling and no clipped retrieval code at 320, 375, 768 and 1280`, async () => {
+    for (const width of [320, 375, 768, 1280]) {
+      await p.call('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
       await p.sleep(250);
-      const over = await p.evaluate(`document.documentElement.scrollWidth - window.innerWidth`);
+      const over = await p.evaluate(`document.documentElement.scrollWidth - document.documentElement.clientWidth`);
       assert.ok(over <= 2, `${width}px: scrolls sideways by ${over}px`);
+      // the retrieval code is read and copied by hand: every character must be visible, none clipped
+      const clipped = await p.evaluate(`(() => { const e = document.querySelector('${codeSel(tool)}'); if (!e) return 0; const r = e.getBoundingClientRect(); return Math.max(0, e.scrollWidth - e.clientWidth) + Math.max(0, r.right - document.documentElement.clientWidth); })()`);
+      assert.ok(clipped <= 1, `${width}px: retrieval code is clipped by ${clipped}px`);
     }
   });
   await c.dispose();
