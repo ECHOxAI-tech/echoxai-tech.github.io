@@ -4,6 +4,9 @@
   var WORKER = 'https://tdh-email.inbox-fde.workers.dev';
   /* Profile storage lives in its own hardened service; the original service is only read for legacy 6-character codes. */
   var PROFILE_SERVICE = 'https://tdh-profile.inbox-fde.workers.dev';
+  /* E-mail delivery: the hardened service (worker/email.mjs). Set only after its Brevo secret is configured; until then
+     the original service keeps delivering. */
+  var EMAIL_SERVICE = '';
   var MODE_KEY = 'tdh_storage_mode';
   var AGE_KEY = 'tdh_adult_confirmed';
   var CONSENT_KEY = 'tdh_remote_consent_at';
@@ -70,6 +73,8 @@
       if (!legacy) return next;
       return next.then(function (res) { return res.ok ? res : originalFetch(input, options); }, function () { return originalFetch(input, options); });
     }
+
+    if (EMAIL_SERVICE && url === WORKER && method === 'POST') return originalFetch(EMAIL_SERVICE, options);
 
     return originalFetch(input, options);
   };

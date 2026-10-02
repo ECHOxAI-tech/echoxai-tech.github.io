@@ -1,0 +1,14 @@
+name = "tdh-mail"
+main = "email.mjs"
+compatibility_date = "2026-10-01"
+
+[vars]
+SENDER_EMAIL = "inbox@echoxstudios.art"
+
+kv_namespaces = [{ binding = "EMAIL_DAILY", id = "8b0b86c420ac4e82a5a899e33d0f9a3c" }]
+
+[[unsafe.bindings]]
+name = "EMAIL_LIMITER"
+type = "ratelimit"
+namespace_id = "1004"
+simple = { limit = 3, period = 60 }

@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import profile from '../profile.mjs';
 import research, { validate, K } from '../research.mjs';
+import email, { validateMail } from '../email.mjs';
 
 const ORIGIN = 'https://echoxstudios.art';
 const req = (path, method = 'GET', body, headers = {}) =>
@@ -109,6 +110,38 @@ await t('research: rejects non-allowlisted tools and oversize bodies', async () 
   }
   assert.equal((await (await research.fetch(req('/research/summary?tool=1'), on)).json()).n, before, 'automated runs must not change the counters');
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 1 }, pad: 'x'.repeat(2000) }), on)).status, 413);
+});
+
+// ---------- e-mail delivery ----------
+const goodHtml = '<div><p>The Dark Hierarchy</p><p>Your result</p><a href="https://echoxstudios.art/tdh/tool-1-trigger-gradient.html?code=ABCD23">link</a></div>';
+const mail = (over = {}) => ({ to: 'reader@example.org', subject: 'Trigger Gradient \u2014 The Dark Hierarchy', htmlContent: goodHtml, ...over });
+await t('email: accepts our own template, rejects abuse', async () => {
+  assert.equal(validateMail(mail()), null);
+  assert.equal(validateMail(mail({ subject: 'Fwd: urgent invoice' })), 'Invalid subject');
+  assert.equal(validateMail(mail({ to: 'a@b.co, c@d.co' })), 'Invalid recipient');
+  assert.equal(validateMail(mail({ htmlContent: goodHtml + '<script>x()</script>' })), 'Invalid content');
+  assert.equal(validateMail(mail({ htmlContent: goodHtml + '<img src="https://evil.example/p.png">' })), 'Invalid content');
+  assert.equal(validateMail(mail({ htmlContent: goodHtml.replace('echoxstudios.art', 'echoxstudios.art.evil.example') })), 'Invalid content');
+  assert.equal(validateMail(mail({ htmlContent: '<p>buy now</p>'.repeat(10) })), 'Invalid content');
+  assert.equal(validateMail({ ...mail(), bcc: 'x@y.zz' }), 'Unexpected fields');
+  assert.equal(validateMail(mail({ subject: 'The Dark Hierarchy \u2014 Liturgical Matrix [ABCD23]' })), null);
+});
+await t('email: origin, configuration, delivery and daily cap', async () => {
+  const real = globalThis.fetch; let sentBody = null;
+  globalThis.fetch = async (u, o) => { sentBody = JSON.parse(o.body); return new Response('{}', { status: 201 }); };
+  try {
+    const mreq = (body, headers) => req('/', 'POST', body, headers);
+    const env = { BREVO_API_KEY: 'k', SENDER_EMAIL: 'inbox@echoxstudios.art', EMAIL_DAILY: kv() };
+    assert.equal((await email.fetch(mreq(mail(), { Origin: 'https://evil.example' }), env)).status, 403);
+    assert.equal((await email.fetch(mreq(mail()), {})).status, 503);
+    assert.equal((await email.fetch(mreq(mail({ subject: 'x' })), env)).status, 400);
+    assert.equal((await email.fetch(req('/stats'), env)).status, 404);
+    assert.equal((await email.fetch(mreq(mail()), env)).status, 200);
+    assert.equal(sentBody.to[0].email, 'reader@example.org');
+    assert.equal(sentBody.sender.email, 'inbox@echoxstudios.art');
+    const stuffed = { ...env, EMAIL_DAILY: kv() }; await stuffed.EMAIL_DAILY.put('n' + new Date().toISOString().slice(0, 10), '300');
+    assert.equal((await email.fetch(mreq(mail()), stuffed)).status, 429);
+  } finally { globalThis.fetch = real; }
 });
 
 console.log(`\n${passed} worker tests passed`);
