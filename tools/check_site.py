@@ -111,5 +111,12 @@ for path in glob.glob("*.html") + glob.glob("tdh/*.html") + glob.glob("*.md") + 
     if LEGAL.search(read(path)):
         errors.append(f"{path}: contains a legal name or personal contact detail")
 
+# 7. Fonts are self-hosted: no page may call a third-party font host (privacy: no visitor IP leaks).
+for path in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    if re.search(r"fonts\.(googleapis|gstatic)\.com", read(path)):
+        errors.append(f"{path}: loads fonts from a third party; use assets/fonts/fonts.css")
+if not os.path.exists("assets/fonts/fonts.css"):
+    errors.append("missing assets/fonts/fonts.css")
+
 print("\n".join(f"FAIL {e}" for e in errors) if errors else "All site checks passed.")
 sys.exit(1 if errors else 0)

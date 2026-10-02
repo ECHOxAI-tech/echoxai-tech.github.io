@@ -30,7 +30,7 @@ Special-category data (sexual life) is plausible in results. Adults only (18+ co
 | Contributor cannot withdraw a past contribution | Certain / low | Disclosed in the consent text before ticking | Accepted, disclosed |
 | Cloudflare processes IPs transiently | Certain / low | Disclosed; rate limiting via binding stores nothing | Accepted, disclosed |
 | E-mail content contains sensitive results | Medium / medium | Sent only on explicit request; not stored beyond transmission (to be verified in the live worker) | Verify |
-| Third-party fonts (Google Fonts) leak visitor IP | Certain / low | Self-host fonts (open item) | Open |
+| Third-party fonts leaking visitor IP | Was certain / low | Fonts self-hosted (`assets/fonts`); CSP allows only `self`; enforced by `tools/check_site.py` | Closed |
 | Misuse on third parties | Low / high | Terms of reading; notice on every tool | Low |
 
 ## 4. Open items before enabling research
