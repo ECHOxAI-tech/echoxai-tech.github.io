@@ -150,4 +150,64 @@ const test = (name, fn) => { fn(); passed++; console.log('ok  ' + name); };
   });
 }
 
+// ---------- Cross-cutting: monotonicity, invalid input, and a golden snapshot ----------
+import crypto from 'node:crypto';
+{
+  const t1 = load('tool-1-trigger-gradient.html', ['const QUESTIONS = [', 'function computeGradient(']).api;
+  const t3 = load('tool-3-attachment-confirmation.html', ['const QUESTIONS = [', 'function computeScores(']).api;
+  const base1 = Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 4]));
+  test('tool 1: raising an item that belongs to a channel never lowers that channel (monotonic)', () => {
+    for (const q of t1.QUESTIONS) {
+      let prev = -1;
+      for (let v = 1; v <= 7; v++) {
+        const score = t1.computeGradient({ ...base1, [q.id]: q.rev ? 8 - v : v })[q.ch];
+        assert.ok(score >= prev, `${q.id} (${q.ch}) dropped at ${v}`);
+        prev = score;
+      }
+    }
+  });
+  test('tool 1: no single item moves a channel by more than its fair weight (weight balance)', () => {
+    const per = {};
+    for (const q of t1.QUESTIONS) {
+      const lo = t1.computeGradient({ ...base1, [q.id]: q.rev ? 7 : 1 })[q.ch], hi = t1.computeGradient({ ...base1, [q.id]: q.rev ? 1 : 7 })[q.ch];
+      (per[q.ch] ||= []).push(hi - lo);
+    }
+    const all = Object.values(per).flat(), mean = all.reduce((a, b) => a + b, 0) / all.length;
+    all.forEach(span => assert.ok(span > 0 && span < mean * 2.5, `item span ${span} vs mean ${mean.toFixed(1)}`));
+  });
+  test('tool 3: raising a non-reversed item never lowers its axis (monotonic)', () => {
+    const base = Object.fromEntries(t3.QUESTIONS.map(q => [q.id, 4]));
+    for (const q of t3.QUESTIONS) {
+      const dir = q.dim === 'B' ? (q.toward ? 1 : -1) : (q.rev ? -1 : 1);
+      let prev = -1;
+      for (let v = 1; v <= 7; v++) {
+        const score = t3.computeScores({ ...base, [q.id]: dir > 0 ? v : 8 - v })[q.dim];
+        assert.ok(score >= prev, `${q.id} (${q.dim}) dropped at ${v}`);
+        prev = score;
+      }
+    }
+  });
+  test('invalid or partial input never produces NaN or out-of-range scores', () => {
+    for (const bad of [{}, { nope: 3 }, Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 0])), Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 99]))]) {
+      const p = t1.computeGradient(bad);
+      Object.values(p).forEach(v => assert.ok(Number.isFinite(v) && v >= 0 && v <= 100, JSON.stringify(p)));
+    }
+    for (const bad of [{}, { nope: 3 }, Object.fromEntries(t3.QUESTIONS.map(q => [q.id, 99]))]) {
+      const p = t3.computeScores(bad);
+      Object.values(p).forEach(v => assert.ok(Number.isFinite(v) && v >= 0 && v <= 100, JSON.stringify(p)));
+    }
+  });
+  test('golden snapshot: scores for 300 fixed answer sets have not changed (UPDATE_GOLDEN=1 to accept a deliberate change)', () => {
+    const r = rng(2026), out = [];
+    for (let n = 0; n < 300; n++) {
+      out.push(t1.computeGradient(Object.fromEntries(t1.QUESTIONS.map(q => [q.id, 1 + Math.floor(r() * 7)]))));
+      out.push(t3.computeScores(Object.fromEntries(t3.QUESTIONS.map(q => [q.id, 1 + Math.floor(r() * 7)]))));
+    }
+    const digest = crypto.createHash('sha256').update(JSON.stringify(out)).digest('hex');
+    const file = new URL('./fixtures/scoring-golden.json', import.meta.url);
+    if (process.env.UPDATE_GOLDEN || !fs.existsSync(file)) { fs.writeFileSync(file, JSON.stringify({ note: 'sha256 of tool 1 and tool 3 scores for 300 seeded answer sets', digest }, null, 2) + '\n'); return; }
+    assert.equal(digest, JSON.parse(fs.readFileSync(file, 'utf8')).digest, 'scoring output changed; if deliberate, run UPDATE_GOLDEN=1 node tests/scoring.test.mjs');
+  });
+}
+
 console.log(`\n${passed} scoring tests passed`);

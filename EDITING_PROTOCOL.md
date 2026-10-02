@@ -1,6 +1,6 @@
 # Required website-edit protocol
 
-Before making any edit to this repository, read and follow:
+Before making any edit to this repository, read `READ_FIRST.md`, then read and follow:
 
 1. `SITE_STANDARDS.md`
 2. `BRAND_MARK_STYLE_GUIDE.md` whenever the text "ECHOx" or any compound such as ECHO×STUDIOS is touched (the x rules are strict).

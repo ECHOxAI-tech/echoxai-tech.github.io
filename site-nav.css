@@ -30,8 +30,10 @@ body > .hero h1 {
   font-size: clamp(2rem, 4.2vw, 3rem) !important;
 }
 
-@media (max-width: 760px) {
+/* The link row needs about 880px (privacy and terms about 1050px); below that the menu collapses so pages never scroll sideways. */
+@media (max-width: 1080px) {
   .nav-toggle { display: flex; }
+  .nav-links:not(.open) { display: none !important; }
 
   .nav-links.open {
     display: flex !important;
