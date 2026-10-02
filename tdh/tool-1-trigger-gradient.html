@@ -448,14 +448,14 @@
 ══════════════════════════════════════════════════════ -->
 <div id="view-intro">
   <div class="page-header">
-    <span class="tool-label">Tool I of VI</span>
+    <span class="tool-label">Tool I of VII</span>
     <h1>Trigger Gradient<br>Profiler</h1>
     <span class="ornament">✦</span>
   </div>
 
   <div class="intro-body">
     <p>Desire arrives as confirmation — the experience of feeling like the version of yourself you most want to be, in the presence of another person. That confirmation can arrive through four channels: <em>Visual</em> (appearance, form), <em>Emotional</em> (connection, relational atmosphere), <em>Tactile</em> (touch, physical presence), or <em>Intellectual</em> (shared sexual understanding, being recognised). Most people have all four active — but in different proportions.</p>
-    <p>This tool maps your personal gradient across the four channels and shows which ones carry most of the confirmatory weight for you. It also compares your distribution to the culturally produced average, which heavily overweights the visual channel at the expense of the rest.</p>
+    <p>This tool maps your personal gradient across the four channels and shows which ones carry most of the confirmatory weight for you. It also offers a provisional framework reference for reflection; it is not a population benchmark, census, or research finding.</p>
     <p>No reading of the book is required. Answer for yourself as you actually are.</p>
   </div>
 
@@ -553,11 +553,11 @@
   <hr class="rule">
 
   <!-- Cultural comparison -->
-  <p class="section-lbl">Your distribution vs the cultural average</p>
+  <p class="section-lbl">Your distribution and a framework reference</p>
 
   <div class="cmp-legend">
     <div class="cmp-legend-item"><div class="cmp-legend-line you"></div>You</div>
-    <div class="cmp-legend-item"><div class="cmp-legend-line avg"></div>Cultural average</div>
+    <div class="cmp-legend-item"><div class="cmp-legend-line avg"></div>Framework reference</div>
   </div>
 
   <div class="cmp-row"><span class="cmp-lbl">Visual</span><div class="cmp-tracks"><div class="cmp-bar-track"><div class="cmp-bar-you" id="cmp-V"></div></div><div class="cmp-bar-track"><div class="cmp-bar-avg" style="width:60%"></div></div></div></div>
@@ -672,7 +672,7 @@ const LOW_FRAG = {
 const READING_RECS = {
   V: [
     { section:'Book II, Section IV — The Visual Channel',    note:'The mechanics of visual desire and what it actually responds to.' },
-    { section:'Book II, Section VI — Cultural Distortion',   note:'Why the cultural average overweights this channel, and what that has done.' },
+    { section:'Book II, Section VI — Cultural Distortion',   note:'How cultural values can overweight this channel, and what that can do.' },
   ],
   E: [
     { section:'Book II, Section IV — The Emotional Channel', note:'The specific way emotional atmosphere generates or suppresses desire.' },
@@ -797,7 +797,7 @@ function buildInterpretation(pct) {
       p1 += ` Your Intellectual channel above 50% places you in territory the book describes from inside. The intellectual-channel sections may be especially recognizable.`;
     }
     if (primary === 'V' && pct.V >= 60) {
-      p1 += ` Your distribution is near the culturally produced average, which also peaks in the Visual. This does not mean your gradient is inauthentic — it may mean the cultural training and your natural distribution are reinforcing each other, or that the cultural training has been thorough. The book's discussion of cultural distortion is relevant here.`;
+      p1 += ` Your distribution is near the provisional framework reference, which also peaks in the Visual. This does not make your gradient inauthentic; it is a prompt to consider how personal experience and cultural training may interact. The book's discussion of cultural distortion is relevant here.`;
     }
     paras.push(p1);
 
