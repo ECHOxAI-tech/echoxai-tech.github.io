@@ -21,8 +21,20 @@ for page in glob.glob("*.html"):
         errors.append(f"{page}: reimplements the mark")
     if re.search(r"ECHOX[A-Za-z]", html):
         errors.append(f"{page}: uppercase-X compound")
-    if "ECHOx" in html and "brand-mark.js" not in html:
+    if "ECHOx" in html and "brand-mark.js" not in html and 'http-equiv="refresh"' not in html:
         errors.append(f"{page}: shows ECHOx without brand-mark.js")
+
+for page in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    if 'http-equiv="refresh"' in read(page):
+        continue  # redirect stubs
+    if "brand-signature.js" not in read(page):
+        errors.append(f"{page}: missing the ECHOx signature script")
+
+for page in glob.glob("*.html") + glob.glob("tdh/*.html"):
+    for m in re.finditer(r"<(h[1-3])[^>]*>(.*?)</\1>", read(page), re.S):
+        plain = re.sub(r"<[^>]+>", "", m.group(2)).strip()
+        if plain.endswith(".") and not plain.endswith("..."):
+            errors.append(f"{page}: heading ends with a full stop: {plain[:50]}")
 
 # 2. Echo-System hardening
 for tool in sorted(glob.glob("tdh/tool-*.html")):
@@ -69,12 +81,23 @@ elif endpoint.group(1) and not os.path.exists("docs/RESEARCH_PROTOCOL.md"):
 if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
     errors.append("worker tests fail")
 for required in ["tdh/research.html", "tdh/system.html", "tdh/info-sheet.html", "docs/DPIA.md", "docs/RESEARCH_PROTOCOL.md",
-                 ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf"]:
+                 ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf", "aniara-the-doors-to-the-stars.html", "assets/pdfs/Aniara_The_Doors_to_the_Stars_sample.pdf", "assets/brand/aniara-emblem.png", "assets/brand/echox-artist-mark.png", "about-echoxstudios.html"]:
     if not os.path.exists(required):
         errors.append(f"missing {required}")
 if not endpoint or not endpoint.group(1):
     if re.search(r"currently collecting|is collecting|now collecting", read("tdh/research.html"), re.I):
         errors.append("research page claims collection while the channel is off")
+
+# 6. Anonymity: no legal name, street address or phone on public pages (until selling under German law).
+# Generic patterns live here; name-specific patterns live in a local, untracked file (.anonymity-patterns,
+# one regular expression per line) so that this public script never contains them.
+patterns = [r"stra(\u00df|ss)e [0-9]", r"\+46 ?[0-9]"]
+if os.path.exists(".anonymity-patterns"):
+    patterns += [ln.strip() for ln in open(".anonymity-patterns", encoding="utf-8") if ln.strip() and not ln.startswith("#")]
+LEGAL = re.compile("|".join(patterns), re.I)
+for path in glob.glob("*.html") + glob.glob("tdh/*.html") + glob.glob("*.md") + glob.glob("docs/*.md"):
+    if LEGAL.search(read(path)):
+        errors.append(f"{path}: contains a legal name or personal contact detail")
 
 print("\n".join(f"FAIL {e}" for e in errors) if errors else "All site checks passed.")
 sys.exit(1 if errors else 0)

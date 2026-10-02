@@ -39,6 +39,8 @@ The site is restrained, literary, editorial, and deliberate. It should feel auth
 
 ### Typography
 
+- **Headings never end with a full stop.** This applies to every h1, h2, and h3 on the site. If a heading holds two thoughts, join them with a semicolon or an em dash rather than ending sentences with periods.
+
 - **IM Fell English** is the display face for authored headings and card titles.
 - **Cormorant Garamond** is the reading face for prose.
 - **Inconsolata** is used for labels, metadata, navigation, and compact calls to action.

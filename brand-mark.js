@@ -1,6 +1,6 @@
 (() => {
   const style = document.createElement('style');
-  style.textContent = '.echox-name{font:inherit!important;letter-spacing:inherit!important;text-transform:inherit!important;color:inherit!important;font-style:normal!important;font-synthesis:none;white-space:nowrap}.echox-name .echox-plain-x{font:inherit!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;font-style:normal!important}.echox-name .echox-mark-x{display:inline-block;font-family:Inconsolata,monospace!important;font-size:.9em!important;font-weight:400!important;font-style:normal!important;letter-spacing:0!important;text-transform:none!important;color:var(--gold-dim,#b8963e)!important;margin:0 .03em;line-height:1;vertical-align:0}';
+  style.textContent = '.echox-name{display:inline!important;float:none!important;font:inherit!important;letter-spacing:inherit!important;text-transform:inherit!important;color:inherit!important;font-style:normal!important;font-synthesis:none;white-space:nowrap}.echox-name .echox-plain-x{font:inherit!important;letter-spacing:0!important;text-transform:none!important;color:inherit!important;font-style:normal!important}.echox-name .echox-mark-x{display:inline-block;font-family:Inconsolata,monospace!important;font-size:.9em!important;font-weight:400!important;font-style:normal!important;letter-spacing:0!important;text-transform:none!important;color:var(--gold-dim,#b8963e)!important;margin:0 .03em;line-height:1;vertical-align:0}';
   document.head.appendChild(style);
 
   const applyMarks = root => {

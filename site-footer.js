@@ -4,6 +4,7 @@
   footer.innerHTML = `
     <span class="footer-logo">ECHOx</span>
     <ul class="footer-links">
+      <li><a href="about-echoxstudios.html">ECHOxSTUDIOS</a></li>
       <li><a href="contact.html">Contact</a></li>
       <li><a href="privacy.html">Privacy</a></li>
       <li><a href="terms.html">Terms</a></li>

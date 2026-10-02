@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About ECHOxSTUDIOS — ECHOx</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <meta name="description" content="ECHOxSTUDIOS is the artistic umbrella of ECHOx: writing, photography, theater, music, and software, made and released from Berlin."/>
+  <link rel="canonical" href="https://echoxstudios.art/about-echoxstudios.html"/>
+  <meta property="og:type" content="website"/><meta property="og:site_name" content="ECHOx"/><meta property="og:title" content="About ECHOxSTUDIOS"/><meta property="og:description" content="The artistic umbrella of ECHOx: writing, photography, theater, music, and software."/><meta property="og:url" content="https://echoxstudios.art/about-echoxstudios.html"/><meta property="og:image" content="https://echoxstudios.art/assets/brand/echoxstudios-umbrella.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Inconsolata:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --black:#080806;--near:#0e0e0b;--off-white:#f0ece3;--bone:#d4cfc4;
+      --gold:#b8963e;--gold-dim:#7a6128;--text:#e2ddd2;
+      --muted:#6e6a64;--rule:rgba(184,150,62,0.2);
+    }
+    html{font-size:24px}
+    body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',Georgia,serif;font-weight:300;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2.5rem;border-bottom:1px solid var(--rule);background:var(--black);position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'IM Fell English',serif;font-size:1.1rem;color:var(--gold);text-decoration:none}
+    .nav-links{display:flex;gap:2rem;list-style:none}
+    .nav-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--gold)}
+    @media(max-width:600px){.nav-links{display:none}}
+
+    .page-header{padding:5rem 2rem 3rem;text-align:center;border-bottom:1px solid var(--rule)}
+    .page-label{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1rem}
+    .page-title{font-family:'IM Fell English',serif;font-size:clamp(2.2rem,6vw,4rem);color:var(--off-white);font-weight:400;line-height:1.1;margin-bottom:1rem}
+    .page-sub{font-size:1.05rem;color:var(--muted);font-style:italic;max-width:500px;margin:0 auto;line-height:1.7}
+
+    .wrapper{max-width:720px;margin:0 auto;padding:5rem 2rem 8rem}
+
+    .about-section{padding-bottom:4rem;margin-bottom:4rem;border-bottom:1px solid var(--rule)}
+    .about-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+
+    .section-label{font-family:'Inconsolata',monospace;font-size:0.85rem;letter-spacing:0.22em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:1.5rem;display:block}
+    .section-title{font-family:'IM Fell English',serif;font-size:clamp(1.6rem,3vw,2rem);color:var(--off-white);font-weight:400;line-height:1.2;margin-bottom:2rem}
+
+    .prose p{font-size:1.05rem;line-height:1.95;color:var(--bone);margin-bottom:1.4em;text-align:justify;hyphens:auto}
+    .prose em{color:var(--off-white);font-style:italic}
+
+    .pull{border-left:2px solid rgba(184,150,62,0.4);padding-left:1.5rem;margin:2.5rem 0;font-size:1.1rem;line-height:1.85;color:var(--muted);font-style:italic}
+
+    footer{border-top:1px solid var(--rule);padding:2.5rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-family:'IM Fell English',serif;font-size:1rem;color:var(--gold-dim)}
+    .footer-links{display:flex;gap:1.5rem;list-style:none}
+    .footer-links a{font-family:'Inconsolata',monospace;font-size:0.9rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--gold)}
+    .footer-copy{font-family:'Inconsolata',monospace;font-size:0.9rem;color:#2a2a26;width:100%}
+  </style>
+  <link rel="stylesheet" href="site-nav.css"/>
+  <link rel="stylesheet" href="site-type.css?v=20260715d"/>
+  <style>
+    .plate{background:#f4f1ea;padding:2.4rem 1.5rem;margin:0 0 2.5rem;display:flex;justify-content:center}
+    .plate img{width:min(100%,430px);height:auto;display:block}
+    .plate.small img{width:min(100%,300px)}
+    .studio-grid{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:1.8rem}
+    @media(min-width:640px){.studio-grid{grid-template-columns:repeat(2,1fr)}}
+    .studio-grid a{display:block;padding:1.4rem 1.5rem;background:var(--black);text-decoration:none;transition:background .2s}
+    .studio-grid a:hover{background:var(--near)}
+    .studio-grid a > span{display:block;font-family:'Inconsolata',monospace;font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:.5rem}
+    .studio-grid a > strong{display:block;font-family:'IM Fell English',serif;font-weight:400;font-size:1.2rem;color:var(--off-white);margin-bottom:.4rem}
+    .studio-grid a > em{display:block;font-style:normal;font-size:.95rem;line-height:1.6;color:var(--muted)}
+    .addr{display:inline-block;font-family:'Inconsolata',monospace;font-size:1rem;letter-spacing:.06em;color:var(--off-white);border:1px solid var(--rule);padding:.7rem 1rem;user-select:all}
+  </style>
+
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">ECHOx</a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html" class="active">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="gallery.html">Photography</a></li>
+    <li><a href="lyrics.html">Music</a></li>
+    <li><a href="development.html">Development</a></li>
+    <li><a href="method.html">Method</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-header">
+  <p class="page-label">About</p>
+  <h1 class="page-title">ECHOxSTUDIOS</h1>
+  <p class="page-sub">The artistic umbrella under which the work of ECHOx is made, published, and released.</p>
+</div>
+
+<div class="wrapper">
+
+  <div class="about-section">
+    <div class="plate"><img src="assets/brand/echoxstudios-umbrella.png?v=20261002" alt="ECHOxSTUDIOS logotype" width="1000" height="649"/></div>
+    <span class="section-label">01 — The studio</span>
+    <h2 class="section-title">One identity, many disciplines</h2>
+    <div class="prose">
+      <p>World- and system-building is the artistic core of the studio, and rigorous theory, held to artistic and academic standards at once, runs through all of it. ECHOxSTUDIOS is the name for everything that carries the ECHOx signature: fiction and poetry, drama, instant photography, music, interactive systems, and software. The disciplines are maintained in parallel and at full commitment, and share one pressure: <em>what survives disappearance?</em></p>
+      <p>Work is made in Berlin. Books are published under the names of their authorial constructs; products and productions carry the studio name. ECHOxSTUDIOS is a business in formation, to be registered before any commercial release.</p>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <span class="section-label">02 — The divisions</span>
+    <h2 class="section-title">Where to find the work</h2>
+    <div class="studio-grid">
+      <a href="manuscripts.html"><span>Writing</span><strong>Manuscripts</strong><em>Novels, poetry collections, philosophy, and drama, with samples and professional material.</em></a>
+      <a href="gallery.html"><span>Photography</span><strong>Instant Film</strong><em>Analog Fuji and Polaroid work with two venue-ready exhibitions and curatorial dossiers.</em></a>
+      <a href="aniara-the-doors-to-the-stars.html"><span>Theater</span><strong>ECHOxPRODUCTION</strong><em>The producing name for stage and performance work, beginning with ANIARA: The Doors to the Stars.</em></a>
+      <a href="lyrics.html"><span>Music</span><strong>Lyrics &amp; Production</strong><em>Released work, lyrics, and independent productions.</em></a>
+      <a href="development.html"><span>Software</span><strong>Development</strong><em>ECHOxLUMINA, ECHOxVAULT, Tofinns Journey, and The Dark Hierarchy interactive system.</em></a>
+      <a href="method.html"><span>Practice</span><strong>Method</strong><em>How the work is made: LaTeX, instant film, irreversibility as discipline.</em></a>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <span class="section-label">03 — The name</span>
+    <h2 class="section-title">How ECHOx is written</h2>
+    <div class="prose">
+      <p><strong>ECHOx</strong> alone is the artist. A compound, such as ECHOxSTUDIOS, ECHOxPRODUCTION, ECHOxLUMINA, or ECHOxVAULT, names a division or a product of the studio. The name is always set upright, with a small gold multiplication sign in the compound.</p>
+    </div>
+    <div class="plate small"><img src="assets/brand/echox-artist-mark.png?v=20261002" alt="ECHOx artist logotype" width="640" height="170"/></div>
+  </div>
+
+  <div class="about-section">
+    <span class="section-label">04 — Contact</span>
+    <h2 class="section-title">Publishing, programming, and commissions</h2>
+    <div class="prose"><p>For publishing and rights, exhibition programming, music, and products, write to:</p></div>
+    <p><span class="addr">inbox@echoxstudios.art</span></p>
+  </div>
+
+</div>
+
+<footer>
+  <span class="footer-logo">ECHOx</span>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="manuscripts.html">Manuscripts</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+  <p class="footer-copy">© ECHOx — echoxstudios.art — Berlin — All rights reserved</p>
+</footer>
+
+<script src="site-nav.js"></script>
+<script src="brand-mark.js?v=20261002t"></script>
+<script src="site-footer.js?v=20260715b"></script>
+<script src="brand-signature.js?v=20261002"></script>
+</body>
+</html>
