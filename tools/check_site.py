@@ -86,10 +86,19 @@ endpoint = re.search(r"var RESEARCH_ENDPOINT = '([^']*)'", pc)
 ref = re.search(r"var ETHICS_APPROVAL_REF = '([^']*)'", pc)
 if not endpoint or not ref:
     errors.append("privacy-choice.js lost its research gate constants")
-elif bool(endpoint.group(1)) != bool(ref.group(1)):
-    errors.append("research endpoint and ethics approval reference must be set together")
-elif endpoint.group(1) and not os.path.exists("docs/RESEARCH_PROTOCOL.md"):
-    errors.append("research enabled without a protocol")
+elif endpoint.group(1):
+    # Live anonymous-counter channel: the terms must be disclosed wherever people could miss them.
+    if not os.path.exists("docs/RESEARCH_PROTOCOL.md"):
+        errors.append("research enabled without a protocol")
+    if "condition of using the free tools" not in read("privacy.html"):
+        errors.append("privacy.html must disclose the research counters as a condition of use")
+    if "Terms of use" not in pc:
+        errors.append("privacy-choice.js panel must show the research terms before first use")
+    if ref.group(1) == "" and "item-level" not in read("docs/RESEARCH_PROTOCOL.md"):
+        errors.append("protocol must state that item-level data needs separate consent and ethics approval")
+    for tp in glob.glob("tdh/tool-*.html"):
+        if endpoint.group(1).replace("https://", "") not in read(tp) and "tool-5" not in tp and "tool-7" not in tp:
+            errors.append(f"{tp}: CSP connect-src is missing the research endpoint")
 if subprocess.run(["node", "worker/test/workers.test.mjs"], capture_output=True).returncode:
     errors.append("worker tests fail")
 if subprocess.run(["node", "tests/scoring.test.mjs"], capture_output=True).returncode:

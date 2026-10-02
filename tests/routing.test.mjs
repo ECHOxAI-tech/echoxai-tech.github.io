@@ -10,7 +10,7 @@ const win = {
   addEventListener() {}, location: { pathname: '/tdh/index.html' }, Response: class { constructor(b, i) { this.status = i?.status; this.ok = i?.status < 400; } },
 };
 win.window = win;
-const ctx = vm.createContext({ ...win, window: win, document: { addEventListener() {}, readyState: 'loading', getElementById: () => null, querySelector: () => null, querySelectorAll: () => [], createElement: el, head: el(), body: el() }, localStorage: win.localStorage, Response: win.Response, console, setTimeout, crypto: { getRandomValues: a => a } });
+const ctx = vm.createContext({ ...win, window: win, document: { addEventListener() {}, readyState: 'loading', getElementById: () => null, querySelector: () => null, querySelectorAll: () => [], createElement: el, head: el(), body: el() }, localStorage: win.localStorage, Response: win.Response, console, setTimeout, crypto: { getRandomValues: a => a }, navigator: { webdriver: false } });
 vm.runInContext(src, ctx);
 const OLD = 'https://tdh-email.inbox-fde.workers.dev', NEW = 'https://tdh-profile.inbox-fde.workers.dev';
 await win.fetch(OLD + '/profile', { method: 'POST', body: JSON.stringify({ code: 'ABCDEFGHJKMN', tool: 't1', data: {} }) });
@@ -24,4 +24,18 @@ assert.equal(calls.length, n + 2, 'legacy 6-character read falls back to the old
 assert.ok(calls.at(-1)[0].startsWith(OLD + '/profile'));
 await win.fetch(OLD, { method: 'POST', body: '{}' });
 assert.equal(calls.at(-1)[0], OLD, 'e-mail endpoint is untouched');
-console.log('4 routing checks passed');
+// research counters: sent once per tool per month, only after the terms are accepted, never by automation
+const RES = 'https://tdh-research.inbox-fde.workers.dev/research';
+const sent = () => calls.filter(c => c[0] === RES).length;
+delete store.tdh_research_optin;
+await win.TDHResearch.submit(1, { V: 31, E: 22, T: 25, I: 22 });
+assert.equal(sent(), 0, 'nothing is sent before the terms are accepted');
+store.tdh_research_optin = '2026-10-03';
+await win.TDHResearch.submit(1, { V: 31, E: 22, T: 25, I: 22 });
+assert.equal(sent(), 1, 'accepted terms: one anonymous submission');
+const body = JSON.parse(calls.at(-1)[1].body);
+assert.deepEqual(Object.keys(body).sort(), ['scores', 'tool', 'v'], 'only whitelisted fields leave the device');
+assert.equal(calls.at(-1)[1].credentials, 'omit');
+await win.TDHResearch.submit(1, { V: 40, E: 20, T: 20, I: 20 });
+assert.equal(sent(), 1, 'second submission in the same month is skipped');
+console.log('9 routing checks passed');

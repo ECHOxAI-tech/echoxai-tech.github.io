@@ -1,0 +1,17 @@
+name = "tdh-research"
+main = "research.mjs"
+compatibility_date = "2026-10-01"
+
+[vars]
+RESEARCH_ENABLED = "1"
+
+[[d1_databases]]
+binding = "RESEARCH_DB"
+database_name = "tdh-research"
+database_id = "7b54245d-c5cd-4070-a1b3-b2ec76b03d8c"
+
+[[unsafe.bindings]]
+name = "RESEARCH_LIMITER"
+type = "ratelimit"
+namespace_id = "1003"
+simple = { limit = 30, period = 60 }

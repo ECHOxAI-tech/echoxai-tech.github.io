@@ -1,7 +1,8 @@
 // Optional, anonymous research contribution endpoint.
 //
 // Design (see docs/RESEARCH_PROTOCOL.md):
-//  - Disabled unless env.RESEARCH_ENABLED === '1' AND env.ETHICS_APPROVAL_REF is set.
+//  - Active only while env.RESEARCH_ENABLED === '1' (kill switch: unset it and the endpoint returns 503).
+//  - Anonymous counters only; item-level or linked data would need a separate consented study with ethics approval.
 //  - Stores only per-dimension HISTOGRAM COUNTERS (tool, dimension, 10-point bucket, month).
 //    No row per submission, no codes, no e-mail, no IP, no timestamps finer than a month,
 //    so individual response vectors can never be reconstructed.
@@ -69,7 +70,7 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(req) });
-    const enabled = env.RESEARCH_ENABLED === '1' && !!env.ETHICS_APPROVAL_REF;
+    const enabled = env.RESEARCH_ENABLED === '1';
 
     try {
       if (url.pathname === '/research' && req.method === 'POST') {

@@ -80,9 +80,9 @@ await t('research: validate accepts buckets and rejects extras', () => {
 });
 const DB = d1();
 const renv = { RESEARCH_DB: DB };
-await t('research: disabled without enable flag and ethics reference', async () => {
+await t('research: inactive until the enable flag is set (kill switch)', async () => {
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20 } }), renv)).status, 503);
-  assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20 } }), { ...renv, RESEARCH_ENABLED: '1' })).status, 503);
+  assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20 } }), { ...renv, RESEARCH_ENABLED: '0' })).status, 503);
 });
 const on = { ...renv, RESEARCH_ENABLED: '1', ETHICS_APPROVAL_REF: 'TEST-REF' };
 await t('research: stores counters only, no per-submission row', async () => {

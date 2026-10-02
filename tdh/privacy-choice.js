@@ -13,12 +13,13 @@
   /* Retrieval-code length. Generation uses 12 characters (worker/profile.mjs deployed); 6-character legacy codes remain readable. */
   var CODE_LENGTH = 12;
 
-  /* Optional anonymous research contribution (docs/RESEARCH_PROTOCOL.md). Disabled until BOTH values are set,
-     which happens only after ethics approval and deployment of worker/research.mjs. */
-  var RESEARCH_ENDPOINT = '';
+  /* Anonymous research counters (docs/RESEARCH_PROTOCOL.md). A condition of use, stated plainly in the panel:
+     each result adds only bucketed, identifier-free counters. Item-level or linked data is never sent here; that
+     would need a separate consented study under an ethics approval. */
+  var RESEARCH_ENDPOINT = 'https://tdh-research.inbox-fde.workers.dev';
   var ETHICS_APPROVAL_REF = '';
   var RESEARCH_KEY = 'tdh_research_optin';
-  var RESEARCH_VERSION = '2026-10-02';
+  var RESEARCH_VERSION = '2026-10-03';
   var RESEARCH_TOOLS = [1, 2, 3, 4, 6]; /* tools 5 and 7 produce free-text protocols and never contribute */
 
   function mode() {
@@ -73,9 +74,10 @@
     return originalFetch(input, options);
   };
 
-  function researchAvailable() { return !!(RESEARCH_ENDPOINT && ETHICS_APPROVAL_REF); }
+  function researchAvailable() { return !!RESEARCH_ENDPOINT; }
 
   function researchOptedIn() {
+    /* Accepted together with the adult confirmation; re-asked whenever the terms version changes. */
     try { return researchAvailable() && localStorage.getItem(RESEARCH_KEY) === RESEARCH_VERSION && localStorage.getItem(AGE_KEY) === 'yes'; }
     catch (error) { return false; }
   }
@@ -173,13 +175,13 @@
       '<section class="tdh-privacy-panel">' +
         '<p class="tdh-privacy-kicker">Adults only · Privacy choice</p>' +
         '<h2 id="tdh-privacy-title">Choose how your results are stored</h2>' +
-        '<p>The tools can generate intimate relationship and sexuality profiles. <strong>No result statistics are sent for analytics.</strong></p>' +
+        '<p>The tools can generate intimate relationship and sexuality profiles. <strong>No analytics, and no individual result statistics, are sent.</strong></p>' +
         '<p><strong>Local only</strong> keeps results in this browser. <strong>Cross-device</strong> stores each generated result with its random retrieval code through the remote profile service, so it can be opened and compared on another device.</p>' +
         '<p>Cross-device storage is optional and requires explicit consent. Email delivery is a separate action you choose after receiving a result. Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
-        '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (localStorage.getItem(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
+        '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (localStorage.getItem(AGE_KEY) === 'yes' && (!researchAvailable() || localStorage.getItem(RESEARCH_KEY) === RESEARCH_VERSION) ? ' checked' : '') + '> <span>I confirm that I am 18 or older, understand that the tools may process sensitive personal reflections' + (researchAvailable() ? ', and accept the anonymous research counters described above' : '') + '.</span></label>' +
         (researchAvailable()
-          ? '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (localStorage.getItem(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span><strong>Optional:</strong> also contribute a bucketed, anonymous summary of my result to research. No code, e-mail, IP address or free text is included, and nothing identifies me. Because it is anonymous, a contribution cannot be located or withdrawn later. <a href="/tdh/research.html" target="_blank" rel="noopener">How this works</a>.</span></label>'
-          : '<p class="tdh-choice-current">Anonymous research contribution is not active. <a href="/tdh/research.html" target="_blank" rel="noopener">Read the research roadmap</a>.</p>') +
+          ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Counts are published only in aggregate. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>'
+          : '') +
         '<div class="tdh-choice-grid">' +
           '<button class="tdh-choice-button" data-mode="local" type="button">Use locally</button>' +
           '<button class="tdh-choice-button" data-mode="remote" type="button">Enable cross-device</button>' +
@@ -214,11 +216,7 @@
       button.addEventListener('click', function () {
         if (!check.checked) return;
         setMode(button.getAttribute('data-mode'));
-        var rc = backdrop.querySelector('#tdh-research-check');
-        try {
-          if (rc && rc.checked) localStorage.setItem(RESEARCH_KEY, RESEARCH_VERSION);
-          else localStorage.removeItem(RESEARCH_KEY);
-        } catch (error) { /* storage unavailable */ }
+        try { localStorage.setItem(RESEARCH_KEY, RESEARCH_VERSION); } catch (error) { /* storage unavailable */ }
         closePanel(backdrop);
       });
     });
@@ -249,7 +247,7 @@
     settings.addEventListener('click', function () { showPanel(false); });
     document.body.appendChild(settings);
 
-    if (requiresChoice && (!localStorage.getItem(MODE_KEY) || localStorage.getItem(AGE_KEY) !== 'yes')) {
+    if (requiresChoice && (!localStorage.getItem(MODE_KEY) || localStorage.getItem(AGE_KEY) !== 'yes' || (researchAvailable() && localStorage.getItem(RESEARCH_KEY) !== RESEARCH_VERSION))) {
       showPanel(true);
     }
   }

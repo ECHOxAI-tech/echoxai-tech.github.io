@@ -1,6 +1,6 @@
 # The Dark Hierarchy: Research Protocol (draft for ethics review)
 
-**Status:** Phase 1 is built and switched **off**. No research data is being collected. Collection starts only after (a) a documented ethics review and (b) the operator sets `RESEARCH_ENABLED=1` and `ETHICS_APPROVAL_REF` in the worker, and the site sets the same reference in `privacy-choice.js`.
+**Status:** Phase 1 (anonymous aggregate counters) is **live since 2026-10-03** as a stated condition of using the free tools. Only anonymous, bucketed counters are stored; nothing in them is personal data. Item-level or linked data (Phase 2) is **not** collected and requires a separate consented study under an ethics approval. Kill switch: unset `RESEARCH_ENABLED` in the worker.
 
 **Principal investigator (author):** Echo Kronborg (carrier of Decho), ECHOxSTUDIOS, Berlin.
 **Scientific partner:** open. See "Institutional co-projects".
@@ -26,7 +26,7 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 
 **Phase 0: now.** Seven reflective instruments with face validity. No research claim is made. Results are local-first by default.
 
-**Phase 1: anonymous aggregate contribution (built, off).** An optional, separate, default-unticked choice lets a visitor contribute **only** a bucketed summary of a result from tools 1, 2, 3, 4 or 6. Tools 5 and 7 (free-text protocols) never contribute. This yields descriptive distributions and a feasibility signal for H2. It cannot test H1, H3–H6 because it holds no item-level or linked data. That limitation is deliberate and is the price of anonymity.
+**Phase 1: anonymous aggregate counters (live).** As a condition of use, stated before first use, each result contributes **only** a bucketed summary of a result from tools 1, 2, 3, 4 or 6. Tools 5 and 7 (free-text protocols) never contribute. This yields descriptive distributions and a feasibility signal for H2. It cannot test H1, H3–H6 because it holds no item-level or linked data. That limitation is deliberate and is the price of anonymity.
 
 **Phase 2: institutional co-project.** With a university or research-institute partner, under that institution's ethics approval, a separately consented, pre-registered study with item-level data and, where needed, pseudonymised retest linkage. The author contributes the theory, instruments and item bank; the partner contributes ethics sponsorship, methodology, and analysis. Data governance, authorship and open-data terms are agreed in writing before launch.
 
@@ -43,9 +43,9 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 
 ## 5. Consent and rights
 
-- Separate from the storage choice and from age confirmation; default off; versioned (`tdh_research_optin`); explained in plain language before it can be ticked.
-- Legal basis: explicit consent, Art. 6(1)(a) and Art. 9(2)(a) GDPR. Withdrawal stops future contributions at once.
-- **Disclosed limit:** because contributions are stored only as anonymous counters, a contribution already made cannot be located or withdrawn. The consent text says so.
+- Stated as a term of use, accepted together with the adult confirmation, shown in plain language before first use and re-asked when the terms version changes (`tdh_research_optin`). Declining means not using the tools.
+- Legal position: the stored counters are anonymous (no identifier, no per-person row, k = 30 publication floor), so they are not personal data (GDPR Recital 26) and no consent basis is needed for them. Because the position depends on the anonymisation holding, it is documented in `docs/DPIA.md` and should be confirmed by an independent data-protection adviser. Consent is **not** relied on for the research, since consent cannot be a condition of service (Art. 7(4)); any item-level study will use separate, freely given, explicit consent (Art. 6(1)(a), 9(2)(a)).
+- **Disclosed limit:** because contributions are stored only as anonymous counters, a contribution already made cannot be located or withdrawn.
 - Adults only (18+).
 
 ## 6. Sampling honesty
@@ -54,8 +54,8 @@ Contributors are self-selected readers and visitors. Phase 1 results will always
 
 ## 7. Governance before switch-on
 
-1. Data protection impact assessment completed (see `docs/DPIA.md`) and reviewed by an independent data-protection adviser.
-2. Ethics review by an appropriate body (a university ethics committee through a partner, or an independent research-ethics service). The approval reference is recorded in `ETHICS_APPROVAL_REF`.
+1. Data protection impact assessment completed (see `docs/DPIA.md`); independent data-protection review is pending and recommended.
+2. Ethics review by an appropriate body (a university ethics committee through a partner, or an independent research-ethics service) is **required before any Phase 2 item-level or linked collection**; the approval reference is then recorded in `ETHICS_APPROVAL_REF`.
 3. Public data dictionary and this protocol published.
 4. Annual public report of contribution counts and any incidents.
 5. Kill switch: unset `RESEARCH_ENABLED`; the endpoint returns 503 and the client stops offering the choice.
