@@ -57,5 +57,5 @@ The compound form always has the multiplication sign. The standalone form always
 ## Artist logotype on the site
 
 - **Footer and signature:** where a footer shows the text logo (`.footer-logo`), `brand-signature.js` replaces it with the ECHOx artist logotype; on pages without one, the logotype closes the page as a quiet signature. It links to `about-echoxstudios.html`.
-- **On dark pages** the bone-lettered export `assets/brand/echox-artist-mark-onblack.png` is used (charcoal letters recoloured to bone, turquoise echo untouched) because the original charcoal vanishes on near-black. Light plates, as on the About ECHOxSTUDIOS page, use the original `echox-artist-mark.png`.
+- **On dark pages** the bone-lettered vector `assets/brand/echox-artist-mark-onblack.svg` is used because the original charcoal vanishes on near-black. Light plates, as on the About ECHOxSTUDIOS page, use `echox-artist-mark.svg`. Both are clean SVG re-drawings of the logotype (traced, smoothed, edges snapped to the grid) so they stay crisp at any size; the turquoise echo is the more vivid `#17e9d0` so it reads on black, and sits at the measured offset behind the letters.
 - The masters live only in the private business repository (see `BRANDING.md`); these files are deployment copies.
