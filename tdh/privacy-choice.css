@@ -82,6 +82,7 @@
 .tdh-choice-opt .tdh-choice-button { width: 100%; }
 .tdh-choice-wide { grid-column: 1 / -1; }
 .tdh-wipe { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; line-height: 1.5; }
+.tdh-fine { font-size: 0.72em; }
 .tdh-choice-note { margin: 0; font-size: 0.8rem; line-height: 1.5; opacity: 0.8; }
 
 .tdh-choice-button {

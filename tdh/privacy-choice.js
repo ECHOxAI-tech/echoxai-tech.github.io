@@ -277,7 +277,7 @@
           : '') +
         '<div class="tdh-choice-grid">' +
           '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="remote" type="button">Recommended: works on any device and browser</button>' +
-            '<p class="tdh-choice-note">Your result is saved under your code and deleted after two years without use. You can delete it at any time. Choosing this is your consent to saving it.</p></div>' +
+            '<p class="tdh-choice-note">Your result is saved under your code, and you can delete it at any time. Choosing this is your consent to saving it. <span class="tdh-fine">Results are deleted after two years without use.</span></p></div>' +
           '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="local" type="button">Limited access: this device and browser only</button>' +
             '<p class="tdh-choice-note">Nothing is saved anywhere else, and your code only works in this browser on this device. <a href="/privacy.html#tdh-storage-difference" target="_blank" rel="noopener">Read here about the difference</a>.</p></div>' +
           '<div class="tdh-choice-opt tdh-choice-wide"><button class="tdh-choice-button" data-mode="none" type="button">Nothing saved: most privacy</button>' +
