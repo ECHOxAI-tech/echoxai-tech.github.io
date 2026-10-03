@@ -105,7 +105,7 @@ await t('the gate has a separate research checkbox: both must be ticked, and the
   await p.evaluate(`document.querySelector('#tdh-research-check').click()`);
   assert.equal(await disabled(), false, 'both ticked');
   await p.click('.tdh-choice-button[data-mode="local"]');
-  assert.equal(await p.evaluate(`localStorage.getItem('tdh_research_optin')`), '2026-10-03-full-aggregate');
+  assert.equal(await p.evaluate(`localStorage.getItem('tdh_research_optin')`), '2026-10-07-owner-only');
   await c.dispose();
 });
 

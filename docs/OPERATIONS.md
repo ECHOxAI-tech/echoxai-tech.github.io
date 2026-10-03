@@ -44,8 +44,24 @@ wrangler d1 execute tdh-research --remote -c worker/wrangler.research.toml \
 ```
 
 - One genuine completion of tool 1, 2, 3, 4 or 6 on the live site, in a normal browser, adds exactly 1 to that tool's `totals` row for the month. Automated browsers are acknowledged and discarded by design, so a scripted run proves nothing.
-- The public endpoint stays suppressed below 30 contributions per tool: `GET /research/summary?tool=1` answers `{"suppressed":true,...}`.
-- The public display threshold does not limit research use, publication or sharing of the full anonymous aggregate table. It contains no individual record or identifier. Keep the self-selected, non-representative and non-clinical warning with every presentation.
+- There is no public summary. `GET /research/summary?tool=N` answers only a request carrying the owner's key; everything else gets the same `404 not found` as any unknown path, and while no key is set it is closed for everyone. Read it yourself (tools 1, 2, 3, 4, 6):
+
+  ```
+  curl -s -H "Authorization: Bearer $RESEARCH_READ_KEY" \
+    "https://tdh-research.inbox-fde.workers.dev/research/summary?tool=1"
+  ```
+
+  It returns the total, the monthly totals and every histogram cell, with no suppression. Keep the key in your password manager, never in the repository or in chat. The database query above reads the same table without the key.
+- Set the key once (a long random string, at least 24 characters), then deploy:
+
+  ```
+  openssl rand -base64 36        # prints a new key; copy it
+  wrangler secret put RESEARCH_READ_KEY -c worker/wrangler.research.toml    # paste it at the prompt
+  wrangler deploy -c worker/wrangler.research.toml
+  ```
+
+  To change the key, run `secret put` again. To close the endpoint completely, run `wrangler secret delete RESEARCH_READ_KEY -c worker/wrangler.research.toml`.
+- Release is your decision: whether, when, to whom and through which media. Keep the self-selected, non-representative and non-clinical warning with every presentation.
 
 ## 5. Export the anonymous aggregate table
 

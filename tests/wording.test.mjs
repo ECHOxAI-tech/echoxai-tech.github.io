@@ -39,8 +39,8 @@ t('no stale or contradictory data wording in the public repository', () => {
 
 const REQUIRED = {
   'privacy.html': [/without a time limit/i, /24 months/, /anonymous research counters/i, /tool 1, 2, 3, 4 or 6/i],
-  'tdh/research.html': [/fewer than 30|30 contributions/i, /tools 5 and 7/i, /Live/],
-  'docs/RESEARCH_PROTOCOL.md': [/live since 2026-10-03/i, /30 contributions/i, /Tools 5 and 7/],
+  'tdh/research.html': [/no public results page/i, /tools 5 and 7/i, /Live/],
+  'docs/RESEARCH_PROTOCOL.md': [/live since 2026-10-03/i, /no public summary/i, /Tools 5 and 7/],
   'docs/DPIA.md': [/live since 2026-10-03/i, /24 months/, /docs\/DATA_FACTS\.md/],
   'worker/README.md': [/live/i, /DATA_FACTS/],
 };
