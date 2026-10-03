@@ -112,7 +112,7 @@ if not os.environ.get("TDH_STATIC_ONLY"):
     if subprocess.run(["node", "tests/e2e-research.mjs"], capture_output=True).returncode:
         errors.append("research end-to-end test fails (node tests/e2e-research.mjs)")
 for required in ["tdh/research.html", "tdh/system.html", "tdh/info-sheet.html", "docs/DPIA.md", "docs/RESEARCH_PROTOCOL.md",
-                 ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v122_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf", "aniara-the-doors-to-the-stars.html", "assets/pdfs/Aniara_The_Doors_to_the_Stars_sample.pdf", "assets/brand/aniara-emblem.png", "assets/brand/echox-artist-mark.svg", "assets/brand/echox-artist-mark-onblack.svg", "about-echoxstudios.html"]:
+                 ".well-known/security.txt", "assets/pdfs/The_Dark_Hierarchy_v123_sample.pdf", "assets/pdfs/TDH_Acquisitions_Info_Sheet.pdf", "aniara-the-doors-to-the-stars.html", "assets/pdfs/Aniara_The_Doors_to_the_Stars_sample.pdf", "assets/brand/aniara-emblem.png", "assets/brand/echox-artist-mark.svg", "assets/brand/echox-artist-mark-onblack.svg", "about-echoxstudios.html"]:
     if not os.path.exists(required):
         errors.append(f"missing {required}")
 if not endpoint or not endpoint.group(1):
