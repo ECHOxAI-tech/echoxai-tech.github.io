@@ -129,6 +129,27 @@
 
   footer { text-align:center; padding:2.4rem 1.5rem 4.5rem; font:300 .58rem 'Inconsolata',monospace; letter-spacing:.14em; color:var(--muted); }
   footer a { color:var(--muted); }
+
+  /* Audience charts: one hue, thin marks, values printed on the marks, scale stated under each chart. */
+  .viz-grid { display:grid; gap:.8rem; margin:1.4rem 0 .8rem; }
+  @media (min-width:760px) { .viz-grid { grid-template-columns:1fr 1fr; } }
+  .viz { margin:0; border:1px solid var(--rule); background:var(--panel); padding:1.2rem 1.1rem 1rem; }
+  .viz figcaption b { display:block; font:400 1.05rem/1.3 'IM Fell English',Georgia,serif; color:var(--off-white); }
+  .viz figcaption span { display:block; margin:.3rem 0 1rem; font:400 .55rem/1.5 'Inconsolata',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .bars { list-style:none; margin:0; padding:0; display:grid; gap:1.05rem; }
+  .bars li { display:grid; grid-template-columns:1fr auto; column-gap:.8rem; row-gap:.45rem; align-items:end; padding:0; border:0; }
+  .bars li::before { content:none; }
+  .bars .bl { grid-column:1; grid-row:1; font-size:.78rem; line-height:1.4; color:var(--bone); }
+  .bars .bl em { font-style:normal; color:var(--muted); }
+  .bars .bt { grid-column:1 / -1; grid-row:2; display:block; height:10px; background:rgba(184,150,62,.12); border-radius:0 4px 4px 0; }
+  .bars .bt i { display:block; height:10px; width:var(--w); background:var(--gold); border-radius:0 4px 4px 0; }
+  .bars .bt i.est { background:repeating-linear-gradient(45deg,var(--gold) 0 3px,rgba(212,169,62,.28) 3px 6px); }
+  .bars b { grid-column:2; grid-row:1; font:400 1.05rem/1 'IM Fell English',Georgia,serif; color:var(--off-white); white-space:nowrap; }
+  .axis { margin:1rem 0 0; font:300 .55rem/1.5 'Inconsolata',monospace; color:var(--muted); }
+  .chips { list-style:none; display:flex; flex-wrap:wrap; gap:.5rem; margin:1.4rem 0 0; padding:0; }
+  .chips li { padding:.45rem .8rem; border:1px solid var(--rule-strong); font:400 .56rem 'Inconsolata',monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--bone); }
+  .chips li::before { content:none; }
+  .chips li.open { border-style:dashed; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -191,15 +212,33 @@
     <p class="label">The audience</p>
     <h2>The subject is measurable, and large</h2>
     <p>Independent research and event data show that the book’s territory is not a fringe curiosity. The figures below are third-party market context, sourced at the foot of this section; they are not projections for this title.</p>
-    <div class="stat-grid">
-      <div class="stat"><b>46.8%</b><em>Of Belgian adults</em><p>had performed at least one BDSM-related activity; 12.5% do so regularly and 7.6% self-identify as practitioners.<sup>1</sup></p></div>
-      <div class="stat"><b>Nearly half</b><em>Of Quebec adults</em><p>expressed interest in at least one paraphilic category; about a third had experience of one (n&nbsp;=&nbsp;1,040).<sup>2</sup></p></div>
-      <div class="stat"><b>20,000+</b><em>Folsom Europe, Berlin</em><p>visitors expected at the 2025 edition, up from about 3,500 at the first, per the organiser.<sup>3</sup></p></div>
-      <div class="stat"><b>16,600</b><em>Darklands, Antwerp</em><p>admissions sold in presale for 2024, with 437 performers and 290 vendors.<sup>4</sup></p></div>
-      <div class="stat"><b>8–11M</b><em>FetLife accounts</em><p>estimated registered members worldwide; figures vary by source and are unaudited.<sup>5</sup></p></div>
-      <div class="stat"><b>165M+</b><em>Fifty Shades, copies</em><p>sold worldwide per its publisher: mass readership for the subject, in a very different register.<sup>6</sup></p></div>
+    <div class="viz-grid">
+      <figure class="viz">
+        <figcaption><b>How common is the territory?</b><span>Belgian adults, representative sample (N&nbsp;=&nbsp;1,027)<sup>1</sup></span></figcaption>
+        <ul class="bars" aria-label="Share of respondents">
+          <li><span class="bl">Had performed at least one BDSM-related activity</span><span class="bt" aria-hidden="true"><i style="--w:46.8%"></i></span><b>46.8%</b></li>
+          <li><span class="bl">Perform one on a regular basis</span><span class="bt" aria-hidden="true"><i style="--w:12.5%"></i></span><b>12.5%</b></li>
+          <li><span class="bl">Self-identify as BDSM practitioners</span><span class="bt" aria-hidden="true"><i style="--w:7.6%"></i></span><b>7.6%</b></li>
+        </ul>
+        <p class="axis">Bars drawn on a 0 to 100% scale.</p>
+      </figure>
+      <figure class="viz">
+        <figcaption><b>How large are the gatherings?</b><span>Visitors per edition, organiser and press figures<sup>3,4</sup></span></figcaption>
+        <ul class="bars" aria-label="Visitors per edition">
+          <li><span class="bl">Folsom Europe, Berlin, 2025 <em>(21st edition, attended)</em></span><span class="bt" aria-hidden="true"><i style="--w:66.7%"></i></span><b>about 20,000</b></li>
+          <li><span class="bl">Darklands, Antwerp, 2024 <em>(14th edition, attended)</em></span><span class="bt" aria-hidden="true"><i style="--w:66.7%"></i></span><b>about 20,000</b></li>
+          <li><span class="bl">Darklands, Antwerp, 2025 <em>(15th edition, expected over five days)</em></span><span class="bt" aria-hidden="true"><i class="est" style="--w:90%"></i></span><b>27,000</b></li>
+        </ul>
+        <p class="axis">Bars drawn on a 0 to 30,000 scale; the hatched bar is an expectation, not an attendance count.</p>
+      </figure>
     </div>
-    <p class="note"><sup>1</sup> Holvoet et al., <em>J Sex Med</em> 14, 2017 · <sup>2</sup> Joyal &amp; Carpentier, <em>J Sex Res</em> 54(2), 2017, 161–171 · <sup>3</sup> FolsomEurope e.V. via place2be.berlin · <sup>4</sup> Darklands 2024 report, tripbytrip.org · <sup>5</sup> third-party estimates, unaudited · <sup>6</sup> Penguin Random House series page. Accessed 2 October 2026.</p>
+
+    <div class="stat-grid">
+      <div class="stat"><b>Nearly half</b><em>Of Quebec adults</em><p>expressed interest in at least one paraphilic category; about a third had experience of one (n&nbsp;=&nbsp;1,040).<sup>2</sup></p></div>
+      <div class="stat"><b>74 countries</b><em>Darklands 2025 visitors</em><p>came from 74 countries, according to Belgian public broadcaster VRT: an international audience for the subject.<sup>4</sup></p></div>
+      <div class="stat"><b>165M+</b><em>Fifty Shades, copies</em><p>sold worldwide per its publisher: mass readership for the subject, in a very different register.<sup>5</sup></p></div>
+    </div>
+    <p class="note"><sup>1</sup> Holvoet et al., <em>J Sex Med</em>, 2017 (pubmed.ncbi.nlm.nih.gov/28781214) · <sup>2</sup> Joyal &amp; Carpentier, <em>J Sex Res</em> 54(2), 2017, 161–171 · <sup>3</sup> FOLSOM Europe e.V. 2025 edition, as listed at festivalsindeutschland.de (organiser figure, about 20,000 visitors from six continents) · <sup>4</sup> VRT NWS, 1 March 2024 (Darklands 2024, about 20,000) and 28 February 2025 (Darklands 2025, 27,000 expected over five days, 74 countries) · <sup>5</sup> Penguin Random House series pages (“more than 165 million copies sold worldwide”). Third-party context only, not a forecast for this title. Accessed 3 October 2026.</p>
 
     <h2 style="margin-top:2.4rem">Six readerships, one book</h2>
     <ul class="comps">
@@ -266,6 +305,10 @@
       <div class="card"><span class="num">II · Science</span><h3>A thesis others can test</h3><p>Six falsifiable hypotheses and an anonymous-by-design pipeline give institutions a concrete route to verify or develop the argument. <a href="./research.html">See the roadmap.</a></p></div>
       <div class="card"><span class="num">III · Reflection</span><h3>A tool readers actually use</h3><p>Seven private instruments, 5–12 minutes each, give a reader something useful the same day, and a reason to return to the book.</p></div>
       <div class="card"><span class="num">IV · Turnkey PR</span><h3>A story that demonstrates itself</h3><p>A reader can try an instrument in minutes, share an anonymous comparison link, or scan the QR on page 312. A journalist can do the same, and the author, the data position and the programming formats are ready.</p></div>
+    <p class="note" style="margin-top:1.6rem">Routes this work can open. Possibilities, not forecasts; dashed items depend on partners or invitations.</p>
+    <ul class="chips">
+      <li>Monograph</li><li>Instrument-validation paper</li><li>Replication study</li><li>Practitioner companion</li><li>15-week seminar syllabus ready</li><li class="open">Festival and gallery talks</li><li class="open">University co-project</li><li class="open">Translation</li>
+    </ul>
     </div>
   </section>
 
