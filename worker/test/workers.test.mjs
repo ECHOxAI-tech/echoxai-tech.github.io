@@ -112,9 +112,14 @@ await t('research: stores counters only, no per-submission row', async () => {
 await t('research: summary is suppressed below K and released at K', async () => {
   let s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
   assert.equal(s.suppressed, true);
-  await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20, emotional: 50 } }), on);
+  // The tool reaches K, but the final visual bucket occurs only once. A public summary
+  // may show the tool total and qualifying cells, never that rare bucket.
+  await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 90, emotional: 50 } }), on);
   s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
-  assert.equal(s.n, K); assert.ok(s.histograms.visual && s.histograms.emotional); assert.ok(/non-representative/.test(s.note));
+  assert.equal(s.n, K);
+  assert.equal(s.histograms.visual, undefined, 'a dimension with no qualifying cell is withheld');
+  assert.deepEqual(s.histograms.emotional, { 50: K });
+  assert.ok(/below 30 are withheld/.test(s.note));
 });
 await t('research: rejects non-allowlisted tools and oversize bodies', async () => {
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 5, scores: { a: 1 } }), on)).status, 400);

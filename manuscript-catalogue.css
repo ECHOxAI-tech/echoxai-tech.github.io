@@ -21,9 +21,10 @@ nav { display:flex; align-items:center; justify-content:space-between; padding:1
 .work-links a { font-family:'Inconsolata',monospace; font-size:.69rem; letter-spacing:.11em; text-transform:uppercase; color:var(--gold-dim); text-decoration:none; border-bottom:1px solid transparent; }
 .work-links a:hover { color:var(--off-white); border-color:var(--gold-dim); }
 .work-links .primary { color:var(--gold); }
-footer { border-top:1px solid var(--rule); padding:2rem 2.5rem; display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+footer { border-top:1px solid var(--rule); padding:2rem 2.5rem; display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; background:var(--black); }
 .footer-logo { font-family:'IM Fell English',serif; color:var(--gold-dim); }
 .footer-links { display:flex; flex-wrap:wrap; gap:1.2rem; list-style:none; }
 .footer-links a { font-family:'Inconsolata',monospace; letter-spacing:.13em; text-transform:uppercase; color:var(--muted); text-decoration:none; }
-.footer-copy { width:100%; color:#34342f; }
+.footer-copy { width:100%; color:var(--bone); }
+footer .footer-logo, footer .footer-links a, footer .footer-copy { background-color:var(--black); }
 @media(max-width:760px) { .nav-links{display:none}.catalogue{grid-template-columns:1fr;padding:2rem 1.2rem 4rem}.work-card{min-height:0}.page-header{padding-top:3.5rem} }

@@ -18,14 +18,14 @@ Special-category data (sexual life) is plausible in results. Adults only (18+ co
 - The visitor chooses at the gate between saving under a code (works on any device and browser, recommended, explicit consent), this device and browser only, and nothing saved (kept only until the window closes); the anonymous research counters are a stated condition of use (not personal data; see RESEARCH_PROTOCOL §5).
 - Research stores no row per person and no identifier, so it cannot be linked back to an individual or to a stored profile.
 - Tools 5 and 7 (free text) are excluded from research.
-- Retention: remote profiles expire automatically after 24 months without use (a save or an open restarts the clock, renewed at most weekly) (`worker/profile.mjs`, privacy page § 6) and can be deleted earlier with the retrieval code. Research counters are aggregate, anonymous and kept without a time limit for scientific use and publication, agreed in a separate checkbox before first use; they cannot be withdrawn individually (disclosed).
+- Retention: remote profiles expire automatically after 24 months without use (a save or an open restarts the clock, renewed at most weekly) (`worker/profile.mjs`, privacy page § 6) and can be deleted earlier with the retrieval code. Research counters are aggregate, anonymous and kept without a time limit for scientific use, public reporting and redacted sharing with scientists or media, agreed in a separate checkbox before first use; they cannot be withdrawn individually (disclosed). Only a redacted aggregate summary may be shared: each released tool total and histogram cell must meet k = 30; raw D1 data and monthly breakdowns are not released.
 
 ## 3. Risks and mitigations
 
 | Risk | Likelihood / severity | Mitigation | Residual |
 | :-- | :-- | :-- | :-- |
 | Guessing a retrieval code to read someone's result | Medium / high | 12-character codes from a crypto RNG (deployed 2026-10-02); rate limiting on reads; legacy 6-char codes expire; ambiguous characters excluded | Low once 12-char codes are live |
-| Re-identification from research counters | Very low / high | No per-submission rows; 10-point buckets; month granularity; suppression below 30 | Very low |
+| Re-identification from research counters | Very low / high | No per-submission rows; 10-point buckets; month granularity; tool and cell suppression below 30; raw data and monthly breakdowns never released | Very low |
 | Skewed or self-selected sample misread as prevalence | High / medium | Mandatory "non-representative" labelling; no prevalence claims | Low |
 | Contributor cannot withdraw a past contribution | Certain / low | Disclosed in the consent text before ticking | Accepted, disclosed |
 | Cloudflare processes IPs transiently | Certain / low | Disclosed; rate limiting via binding stores nothing | Accepted, disclosed |

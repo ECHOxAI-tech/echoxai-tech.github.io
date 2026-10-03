@@ -84,7 +84,7 @@ export async function launch() {
       for (const d of ['Runtime', 'Page']) await call(d + '.enable');
       await call('Fetch.enable', { patterns: [{ urlPattern: 'https://*.workers.dev/*' }] });
       await call('Emulation.setDeviceMetricsOverride', { width: popts.width || opts.width || 1280, height: popts.height || 900, deviceScaleFactor: 1, mobile: popts.mobile !== undefined ? popts.mobile : (popts.width || opts.width || 1280) < 500 });
-      const seed = { tdh_storage_mode: 'remote', tdh_remote_consent_at: '2026-10-02T10:00:00.000Z', tdh_adult_confirmed: 'yes', tdh_research_optin: '2026-10-04', ...(opts.seed || {}) };
+      const seed = { tdh_storage_mode: 'remote', tdh_remote_consent_at: '2026-10-02T10:00:00.000Z', tdh_adult_confirmed: 'yes', tdh_research_optin: '2026-10-03', ...(opts.seed || {}) };
       await call('Page.addScriptToEvaluateOnNewDocument', { source: `
         Object.defineProperty(navigator, 'webdriver', { get: () => ${opts.webdriver ? 'true' : 'false'} });
         ${opts.blockStorage ? `Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('blocked', 'SecurityError'); } });` : `try { if (window !== window.top) throw 0; var s = ${JSON.stringify(seed)}; for (var k in s) if (localStorage.getItem(k) === null && !sessionStorage.getItem('tdh_seeded_off')) localStorage.setItem(k, s[k]); } catch (e) {}`}

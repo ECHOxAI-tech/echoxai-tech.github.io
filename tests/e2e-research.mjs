@@ -96,7 +96,7 @@ await t('automated browsers never contribute and show no receipt', async () => {
 await t('the gate has a separate research checkbox: both must be ticked, and the stored version is the current one', async () => {
   const c = await b.context({ seed: { tdh_storage_mode: '', tdh_adult_confirmed: '', tdh_research_optin: '' } }); const p = await c.page(T1);
   await p.waitFor(`!!document.querySelector('#tdh-research-check')`, 8000);
-  assert.match(await p.text('.tdh-privacy-panel'), /without a time limit and used for scientific research and publication/);
+  assert.match(await p.text('.tdh-privacy-panel'), /scientific research, public reporting and redacted sharing with scientists or media/);
   assert.equal(await p.evaluate(`document.querySelector('#tdh-research-check').checked`), false, 'default unticked');
   const disabled = () => p.evaluate(`[...document.querySelectorAll('.tdh-choice-button')].every(x => x.disabled)`);
   assert.equal(await disabled(), true, 'nothing ticked');
@@ -105,7 +105,7 @@ await t('the gate has a separate research checkbox: both must be ticked, and the
   await p.evaluate(`document.querySelector('#tdh-research-check').click()`);
   assert.equal(await disabled(), false, 'both ticked');
   await p.click('.tdh-choice-button[data-mode="local"]');
-  assert.equal(await p.evaluate(`localStorage.getItem('tdh_research_optin')`), '2026-10-04');
+  assert.equal(await p.evaluate(`localStorage.getItem('tdh_research_optin')`), '2026-10-03');
   await c.dispose();
 });
 

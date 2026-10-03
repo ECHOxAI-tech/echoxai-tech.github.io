@@ -35,7 +35,8 @@
   var RESEARCH_ENDPOINT = 'https://tdh-research.inbox-fde.workers.dev';
   var ETHICS_APPROVAL_REF = '';
   var RESEARCH_KEY = 'tdh_research_optin';
-  var RESEARCH_VERSION = '2026-10-04';
+  // Re-ask because the disclosure now expressly permits redacted sharing with scientists and media.
+  var RESEARCH_VERSION = '2026-10-03';
   var RESEARCH_TOOLS = [1, 2, 3, 4, 6]; /* tools 5 and 7 produce free-text protocols and never contribute */
 
   /* Storage that never throws. When the browser blocks localStorage (some private modes, strict settings), values live
@@ -272,8 +273,8 @@
         '<p>The tools give you a personal result and a code. <strong>No analytics, and no individual result statistics, are sent.</strong> Read the <a href="/privacy.html#tdh-data" target="_blank" rel="noopener">data-protection details</a>.</p>' +
         '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-age-check"' + (store.get(AGE_KEY) === 'yes' ? ' checked' : '') + '> <span>I confirm that I am 18 or older and understand that the tools may process sensitive personal reflections.</span></label>' +
         (researchAvailable()
-          ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Counts are published only in aggregate. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>' +
-            '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (store.get(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span>I agree that these anonymous, untraceable counters may be stored without a time limit and used for scientific research and publication. I understand they cannot be traced to me, so they cannot be located or withdrawn later.</span></label>'
+          ? '<p class="tdh-choice-current"><strong>Terms of use:</strong> the tools are free. In return, each result adds a few anonymous, rounded counters (for example &ldquo;visual: 60&ndash;70&rdquo;) to a research tally, at most once per tool per month. No code, name, e-mail, IP address, device identifier, free text or per-person record is ever stored, so nothing can be traced back to you. Only redacted aggregate summaries may be published or shared with scientists or media; no count below 30, raw database data or monthly breakdown is released. <a href="/tdh/research.html" target="_blank" rel="noopener">How it works</a>.</p>' +
+            '<label class="tdh-age-confirm"><input type="checkbox" id="tdh-research-check"' + (store.get(RESEARCH_KEY) === RESEARCH_VERSION ? ' checked' : '') + '> <span>I agree that these anonymous, untraceable counters may be stored without a time limit and used for scientific research, public reporting and redacted sharing with scientists or media. I understand they cannot be traced to me, so they cannot be located or withdrawn later.</span></label>'
           : '') +
         '<div class="tdh-choice-grid">' +
           '<div class="tdh-choice-opt"><button class="tdh-choice-button" data-mode="remote" type="button">Recommended: works on any device and browser</button>' +
