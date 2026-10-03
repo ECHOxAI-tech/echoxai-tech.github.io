@@ -109,26 +109,48 @@ await t('research: stores counters only, no per-submission row', async () => {
   assert.equal(total, (K - 1) * 2);
   assert.equal([...DB.totals.values()].reduce((a, n) => a + n, 0), K - 1);
 });
-await t('research: summary is suppressed below K and released at K', async () => {
-  let s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
-  assert.equal(s.suppressed, true);
-  // The public summary waits until the tool reaches K; once it does, all anonymous
-  // aggregate cells remain available for research, cultural-science work and publication.
+const KEY = 'test-read-key-0123456789abcdefghij';
+const owner = { ...on, RESEARCH_READ_KEY: KEY };
+const read = (path, env = owner, headers = { Authorization: `Bearer ${KEY}` }) => research.fetch(req(path, 'GET', undefined, headers), env);
+await t('research: summary is owner-only and indistinguishable from an unknown path', async () => {
+  const path = '/research/summary?tool=1';
+  const unknown = await research.fetch(req('/research/nothing-here'), owner);
+  for (const [label, r] of [
+    ['no key sent', await read(path, owner, {})],
+    ['wrong key', await read(path, owner, { Authorization: 'Bearer wrong-key-wrong-key-wrong-key-x' })],
+    ['wrong scheme', await read(path, owner, { Authorization: `Basic ${KEY}` })],
+    ['no key configured', await read(path, on)],
+    ['key configured but too short', await read(path, { ...on, RESEARCH_READ_KEY: 'short' }, { Authorization: 'Bearer short' })],
+  ]) {
+    assert.equal(r.status, unknown.status, label);
+    assert.deepEqual(await r.json(), await unknown.clone().json(), label);
+  }
+  assert.equal(unknown.status, 404);
+});
+await t('research: the owner sees every cell and month, with no suppression', async () => {
+  // Tool 1 holds K-1 earlier contributions; add one rare bucket.
   await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 90, emotional: 50 } }), on);
-  s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
+  const s = await (await read('/research/summary?tool=1')).json();
   assert.equal(s.n, K);
-  assert.deepEqual(s.histograms.visual, { 20: K - 1, 90: 1 });
+  assert.equal(s.months.length, 1);
+  assert.equal(s.months[0].n, K);
+  assert.deepEqual(s.histograms.visual, { 20: K - 1, 90: 1 }, 'rare cells are shown to the owner');
   assert.deepEqual(s.histograms.emotional, { 50: K });
-  assert.ok(/Anonymous aggregate counters only/.test(s.note));
+  // And a tool with a single contribution is not hidden from the owner either.
+  await research.fetch(req('/research', 'POST', { v: 1, tool: 3, scores: { visual: 40 } }), on);
+  assert.equal((await (await read('/research/summary?tool=3')).json()).n, 1);
+  assert.equal((await read('/research/summary?tool=5')).status, 400);
+  // The browser is never offered the Authorization header, so site scripts cannot read it.
+  assert.ok(!/authorization/i.test((await research.fetch(req('/research', 'OPTIONS'), owner)).headers.get('Access-Control-Allow-Headers') || ''));
 });
 await t('research: rejects non-allowlisted tools and oversize bodies', async () => {
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 5, scores: { a: 1 } }), on)).status, 400);
   // automated runs are acknowledged but never counted
-  const before = (await (await research.fetch(req('/research/summary?tool=1'), on)).json()).n;
+  const before = (await (await read('/research/summary?tool=1')).json()).n;
   for (const h of [{ 'User-Agent': 'HeadlessChrome/124' }, { 'User-Agent': 'python-requests/2.31' }, { Origin: 'https://localhost:8765' }, { Origin: 'https://evil.example' }]) {
     assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 20, emotional: 50 } }, h), on)).status, 200);
   }
-  assert.equal((await (await research.fetch(req('/research/summary?tool=1'), on)).json()).n, before, 'automated runs must not change the counters');
+  assert.equal((await (await read('/research/summary?tool=1')).json()).n, before, 'automated runs must not change the counters');
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 1 }, pad: 'x'.repeat(2000) }), on)).status, 413);
 });
 

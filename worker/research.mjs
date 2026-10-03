@@ -6,12 +6,13 @@
 //  - Stores only per-dimension HISTOGRAM COUNTERS (tool, dimension, 10-point bucket, month).
 //    No row per submission, no codes, no e-mail, no IP, no timestamps finer than a month,
 //    so individual response vectors can never be reconstructed.
-//  - The public on-site summary waits for K total contributions per tool, to avoid
-//    over-interpreting a very small sample. That display rule does not limit the
-//    author's use or sharing of the full anonymous aggregate table for research,
-//    cultural-science work, publication or media.
+//  - There is NO public summary. GET /research/summary answers only a request that carries
+//    the owner's secret (`Authorization: Bearer <RESEARCH_READ_KEY>`); every other request,
+//    and every request while no key is configured, gets the same 404 as an unknown path.
+//    The owner sees every cell and month with no suppression. Whether, when and to whom
+//    anything is released is the owner's decision.
 //
-// Bindings: RESEARCH_DB (D1), RESEARCH_LIMITER (rate limit, optional), RESEARCH_ENABLED, ETHICS_APPROVAL_REF.
+// Bindings: RESEARCH_DB (D1), RESEARCH_LIMITER (rate limit, optional), RESEARCH_ENABLED, ETHICS_APPROVAL_REF, RESEARCH_READ_KEY (secret).
 import { cors, json, readJson, limited, ORIGINS } from './lib.mjs';
 
 export const K = 30;
@@ -67,6 +68,20 @@ export function isAutomated(req) {
   return false;
 }
 
+// Compares in time independent of where the first difference is.
+function sameSecret(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+}
+function ownerRead(req, env) {
+  const key = env.RESEARCH_READ_KEY;
+  if (typeof key !== 'string' || key.length < 24) return false; // unset or too short: closed
+  const m = /^Bearer (.+)$/.exec(req.headers.get('Authorization') || '');
+  return !!m && sameSecret(m[1], key);
+}
+
 const month = () => new Date().toISOString().slice(0, 7);
 
 export default {
@@ -100,17 +115,18 @@ export default {
       }
 
       if (url.pathname === '/research/summary' && req.method === 'GET') {
+        if (await limited(env, 'RESEARCH_LIMITER', req)) return json(req, { error: 'not found' }, 404);
+        if (!ownerRead(req, env)) return json(req, { error: 'not found' }, 404);
         const tool = Number(url.searchParams.get('tool'));
         if (!TOOLS.includes(tool)) return json(req, { error: 'invalid tool' }, 400);
-        const totals = (await env.RESEARCH_DB.prepare('SELECT month, n FROM totals WHERE tool = ?1').bind(tool).all()).results;
-        const n = totals.reduce((a, r) => a + r.n, 0);
-        if (n < K) return json(req, { tool, suppressed: true, reason: `fewer than ${K} contributions`, active: enabled });
+        const months = (await env.RESEARCH_DB.prepare('SELECT month, n FROM totals WHERE tool = ?1 ORDER BY month').bind(tool).all()).results;
+        const n = months.reduce((a, r) => a + r.n, 0);
         const rows = (await env.RESEARCH_DB.prepare('SELECT dim, bucket, SUM(n) AS n FROM cells WHERE tool = ?1 GROUP BY dim, bucket').bind(tool).all()).results;
         const histograms = {};
         for (const r of rows) (histograms[r.dim] ||= {})[r.bucket] = r.n;
         return json(req, {
-          tool, n, histograms,
-          note: 'Anonymous aggregate counters only. Self-selected, non-representative contributions; not a census or clinical measure.',
+          tool, n, months, histograms,
+          note: 'Owner view, no suppression. Anonymous aggregate counters only. Self-selected, non-representative contributions; not a census or clinical measure.',
         });
       }
 

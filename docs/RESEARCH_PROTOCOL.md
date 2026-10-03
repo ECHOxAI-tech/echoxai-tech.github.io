@@ -38,13 +38,13 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 - **Not stored:** retrieval codes, e-mail addresses, IP addresses, device or browser identifiers, user agents, cookies, precise timestamps, free text, demographics, or any per-submission row. Individual response vectors cannot be reconstructed.
 - **Transient processing:** Cloudflare handles IP addresses at its edge to deliver the request. The service does not store them. Rate limiting uses Cloudflare's rate-limit binding, which keeps no log of visitors.
 - **Rejected at the door:** any payload with fields beyond `v`, `tool`, `scores` or `label`; scores outside 0–100; more than 12 dimensions; payloads over 1 KB.
-- **On-site display floor:** the public on-site summary waits until a tool has **30** contributions. This prevents over-interpretation on the site; it does not limit research use, publication or sharing of the full anonymous aggregate counter table.
+- **No public summary:** the research service has no public read endpoint. Reading the counters needs the owner's secret key (`RESEARCH_READ_KEY`); without it the address behaves as if it did not exist. The owner sees every cell and month, unsuppressed, and decides whether, when, to whom and through which media anything is released. Nothing is released before there is a solid base; every release names the data as self-selected and non-representative.
 - **One contribution per tool per device per month**, enforced client-side to limit skew.
 
 ## 5. Consent and rights
 
 - Stated as a term of use, accepted together with the adult confirmation, shown in plain language before first use and re-asked when the terms version changes (`tdh_research_optin`). Declining means not using the tools.
-- Retention: the counters have no expiry, by design, so a study years from now can use them. Before first use a separate required checkbox records the participant's agreement that they may be stored without a time limit and used for research, cultural-science work, publication and sharing (version `2026-10-03-full-aggregate` of the gate). That agreement is for transparency and for the participant's own decision; it is not the legal basis (see below), which is that the counters are anonymous.
+- Retention: the counters have no expiry, by design, so a study years from now can use them. Before first use a separate required checkbox records the participant's agreement that they may be stored without a time limit and used for research, cultural-science work, publication and sharing (version `2026-10-07-owner-only` of the gate). That agreement is for transparency and for the participant's own decision; it is not the legal basis (see below), which is that the counters are anonymous.
 - Legal position: the stored counters are anonymous (no identifier or per-person row), so they are not personal data (GDPR Recital 26) and no consent basis is needed for them. Because the position depends on the anonymisation holding, it is documented in `docs/DPIA.md` and should be confirmed by an independent data-protection adviser. Consent is **not** relied on for the research, since consent cannot be a condition of service (Art. 7(4)); any item-level study will use separate, freely given, explicit consent (Art. 6(1)(a), 9(2)(a)).
 - **Disclosed limit:** because contributions are stored only as anonymous counters, a contribution already made cannot be located or withdrawn.
 - Adults only (18+).
@@ -58,7 +58,7 @@ Contributors are self-selected readers and visitors. Phase 1 results will always
 - The full anonymous aggregate counter table may be used, published or shared for research, cultural-science work, publication or media.
 - It contains only tool, dimension, bucket, calendar month and count. There is no individual-level dataset, identity, code, address, IP address, device identifier, free text or demographic to release.
 - Every presentation carries the self-selected, non-representative and non-clinical warning.
-- The on-site public summary waits until a tool has 30 contributions; that display rule does not limit use or sharing of the full anonymous table.
+- There is no public summary; the counters are readable only with the owner's key, and release is the owner's decision.
 - A collaborator needing item-level or linked data must use the separate Phase 2 study route, with ethics approval and its own consent.
 
 ## 8. Governance before switch-on
