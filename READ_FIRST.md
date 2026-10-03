@@ -1,8 +1,10 @@
 # Read first
 
-This repository is public. Before you edit, test or publish anything here, read the owner's private guidelines and guardrails. They are not in this repository.
+Before handling any part of this repository, read the private operations repository at `../echoxstudios-ops`:
 
-- Private repository: `echoxstudios/echoxstudios-ops`, folders `web/guidelines/` and `shared/guardrails/`.
-- If you cannot open it, stop and ask the owner.
+1. `README.md`
+2. `AGENTS.md`
+3. `web/guidelines/README.md`
+4. The current handoff and open decisions in `shared/handoffs/` and `shared/decisions/OPEN_DECISIONS.md`
 
-In this repository, also read `EDITING_PROTOCOL.md`, `SITE_STANDARDS.md`, `BRANDING.md`, `BRAND_MARK_STYLE_GUIDE.md` (when "ECHOx" appears) and `docs/DATA_FACTS.md` (any statement about data). Run `npm test` before every push.
+Those documents are the authority for files, work areas, guardrails, identity, release checks and repository structure. If the operations repository is unavailable, stop and ask the owner before making changes here.
