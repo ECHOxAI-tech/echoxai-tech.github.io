@@ -24,6 +24,10 @@ If X is changed on one Y, identify every equivalent Y across the site and apply 
 
 Check every instance before committing.
 
+### Rhythm and spacing rule
+
+Repeated visual sequences must preserve a deliberate rhythm at every breakpoint. When a heading, ornament, label, rule, lead paragraph, or call to action is adjusted, inspect the full sequence around it rather than only the changed element. Equal elements need equal spacing; intentional differences must communicate hierarchy. Audit every equivalent sequence across the site and correct the whole family in the same change.
+
 ## Visual system
 
 ### Character
@@ -113,6 +117,7 @@ Keep the durable rules above current. Add concise dated entries only when a rule
 - 2026-07-17: Public-name privacy rule added: exclude legal-name variants and home-address details from deployable files and public history; keep legal-page indexing disabled.
 - 2026-07-20: Replaced the compound connector’s fractional CSS strokes with a shared inline SVG mark so its thin geometry renders consistently in every card, label, and metadata context.
 - 2026-07-20: Transparent logo exports keep their outer canvas clear while retaining opaque graphic interiors; overlapping symbols must never show through one another.
+- 2026-10-03: Added the rhythm-and-spacing rule after normalising the tool-header ornament sequence across the Echo-System.
 
 ## Brand name rendering
 
