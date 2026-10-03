@@ -26,7 +26,7 @@ const sent = () => calls.filter(c => c[0] === RES).length;
 delete store.tdh_research_optin;
 await win.TDHResearch.submit(1, { V: 31, E: 22, T: 25, I: 22 });
 assert.equal(sent(), 0, 'nothing is sent before the terms are accepted');
-store.tdh_research_optin = '2026-10-03';
+store.tdh_research_optin = '2026-10-03-full-aggregate';
 await win.TDHResearch.submit(1, { V: 31, E: 22, T: 25, I: 22 });
 assert.equal(sent(), 1, 'accepted terms: one anonymous submission');
 const body = JSON.parse(calls.at(-1)[1].body);

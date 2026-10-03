@@ -26,7 +26,7 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 
 **Phase 0: now.** Seven reflective instruments with face validity. No research claim is made. Results are local-first by default.
 
-**Phase 1: anonymous aggregate counters (live).** As a condition of use, stated before first use, each result contributes **only** a bucketed summary of a result from tools 1, 2, 3, 4 or 6. Tools 5 and 7 (free-text protocols) never contribute. The redacted aggregate summary may be published or shared with scientists and media; raw data and monthly breakdowns are never shared. This yields descriptive distributions and a feasibility signal for H2. It cannot test H1, H3–H6 because it holds no item-level or linked data. That limitation is deliberate and is the price of anonymity.
+**Phase 1: anonymous aggregate counters (live).** As a condition of use, stated before first use, each result contributes **only** a bucketed summary of a result from tools 1, 2, 3, 4 or 6. Tools 5 and 7 (free-text protocols) never contribute. The full anonymous aggregate counter table may be used, published or shared for research, cultural-science work, publication or media. This yields descriptive distributions and a feasibility signal for H2. It cannot test H1, H3–H6 because it holds no item-level or linked data. That limitation is deliberate and is the price of anonymity.
 
 **Phase 2: institutional co-project.** With a university or research-institute partner, under that institution's ethics approval, a separately consented, pre-registered study with item-level data and, where needed, pseudonymised retest linkage. The author contributes the theory, instruments and item bank; the partner contributes ethics sponsorship, methodology, and analysis. Data governance, authorship and open-data terms are agreed in writing before launch.
 
@@ -38,14 +38,14 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 - **Not stored:** retrieval codes, e-mail addresses, IP addresses, device or browser identifiers, user agents, cookies, precise timestamps, free text, demographics, or any per-submission row. Individual response vectors cannot be reconstructed.
 - **Transient processing:** Cloudflare handles IP addresses at its edge to deliver the request. The service does not store them. Rate limiting uses Cloudflare's rate-limit binding, which keeps no log of visitors.
 - **Rejected at the door:** any payload with fields beyond `v`, `tool`, `scores` or `label`; scores outside 0–100; more than 12 dimensions; payloads over 1 KB.
-- **Disclosure floor:** a summary is suppressed for any tool with fewer than **30** contributions, and every histogram cell below **30** is withheld. No raw database export or monthly breakdown is released. This redacted summary is the only Phase 1 output that may be published or shared with scientists or media.
+- **On-site display floor:** the public on-site summary waits until a tool has **30** contributions. This prevents over-interpretation on the site; it does not limit research use, publication or sharing of the full anonymous aggregate counter table.
 - **One contribution per tool per device per month**, enforced client-side to limit skew.
 
 ## 5. Consent and rights
 
 - Stated as a term of use, accepted together with the adult confirmation, shown in plain language before first use and re-asked when the terms version changes (`tdh_research_optin`). Declining means not using the tools.
-- Retention: the counters have no expiry, by design, so a study years from now can use them. Before first use a separate required checkbox records the participant's agreement that they may be stored without a time limit and used for scientific research, public reporting and the restricted sharing described above (version `2026-10-03` of the gate). That agreement is for transparency and for the participant's own decision; it is not the legal basis (see below), which is that the counters are anonymous.
-- Legal position: the stored counters are anonymous (no identifier, no per-person row, k = 30 publication floor), so they are not personal data (GDPR Recital 26) and no consent basis is needed for them. Because the position depends on the anonymisation holding, it is documented in `docs/DPIA.md` and should be confirmed by an independent data-protection adviser. Consent is **not** relied on for the research, since consent cannot be a condition of service (Art. 7(4)); any item-level study will use separate, freely given, explicit consent (Art. 6(1)(a), 9(2)(a)).
+- Retention: the counters have no expiry, by design, so a study years from now can use them. Before first use a separate required checkbox records the participant's agreement that they may be stored without a time limit and used for research, cultural-science work, publication and sharing (version `2026-10-03-full-aggregate` of the gate). That agreement is for transparency and for the participant's own decision; it is not the legal basis (see below), which is that the counters are anonymous.
+- Legal position: the stored counters are anonymous (no identifier or per-person row), so they are not personal data (GDPR Recital 26) and no consent basis is needed for them. Because the position depends on the anonymisation holding, it is documented in `docs/DPIA.md` and should be confirmed by an independent data-protection adviser. Consent is **not** relied on for the research, since consent cannot be a condition of service (Art. 7(4)); any item-level study will use separate, freely given, explicit consent (Art. 6(1)(a), 9(2)(a)).
 - **Disclosed limit:** because contributions are stored only as anonymous counters, a contribution already made cannot be located or withdrawn.
 - Adults only (18+).
 
@@ -53,12 +53,13 @@ Each hypothesis is registered before data are analysed. Null and contrary result
 
 Contributors are self-selected readers and visitors. Phase 1 results will always be labelled "self-selected, non-representative", must not be presented as prevalence estimates, and must not be used for clinical claims.
 
-## 7. Phase 1 sharing and publication
+## 7. Phase 1 use, publication and sharing
 
-- The only sharable Phase 1 output is the redacted aggregate summary: a tool total plus marginal histogram cells that each meet k = 30.
-- It may be made public or supplied to scientists or media with the non-representative and non-clinical warning intact.
-- The raw D1 database, exact monthly counts, request logs and any small cell are never shared. There is no individual-level dataset to release.
-- A scientific collaborator needing item-level, linked or time-resolved data must use the separate Phase 2 study route, with ethics approval and its own consent.
+- The full anonymous aggregate counter table may be used, published or shared for research, cultural-science work, publication or media.
+- It contains only tool, dimension, bucket, calendar month and count. There is no individual-level dataset, identity, code, address, IP address, device identifier, free text or demographic to release.
+- Every presentation carries the self-selected, non-representative and non-clinical warning.
+- The on-site public summary waits until a tool has 30 contributions; that display rule does not limit use or sharing of the full anonymous table.
+- A collaborator needing item-level or linked data must use the separate Phase 2 study route, with ethics approval and its own consent.
 
 ## 8. Governance before switch-on
 

@@ -112,14 +112,14 @@ await t('research: stores counters only, no per-submission row', async () => {
 await t('research: summary is suppressed below K and released at K', async () => {
   let s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
   assert.equal(s.suppressed, true);
-  // The tool reaches K, but the final visual bucket occurs only once. A public summary
-  // may show the tool total and qualifying cells, never that rare bucket.
+  // The public summary waits until the tool reaches K; once it does, all anonymous
+  // aggregate cells remain available for research, cultural-science work and publication.
   await research.fetch(req('/research', 'POST', { v: 1, tool: 1, scores: { visual: 90, emotional: 50 } }), on);
   s = await (await research.fetch(req('/research/summary?tool=1'), on)).json();
   assert.equal(s.n, K);
-  assert.equal(s.histograms.visual, undefined, 'a dimension with no qualifying cell is withheld');
+  assert.deepEqual(s.histograms.visual, { 20: K - 1, 90: 1 });
   assert.deepEqual(s.histograms.emotional, { 50: K });
-  assert.ok(/below 30 are withheld/.test(s.note));
+  assert.ok(/Anonymous aggregate counters only/.test(s.note));
 });
 await t('research: rejects non-allowlisted tools and oversize bodies', async () => {
   assert.equal((await research.fetch(req('/research', 'POST', { v: 1, tool: 5, scores: { a: 1 } }), on)).status, 400);

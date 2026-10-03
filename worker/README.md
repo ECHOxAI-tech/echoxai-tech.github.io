@@ -5,7 +5,7 @@ Two small Cloudflare Workers that replace and extend the current profile service
 | File | Purpose |
 | :-- | :-- |
 | `profile.mjs` | `POST/GET/DELETE /profile`. Same contract as today, plus 12-character codes, rate limits, consent required to store, 24-month expiry, deletion by code, strict CORS. |
-| `research.mjs` | Optional anonymous research contribution: histogram counters only, k-anonymity floor of 30, disabled unless explicitly enabled. |
+| `research.mjs` | Optional anonymous research contribution: histogram counters only; the on-site summary waits for 30 contributions per tool, while the full anonymous aggregate table may be used or shared for research and publication. Disabled unless explicitly enabled. |
 | `schema.sql` | D1 tables for the research counters (no per-submission table). |
 | `test/workers.test.mjs` | `node worker/test/workers.test.mjs` |
 

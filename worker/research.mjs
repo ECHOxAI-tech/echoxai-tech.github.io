@@ -6,9 +6,10 @@
 //  - Stores only per-dimension HISTOGRAM COUNTERS (tool, dimension, 10-point bucket, month).
 //    No row per submission, no codes, no e-mail, no IP, no timestamps finer than a month,
 //    so individual response vectors can never be reconstructed.
-//  - Summary output never exposes a count below K: the overall tool total must meet K
-//    and every histogram cell below K is withheld. Only this redacted summary may be
-//    shared; raw D1 data and monthly breakdowns are never released.
+//  - The public on-site summary waits for K total contributions per tool, to avoid
+//    over-interpreting a very small sample. That display rule does not limit the
+//    author's use or sharing of the full anonymous aggregate table for research,
+//    cultural-science work, publication or media.
 //
 // Bindings: RESEARCH_DB (D1), RESEARCH_LIMITER (rate limit, optional), RESEARCH_ENABLED, ETHICS_APPROVAL_REF.
 import { cors, json, readJson, limited, ORIGINS } from './lib.mjs';
@@ -106,12 +107,10 @@ export default {
         if (n < K) return json(req, { tool, suppressed: true, reason: `fewer than ${K} contributions`, active: enabled });
         const rows = (await env.RESEARCH_DB.prepare('SELECT dim, bucket, SUM(n) AS n FROM cells WHERE tool = ?1 GROUP BY dim, bucket').bind(tool).all()).results;
         const histograms = {};
-        // A qualifying tool can still contain rare buckets. Withhold those buckets rather
-        // than making a small cell public through the summary endpoint.
-        for (const r of rows) if (r.n >= K) (histograms[r.dim] ||= {})[r.bucket] = r.n;
+        for (const r of rows) (histograms[r.dim] ||= {})[r.bucket] = r.n;
         return json(req, {
           tool, n, histograms,
-          note: `Self-selected, non-representative contributions. Marginal histograms only; cells below ${K} are withheld. Not a census or clinical measure.`,
+          note: 'Anonymous aggregate counters only. Self-selected, non-representative contributions; not a census or clinical measure.',
         });
       }
 

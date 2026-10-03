@@ -45,9 +45,20 @@ wrangler d1 execute tdh-research --remote -c worker/wrangler.research.toml \
 
 - One genuine completion of tool 1, 2, 3, 4 or 6 on the live site, in a normal browser, adds exactly 1 to that tool's `totals` row for the month. Automated browsers are acknowledged and discarded by design, so a scripted run proves nothing.
 - The public endpoint stays suppressed below 30 contributions per tool: `GET /research/summary?tool=1` answers `{"suppressed":true,...}`.
-- Never publish a figure for a tool or cell below 30.
+- The public display threshold does not limit research use, publication or sharing of the full anonymous aggregate table. It contains no individual record or identifier. Keep the self-selected, non-representative and non-clinical warning with every presentation.
 
-## 5. Redacted export of profile storage
+## 5. Export the anonymous aggregate table
+
+The owner may use, publish or share this aggregate-only output for research, cultural-science work, publication or media. It contains only tool, dimension, bucket, month and count.
+
+```
+wrangler d1 execute tdh-research --remote -c worker/wrangler.research.toml \
+  --command "SELECT tool, dim, bucket, month, n FROM cells ORDER BY tool, dim, bucket, month"
+```
+
+There is no individual-level data, retrieval code, e-mail address, IP address, device identifier, free text or demographic in this table.
+
+## 6. Redacted export of profile storage
 
 Retrieval codes are credentials, so an export must never contain them. This lists only counts per tool and an age/expiry spread, with codes one-way hashed:
 
@@ -57,7 +68,7 @@ wrangler kv key list --binding PROFILES -c worker/wrangler.toml --remote | node 
 
 The output is safe to keep. It is for capacity and retention checks, not for restoring data. Records are deliberately not backed up in readable form.
 
-## 6. Incident checklist
+## 7. Incident checklist
 
 1. Contain: break-glass above for research; for profile or mail, deploy a version that answers 503 (or `wrangler delete` the worker if needed).
 2. Preserve: note the time, what was seen, which worker. Do not log personal data while investigating.
@@ -65,7 +76,7 @@ The output is safe to keep. It is for capacity and retention checks, not for res
 4. Notify: if personal data may have been exposed, the owner decides on notification to affected people and the supervisory authority (GDPR Art. 33, within 72 hours of becoming aware). This runbook is not legal advice.
 5. Fix, run `npm test`, redeploy, and record what changed in the preflight log.
 
-## 7. Routine checks
+## 8. Routine checks
 
 - After any change to `tdh/` or `worker/`: `npm test`.
 - Monthly: counter check (section 4), confirm the research page still matches `docs/DATA_FACTS.md`.
